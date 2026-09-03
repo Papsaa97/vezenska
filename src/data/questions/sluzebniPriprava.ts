@@ -625,4 +625,90 @@ export const sluzebniPripravaQuestions: Question[] = [
     rationale: 'Dle Metodického listu č. 5/2014 má formulář 13 částí A–M. Zakročující příslušník zpracovává části A až G ve 2 výtiscích bez zbytečného odkladu.',
     source: '§ 4 Metodického listu ředitele odboru VaJS č. 5/2014'
   }
+  ,
+  // 36. Donucovací prostředky – Pouta
+  {
+    id: 'sp-36',
+    subject: 'Služební příprava',
+    topic: 'Donucovací prostředky',
+    question: 'Ve kterých situacích je příslušník VS ČR oprávněn použít pouta (nebo prostředky k zamezení prostorové orientace) jako donucovací prostředek?',
+    answer: 'K vzájemnému připoutání předváděných osob, při eskortě, k zamezení fyzického napadání, poškozování majetku nebo pokusu o útěk, a na osobě, která má být umístěna do výkonu trestu/vazby a klade odpor.',
+    options: [
+      'Pouze při převozu vězně mimo území České republiky.',
+      'K vzájemnému připoutání předváděných osob, při eskortě, k zamezení fyzického napadání, poškozování majetku nebo pokusu o útěk, a na osobě, která má být umístěna do výkonu trestu/vazby a klade odpor.',
+      'Pouta lze použít pouze se souhlasem ředitele věznice v případě, že vězeň odmítá pracovat.',
+      'Pouze v případě, že je vězeň agresivní vůči civilnímu lékaři.'
+    ],
+    correctOption: 1,
+    rationale: 'Zákon č. 555/1992 Sb. taxativně vyjmenovává situace pro použití pout, mezi které patří zejména zamezení útěku, sebepoškozování, napadání okolí a zajištění bezpečnosti při předvádění a eskortách.',
+    source: '§ 17 zákona č. 555/1992 Sb., o VS a JS ČR'
+  },
+  // 37. Donucovací prostředky – Zákaz použití u zranitelných osob
+  {
+    id: 'sp-37',
+    subject: 'Služební příprava',
+    topic: 'Donucovací prostředky',
+    question: 'U jakých kategorií osob je příslušníkům VS ČR zakázáno použít úderů, kopů, slzotvorných prostředků, taseru a zbraně (neplatí pro nutnou obranu a krajní nouzi)?',
+    answer: 'U zjevně těhotných žen, osob zjevně vysokého věku, osob se zjevnou tělesnou vadou (invalidů) a dětí mladších 15 let.',
+    options: [
+      'U všech cizích státních příslušníků a diplomatů.',
+      'U osob, které jsou ve výkonu vazby déle než 1 rok.',
+      'U zjevně těhotných žen, osob zjevně vysokého věku, osob se zjevnou tělesnou vadou (invalidů) a dětí mladších 15 let.',
+      'Zákon nedefinuje žádné chráněné kategorie, donucovací prostředky lze použít bez omezení vůči každému.'
+    ],
+    correctOption: 2,
+    rationale: 'Zákon jasně chrání vybrané zranitelné skupiny. Výjimka pro použití DP vůči nim platí POUZE tehdy, pokud útok těchto osob bezprostředně ohrožuje život nebo zdraví jiných a nelze jej odvrátit jinak (§ 21 zákona č. 555/1992 Sb.).',
+    source: '§ 21 zákona č. 555/1992 Sb., o VS a JS ČR'
+  },
+  // 38. Základní bezpečnostní pravidlo pro střelbu
+  {
+    id: 'sp-38',
+    subject: 'Služební příprava',
+    topic: 'Zbraňová bezpečnost',
+    question: 'Jak zní první a nejdůležitější pravidlo bezpečné manipulace se střelnou zbraní?',
+    answer: 'S každou zbraní je třeba vždy zacházet tak, jako by byla nabitá a připravená k výstřelu.',
+    options: [
+      'Zbraň musí být vždy uzamčena v trezoru.',
+      'Při předání zbraně je nutné se podívat do hlavně zepředu.',
+      'S každou zbraní je třeba vždy zacházet tak, jako by byla nabitá a připravená k výstřelu.',
+      'Před výstřelem je třeba zbraň namazat olejem.'
+    ],
+    correctOption: 2,
+    rationale: 'Toto pravidlo (spolu s mířením do bezpečného prostoru a prstem mimo spoušť) tvoří celosvětový standard pro prevenci nechtěných výstřelů a fatálních zranění při manipulaci.',
+    source: 'Předpis pro střeleckou přípravu a bezpečnost manipulace se zbraněmi'
+  },
+  // 39. Taktická obrana proti noži
+  {
+    id: 'sp-39',
+    subject: 'Služební příprava',
+    topic: 'Taktická sebeobrana',
+    question: 'Jaké je základní taktické pravidlo při nečekaném útoku nožem na krátkou vzdálenost?',
+    answer: 'Prioritou je zablokovat/kontrolovat útočící končetinu (ruku s nožem) a narušit stabilitu útočníka, nikoliv se primárně pokoušet nůž vytrhnout.',
+    options: [
+      'Stát na místě a snažit se zachytit čepel nože holýma rukama.',
+      'Prioritou je zablokovat/kontrolovat útočící končetinu (ruku s nožem) a narušit stabilitu útočníka, nikoliv se primárně pokoušet nůž vytrhnout.',
+      'Otočit se k útočníkovi zády a utíkat rovně pryč.',
+      'Zavřít oči a doufat, že si to útočník rozmyslí.'
+    ],
+    correctOption: 1,
+    rationale: 'Kontrola zbraně a vytvoření bezpečné vzdálenosti/úhlu je klíčové pro přežití útoku bodnou zbraní. Snaha o disarm (vytržení) před plnou kontrolou pohybu vede k těžkým řezným poraněním.',
+    source: 'Metodika taktické sebeobrany Akademie VS ČR'
+  },
+  // 40. Použití elektrického paralyzéru (Taser)
+  {
+    id: 'sp-40',
+    subject: 'Služební příprava',
+    topic: 'Donucovací prostředky',
+    question: 'Jaký je princip účinku elektrického paralyzéru (např. Taser) používaného VS ČR?',
+    answer: 'Taser vystřeluje elektrody, které po zasažení těla naruší senzorický a motorický nervový systém útočníka (NMI - Neuromuskulární inkapacitace), což způsobí okamžitou, ale dočasnou svalovou paralýzu a neschopnost ovládat tělo.',
+    options: [
+      'Způsobuje trvalé poškození mozkové kůry vysokým napětím.',
+      'Taser vystřeluje elektrody, které po zasažení těla naruší senzorický a motorický nervový systém útočníka (NMI - Neuromuskulární inkapacitace), což způsobí okamžitou, ale dočasnou svalovou paralýzu a neschopnost ovládat tělo.',
+      'Využívá ultrazvukové vlny k vyvolání nevolnosti a zvracení.',
+      'Pouze zahřeje kůži na vysokou teplotu a způsobí popáleniny 3. stupně.'
+    ],
+    correctOption: 1,
+    rationale: 'Technologie NMI přeruší komunikaci mezi mozkem a svaly (bez ohledu na toleranci bolesti pachatele např. z drog). Po vypnutí cyklu se motorická funkce okamžitě vrací k normálu.',
+    source: '§ 17 zákona č. 555/1992 Sb. a manuál výrobce'
+  }
 ];

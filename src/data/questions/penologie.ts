@@ -721,4 +721,90 @@ export const penologieQuestions: Question[] = [
     rationale: 'Zákon č. 169/1999 Sb. (§ 60–65) a zákon č. 218/2003 Sb. (ZSM) stanoví zvýšenou ochranu mladistvých, prioritní zaměření na vzdělávání a přípravu na povolání, rozšířená práva a mírnější sankce.',
     source: '§ 60–65 zákona č. 169/1999 Sb. a Studijní text str. 83–84'
   }
+  ,
+  // 46. Výkon zabezpečovací detence
+  {
+    id: 'pen-46',
+    subject: 'Penologie',
+    topic: 'Zabezpečovací detence',
+    question: 'Jaká jsou specifika výkonu zabezpečovací detence a kdo ji zajišťuje?',
+    answer: 'Vykonává se v ústavech pro výkon zabezpečovací detence (ÚVZD), které spravuje Vězeňská služba ČR. Střežení a bezpečnost zajišťují příslušníci VS ČR, ale odborné zacházení, terapii a ošetřovatelství zajišťují psychologové, speciální pedagogové a zdravotnický personál. Režim je volnější než ve věznici, kladen je důraz na léčebně-terapeutické a výchovné působení.',
+    options: [
+      'Vykonává se v běžných věznicích na odděleních se zvýšenou ostrahou; střežení i terapii zajišťují výhradně příslušníci VS ČR (dozorci).',
+      'Vykonává se v ústavech pro výkon zabezpečovací detence (ÚVZD), které spravuje Vězeňská služba ČR. Střežení a bezpečnost zajišťují příslušníci VS ČR, ale odborné zacházení, terapii a ošetřovatelství zajišťují psychologové, speciální pedagogové a zdravotnický personál. Režim je volnější než ve věznici, kladen je důraz na léčebně-terapeutické a výchovné působení.',
+      'Zajišťují ji výhradně civilní psychiatrické nemocnice spadající pod Ministerstvo zdravotnictví, bez jakékoliv účasti Vězeňské služby ČR.',
+      'Detence se vykonává formou domácího vězení s elektronickým náramkem a povinnou ambulantní psychiatrickou léčbou.'
+    ],
+    correctOption: 1,
+    rationale: 'ÚVZD (Brno, Opava) kombinují bezpečnostní prvky věznice s terapeutickým režimem zdravotnického zařízení. VS ČR zajišťuje střežení, civilní odborníci terapii (z. č. 129/2008 Sb.).',
+    source: 'Zákon č. 129/2008 Sb., o výkonu zabezpečovací detence'
+  },
+  // 47. Klasifikace věznic
+  {
+    id: 'pen-47',
+    subject: 'Penologie',
+    topic: 'Diferenciace věznic',
+    question: 'Jaké jsou dva základní typy věznic v ČR pro výkon trestu odnětí svobody plnoletých pachatelů podle platného znění TZ (§ 56)?',
+    answer: '1. Věznice s ostrahou (dále se vnitřně člení na oddělení s nízkým, středním a vysokým stupněm zabezpečení) a 2. Věznice se zvýšenou ostrahou.',
+    options: [
+      '1. Věznice pro prvotrestané a 2. Věznice pro recidivisty.',
+      '1. Věznice s ostrahou (dále se vnitřně člení na oddělení s nízkým, středním a vysokým stupněm zabezpečení) a 2. Věznice se zvýšenou ostrahou.',
+      '1. Věznice s dohledem, 2. Věznice s dozorem, 3. Věznice s ostrahou, 4. Věznice se zvýšenou ostrahou.',
+      '1. Polouzavřené ústavy a 2. Plně uzavřené ústavy s maximální ostrahou.'
+    ],
+    correctOption: 1,
+    rationale: 'Od 1. 1. 2017 (novela TZ) existují jen dva typy věznic. Věznice s ostrahou se vnitřně člení na 3 oddělení. O zařazení do oddělení rozhoduje ředitel věznice na základě doporučení komise, soud určuje jen typ věznice.',
+    source: '§ 56 zákona č. 40/2009 Sb., trestní zákoník'
+  },
+  // 48. Metodika SARPO
+  {
+    id: 'pen-48',
+    subject: 'Penologie',
+    topic: 'Penitenciární diagnostika',
+    question: 'K čemu slouží v penitenciární praxi nástroj SARPO (Souhrnná analýza rizik a kriminogenních potřeb)?',
+    answer: 'Je to standardizovaný diagnostický nástroj pro hodnocení rizik (např. riziko recidivy, riziko agrese, útěku) a kriminogenních potřeb (např. závislosti, dluhy, vzdělání) odsouzených. Výsledky SARPO jsou klíčové pro nastavení individuálního Programu zacházení a pro rozhodování o umístění do prostupného režimu.',
+    options: [
+      'Slouží k automatickému přidělování vězňů na pracovní zařazení bez posouzení jejich zdravotního stavu.',
+      'Je to formulář pro podávání stížností odsouzených proti rozhodnutí ředitele věznice o kázeňském trestu.',
+      'Je to standardizovaný diagnostický nástroj pro hodnocení rizik (např. riziko recidivy, riziko agrese, útěku) a kriminogenních potřeb (např. závislosti, dluhy, vzdělání) odsouzených. Výsledky SARPO jsou klíčové pro nastavení individuálního Programu zacházení a pro rozhodování o umístění do prostupného režimu.',
+      'Jedná se o účetní program pro výpočet srážek ze mzdy pracujících vězňů za výkon trestu.'
+    ],
+    correctOption: 2,
+    rationale: 'SARPO umožňuje objektivní posouzení rizik a potřeb vězně, čímž zefektivňuje zacílení odborného zacházení a snižuje pravděpodobnost recidivy po propuštění.',
+    source: 'Metodika SARPO a koncepce vězeňství ČR'
+  },
+  // 49. Program zacházení (aktivity)
+  {
+    id: 'pen-49',
+    subject: 'Penologie',
+    topic: 'Program zacházení',
+    question: 'Z jakých základních typů aktivit se skládá Program zacházení odsouzeného?',
+    answer: 'Skládá se z aktivit: 1. Pracovní (pracovní zařazení), 2. Vzdělávací (škola, kurzy), 3. Speciálně výchovné (terapeutické programy, zvládání agrese), 4. Zájmové (sport, kultura) a 5. Oblast utváření vnějších vztahů (udržování kontaktů s rodinou).',
+    options: [
+      '1. Výslechy na policii, 2. Účast na soudech, 3. Advokátní poradny.',
+      '1. Úklid cely, 2. Sledování televize, 3. Nákup v kantýně, 4. Osobní volno.',
+      'Skládá se z aktivit: 1. Pracovní (pracovní zařazení), 2. Vzdělávací (škola, kurzy), 3. Speciálně výchovné (terapeutické programy, zvládání agrese), 4. Zájmové (sport, kultura) a 5. Oblast utváření vnějších vztahů (udržování kontaktů s rodinou).',
+      'Program zacházení zahrnuje výhradně povinnost mlčet a denně cvičit prostná.'
+    ],
+    correctOption: 2,
+    rationale: 'Těchto 5 oblastí aktivit (PV, VV, SV, ZV, UVZ) tvoří komplexní rámec resocializace odsouzeného, který se individualizuje na základě výsledků SARPO.',
+    source: 'Zákon č. 169/1999 Sb., o VTOS a Řád výkonu trestu'
+  },
+  // 50. Prevence násilí (kategorie DVO)
+  {
+    id: 'pen-50',
+    subject: 'Penologie',
+    topic: 'Prevence násilí',
+    question: 'Která kategorie vězněných osob se označuje zkratkou DVO a jaká platí pro ni specifika?',
+    answer: 'DVO = Duševně (psychicky) vysoce narušené osoby a osoby s mentální retardací (dále DVO-P, DVO-M). Vyžadují speciální zacházení, umístění na specializované oddělení, dohled psychologa a zvýšenou ochranu před šikanou ze strany ostatních vězňů.',
+    options: [
+      'DVO = Dlouhodobě vydělávající osoby; mají přednost při zařazení do práce mimo věznici.',
+      'DVO = Dobře vychované osoby; tyto osoby mají povoleny neomezené návštěvy.',
+      'DVO = Dozorci ve výslužbě; označení pro bývalé příslušníky v civilu.',
+      'DVO = Duševně (psychicky) vysoce narušené osoby a osoby s mentální retardací (dále DVO-P, DVO-M). Vyžadují speciální zacházení, umístění na specializované oddělení, dohled psychologa a zvýšenou ochranu před šikanou ze strany ostatních vězňů.'
+    ],
+    correctOption: 3,
+    rationale: 'Osoby v kategorii DVO jsou obzvlášť zranitelné (riziko viktimizace) nebo hůře zvladatelné běžnými metodami, proto se pro ně zřizují specializovaná oddělení s intenzivnějším dohledem odborných zaměstnanců.',
+    source: 'NGŘ č. 24/2022, o předcházení násilí mezi vězněnými osobami'
+  }
 ];

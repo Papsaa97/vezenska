@@ -385,4 +385,90 @@ export const pedagogikaQuestions: Question[] = [
     rationale: 'Režim nejsou jen časy budíčku a večerky, ale ucelená soustava pravidel, která má vězně naučit žít organizovaně, plnit povinnosti a respektovat autority.',
     source: 'Učební texty předmětu Pedagogika, Akademie VS ČR, str. 68'
   }
+  ,
+  // 26. Etopedie
+  {
+    id: 'ped-26',
+    subject: 'Pedagogika',
+    topic: 'Speciální pedagogika',
+    question: 'Čím se zabývá etopedie v rámci speciální pedagogiky?',
+    answer: 'Etopedie se zabývá výchovou, vzděláváním a reedukací jedinců s poruchami chování, sociálně nepřizpůsobivých a mravně narušených (včetně pachatelů trestné činnosti).',
+    options: [
+      'Zabývá se výhradně vzděláváním osob s těžkým zrakovým postižením.',
+      'Etopedie se zabývá výchovou, vzděláváním a reedukací jedinců s poruchami chování, sociálně nepřizpůsobivých a mravně narušených (včetně pachatelů trestné činnosti).',
+      'Zabývá se historií pedagogiky a vývojem školství od středověku.',
+      'Zaměřuje se na léčbu poruch řeči a komunikace (koktavost, dyslalie).'
+    ],
+    correctOption: 1,
+    rationale: 'Etopedie je pro penitenciární praxi klíčovým oborem, protože zkoumá příčiny (etiologii) a projevy asociálního a antisociálního chování a hledá metody k resocializaci těchto osob.',
+    source: 'Základy speciální pedagogiky pro bezpečnostní sbory'
+  },
+  // 27. Metody výchovy
+  {
+    id: 'ped-27',
+    subject: 'Pedagogika',
+    topic: 'Obecná pedagogika',
+    question: 'Co jsou v pedagogice metody výchovy?',
+    answer: 'Záměrné a systematické způsoby působení vychovatele na vychovávaného za účelem dosažení stanoveného výchovného cíle (např. metoda přesvědčování, metoda příkladu, metoda povzbuzování, metoda cvičení a návyku).',
+    options: [
+      'Jsou to pouze kázeňské tresty ukládané za porušení pravidel.',
+      'Záměrné a systematické způsoby působení vychovatele na vychovávaného za účelem dosažení stanoveného výchovného cíle (např. metoda přesvědčování, metoda příkladu, metoda povzbuzování, metoda cvičení a návyku).',
+      'Jedná se výhradně o způsoby zkoušení a známkování žáků ve škole.',
+      'Jsou to finanční odměny za dobré pracovní výsledky.'
+    ],
+    correctOption: 1,
+    rationale: 'Metody výchovy představují cestu (postup), jak u vychovávaného jedince formovat žádoucí vlastnosti, postoje a návyky. Ve vězeňství se využívají k motivaci k bezkonfliktnímu chování a práci.',
+    source: 'Základy obecné pedagogiky'
+  },
+  // 28. Mentální retardace
+  {
+    id: 'ped-28',
+    subject: 'Pedagogika',
+    topic: 'Speciální pedagogika',
+    question: 'Jaký je rozdíl mezi mentální retardací (oligofrenií) a demencí?',
+    answer: 'Mentální retardace je vrozené (nebo v raném dětství získané) trvalé snížení rozumových schopností (zastavení vývoje intelektu). Demence je proces úpadku a ztráty již dříve normálně rozvinutých rozumových schopností (typicky ve stáří nebo po nemoci/úrazu).',
+    options: [
+      'Mentální retardace se dá vyléčit antibiotiky, zatímco demence je neléčitelná.',
+      'Oba pojmy znamenají totéž a dají se volně zaměňovat.',
+      'Mentální retardace je vrozené (nebo v raném dětství získané) trvalé snížení rozumových schopností (zastavení vývoje intelektu). Demence je proces úpadku a ztráty již dříve normálně rozvinutých rozumových schopností (typicky ve stáří nebo po nemoci/úrazu).',
+      'Mentální retardace postihuje pouze paměť, zatímco demence postihuje pouze řeč.'
+    ],
+    correctOption: 2,
+    rationale: 'Rozlišení je klíčové pro komunikaci. Vězni s mentální retardací (kategorie DVO) mají omezenou schopnost chápat složité pokyny, zatímco osoby s demencí postupně ztrácejí paměť a orientaci.',
+    source: 'Speciální pedagogika - psychopedie'
+  },
+  // 29. Zásada přiměřenosti
+  {
+    id: 'ped-29',
+    subject: 'Pedagogika',
+    topic: 'Didaktické zásady',
+    question: 'Co znamená v pedagogice zásada přiměřenosti (individuálního přístupu)?',
+    answer: 'Výchovné i vzdělávací požadavky, úkoly a metody musí odpovídat věku, rozumové vyspělosti, zdravotnímu stavu a individuálním schopnostem vychovávaného jedince, aby pro něj nebyly ani příliš snadné, ani nezvládnutelné.',
+    options: [
+      'Všichni jedinci musí být vzděláváni přesně stejně a musí plnit stejné úkoly bez výjimek.',
+      'Výchovné i vzdělávací požadavky, úkoly a metody musí odpovídat věku, rozumové vyspělosti, zdravotnímu stavu a individuálním schopnostem vychovávaného jedince, aby pro něj nebyly ani příliš snadné, ani nezvládnutelné.',
+      'Znamená, že odměna musí být vždy finančně přiměřená odvedené práci.',
+      'Znamená, že učitel smí používat fyzické tresty, pokud jsou přiměřené prohřešku.'
+    ],
+    correctOption: 1,
+    rationale: 'Zásada přiměřenosti, zavedená již J. A. Komenským, je základem pro tvorbu Programů zacházení ve vězeňství (nelze po osobě s lehkou mentální retardací chtít studium složité literatury).',
+    source: 'Obecná didaktika'
+  },
+  // 30. Andragogika
+  {
+    id: 'ped-30',
+    subject: 'Pedagogika',
+    topic: 'Oborové členění',
+    question: 'Čím se zabývá vědní obor andragogika?',
+    answer: 'Andragogika se zabývá výchovou a vzděláváním dospělých lidí (na rozdíl od pedagogiky zaměřené primárně na děti a mládež). Zkoumá specifika učení dospělých, rekvalifikaci a celoživotní vzdělávání.',
+    options: [
+      'Zabývá se výchovou zvířat a jejich výcvikem (např. služebních psů).',
+      'Andragogika se zabývá výchovou a vzděláváním dospělých lidí (na rozdíl od pedagogiky zaměřené primárně na děti a mládež). Zkoumá specifika učení dospělých, rekvalifikaci a celoživotní vzdělávání.',
+      'Zabývá se výhradně studiem starověkých řeckých textů a filozofie.',
+      'Je to obor zabývající se léčbou dětských psychických traumat.'
+    ],
+    correctOption: 1,
+    rationale: 'Penitenciární pedagogika do značné míry vychází z poznatků andragogiky, protože většina vězeňské populace je tvořena dospělými jedinci, kteří mají již utvořené postoje a zkušenosti.',
+    source: 'Základy andragogiky'
+  }
 ];
