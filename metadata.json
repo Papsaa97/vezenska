@@ -1,0 +1,6 @@
+{
+  "name": "Akademie VS ČR",
+  "description": "Studijní portál s podporou PWA a offline režimu pro přípravu na zkoušky ZOP A (Vězeňská služba ČR).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

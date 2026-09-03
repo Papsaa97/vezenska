@@ -1,0 +1,49 @@
+{
+  "name": "Akademie VS ČR – ZOP A",
+  "short_name": "Akademie VS ČR",
+  "description": "Studijní portál a offline příprava na zkoušky ZOP A Vězeňské služby ČR.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#1e3a8a",
+  "lang": "cs",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "reference", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Předpisy & Paragrafy",
+      "short_name": "Předpisy",
+      "description": "Rychlý přístup k zákonu 555/1992 Sb. a předpisům VS ČR",
+      "url": "/#compass",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Kartičky Dril",
+      "short_name": "Dril",
+      "description": "Kartičkový systém učení metodou Leitner",
+      "url": "/#flashcards",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Test & Zkouška",
+      "short_name": "Kvíz",
+      "description": "Ostrá zkouška a cvičné testy",
+      "url": "/#quiz",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
+    }
+  ]
+}
