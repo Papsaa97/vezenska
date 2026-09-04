@@ -525,7 +525,7 @@ export const pravoQuestions: Question[] = [
 
   // 30. Nutná obrana (§ 29 TZ)
   {
-    id: 'pr-29b',
+    id: 'pr-30',
     subject: 'Právo',
     topic: 'Trestní právo hmotné',
     question: 'Jak je definována nutná obrana v § 29 TZ a jaké jsou její meze?',
@@ -899,5 +899,91 @@ export const pravoQuestions: Question[] = [
     correctOption: 1,
     rationale: 'Dle 2. obecné zprávy CPT (odst. 36) a navazujících zpráv představuje trojice práv (informování blízkých, přístup k advokátovi a přístup k lékaři) od prvních okamžiků zadržení elementární štít proti mučení, nezákonnému nátlaku a vynucování přiznání.',
     source: 'Standardy CPT (Zpráva CPT/Inf (92) 3, body 36–43; CPT/Inf (2002) 15)'
+  }
+  ,
+  // 51. Probační a mediační služba
+  {
+    id: 'pr-51',
+    subject: 'Právo',
+    topic: 'Probační a mediační služba',
+    question: 'Jaký je hlavní cíl činnosti Probační a mediační služby (PMS) podle zákona č. 257/2000 Sb. a v jaké fázi se podílí na trestním řízení?',
+    answer: 'Hlavním cílem PMS je urovnání konfliktního stavu mezi pachatelem a poškozeným (mediace), provádění dohledu nad obviněnými/odsouzenými a kontrola výkonu alternativních trestů (probace). Podílí se na celém průběhu trestního řízení – od přípravného řízení až po vykonávací řízení a péči po propuštění z VTOS.',
+    options: [
+      'Hlavním cílem PMS je výhradně bezplatné právní zastupování pachatelů před soudem. Podílí se pouze na přípravném řízení před podáním obžaloby a nahrazuje činnost advokátů.',
+      'Hlavním cílem PMS je urovnání konfliktního stavu mezi pachatelem a poškozeným (mediace), provádění dohledu nad obviněnými/odsouzenými a kontrola výkonu alternativních trestů (probace). Podílí se na celém průběhu trestního řízení – od přípravného řízení až po vykonávací řízení a péči po propuštění z VTOS.',
+      'Hlavním cílem je vyšetřování stížností na postup policie a vězeňské služby. Funguje jako nezávislý dozorový orgán a její činnost se omezuje výhradně na výkon vazby.',
+      'PMS se zaměřuje pouze na ochranu obětí trestných činů a poskytování finanční kompenzace od státu; s pachateli zásadně nepracuje, aby nedošlo ke střetu zájmů.'
+    ],
+    correctOption: 1,
+    rationale: 'Zákon č. 257/2000 Sb. vymezuje probaci (dohled nad pachatelem, kontrola alternativních trestů) a mediaci (mimosoudní zprostředkování řešení sporu). PMS pracuje s pachateli i oběťmi ve všech stadiích trestního řízení, včetně přípravy na propuštění z vězení (tzv. parole).',
+    source: 'Zákon č. 257/2000 Sb., o Probační a mediační službě'
+  },
+  // 52. Druhy trestů odnětí svobody
+  {
+    id: 'pr-52',
+    subject: 'Právo',
+    topic: 'Trestní právo hmotné',
+    question: 'Jak se z hlediska výkonu člení nepodmíněné tresty odnětí svobody (§ 56 TZ a ZVTOS)?',
+    answer: 'Odnětí svobody se vykonává ve věznicích s ostrahou (členěné na oddělení s nízkým, středním a vysokým stupněm zabezpečení) nebo se zvýšenou ostrahou. Do věznice se zvýšenou ostrahou soud obligatorně zařadí např. pachatele s výjimečným trestem nebo odsouzeného za ZZZ spáchaný ve prospěch organizované zločinecké skupiny.',
+    options: [
+      'Vykonávají se výhradně ve třech typech věznic: dohled, dozor a ostraha. O zařazení rozhoduje ředitel věznice na základě kapacity ubytovacích prostor bez ohledu na verdikt soudu.',
+      'Odnětí svobody se vykonává ve věznicích s ostrahou (členěné na oddělení s nízkým, středním a vysokým stupněm zabezpečení) nebo se zvýšenou ostrahou. Do věznice se zvýšenou ostrahou soud obligatorně zařadí např. pachatele s výjimečným trestem nebo odsouzeného za ZZZ spáchaný ve prospěch organizované zločinecké skupiny.',
+      'Tresty odnětí svobody se člení na krátkodobé (do 1 roku), střednědobé (do 5 let) a dlouhodobé (nad 5 let), přičemž všechny se vykonávají ve stejných ubytovnách se společným režimem.',
+      'Existuje pouze jeden typ věznice s jednotným režimem pro všechny odsouzené, protože ústava zaručuje rovnost občanů před zákonem i během výkonu trestu.'
+    ],
+    correctOption: 1,
+    rationale: 'Novelou TZ a ZVTOS (2017) došlo ke zrušení čtyř typů věznic a nahrazení dvěma základními typy: věznice s ostrahou a věznice se zvýšenou ostrahou. O konkrétním umístění do oddělení v rámci věznice s ostrahou rozhoduje ředitel na návrh odborné komise, o typu věznice rozhoduje soud.',
+    source: '§ 56 zákona č. 40/2009 Sb., trestní zákoník a § 39a zákona č. 169/1999 Sb.'
+  },
+  // 53. Zvláštní způsoby řízení (Odklony)
+  {
+    id: 'pr-53',
+    subject: 'Právo',
+    topic: 'Trestní právo procesní',
+    question: 'Co se v trestním právu procesním rozumí pod pojmem „odklony“ a jaké jsou hlavní příklady?',
+    answer: 'Odklony jsou alternativní (zvláštní) způsoby trestního řízení, které umožňují vyřídit věc mimo klasické hlavní líčení u soudu, pokud jde o méně závažné činy (přečiny) a pachatel splní podmínky (doznání, náhrada škody). Příklady: Podmíněné zastavení trestního stíhání (§ 307 TrŘ) a Narovnání (§ 309 TrŘ).',
+    options: [
+      'Odklony označují procesní přesunutí trestní věci k příslušnému správnímu orgánu za účelem uložení pořádkové pokuty, pokud pachatel odmítne vypovídat.',
+      'Odklony jsou alternativní (zvláštní) způsoby trestního řízení, které umožňují vyřídit věc mimo klasické hlavní líčení u soudu, pokud jde o méně závažné činy (přečiny) a pachatel splní podmínky (doznání, náhrada škody). Příklady: Podmíněné zastavení trestního stíhání (§ 307 TrŘ) a Narovnání (§ 309 TrŘ).',
+      'Znamenají převedení pravomoci k vydání rozsudku z nezávislého soudu na dozorového státního zástupce, který rovnou ukládá nepodmíněné tresty.',
+      'Je to dočasné přerušení výkonu trestu odnětí svobody z humanitárních důvodů (zdravotní stav, úmrtí v rodině), po němž se vězeň musí vrátit.'
+    ],
+    correctOption: 1,
+    rationale: 'Odklony jsou projevem restorativní justice (obnovující spravedlnosti). Šetří náklady, urychlují řízení, uspokojují nároky poškozeného a motivují prvopachatele přečinů k nápravě bez nutnosti klasického potrestání a záznamu v trestním rejstříku.',
+    source: '§ 307, § 309 zákona č. 141/1961 Sb., trestní řád'
+  },
+  // 54. Zadržení osoby podezřelé
+  {
+    id: 'pr-54',
+    subject: 'Právo',
+    topic: 'Trestní právo procesní',
+    question: 'Za jakých podmínek může policie nebo občan zadržet osobu podezřelou ze spáchání trestného činu a jaké jsou následné lhůty (§ 76 TrŘ)?',
+    answer: 'Policejní orgán smí zadržet osobu při existenci vazebních důvodů (i bez souhlasu SZ u neodkladnosti). Kterýkoliv občan smí omezit osobní svobodu (zadržet) toho, kdo byl přistižen při TČ nebo těsně poté (k zjištění totožnosti/předání policii). Policie musí zadrženého do 48 hodin vyslechnout a buď propustit, nebo předat soudu (soud má pak dalších 24 hod na rozhodnutí o vazbě).',
+    options: [
+      'Policejní orgán smí zadržet kohokoliv bez důvodu na 72 hodin. Občané právo zadržet nemají, vystavují se tím riziku stíhání za omezování svobody.',
+      'Policejní orgán smí zadržet osobu při existenci vazebních důvodů (i bez souhlasu SZ u neodkladnosti). Kterýkoliv občan smí omezit osobní svobodu (zadržet) toho, kdo byl přistižen při TČ nebo těsně poté (k zjištění totožnosti/předání policii). Policie musí zadrženého do 48 hodin vyslechnout a buď propustit, nebo předat soudu (soud má pak dalších 24 hod na rozhodnutí o vazbě).',
+      'Policie smí zadržet osobu maximálně na 12 hodin, poté musí být propuštěna na kauci. Souhlas soudu k prodloužení se nevyžaduje. Občanské zadržení je povoleno jen u majetkových deliktů.',
+      'Osobu podezřelou smí zadržet výhradně soudce nebo státní zástupce na místě činu. Doba zadržení nesmí přesáhnout 24 hodin celkem.'
+    ],
+    correctOption: 1,
+    rationale: 'Zadržení (§ 76 TrŘ) je krátkodobé omezení osobní svobody (max. 48 + 24 hod dle čl. 8 LZPS). Občanské zadržení („nutnost přistižení při činu nebo bezprostředně po něm“) vyžaduje okamžité předání policejnímu orgánu.',
+    source: '§ 76 zákona č. 141/1961 Sb., trestní řád'
+  },
+  // 55. Rozdíl mezi TČ a Přestupkem
+  {
+    id: 'pr-55',
+    subject: 'Právo',
+    topic: 'Základy práva',
+    question: 'Jaký je hlavní rozdíl mezi trestným činem (přečinem/zločinem) a přestupkem?',
+    answer: 'Trestný čin je závažnější protiprávní čin zakotvený výhradně v trestním zákoníku, o kterém rozhoduje nezávislý soud a ukládá tresty zanechávající záznam v Rejstříku trestů. Přestupek je méně závažné společensky škodlivé jednání, které projednávají správní orgány (obce, policie), trestem jsou pokuty, zákazy činnosti či napomenutí, bez záznamu v Rejstříku trestů.',
+    options: [
+      'Obě kategorie jsou totožné, rozdíl je pouze v terminologii starých a nových zákonů; o obou rozhoduje výhradně soud v trestním řízení a ukládá stejné tresty.',
+      'Trestný čin je závažnější protiprávní čin zakotvený výhradně v trestním zákoníku, o kterém rozhoduje nezávislý soud a ukládá tresty zanechávající záznam v Rejstříku trestů. Přestupek je méně závažné společensky škodlivé jednání, které projednávají správní orgány (obce, policie), trestem jsou pokuty, zákazy činnosti či napomenutí, bez záznamu v Rejstříku trestů.',
+      'Přestupkem je pouze neúmyslné (nedbalostní) jednání řešené Policií ČR na ulici, zatímco trestným činem je výhradně úmyslné násilí páchané organizovanými skupinami.',
+      'Rozdíl spočívá výhradně ve věku pachatele: přestupky páchají mladiství do 18 let, zatímco dospělí nad 18 let páchají vždy jen trestné činy bez ohledu na závažnost.'
+    ],
+    correctOption: 1,
+    rationale: 'Přestupky upravuje zákon č. 250/2016 Sb. o odpovědnosti za přestupky a o řízení o nich. Mají nižší materiální škodlivost. O trestech za trestné činy (sankční dualismus – tresty a ochranná opatření) smí rozhodovat pouze soud (čl. 39 a 40 LZPS).',
+    source: 'Zákon č. 250/2016 Sb. a Zákon č. 40/2009 Sb.'
   }
 ];

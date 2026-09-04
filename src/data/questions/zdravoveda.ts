@@ -353,4 +353,90 @@ export const zdravovedaQuestions: Question[] = [
     rationale: 'Protišoková opatření 5T stabilizují mikrocirkulaci a brání prohloubení centralizace oběhu před příjezdem záchranné služby.',
     source: 'Standardy první pomoci Českého červeného kříže'
   }
+  ,
+  // 31. Intoxikace a předávkování
+  {
+    id: 'zdr-23',
+    subject: 'Zdravověda a první pomoc',
+    topic: 'Akutní stavy',
+    question: 'Jaké jsou typické příznaky předávkování opioidy (např. heroin, fentanyl) a jaká je první pomoc?',
+    answer: 'Příznaky: zpomalené až zástavové dýchání, bezvědomí, modrání rtů a prstů (cyanóza), extrémně zúžené zorničky (špendlíkové hlavičky). První pomoc: přivolat ZZS, zajistit dýchací cesty, při zástavě dechu zahájit KPR, pokud je k dispozici, podat antidotum Naloxon (Nyxoid sprej do nosu).',
+    options: [
+      'Příznaky: hyperaktivita, rozšířené zorničky, rychlý tep. První pomoc: podat kávu a nechat osobu běhat, aby se urychlil metabolismus.',
+      'Příznaky: zpomalené až zástavové dýchání, bezvědomí, modrání rtů a prstů (cyanóza), extrémně zúžené zorničky (špendlíkové hlavičky). První pomoc: přivolat ZZS, zajistit dýchací cesty, při zástavě dechu zahájit KPR, pokud je k dispozici, podat antidotum Naloxon (Nyxoid sprej do nosu).',
+      'Příznaky: zvracení krve a silné křeče. První pomoc: podat aktivní uhlí a donutit osobu vypít velké množství vody.',
+      'Příznaky: žluté zbarvení kůže a očí. První pomoc: podat sladký čaj a uložit do stabilizované polohy.'
+    ],
+    correctOption: 1,
+    rationale: 'Předávkování opioidy je život ohrožující stav kvůli útlumu dýchacího centra v mozku. Rychlé podání Naloxonu (antidota) a podpora dýchání zachraňuje život.',
+    source: 'Metodický pokyn zdravotnické služby VS ČR'
+  },
+  // 32. Anafylaktický šok
+  {
+    id: 'zdr-24',
+    subject: 'Zdravověda a první pomoc',
+    topic: 'Akutní stavy',
+    question: 'Jak se projevuje anafylaktický šok a jaká je neodkladná první pomoc?',
+    answer: 'Jde o těžkou alergickou reakci (např. na bodnutí hmyzem, potravinu, lék). Projevuje se otokem (zejména rtů, jazyka a dýchacích cest), dušností, poklesem krevního tlaku a poruchou vědomí. První pomoc: přivolat ZZS, uložit do protišokové polohy, u pacienta s předepsaným adrenalinovým autoinjektorem (EpiPen) pomoci s jeho aplikací do stehna, při zástavě dechu zahájit KPR.',
+    options: [
+      'Jde o mírnou vyrážku. První pomoc: namazat kůži chladivou mastí a podat sklenici vody.',
+      'Jde o psychický šok po špatné zprávě. První pomoc: uklidnit osobu a nechat ji odpočívat v sedě.',
+      'Jde o těžkou alergickou reakci (např. na bodnutí hmyzem, potravinu, lék). Projevuje se otokem (zejména rtů, jazyka a dýchacích cest), dušností, poklesem krevního tlaku a poruchou vědomí. První pomoc: přivolat ZZS, uložit do protišokové polohy, u pacienta s předepsaným adrenalinovým autoinjektorem (EpiPen) pomoci s jeho aplikací do stehna, při zástavě dechu zahájit KPR.',
+      'Jde o úpal ze slunce. První pomoc: přesunout do stínu a podat teplý nápoj.'
+    ],
+    correctOption: 2,
+    rationale: 'Anafylaxe je život ohrožující stav vyžadující okamžitou aplikaci adrenalinu (EpiPen), který rozšíří dýchací cesty a zvedne krevní tlak.',
+    source: 'Doporučené postupy ERC (Evropská resuscitační rada)'
+  },
+  // 33. Popáleniny
+  {
+    id: 'zdr-25',
+    subject: 'Zdravověda a první pomoc',
+    topic: 'Traumata',
+    question: 'Jaká je správná první pomoc u popálenin 2. a 3. stupně?',
+    answer: 'Bezpečně ukončit působení tepla, zasažené místo začít ihned chladit mírným proudem studené vody (minimálně 10-20 minut, chladit pouze popálenou plochu, ne celé tělo - riziko podchlazení), neslupovat přiškvařený oděv, nepropichovat puchýře, nic na ránu nemazat, sterilně krýt (nebo použít čistý igelitový sáček) a přivolat ZZS.',
+    options: [
+      'Puchýře propíchnout jehlou, aby vytekla tekutina, a ránu zasypat dětským pudrem.',
+      'Popáleninu okamžitě namazat mastným krémem, olejem nebo máslem a pevně zavázat obinadlem.',
+      'Bezpečně ukončit působení tepla, zasažené místo začít ihned chladit mírným proudem studené vody (minimálně 10-20 minut, chladit pouze popálenou plochu, ne celé tělo - riziko podchlazení), neslupovat přiškvařený oděv, nepropichovat puchýře, nic na ránu nemazat, sterilně krýt (nebo použít čistý igelitový sáček) a přivolat ZZS.',
+      'Popáleninu ničím nechladit, protože hrozí infekce, a pouze podat léky proti bolesti.'
+    ],
+    correctOption: 2,
+    rationale: 'Chlazení snižuje hloubku poškození tkání a tlumí bolest. Použití mastí nebo krémů ránu uzavře a brání odvodu tepla (zhoršuje stav).',
+    source: 'Doporučené postupy ČČK'
+  },
+  // 34. Stabilizovaná poloha
+  {
+    id: 'zdr-26',
+    subject: 'Zdravověda a první pomoc',
+    topic: 'Základní postupy',
+    question: 'Kdy se používá zotavovací (stabilizovaná) poloha na boku?',
+    answer: 'Používá se výhradně u pacienta, který je v bezvědomí, ALE normálně a pravidelně dýchá (a nemá podezření na zranění páteře). Účelem je udržet průchodné dýchací cesty a zabránit vdechnutí zvratků.',
+    options: [
+      'Používá se u pacienta v bezvědomí, který vůbec nedýchá nebo lapá po dechu (gasping).',
+      'Používá se výhradně u pacienta, který je v bezvědomí, ALE normálně a pravidelně dýchá (a nemá podezření na zranění páteře). Účelem je udržet průchodné dýchací cesty a zabránit vdechnutí zvratků.',
+      'Používá se u všech pacientů s bolestí břicha nebo hrudníku jako úlevová poloha.',
+      'Používá se u zlomenin dolních končetin k fixaci kostí.'
+    ],
+    correctOption: 1,
+    rationale: 'Zotavovací poloha zajišťuje dýchací cesty (jazyk nepadá dozadu). Pokud pacient nedýchá normálně, musí ležet na zádech a musí být zahájena KPR.',
+    source: 'Doporučené postupy ERC (Evropská resuscitační rada)'
+  },
+  // 35. Použití škrtidla (CAT) na krku
+  {
+    id: 'zdr-27',
+    subject: 'Zdravověda a první pomoc',
+    topic: 'TCCC - Zástava krvácení',
+    question: 'Lze použít taktické turniketové škrtidlo (CAT) k zástavě masivního krvácení na krku?',
+    answer: 'NE. Škrtidlo (turniket) se používá výhradně k zástavě masivního tepenného krvácení na končetinách (paže, stehna). Aplikace na krk by způsobila udušení. Krvácení na krku se zastavuje přímým tlakem v ráně (prsty/dlouhodobým tlakem ruky) nebo metodou wound packing (tamponáda rány).',
+    options: [
+      'Ano, ale škrtidlo se smí utáhnout pouze na 50 % maximální síly.',
+      'NE. Škrtidlo (turniket) se používá výhradně k zástavě masivního tepenného krvácení na končetinách (paže, stehna). Aplikace na krk by způsobila udušení. Krvácení na krku se zastavuje přímým tlakem v ráně (prsty/dlouhodobým tlakem ruky) nebo metodou wound packing (tamponáda rány).',
+      'Ano, je to standardní postup TCCC pro všechny typy masivního krvácení.',
+      'Ne, škrtidlo se používá výhradně k fixaci zlomenin a nikdy k zástavě krvácení.'
+    ],
+    correctOption: 1,
+    rationale: 'Turniket okluduje krevní řečiště kompletním stlačením tkáně proti kosti. Na krku by to znemožnilo dýchání a zablokovalo průtok krve do mozku oběma karotidami.',
+    source: 'Mezinárodní taktický standard TCCC'
+  }
 ];

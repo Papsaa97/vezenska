@@ -801,4 +801,90 @@ export const profesniEtikaQuestions: Question[] = [
     rationale: 'Korupční jednání narušuje princip rovnosti a nestrannosti, způsobuje finanční škody státu a podkopává samotné základy právního státu.',
     source: 'NGŘ č. 28/2018 Sb. Příloha 1 Preambule; Studijní opora str. 12, 15'
   }
+  ,
+  // 46. Zásady bezúhonnosti
+  {
+    id: 'pe_51',
+    subject: 'Profesní etika',
+    topic: 'Etický kodex',
+    question: 'Jaké etické a právní důsledky má ztráta osobní bezúhonnosti pro příslušníka bezpečnostního sboru?',
+    answer: 'Ztráta bezúhonnosti (např. pravomocné odsouzení pro úmyslný trestný čin) je ze zákona důvodem k okamžitému propuštění ze služebního poměru. Eticky představuje fatální selhání a ztrátu důvěry veřejnosti v nestrannost a zákonnost bezpečnostního sboru.',
+    options: [
+      'Příslušník může být pouze dočasně převeden na jinou práci, dokud se trest nevymaže z rejstříku.',
+      'Ztráta bezúhonnosti (např. pravomocné odsouzení pro úmyslný trestný čin) je ze zákona důvodem k okamžitému propuštění ze služebního poměru. Eticky představuje fatální selhání a ztrátu důvěry veřejnosti v nestrannost a zákonnost bezpečnostního sboru.',
+      'Nemá žádné důsledky, pokud k trestnému činu nedošlo přímo ve věznici nebo ve službě.',
+      'Příslušník je pouze upozorněn na porušení etického kodexu bez vlivu na jeho pracovní smlouvu.'
+    ],
+    correctOption: 1,
+    rationale: 'Zákon č. 361/2003 Sb. (o služebním poměru) stanoví bezúhonnost jako základní předpoklad pro přijetí i setrvání ve službě. Kriminalita ochránců zákona narušuje samotný smysl existence bezpečnostních sborů.',
+    source: 'Zákon č. 361/2003 Sb. a Kodex profesní etiky VS ČR'
+  },
+  // 47. Oznamování korupce
+  {
+    id: 'pe_52',
+    subject: 'Profesní etika',
+    topic: 'Protikorupční program',
+    question: 'Co je podle Protikorupčního programu VS ČR základní povinností příslušníka, kterému je nabídnut úplatek?',
+    answer: 'Úplatek jednoznačně odmítnout a celou událost bezodkladně nahlásit svým nadřízeným nebo příslušným kontrolním orgánům (GIBS, pověřený orgán). Neoznámení korupce může být samo o sobě trestným činem nebo kázeňským proviněním.',
+    options: [
+      'Úplatek si dočasně ponechat jako důkaz a pak ho předat poškozeným.',
+      'Úplatek odmítnout a celou věc utajit, aby se vyhnul papírování a problémům na pracovišti.',
+      'Úplatek jednoznačně odmítnout a celou událost bezodkladně nahlásit svým nadřízeným nebo příslušným kontrolním orgánům (GIBS, pověřený orgán). Neoznámení korupce může být samo o sobě trestným činem nebo kázeňským proviněním.',
+      'Přijmout peníze, ale odevzdat je do státního rozpočtu přes účtárnu věznice.'
+    ],
+    correctOption: 2,
+    rationale: 'Oznamovací povinnost (tzv. whistleblowing) je stěžejním nástrojem boje proti korupci. Zaměstnanec, který upozorní na korupci, je chráněn před odvetnými opatřeními (šikanou na pracovišti).',
+    source: 'Protikorupční program VS ČR (NGŘ č. 28/2018 Sb.)'
+  },
+  // 48. Nulová tolerance
+  {
+    id: 'pe_53',
+    subject: 'Profesní etika',
+    topic: 'Etický kodex',
+    question: 'K čemu se vztahuje princip "nulové tolerance" v etickém kodexu vězeňského personálu?',
+    answer: 'K jakémukoliv projevu mučení, nelidského či ponižujícího zacházení, rasismu, diskriminace a korupce. Na tyto činy neexistuje žádná omluva ani polehčující okolnost (jako je stres, vyčerpání nebo příkaz nadřízeného).',
+    options: [
+      'K pozdním příchodům do služby a nedodržování přestávek na jídlo.',
+      'K jakémukoliv projevu mučení, nelidského či ponižujícího zacházení, rasismu, diskriminace a korupce. Na tyto činy neexistuje žádná omluva ani polehčující okolnost (jako je stres, vyčerpání nebo příkaz nadřízeného).',
+      'K užívání vulgarismů při komunikaci s kolegy.',
+      'Ke ztrátě klíčů od kanceláří a skladů.'
+    ],
+    correctOption: 1,
+    rationale: 'Zákaz mučení a nelidského zacházení je absolutním lidským právem (čl. 3 EÚLP), které nelze omezit ani v době války či výjimečného stavu. Kodex etiky tento zákaz plně přejímá.',
+    source: 'Kodex profesní etiky a Evropská úmluva o lidských právech'
+  },
+  // 49. Zastupování organizace na veřejnosti
+  {
+    id: 'pe_54',
+    subject: 'Profesní etika',
+    topic: 'Profesní chování',
+    question: 'Jak by se měl příslušník VS ČR chovat v době mimo službu (v občanském životě a na sociálních sítích)?',
+    answer: 'I mimo službu je povinen chovat se tak, aby nesnižoval vážnost a důvěryhodnost bezpečnostního sboru. Nesmí se opíjet na veřejnosti, vyvolávat konflikty, stýkat se se závadovými osobami a na sociálních sítích sdílet obsah, který podporuje extremismus, nenávist nebo odhaluje utajované skutečnosti z výkonu služby.',
+    options: [
+      'Mimo službu (bez uniformy) se na něj nevztahují žádná pravidla a může se chovat zcela podle vlastního uvážení.',
+      'Může na sociálních sítích volně kritizovat vedení státu a soudy, protože má právo na svobodu slova.',
+      'I mimo službu je povinen chovat se tak, aby nesnižoval vážnost a důvěryhodnost bezpečnostního sboru. Nesmí se opíjet na veřejnosti, vyvolávat konflikty, stýkat se se závadovými osobami a na sociálních sítích sdílet obsah, který podporuje extremismus, nenávist nebo odhaluje utajované skutečnosti z výkonu služby.',
+      'Mimo službu nesmí vůbec používat sociální sítě ani se účastnit veřejného života v obci.'
+    ],
+    correctOption: 2,
+    rationale: 'Zákon o služebním poměru (§ 46) a Kodex etiky vyžadují od příslušníků zvýšený standard morálního chování 24/7. Neetické chování v soukromí (např. rasistické komentáře na Facebooku) často vede ke kárnému řízení.',
+    source: '§ 46 zákona č. 361/2003 Sb. a Kodex profesní etiky VS ČR'
+  },
+  // 50. Objektivita a nestrannost
+  {
+    id: 'pe_55',
+    subject: 'Profesní etika',
+    topic: 'Základní principy',
+    question: 'Co znamená požadavek "nestrannosti" při výkonu služby ve věznici?',
+    answer: 'Příslušník přistupuje ke všem vězněným osobám bez předsudků, nezvýhodňuje ani nediskriminuje na základě rasy, národnosti, náboženství, pohlaví nebo majetku. Svá rozhodnutí zakládá výhradně na faktech, zákonech a vnitřních řádech.',
+    options: [
+      'Příslušník se nesmí bavit s vězni o ničem jiném než o práci.',
+      'Příslušník musí dávat přednost těm vězňům, kteří s ním spolupracují a donášejí na ostatní.',
+      'Příslušník přistupuje ke všem vězněným osobám bez předsudků, nezvýhodňuje ani nediskriminuje na základě rasy, národnosti, náboženství, pohlaví nebo majetku. Svá rozhodnutí zakládá výhradně na faktech, zákonech a vnitřních řádech.',
+      'Příslušník nesmí volit ve volbách, aby zůstal politicky neutrální.'
+    ],
+    correctOption: 2,
+    rationale: 'Nestrannost a rovný přístup (zákaz diskriminace) tvoří základní pilíř spravedlivého výkonu trestu. Vězeň musí vnímat, že s ním stát jedná férově a na základě pravidel, nikoli na základě osobních sympatií dozorce.',
+    source: 'Kodex profesní etiky VS ČR'
+  }
 ];

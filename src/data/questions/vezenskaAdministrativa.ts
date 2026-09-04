@@ -321,4 +321,90 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     rationale: 'Dle příručky ETŘ: Při běžném zakládání a doplňování rozlišení ČJ NIKDY NEKLIKÁME na políčko „ZAMKNOUT“. Zamčení spisu omezí přístup výhradně na zpracovatele a vedení a je vyhrazeno pro specifické bezpečnostní režimy.',
     source: 'Příručka ETŘ – Založení spisu'
   }
+  ,
+  // 17. Záznam o použití DP
+  {
+    id: 'va_21',
+    subject: 'Vězeňská administrativa',
+    topic: 'Úřední písemnosti',
+    question: 'Kdo a do jaké lhůty zpracovává „Záznam o použití donucovacího prostředku“ po zákroku proti vězněné osobě?',
+    answer: 'Záznam zpracovává zakročující příslušník (nebo velitel zákroku, pokud jich zakročovalo více) bez zbytečného odkladu po použití donucovacích prostředků. Záznam se zakládá do ETŘ a následně je předložen k posouzení řediteli věznice.',
+    options: [
+      'Záznam zpracovává výhradně lékař věznice do 48 hodin po vyšetření vězně.',
+      'Záznam zpracovává zakročující příslušník (nebo velitel zákroku, pokud jich zakročovalo více) bez zbytečného odkladu po použití donucovacích prostředků. Záznam se zakládá do ETŘ a následně je předložen k posouzení řediteli věznice.',
+      'Záznam se pořizuje jen tehdy, pokud došlo ke zranění vězně, a sepisuje ho vyšetřovatel PČR.',
+      'Záznam sepisuje obhájce odsouzeného na základě ústního podání vězně.'
+    ],
+    correctOption: 1,
+    rationale: 'Zákon č. 555/1992 Sb. a navazující metodické listy jasně stanoví povinnost ohlásit a formálně zdokumentovat každé použití DP. Záznam musí obsahovat zákonné náležitosti (důvod, předchozí výzva, výsledek).',
+    source: '§ 22 zákona č. 555/1992 Sb. a Metodický list č. 5/2014'
+  },
+  // 18. Archivnictví a spisová služba
+  {
+    id: 'va_22',
+    subject: 'Vězeňská administrativa',
+    topic: 'Spisová služba',
+    question: 'Jaké jsou tři základní skartační znaky při vyřazování dokumentů z elektronické spisové služby (ETŘ)?',
+    answer: 'S (stoupa - dokumenty bez trvalé hodnoty určené ke zničení po uplynutí lhůty), V (výběr - dokumenty, které po uplynutí lhůty posoudí archivář a buď zničí, nebo uloží) a A (archiv - dokumenty trvalé hodnoty určené k trvalému uložení v Národním archivu).',
+    options: [
+      'T (tajné), D (důvěrné), V (vyhrazené).',
+      'X (smazat), Y (přesunout), Z (zamknout).',
+      'S (stoupa - dokumenty bez trvalé hodnoty určené ke zničení po uplynutí lhůty), V (výběr - dokumenty, které po uplynutí lhůty posoudí archivář a buď zničí, nebo uloží) a A (archiv - dokumenty trvalé hodnoty určené k trvalému uložení v Národním archivu).',
+      'R (rychlé smazání), P (pomalé smazání), N (nikdy nesmazat).'
+    ],
+    correctOption: 2,
+    rationale: 'Skartační řízení se řídí zákonem č. 499/2004 Sb. Každý typ dokumentu (spisový znak) má přiřazenou skartační lhůtu (např. S5 znamená zničit po 5 letech).',
+    source: 'Zákon č. 499/2004 Sb., o archivnictví a spisové službě'
+  },
+  // 19. Poskytování informací
+  {
+    id: 'va_23',
+    subject: 'Vězeňská administrativa',
+    topic: 'Práce ve VIS',
+    question: 'Je dozorce oprávněn telefonicky sdělit rodinnému příslušníkovi informaci o tom, zda je konkrétní osoba ve výkonu vazby?',
+    answer: 'Ne, bez ověření totožnosti (např. pomocí předem stanoveného hesla) nelze po telefonu podávat informace o umístění osob. Informace se poskytují pouze oprávněným orgánům (OČTŘ) nebo na základě písemného souhlasu vězněné osoby oprávněným subjektům.',
+    options: [
+      'Ano, pokud volající uvede rodné číslo hledané osoby.',
+      'Ano, seznam všech vězněných osob je veřejně dostupný na internetu.',
+      'Ne, bez ověření totožnosti (např. pomocí předem stanoveného hesla) nelze po telefonu podávat informace o umístění osob. Informace se poskytují pouze oprávněným orgánům (OČTŘ) nebo na základě písemného souhlasu vězněné osoby oprávněným subjektům.',
+      'Ano, ale pouze manželce nebo rodičům obviněného.'
+    ],
+    correctOption: 2,
+    rationale: 'Ochrana osobních údajů (GDPR) a zákon o VS a JS zakazuje neoprávněné poskytování informací z evidencí. Telefonické lustrace jsou rizikové kvůli nemožnosti spolehlivě ověřit volajícího (tzv. sociální inženýrství).',
+    source: 'Zákon o VS a JS, GDPR a interní předpisy pro práci s VIS'
+  },
+  // 20. Evidence VIS - Stavy
+  {
+    id: 'va_24',
+    subject: 'Vězeňská administrativa',
+    topic: 'Vězeňský informační systém',
+    question: 'Co v modulu evidence osob ve VIS znamená rozdíl mezi "kmenovým stavem" a "fyzickým stavem" věznice?',
+    answer: 'Kmenový stav zahrnuje všechny osoby přidělené dané věznici (včetně těch, kteří jsou dočasně v nemocnici, na eskortě, nebo na přerušení trestu). Fyzický stav označuje pouze ty osoby, které se v daném okamžiku fyzicky nacházejí uvnitř objektu věznice.',
+    options: [
+      'Kmenový stav jsou odsouzení, fyzický stav jsou obvinění (vazba).',
+      'Kmenový stav zahrnuje všechny osoby přidělené dané věznici (včetně těch, kteří jsou dočasně v nemocnici, na eskortě, nebo na přerušení trestu). Fyzický stav označuje pouze ty osoby, které se v daném okamžiku fyzicky nacházejí uvnitř objektu věznice.',
+      'Mezi těmito pojmy není žádný rozdíl, systém ukazuje vždy jen jedno číslo.',
+      'Kmenový stav znamená počet volných lůžek, fyzický stav je počet obsazených cel.'
+    ],
+    correctOption: 1,
+    rationale: 'Přesná evidence pohybu osob (dočasné změny vs. trvalé přesuny) je klíčová pro kontrolu a řízení kapacit. Při požárním poplachu se vychází vždy z aktuálního fyzického stavu.',
+    source: 'Manuál k Vězeňskému informačnímu systému (VIS)'
+  },
+  // 21. Úřední styl
+  {
+    id: 'va_25',
+    subject: 'Vězeňská administrativa',
+    topic: 'Úřední písemnosti',
+    question: 'Která z následujících formulací ve Služebním záznamu nejlépe odpovídá pravidlům objektivního a formálního úředního stylu?',
+    answer: '„Dne 15. 4. v 14:30 hod. jsem na ubytovně B zjistil, že odsouzený Novák křičí a převrací nábytek. Na moji výzvu ‚Jménem zákona, upusťte od protiprávního jednání!‘ reagoval vulgárními urážkami.“',
+    options: [
+      '„Ten blázen Novák zase začal řádit na béčku, tak jsem mu řekl, ať se okamžitě uklidní, jinak uvidí.“',
+      '„Dne 15. 4. v 14:30 hod. jsem na ubytovně B zjistil, že odsouzený Novák křičí a převrací nábytek. Na moji výzvu ‚Jménem zákona, upusťte od protiprávního jednání!‘ reagoval vulgárními urážkami.“',
+      '„Dnes odpoledne tam nějaký vězeň dělal nepořádek a asi byl pod vlivem drog, tak jsem musel zasáhnout.“',
+      '„Je zřejmé, že jmenovaný vězeň je psychopat a měl by být ihned převezen do detence, protože s ním nejde mluvit.“'
+    ],
+    correctOption: 1,
+    rationale: 'Úřední záznam musí být objektivní (bez emocí a nepodložených diagnóz), chronologický, přesný (čas, místo) a musí psát v 1. osobě čísla jednotného (já jsem zjistil). Osobní názory či domněnky do něj nepatří.',
+    source: 'Pravidla pro tvorbu úředních písemností VS ČR'
+  }
 ];

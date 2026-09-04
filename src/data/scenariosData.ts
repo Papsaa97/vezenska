@@ -517,5 +517,111 @@ export const tacticalScenarios: Scenario[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'sc-11',
+    title: 'Modelová situace 11: Zadržení osoby s návykovou látkou na návštěvě',
+    category: 'Vstupy & Justiční stráž',
+    badge: 'NGŘ č. 33/2019 & TZ',
+    difficulty: 'Pokročilá',
+    briefing: 'Při kontrole civilní osoby (návštěvy odsouzeného) za použití RTG a osobní prohlídky naleznete v podšívce bundy zatavený igelitový sáček s bílou krystalickou látkou (podezření na pervitin). Návštěvník začne být nervózní a chce věznici ihned opustit.',
+    steps: [
+      {
+        id: 'step-1',
+        title: 'Krok 1: Omezení osobní svobody a zajištění místa',
+        description: 'Jak budete postupovat vůči podezřelé civilní osobě u vchodu do věznice?',
+        choices: [
+          {
+            id: 'c1-1',
+            text: 'Osobu ihned propustíte s tím, že se návštěva ruší, a sáček vyhodíte do koše.',
+            isCorrect: false,
+            feedback: 'CHYBA: Nález OPL je podezřením ze spáchání trestného činu (nedovolená výroba a jiné nakládání s OPL dle § 283 TZ nebo maření výkonu úředního rozhodnutí). Zničení důkazu a propuštění pachatele je nepřípustné.',
+            legalBasis: '§ 283 TZ'
+          },
+          {
+            id: 'c1-2',
+            text: 'Zabráníte osobě v odchodu z věznice (omezení osobní svobody osoby přistižené při trestném činu dle § 76 odst. 2 TrŘ), sáčku se nebudete dotýkat holýma rukama, informujete velitele směny a ihned přivoláte Policii ČR k převzetí osoby a důkazu.',
+            isCorrect: true,
+            feedback: 'SPRÁVNĚ: Omezení osobní svobody podle § 76 odst. 2 TrŘ (občanské zadržení) je zde na místě, jelikož osoba byla přistižena při činu. Zajištění stop (sáčků) se provádí v rukavicích a věc se předává PČR.',
+            legalBasis: '§ 76 odst. 2 trestního řádu',
+            nextStepId: 'step-2'
+          }
+        ]
+      },
+      {
+        id: 'step-2',
+        title: 'Krok 2: Administrativní opatření a hlášení',
+        description: 'Policie osobu převzala. Co učiníte na úrovni věznice?',
+        choices: [
+          {
+            id: 'c2-1',
+            text: 'Zpracujete úřední záznam o incidentu, zaevidujete událost v ETŘ, navrhnete zrušení návštěvy a zavedete odsouzeného, k němuž návštěva směřovala, na mimořádnou prohlídku a případně test na OPL.',
+            isCorrect: true,
+            feedback: 'SPRÁVNĚ: Událost se musí interně řešit (záznam, ETŘ) a cílový odsouzený je ihned považován za rizikového pro možnou držbu či distribuci OPL.',
+            legalBasis: 'NGŘ č. 33/2019 a Řád výkonu trestu'
+          },
+          {
+            id: 'c2-2',
+            text: 'Událost se nemusí hlásit, protože policie si případ odvezla a odsouzený drogu nedostal.',
+            isCorrect: false,
+            feedback: 'CHYBA: Jakýkoli nález a zásah PČR je mimořádnou událostí, která musí být zaznamenána a hlášena vedení věznice (příp. GŘ).',
+            legalBasis: 'NGŘ č. 16/2022'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'sc-12',
+    title: 'Modelová situace 12: Rukojmí na oddělení - Krizová situace',
+    category: 'Mimořádné události & Zásah',
+    badge: 'Krizové řízení & IZS',
+    difficulty: 'Expertní',
+    briefing: 'Během výdeje stravy na oddělení s vysokým stupněm zabezpečení agresivní vězeň ozbrojený improvizovaným bodcem (zaostřený kartáček) napadne vychovatele a vezme ho jako rukojmí. Drží mu zbraň pod krkem a dožaduje se klíčů od katru a přistavení vozidla.',
+    steps: [
+      {
+        id: 'step-1',
+        title: 'Krok 1: Prvotní reakce dozorce na oddělení',
+        description: 'Jste první na místě (dozorce z vedlejšího traktu). Jak zareagujete na tuto kritickou situaci?',
+        choices: [
+          {
+            id: 'c1-1',
+            text: 'Ihned vytáhnete obušek, rozběhnete se na vězně a pokusíte se mu bodec vytrhnout.',
+            isCorrect: false,
+            feedback: 'FATÁLNÍ CHYBA: Přímý útok na ozbrojeného pachatele, který drží rukojmí, s největší pravděpodobností povede ke smrtelnému zranění rukojmího (vychovatele).',
+            legalBasis: 'Zásady taktického zásahu a krizové vyjednávání'
+          },
+          {
+            id: 'c1-2',
+            text: 'Ustoupíte do bezpečné vzdálenosti, zablokujete/uzamknete únikovou cestu z daného sektoru, okamžitě stisknete tísňový hlásič (nebo nahlásíte do vysílačky kód pro vzetí rukojmí), navážete s pachatelem vizuální a uklidňující verbální kontakt (deeskalace) a vyčkáte na příjezd zásahové jednotky.',
+            isCorrect: true,
+            feedback: 'SPRÁVNĚ: Prioritou je zabránit šíření incidentu (izolace perimetru), vyrozumět velení (přivolání specialistů - vyjednavačů, ZJ) a pokusit se situaci verbálně zmrazit (nekřičet, nevyhrožovat).',
+            legalBasis: 'Metodika krizového vyjednávání a NGŘ č. 16/2022',
+            nextStepId: 'step-2'
+          }
+        ]
+      },
+      {
+        id: 'step-2',
+        title: 'Krok 2: Chování během krizového vyjednávání',
+        description: 'Na místo dorazil VISS s vyjednavačem. Vězeň je stále extrémně rozrušený. Co uděláte s klíči od hlavních dveří, které máte u sebe?',
+        choices: [
+          {
+            id: 'c2-1',
+            text: 'Pokud pachatel křičí, že vychovatele zabije, ihned mu své klíče hodíte a otevřete hlavní katr k východu.',
+            isCorrect: false,
+            feedback: 'HRUBÁ CHYBA: Zásadní pravidlo vězeňské bezpečnosti zní, že klíče od střeženého prostoru se NIKDY nesmí vydat vězňům, a to ani pod hrozbou násilí či smrti. Vydání klíčů by ohrozilo celou věznici a neochránilo rukojmí.',
+            legalBasis: 'Zásady bezpečnosti VS ČR'
+          },
+          {
+            id: 'c2-2',
+            text: 'Klíče nevydáte. Předáte řízení situace vyjednavači a VISS a nadále pouze plníte jejich pokyny (např. zabezpečení vnějšího okruhu, odsunutí ostatních vězňů z dohledu).',
+            isCorrect: true,
+            feedback: 'SPRÁVNĚ: Řízení přebírá krizový manažer/vyjednavač. Klíče se nesmí za žádných okolností vydat. Váš úkol se mění na podpůrný a zajišťovací.',
+            legalBasis: 'Směrnice pro řešení krizových situací (Rukojmí)'
+          }
+        ]
+      }
+    ]
   }
 ];

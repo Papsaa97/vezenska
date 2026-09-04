@@ -401,4 +401,90 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     rationale: 'Eskortní karta s červeným pruhem (tzv. Červený pruh) signalizuje nejvyšší bezpečnostní riziko (často doživotně odsouzení, členové organizovaného zločinu, osoby s pokusem o ozbrojený útěk). Eskorta se provádí se zvýšeným počtem příslušníků a zbraní.',
     source: 'Eskortní řád VS ČR (NGŘ č. 24/2018)'
   }
+  ,
+  // 17. Zásada dvojic
+  {
+    id: 'bs-26',
+    subject: 'Bezpečnostní služba',
+    topic: 'Zásady bezpečnosti',
+    question: 'Co znamená "zásada dvojic" při výkonu služby ve věznici?',
+    answer: 'Příslušníci nesmí provádět otevírání cel nebo zasahovat na ubytovnách o samotě. Úkony, při nichž hrozí napadení (např. řešení konfliktů, prohlídky, předvádění agresivních vězňů, vstup do cely v noční době), se provádějí vždy za přítomnosti minimálně dvou příslušníků (jeden koná, druhý jistí).',
+    options: [
+      'Při každé službě musí být přítomni dva velitelé oddělení.',
+      'Příslušníci nesmí provádět otevírání cel nebo zasahovat na ubytovnách o samotě. Úkony, při nichž hrozí napadení (např. řešení konfliktů, prohlídky, předvádění agresivních vězňů, vstup do cely v noční době), se provádějí vždy za přítomnosti minimálně dvou příslušníků (jeden koná, druhý jistí).',
+      'Každý vězeň musí mít přidělené dva vychovatele.',
+      'Strážný na věži musí mít u sebe vždy dva typy donucovacích prostředků.'
+    ],
+    correctOption: 1,
+    rationale: 'Zásada dvojic je základním bezpečnostním pravidlem dozorčí služby. Zajišťuje vzájemné jištění, odrazuje od napadení a poskytuje svědeckou podporu při řešení incidentů.',
+    source: 'NGŘ č. 33/2019, o strážní, dozorčí a eskortní službě'
+  },
+  // 18. Povinnosti dozorce po nástupu
+  {
+    id: 'bs-27',
+    subject: 'Bezpečnostní služba',
+    topic: 'Dozorčí služba',
+    question: 'Jaké jsou bezprostřední povinnosti dozorce po převzetí služby na ubytovně?',
+    answer: 'Dozorce provede kontrolu početního stavu (přepočítání), prohlídku mříží, zámků, oken, osvětlení a celkového pořádku. O převzetí úseku, stavu vězněných osob a případných závadách provede záznam do staniční knihy.',
+    options: [
+      'Provést důkladnou osobní prohlídku všech vězňů a odeslat je na vycházku.',
+      'Uvařit kávu pro ostatní příslušníky a zkontrolovat televizní program.',
+      'Dozorce provede kontrolu početního stavu (přepočítání), prohlídku mříží, zámků, oken, osvětlení a celkového pořádku. O převzetí úseku, stavu vězněných osob a případných závadách provede záznam do staniční knihy.',
+      'Sepsat hlášení o průběhu minulé směny, aniž by musel kontrolovat ubytovnu.'
+    ],
+    correctOption: 2,
+    rationale: 'Fyzická přejímka úseku (kontrola osob a bezpečnostních prvků) je kritická pro odpovědnost za stav oddělení a pro zajištění kontinuity bezpečnosti při střídání směn.',
+    source: 'NGŘ č. 33/2019, o strážní, dozorčí a eskortní službě'
+  },
+  // 19. Propustkový režim
+  {
+    id: 'bs-28',
+    subject: 'Bezpečnostní služba',
+    topic: 'Strážní služba u vchodu',
+    question: 'Jaká jsou základní pravidla pro propustkový režim do střeženého objektu?',
+    answer: 'Vstup do objektu je možný jen na základě platného průkazu totožnosti (služební průkaz, OP) a pověření nebo jednorázové propustky po evidenci návštěvy. Strážný kontroluje oprávněnost vstupu, zavazadla a využívá rámový detektor kovů.',
+    options: [
+      'Propustkový režim neplatí pro rodinné příslušníky dozorců, pokud vstupují do areálu v době návštěv.',
+      'Vstup do objektu je možný jen na základě platného průkazu totožnosti (služební průkaz, OP) a pověření nebo jednorázové propustky po evidenci návštěvy. Strážný kontroluje oprávněnost vstupu, zavazadla a využívá rámový detektor kovů.',
+      'Do věznice lze pustit kohokoliv, kdo zná heslo dne.',
+      'Strážný propouští osoby na základě ústního slibu ředitele věznice bez prokázání totožnosti.'
+    ],
+    correctOption: 1,
+    rationale: 'Kontrola vstupu brání průniku nepovolaných osob a vnášení zakázaných předmětů. Každá civilní návštěva musí být evidována a doprovázena.',
+    source: 'NGŘ č. 2/2026, o pravidlech vstupu a vjezdu do objektů VS ČR'
+  },
+  // 20. Použití střelné zbraně proti davu
+  {
+    id: 'bs-29',
+    subject: 'Bezpečnostní služba',
+    topic: 'Strážní služba',
+    question: 'Je příslušník VS ČR oprávněn použít střelnou zbraň proti davu, pokud z něj vychází nebezpečí?',
+    answer: 'Příslušník nesmí použít zbraň přímo proti davu (do davu střílet nelze z důvodu ohrožení nezúčastněných osob). Může použít varovný výstřel (do bezpečného prostoru), aby dav zastavil, nebo zasáhnout konkrétního identifikovaného agresora, pokud to situace vyžaduje a nejsou ohroženi ostatní.',
+    options: [
+      'Příslušník může střílet dávkou přímo do středu davu k rychlému rozehnání.',
+      'Příslušník musí odložit zbraň a pokusit se dav uklidnit verbálně z bezprostřední blízkosti.',
+      'Zbraň se nesmí použít vůbec, dav lze rozhánět jen slzotvornými prostředky a vodními děly.',
+      'Příslušník nesmí použít zbraň přímo proti davu (do davu střílet nelze z důvodu ohrožení nezúčastněných osob). Může použít varovný výstřel (do bezpečného prostoru), aby dav zastavil, nebo zasáhnout konkrétního identifikovaného agresora, pokud to situace vyžaduje a nejsou ohroženi ostatní.'
+    ],
+    correctOption: 3,
+    rationale: 'Zákon č. 555/1992 Sb. i obecné zásady bezpečnosti použití zbraně přísně zakazují plošnou střelbu do davu. Zbraň lze použít jen selektivně proti pachateli, pokud to neodporuje § 18 odst. 4 (povinnost dbát opatrnosti).',
+    source: 'Zákon č. 555/1992 Sb., o VS a JS ČR'
+  },
+  // 21. Použití donucovacích prostředků
+  {
+    id: 'bs-30',
+    subject: 'Bezpečnostní služba',
+    topic: 'Donucovací prostředky',
+    question: 'Jaké jsou povinnosti příslušníka před použitím donucovacího prostředku?',
+    answer: 'Příslušník je povinen vyzvat osobu jménem zákona k upuštění od protiprávního jednání (s výstrahou, že bude zakročeno) s výjimkou případů, kdy hrozí bezprostřední nebezpečí a výzvu není možné učinit. Musí volit prostředek přiměřený povaze protiprávního jednání (zásada subsidiarity a proporcionality).',
+    options: [
+      'Příslušník musí nejprve sepsat úřední záznam a získat podpis odsouzeného.',
+      'Příslušník je povinen vyzvat osobu jménem zákona k upuštění od protiprávního jednání (s výstrahou, že bude zakročeno) s výjimkou případů, kdy hrozí bezprostřední nebezpečí a výzvu není možné učinit. Musí volit prostředek přiměřený povaze protiprávního jednání (zásada subsidiarity a proporcionality).',
+      'Příslušník může zasáhnout bez varování v každé situaci, aby zajistil moment překvapení.',
+      'Příslušník musí vyžádat telefonický souhlas státního zástupce.'
+    ],
+    correctOption: 1,
+    rationale: 'Zákonná výzva („Jménem zákona, upusťte od...“) je obligatorní podmínkou použití DP, pokud to situace umožňuje. Dále platí zásada subsidiarity (využít mírnější prostředky) a proporcionality (intenzita nesmí zjevně převýšit hrozbu).',
+    source: '§ 17 a § 21 zákona č. 555/1992 Sb., o VS a JS ČR'
+  }
 ];

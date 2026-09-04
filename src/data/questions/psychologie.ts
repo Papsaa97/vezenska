@@ -561,4 +561,90 @@ export const psychologieQuestions: Question[] = [
     rationale: 'V kriminální populaci tvoří psychopati cca 30 % (u recidivistů ještě více). Disociální a emočně nestabilní jedinci mají navíc zvýšené riziko abúzu návykových látek, které agresivitu dále eskalují.',
     source: 'Učební texty předmětu Psychologie, Akademie VS ČR 2023, str. 31–32, 54, 70'
   }
+  ,
+  // 46. Krizová komunikace - Deeskalace
+  {
+    id: 'psy-36',
+    subject: 'Psychologie',
+    topic: 'Krizová komunikace',
+    question: 'Co je hlavním cílem verbální deeskalace při jednání s agresivním nebo afektivním vězněm?',
+    answer: 'Snížit úroveň emočního napětí a agresivity, navázat kontakt, získat čas a zabránit fyzickému útoku bez nutnosti okamžitého použití donucovacích prostředků (pokud to bezpečnostní situace dovoluje).',
+    options: [
+      'Okamžitě křičet hlasitěji než vězeň, aby se ukázala dominance.',
+      'Snížit úroveň emočního napětí a agresivity, navázat kontakt, získat čas a zabránit fyzickému útoku bez nutnosti okamžitého použití donucovacích prostředků (pokud to bezpečnostní situace dovoluje).',
+      'Ignorovat vězně, odejít a zamknout ho, dokud se sám neuklidní.',
+      'Slibovat vězni cokoliv, co chce, jen aby přestal křičet.'
+    ],
+    correctOption: 1,
+    rationale: 'Verbální deeskalace je preferovaným prvotním postupem u afektivní agrese (nikoli instrumentální). Cílem je zklidnit fyziologické nabuzení útočníka (získat kontrolu nad situací).',
+    source: 'Metodika krizové intervence VS ČR'
+  },
+  // 47. Stockholm syndrom
+  {
+    id: 'psy-37',
+    subject: 'Psychologie',
+    topic: 'Penitenciární psychologie',
+    question: 'Co se v psychologii rozumí pod pojmem Stockholmský syndrom, který se může vyskytnout například při vzetí rukojmí?',
+    answer: 'Specifická emoční reakce (obranný mechanismus), při níž si oběť (rukojmí) vytváří paradoxní pozitivní emoční vazbu nebo sympatie k pachateli (únosci) jako podvědomou strategii přežití.',
+    options: [
+      'Syndrom absolutní paniky a ztráty paměti u oběti trestného činu.',
+      'Odmítnutí oběti spolupracovat s vyjednavači a policií z důvodu jazykové bariéry.',
+      'Specifická emoční reakce (obranný mechanismus), při níž si oběť (rukojmí) vytváří paradoxní pozitivní emoční vazbu nebo sympatie k pachateli (únosci) jako podvědomou strategii přežití.',
+      'Extrémní agresivita oběti, která se snaží pachatele okamžitě fyzicky zlikvidovat.'
+    ],
+    correctOption: 2,
+    rationale: 'Tato reakce komplikuje záchranné operace, protože oběť může chránit únosce nebo odmítat pomoc policie. Vzniká z prožitého ohrožení života a následné "vděčnosti", že ji pachatel nezabil.',
+    source: 'Základy psychologie pro bezpečnostní sbory'
+  },
+  // 48. Psychohygiena
+  {
+    id: 'psy-38',
+    subject: 'Psychologie',
+    topic: 'Syndrom vyhoření',
+    question: 'Která z následujících technik je považována za efektivní součást psychohygieny pro prevenci syndromu vyhoření u příslušníků bezpečnostních sborů?',
+    answer: 'Oddělování pracovního a osobního života, pravidelný odpočinek, fyzická aktivita, supervize/debriefing s kolegy nebo psychologem po náročných zákrocích a pěstování zájmů nesouvisejících se službou.',
+    options: [
+      'Pravidelná konzumace alkoholu po noční směně k uvolnění napětí.',
+      'Práce přesčas a přijímání co nejvíce služeb k dosažení rychlého povýšení.',
+      'Oddělování pracovního a osobního života, pravidelný odpočinek, fyzická aktivita, supervize/debriefing s kolegy nebo psychologem po náročných zákrocích a pěstování zájmů nesouvisejících se službou.',
+      'Potlačování emocí a přesvědčení, že profesionál nesmí nikdy cítit strach nebo stres.'
+    ],
+    correctOption: 2,
+    rationale: 'Syndrom vyhoření (Burnout) hrozí u pomáhajících a bezpečnostních profesí. Aktivní psychohygiena a schopnost zpracovat zátěž (debriefing) jsou klíčové pro dlouhodobé duševní zdraví.',
+    source: 'Psychologie pro výkon služby (Metodika GŘ VS ČR)'
+  },
+  // 49. Manipulace vězni
+  {
+    id: 'psy-39',
+    subject: 'Psychologie',
+    topic: 'Sociální interakce',
+    question: 'Jaké jsou nejčastější formy manipulace, kterými se vězni snaží ovlivnit personál (např. k získání výhod nebo zakázaných věcí)?',
+    answer: 'Lichocení, zdůrazňování vzájemných sympatií, hraní na soucit, vyvolávání pocitu viny u dozorce, postupné testování hranic (drobné laskavosti) nebo naopak skryté zastrašování a vydírání.',
+    options: [
+      'Vždy pouze otevřené fyzické napadení bez předchozí komunikace.',
+      'Lichocení, zdůrazňování vzájemných sympatií, hraní na soucit, vyvolávání pocitu viny u dozorce, postupné testování hranic (drobné laskavosti) nebo naopak skryté zastrašování a vydírání.',
+      'Podávání písemných žádostí prostřednictvím advokáta.',
+      'Odmítání stravy a protestní hladovky za účelem zvýšení platu personálu.'
+    ],
+    correctOption: 1,
+    rationale: 'Manipulace je účelové jednání (často u psychopatických rysů osobnosti vězňů). Vězeň se snaží narušit profesionální odstup dozorce ("my versus oni") a zatáhnout ho do neformálního vztahu.',
+    source: 'Penitenciární psychologie'
+  },
+  // 50. Prevence sebevražd (Presuicidální syndrom)
+  {
+    id: 'psy-40',
+    subject: 'Psychologie',
+    topic: 'Prevence suicidiálního jednání',
+    question: 'Které tři složky tvoří Ringelův presuicidální syndrom (varovné signály před sebevraždou)?',
+    answer: '1. Zúžení (zúžení vnímání možností, ztráta zájmů, izolace), 2. Zadržovaná agresivita (obrácená vůči sobě), 3. Suicidiální fantazie (časté myšlenky nebo mluvení o smrti a sebevraždě).',
+    options: [
+      '1. Nadměrná radost, 2. Rozdávání majetku, 3. Zvýšený apetit.',
+      '1. Zúžení (zúžení vnímání možností, ztráta zájmů, izolace), 2. Zadržovaná agresivita (obrácená vůči sobě), 3. Suicidiální fantazie (časté myšlenky nebo mluvení o smrti a sebevraždě).',
+      '1. Agresivita k okolí, 2. Plánování útěku, 3. Odmítání komunikace s policií.',
+      'Tento syndrom v psychologii neexistuje.'
+    ],
+    correctOption: 1,
+    rationale: 'Rozpoznání těchto tří signálů (uvedených Erwinem Ringelem) u vězně může personálu VS ČR pomoci včas odhalit riziko sebevraždy a zajistit psychologickou či psychiatrickou pomoc.',
+    source: 'Metodika krizové intervence a prevence sebevražd VS ČR'
+  }
 ];
