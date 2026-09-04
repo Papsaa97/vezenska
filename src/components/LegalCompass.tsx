@@ -696,7 +696,7 @@ export default function LegalCompass() {
         /* ========================================================================= */
         /* ARTICLES VIEW: PARAGRAPH COMPASS WITH FULL TEXT AND TIPS                */
         /* ========================================================================= */
-        <div className="flex-1 flex flex-col md:flex-row gap-3 sm:gap-6 overflow-hidden relative">
+        <div className="flex-1 min-h-0 flex flex-col md:flex-row gap-3 sm:gap-6 overflow-hidden relative">
       
       {/* --------------------------------------------------------------------- */}
       {/* SIDEBAR: SEZNAM PŘEDPISŮ & VYHLEDÁVÁNÍ */}
@@ -705,7 +705,7 @@ export default function LegalCompass() {
         ref={listContainerRef}
         className={`${
           mobileDetailOpen ? 'hidden md:flex' : 'flex'
-        } flex-col w-full md:w-80 lg:w-96 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shrink-0 shadow-sm`}
+        } flex-col w-full md:w-80 lg:w-96 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shrink-0 shadow-sm h-[calc(100dvh-8rem)] md:h-auto max-h-[calc(100dvh-8rem)] md:max-h-none`}
       >
         {/* Search Header */}
         <div className="p-3 sm:p-4 border-b border-slate-200 dark:border-slate-800 space-y-3 bg-slate-50/50 dark:bg-slate-900/50">
@@ -755,7 +755,7 @@ export default function LegalCompass() {
         </div>
 
         {/* List of Articles */}
-        <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60 p-2 space-y-1">
+        <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60 p-2 space-y-1 overscroll-contain [touch-action:pan-y]">
           {filteredArticles.length === 0 ? (
             <div className="p-8 text-center text-xs text-slate-500 space-y-2">
               <HelpCircle className="w-8 h-8 mx-auto text-slate-400" />
@@ -807,16 +807,15 @@ export default function LegalCompass() {
         ref={detailContainerRef}
         className={`${
           mobileDetailOpen ? 'flex' : 'hidden md:flex'
-        } flex-1 flex-col bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-y-auto shadow-sm`}
+        } flex-1 min-h-0 flex-col bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm h-[100dvh] md:h-auto max-h-[100dvh] md:max-h-none`}
       >
         {currentArticle ? (
-          <div className="p-4 sm:p-6 md:p-8 space-y-6">
-            
-            {/* Mobile Back Button */}
-            <div className="md:hidden flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <>
+            {/* Mobile Back Button — fixed sticky header */}
+            <div className="md:hidden flex items-center justify-between px-3 py-2.5 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900">
               <button
                 onClick={() => setMobileDetailOpen(false)}
-                className="flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 cursor-pointer"
+                className="flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 cursor-pointer min-h-[44px] min-w-[44px] px-1"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Zpět na přehled předpisů</span>
@@ -826,27 +825,30 @@ export default function LegalCompass() {
               </div>
             </div>
 
+            {/* Scrollable body */}
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain [touch-action:pan-y] p-3 sm:p-6 md:p-8 space-y-6">
+
             {/* Header: Title, Tags, Actions */}
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-5">
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="px-2 py-0.5 rounded-lg text-xs font-extrabold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                     {currentArticle.section}
                   </span>
-                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                  <span className="px-2 py-0.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 line-clamp-1">
                     {currentArticle.actTitle} ({currentArticle.actNumber})
                   </span>
                 </div>
-                <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white leading-tight">
+                <h1 className="text-base sm:text-xl md:text-2xl font-extrabold text-slate-900 dark:text-white leading-tight">
                   {currentArticle.title}
                 </h1>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-2 shrink-0">
+              {/* Action Buttons — 44px touch targets */}
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   onClick={() => toggleFavorite(currentArticle.id)}
-                  className={`p-2.5 rounded-xl border transition-colors cursor-pointer ${
+                  className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl border transition-colors cursor-pointer ${
                     savedFavorites.includes(currentArticle.id)
                       ? 'bg-amber-50 dark:bg-amber-950/50 border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400'
                       : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
@@ -859,7 +861,7 @@ export default function LegalCompass() {
                 {isSpeechSupported() && (
                   <button
                     onClick={() => handleSpeak(`${currentArticle.section}. ${currentArticle.title}. ${currentArticle.exactText}. Aplikační výklad: ${currentArticle.explanation}`)}
-                    className={`p-2.5 rounded-xl border transition-colors cursor-pointer ${
+                    className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl border transition-colors cursor-pointer ${
                       isSpeaking
                         ? 'bg-blue-600 border-blue-600 text-white animate-pulse'
                         : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
@@ -872,17 +874,17 @@ export default function LegalCompass() {
 
                 <button
                   onClick={() => handleCopy(`${currentArticle.section} – ${currentArticle.title}\n\n${currentArticle.exactText}\n\nVýklad:\n${currentArticle.explanation}`, currentArticle.id)}
-                  className="p-2.5 px-3.5 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
+                  className="min-h-[44px] px-3 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
                 >
                   {copiedId === currentArticle.id ? (
                     <>
                       <Check className="w-4 h-4 text-emerald-400 dark:text-emerald-600" />
-                      <span>Zkopírováno</span>
+                      <span className="hidden sm:inline">Zkopírováno</span>
                     </>
                   ) : (
                     <>
                       <Copy className="w-4 h-4" />
-                      <span>Kopírovat</span>
+                      <span className="hidden sm:inline">Kopírovat</span>
                     </>
                   )}
                 </button>
@@ -954,7 +956,31 @@ export default function LegalCompass() {
               </button>
             </div>
 
-          </div>
+            </div>{/* end scrollable body */}
+
+            {/* Mobile Stepper Footer — sticky at bottom */}
+            <div className="md:hidden flex items-center justify-between gap-2 px-3 py-2 border-t border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900">
+              <button
+                disabled={currentIndex <= 0}
+                onClick={goToPrev}
+                className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>Předchozí</span>
+              </button>
+              <div className="text-[10px] text-slate-400 font-semibold whitespace-nowrap px-1">
+                {currentIndex + 1} / {filteredArticles.length}
+              </div>
+              <button
+                disabled={currentIndex >= filteredArticles.length - 1}
+                onClick={goToNext}
+                className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+              >
+                <span>Další</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </>
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-slate-400 text-sm p-8 text-center space-y-3">
             <Scale className="w-12 h-12 text-slate-300 dark:text-slate-700" />
@@ -971,16 +997,16 @@ export default function LegalCompass() {
       <AnimatePresence>
         {showEditorModal && editingRegulation && (
           <div 
-            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-xs"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-6 bg-black/70 backdrop-blur-xs"
             onClick={(e) => { if (e.target === e.currentTarget) setShowEditorModal(false); }}
           >
             <motion.div
               initial={{ scale: 0.96, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.96, opacity: 0 }}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-2xl sm:rounded-3xl shadow-2xl w-full max-w-2xl h-[100dvh] sm:h-auto sm:max-h-[92vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100"
             >
-              <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950">
+              <div className="p-3 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950 shrink-0">
                 <div className="flex items-center gap-2">
                   <Edit3 className="w-5 h-5 text-indigo-600" />
                   <h3 className="text-base sm:text-lg font-bold">
@@ -989,13 +1015,13 @@ export default function LegalCompass() {
                 </div>
                 <button
                   onClick={() => setShowEditorModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-lg font-light"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 text-xs sm:text-sm">
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain [touch-action:pan-y] p-3 sm:p-6 space-y-4 text-xs sm:text-sm">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Číslo / Kód předpisu *</label>
@@ -1134,14 +1160,14 @@ export default function LegalCompass() {
       <AnimatePresence>
         {showIntegrityModal && (
           <div 
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-xs"
             onClick={(e) => { if (e.target === e.currentTarget) setShowIntegrityModal(false); }}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-5 sm:p-7 space-y-5"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-xl h-[90dvh] sm:h-auto sm:max-h-[90vh] overflow-y-auto overscroll-contain [touch-action:pan-y] p-4 sm:p-7 space-y-5"
             >
               <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                 <div className="flex items-center gap-2.5">
@@ -1159,7 +1185,7 @@ export default function LegalCompass() {
                 </div>
                 <button
                   onClick={() => setShowIntegrityModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-lg font-light"
                 >
                   ✕
                 </button>
@@ -1243,7 +1269,7 @@ export default function LegalCompass() {
       <AnimatePresence>
         {activeModalRegulation && (
           <div 
-            className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 md:p-6 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={(e) => {
               if (e.target === e.currentTarget) {
                 setActiveModalRegulation(null);
@@ -1259,17 +1285,17 @@ export default function LegalCompass() {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.96, opacity: 0, y: 16 }}
               transition={{ duration: 0.2 }}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-2xl sm:rounded-3xl shadow-2xl w-full max-w-4xl h-[100dvh] sm:h-auto sm:max-h-[92vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100"
             >
               {/* Modal Header */}
-              <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 space-y-3 shrink-0 bg-slate-50/70 dark:bg-slate-950/70">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 uppercase tracking-wider">
+              <div className="p-3 sm:p-5 border-b border-slate-200 dark:border-slate-800 space-y-2 sm:space-y-3 shrink-0 bg-slate-50/70 dark:bg-slate-950/70">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 uppercase tracking-wider">
                         {activeModalRegulation.code}
                       </span>
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hidden sm:inline">
                         {activeModalRegulation.authority}
                       </span>
                       <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
@@ -1277,28 +1303,18 @@ export default function LegalCompass() {
                       </span>
                     </div>
 
-                    <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white leading-snug">
+                    <h2 className="text-sm sm:text-lg md:text-xl font-extrabold text-slate-900 dark:text-white leading-snug line-clamp-2">
                       {activeModalRegulation.shortTitle}
                     </h2>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1 hidden sm:block">
                       {activeModalRegulation.title}
                     </p>
                   </div>
 
                   {/* Top Right Action Tools */}
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    {/* Font Size Switcher */}
-                    <button
-                      onClick={() => setFontSize(prev => prev === 'sm' ? 'base' : prev === 'base' ? 'lg' : 'sm')}
-                      className="p-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-colors flex items-center gap-1 cursor-pointer border border-slate-200/80 dark:border-slate-700/80"
-                      title="Změnit velikost písma textu"
-                    >
-                      <Type className="w-3.5 h-3.5" />
-                      <span className="uppercase text-[10px]">{fontSize}</span>
-                    </button>
-
-                    {/* PDF Paper vs Dark Mode Switcher */}
-                    <div className="flex items-center bg-slate-200/80 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-300/60 dark:border-slate-700">
+                  <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                    {/* PDF / Dark Mode Switcher — hidden on smallest screens */}
+                    <div className="hidden sm:flex items-center bg-slate-200/80 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-300/60 dark:border-slate-700">
                       <button
                         onClick={() => setPdfViewMode('paper')}
                         className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all flex items-center gap-1 cursor-pointer ${
@@ -1324,31 +1340,31 @@ export default function LegalCompass() {
                       </button>
                     </div>
 
-                    {/* Print / Export PDF */}
-                    <button
-                      onClick={() => window.print()}
-                      className="p-2 px-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1 transition-colors cursor-pointer border border-slate-300/60 dark:border-slate-700"
-                      title="Vytisknout nebo uložit jako PDF soubor"
-                    >
-                      <Printer className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
-                      <span className="hidden md:inline text-[11px]">Tisk / PDF</span>
-                    </button>
-
-                    {/* Font Size Switcher */}
+                    {/* Font Size — hidden on mobile */}
                     <button
                       onClick={() => setFontSize(prev => prev === 'sm' ? 'base' : prev === 'base' ? 'lg' : 'sm')}
-                      className="p-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-colors flex items-center gap-1 cursor-pointer border border-slate-200/80 dark:border-slate-700/80"
+                      className="hidden sm:flex min-w-[44px] min-h-[44px] items-center justify-center gap-1 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer border border-slate-200/80 dark:border-slate-700/80"
                       title="Změnit velikost písma textu"
                     >
                       <Type className="w-3.5 h-3.5" />
                       <span className="uppercase text-[10px]">{fontSize}</span>
                     </button>
 
+                    {/* Print — hidden on mobile */}
+                    <button
+                      onClick={() => window.print()}
+                      className="hidden md:flex min-w-[44px] min-h-[44px] items-center justify-center gap-1 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer border border-slate-300/60 dark:border-slate-700"
+                      title="Vytisknout nebo uložit jako PDF soubor"
+                    >
+                      <Printer className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
+                      <span className="hidden lg:inline text-[11px]">Tisk</span>
+                    </button>
+
                     {/* Audio TTS */}
                     {isSpeechSupported() && (
                       <button
                         onClick={() => handleSpeak(activeModalRegulation.fullLegalText)}
-                        className={`p-2 rounded-xl transition-colors cursor-pointer border ${
+                        className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors cursor-pointer border ${
                           isSpeaking
                             ? 'bg-blue-600 border-blue-600 text-white animate-pulse'
                             : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 border-slate-200/80 dark:border-slate-700/80'
@@ -1362,7 +1378,7 @@ export default function LegalCompass() {
                     {/* Copy Full Text */}
                     <button
                       onClick={() => handleCopy(activeModalRegulation.fullLegalText, `modal-${activeModalRegulation.id}`)}
-                      className="p-2 px-3 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                      className="min-w-[44px] min-h-[44px] flex items-center justify-center gap-1.5 px-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
                       title="Zkopírovat celé doslovné znění do schránky"
                     >
                       {copiedId === `modal-${activeModalRegulation.id}` ? (
@@ -1378,7 +1394,7 @@ export default function LegalCompass() {
                       )}
                     </button>
 
-                    {/* Close Button */}
+                    {/* Close Button — large touch target */}
                     <button
                       onClick={() => {
                         setActiveModalRegulation(null);
@@ -1387,7 +1403,7 @@ export default function LegalCompass() {
                           setIsSpeaking(false);
                         }
                       }}
-                      className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer ml-1"
+                      className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer ml-0.5 text-lg font-light"
                       title="Zavřít okno (ESC)"
                     >
                       ✕
@@ -1485,7 +1501,7 @@ export default function LegalCompass() {
               </div>
 
               {/* Modal Body: Scrollable Legal Text / PDF Sheet */}
-              <div className={`flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 font-sans leading-relaxed ${
+              <div className={`flex-1 min-h-0 overflow-y-auto overscroll-contain [touch-action:pan-y] p-4 sm:p-6 space-y-4 font-sans leading-relaxed ${
                 pdfViewMode === 'paper' ? 'bg-slate-200/70 dark:bg-slate-950/80' : 'bg-slate-100 dark:bg-slate-900'
               }`}>
                 {/* Summary & Application Callout */}

@@ -15,6 +15,27 @@
   .rotate-y-180 {
     transform: rotateY(180deg);
   }
+
+  /* Smooth touch scrolling for iOS/Android */
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+
+  /* Hide scrollbar but keep scrollability */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Global smooth scroll for all overflow-y-auto elements on touch */
+  .overflow-y-auto,
+  .overflow-auto {
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* ==========================================================================
