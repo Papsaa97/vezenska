@@ -149,7 +149,7 @@ export async function analyzeExamContent(
   }
   contents.push(promptText);
 
-  const modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash'];
+  const modelsToTry = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash'];
   let lastError: any = null;
 
   for (const modelName of modelsToTry) {
@@ -166,7 +166,7 @@ export async function analyzeExamContent(
 
       const responseText = response.text || '';
       if (!responseText) {
-        lastError = new Error('Model nevrátil žádnou odpověď.');
+        lastError = new Error(`Model ${modelName} nevrátil žádnou odpověď.`);
         continue;
       }
 
@@ -202,10 +202,38 @@ export async function analyzeExamContent(
   // All models failed
   if (lastError) {
     console.error('Gemini Analysis Error:', lastError);
-    if (lastError.message && lastError.message.includes('API_KEY_INVALID')) {
-      throw new Error('Zadaný Gemini API klíč je neplatný. Zkontrolujte prosím jeho správnost.');
+
+    let rawMessage = lastError.message || String(lastError);
+
+    // Try to parse raw JSON error if present
+    if (typeof rawMessage === 'string') {
+      const jsonMatch = rawMessage.match(/\{[\s\S]*"error"[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          const parsedErr = JSON.parse(jsonMatch[0]);
+          if (parsedErr?.error?.message) {
+            rawMessage = parsedErr.error.message;
+          }
+        } catch {
+          // ignore JSON parse error
+        }
+      }
     }
-    throw new Error(lastError.message || 'Nepodařilo se zpracovat zadání pomocí AI. Zkontrolujte připojení k internetu a API klíč.');
+
+    if (rawMessage.includes('API_KEY_INVALID') || rawMessage.includes('API key not valid') || rawMessage.includes('API key expired')) {
+      throw new Error('Zadaný Gemini API klíč je neplatný nebo expiroval. Zkontrolujte prosím svůj API klíč v nastavení asistenta.');
+    }
+    if (rawMessage.includes('RESOURCE_EXHAUSTED') || rawMessage.includes('429') || rawMessage.includes('Quota exceeded')) {
+      throw new Error('Byl překročen limit volání (kvóta) vašeho Google Gemini API klíče. Počkejte chvíli a zkuste to znovu.');
+    }
+    if (rawMessage.includes('not found') || rawMessage.includes('404')) {
+      throw new Error(`AI model není dostupný: ${rawMessage}`);
+    }
+    if (rawMessage.includes('Failed to fetch') || rawMessage.includes('NetworkError') || rawMessage.includes('net::ERR')) {
+      throw new Error('Nepodařilo se navázat spojení se službou Google Gemini API. Zkontrolujte připojení k síti.');
+    }
+
+    throw new Error(rawMessage || 'Nepodařilo se zpracovat zadání pomocí AI. Zkontrolujte připojení k internetu a API klíč.');
   }
-  throw new Error('Model nevrátil žádnou odpověď.');
+  throw new Error('Nepodařilo se získat odpověď od žádného AI modelu.');
 }

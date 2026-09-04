@@ -280,7 +280,7 @@ export default function CaptainExamAssistant({
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-xs font-semibold uppercase tracking-wider mb-2 border border-indigo-400/20">
               <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Gemini 3.6 Flash AI • Multimodální asistent Akademie VS ČR</span>
+              <span>Gemini Flash AI • Multimodální asistent Akademie VS ČR</span>
             </div>
             <h1 className="text-xl sm:text-3xl font-bold tracking-tight">AI Vyhodnocení zadání od kapitánů</h1>
             <p className="text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
