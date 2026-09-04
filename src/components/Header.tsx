@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord } from '../types';
 import { calculateBaseXp, evaluateBadges, getUserRank, loadStreakInfo } from '../utils/gamification';
+import { UserBadge, AuthModal } from './AuthUI';
 
 export type NavTab = 'subjects' | 'quiz' | 'assistant' | 'compass' | 'admin' | 'ethics' | 'scenarios' | 'weapons' | 'flashcards' | 'matching' | 'badges' | 'statistics';
 
@@ -42,6 +43,7 @@ export default function Header({
   matchingHistory = []
 }: HeaderProps) {
   const [openDropdown, setOpenDropdown] = useState<'practice' | 'drill' | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const streakInfo = useMemo(() => loadStreakInfo(), []);
@@ -316,11 +318,14 @@ export default function Header({
           </button>
         </nav>
 
-        {/* Right controls: Rank Badge + Theme Toggle */}
+        {/* Right controls: Auth + Rank Badge + Theme Toggle */}
         <div className="flex items-center gap-2.5">
+          {/* Auth user badge / login button */}
+          <UserBadge onLoginClick={() => setIsAuthModalOpen(true)} />
+
           <button
             onClick={() => { setActiveTab('badges'); setOpenDropdown(null); }}
-            className="cursor-pointer flex items-center gap-2 px-3 py-1.5 bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700/80 rounded-xl transition-all text-xs text-slate-200 hover:border-amber-400/50 hover:ring-1 hover:ring-amber-500/30 shadow-sm"
+            className="cursor-pointer hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700/80 rounded-xl transition-all text-xs text-slate-200 hover:border-amber-400/50 hover:ring-1 hover:ring-amber-500/30 shadow-sm"
             title="Zobrazit hodnostní postup VS ČR a odznaky"
           >
             <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 flex items-center justify-center font-black text-xs shadow-sm">
@@ -355,7 +360,11 @@ export default function Header({
           transition={{ duration: 0.8, ease: 'easeOut' }}
         />
       </div>
+
+      {/* Auth Modal */}
+      {isAuthModalOpen && (
+        <AuthModal onClose={() => setIsAuthModalOpen(false)} />
+      )}
     </div>
   );
 }
-
