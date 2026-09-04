@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord, Question } from './types';
 import { loadMatchingHistory, updateDailyStreak } from './utils/gamification';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 
 export default function App() {
@@ -543,6 +544,7 @@ export default function App() {
           </>
         )}
       </AnimatePresence>
+      <SpeedInsights />
     </div>
   );
 }
