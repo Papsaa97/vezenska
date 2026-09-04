@@ -804,7 +804,7 @@ export const profesniEtikaQuestions: Question[] = [
   ,
   // 46. Zásady bezúhonnosti
   {
-    id: 'etk-46',
+    id: 'pe_51',
     subject: 'Profesní etika',
     topic: 'Etický kodex',
     question: 'Jaké etické a právní důsledky má ztráta osobní bezúhonnosti pro příslušníka bezpečnostního sboru?',
@@ -821,7 +821,7 @@ export const profesniEtikaQuestions: Question[] = [
   },
   // 47. Oznamování korupce
   {
-    id: 'etk-47',
+    id: 'pe_52',
     subject: 'Profesní etika',
     topic: 'Protikorupční program',
     question: 'Co je podle Protikorupčního programu VS ČR základní povinností příslušníka, kterému je nabídnut úplatek?',
@@ -838,7 +838,7 @@ export const profesniEtikaQuestions: Question[] = [
   },
   // 48. Nulová tolerance
   {
-    id: 'etk-48',
+    id: 'pe_53',
     subject: 'Profesní etika',
     topic: 'Etický kodex',
     question: 'K čemu se vztahuje princip "nulové tolerance" v etickém kodexu vězeňského personálu?',
@@ -855,7 +855,7 @@ export const profesniEtikaQuestions: Question[] = [
   },
   // 49. Zastupování organizace na veřejnosti
   {
-    id: 'etk-49',
+    id: 'pe_54',
     subject: 'Profesní etika',
     topic: 'Profesní chování',
     question: 'Jak by se měl příslušník VS ČR chovat v době mimo službu (v občanském životě a na sociálních sítích)?',
@@ -872,7 +872,7 @@ export const profesniEtikaQuestions: Question[] = [
   },
   // 50. Objektivita a nestrannost
   {
-    id: 'etk-50',
+    id: 'pe_55',
     subject: 'Profesní etika',
     topic: 'Základní principy',
     question: 'Co znamená požadavek "nestrannosti" při výkonu služby ve věznici?',

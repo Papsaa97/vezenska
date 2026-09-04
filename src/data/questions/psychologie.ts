@@ -564,7 +564,7 @@ export const psychologieQuestions: Question[] = [
   ,
   // 46. Krizová komunikace - Deeskalace
   {
-    id: 'psy-46',
+    id: 'psy-36',
     subject: 'Psychologie',
     topic: 'Krizová komunikace',
     question: 'Co je hlavním cílem verbální deeskalace při jednání s agresivním nebo afektivním vězněm?',
@@ -581,7 +581,7 @@ export const psychologieQuestions: Question[] = [
   },
   // 47. Stockholm syndrom
   {
-    id: 'psy-47',
+    id: 'psy-37',
     subject: 'Psychologie',
     topic: 'Penitenciární psychologie',
     question: 'Co se v psychologii rozumí pod pojmem Stockholmský syndrom, který se může vyskytnout například při vzetí rukojmí?',
@@ -598,7 +598,7 @@ export const psychologieQuestions: Question[] = [
   },
   // 48. Psychohygiena
   {
-    id: 'psy-48',
+    id: 'psy-38',
     subject: 'Psychologie',
     topic: 'Syndrom vyhoření',
     question: 'Která z následujících technik je považována za efektivní součást psychohygieny pro prevenci syndromu vyhoření u příslušníků bezpečnostních sborů?',
@@ -615,7 +615,7 @@ export const psychologieQuestions: Question[] = [
   },
   // 49. Manipulace vězni
   {
-    id: 'psy-49',
+    id: 'psy-39',
     subject: 'Psychologie',
     topic: 'Sociální interakce',
     question: 'Jaké jsou nejčastější formy manipulace, kterými se vězni snaží ovlivnit personál (např. k získání výhod nebo zakázaných věcí)?',
@@ -632,7 +632,7 @@ export const psychologieQuestions: Question[] = [
   },
   // 50. Prevence sebevražd (Presuicidální syndrom)
   {
-    id: 'psy-50',
+    id: 'psy-40',
     subject: 'Psychologie',
     topic: 'Prevence suicidiálního jednání',
     question: 'Které tři složky tvoří Ringelův presuicidální syndrom (varovné signály před sebevraždou)?',

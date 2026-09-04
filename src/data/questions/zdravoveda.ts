@@ -356,7 +356,7 @@ export const zdravovedaQuestions: Question[] = [
   ,
   // 31. Intoxikace a předávkování
   {
-    id: 'zdr-31',
+    id: 'zdr-23',
     subject: 'Zdravověda a první pomoc',
     topic: 'Akutní stavy',
     question: 'Jaké jsou typické příznaky předávkování opioidy (např. heroin, fentanyl) a jaká je první pomoc?',
@@ -373,7 +373,7 @@ export const zdravovedaQuestions: Question[] = [
   },
   // 32. Anafylaktický šok
   {
-    id: 'zdr-32',
+    id: 'zdr-24',
     subject: 'Zdravověda a první pomoc',
     topic: 'Akutní stavy',
     question: 'Jak se projevuje anafylaktický šok a jaká je neodkladná první pomoc?',
@@ -390,7 +390,7 @@ export const zdravovedaQuestions: Question[] = [
   },
   // 33. Popáleniny
   {
-    id: 'zdr-33',
+    id: 'zdr-25',
     subject: 'Zdravověda a první pomoc',
     topic: 'Traumata',
     question: 'Jaká je správná první pomoc u popálenin 2. a 3. stupně?',
@@ -407,7 +407,7 @@ export const zdravovedaQuestions: Question[] = [
   },
   // 34. Stabilizovaná poloha
   {
-    id: 'zdr-34',
+    id: 'zdr-26',
     subject: 'Zdravověda a první pomoc',
     topic: 'Základní postupy',
     question: 'Kdy se používá zotavovací (stabilizovaná) poloha na boku?',
@@ -424,7 +424,7 @@ export const zdravovedaQuestions: Question[] = [
   },
   // 35. Použití škrtidla (CAT) na krku
   {
-    id: 'zdr-35',
+    id: 'zdr-27',
     subject: 'Zdravověda a první pomoc',
     topic: 'TCCC - Zástava krvácení',
     question: 'Lze použít taktické turniketové škrtidlo (CAT) k zástavě masivního krvácení na krku?',

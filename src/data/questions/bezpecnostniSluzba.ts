@@ -404,7 +404,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
   ,
   // 17. Zásada dvojic
   {
-    id: 'bs-17',
+    id: 'bs-26',
     subject: 'Bezpečnostní služba',
     topic: 'Zásady bezpečnosti',
     question: 'Co znamená "zásada dvojic" při výkonu služby ve věznici?',
@@ -421,7 +421,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
   },
   // 18. Povinnosti dozorce po nástupu
   {
-    id: 'bs-18',
+    id: 'bs-27',
     subject: 'Bezpečnostní služba',
     topic: 'Dozorčí služba',
     question: 'Jaké jsou bezprostřední povinnosti dozorce po převzetí služby na ubytovně?',
@@ -438,7 +438,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
   },
   // 19. Propustkový režim
   {
-    id: 'bs-19',
+    id: 'bs-28',
     subject: 'Bezpečnostní služba',
     topic: 'Strážní služba u vchodu',
     question: 'Jaká jsou základní pravidla pro propustkový režim do střeženého objektu?',
@@ -455,7 +455,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
   },
   // 20. Použití střelné zbraně proti davu
   {
-    id: 'bs-20',
+    id: 'bs-29',
     subject: 'Bezpečnostní služba',
     topic: 'Strážní služba',
     question: 'Je příslušník VS ČR oprávněn použít střelnou zbraň proti davu, pokud z něj vychází nebezpečí?',
@@ -472,7 +472,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
   },
   // 21. Použití donucovacích prostředků
   {
-    id: 'bs-21',
+    id: 'bs-30',
     subject: 'Bezpečnostní služba',
     topic: 'Donucovací prostředky',
     question: 'Jaké jsou povinnosti příslušníka před použitím donucovacího prostředku?',

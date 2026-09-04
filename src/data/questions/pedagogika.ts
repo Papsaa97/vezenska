@@ -388,7 +388,7 @@ export const pedagogikaQuestions: Question[] = [
   ,
   // 26. Etopedie
   {
-    id: 'ped-26',
+    id: 'ped-25',
     subject: 'Pedagogika',
     topic: 'Speciální pedagogika',
     question: 'Čím se zabývá etopedie v rámci speciální pedagogiky?',
@@ -405,7 +405,7 @@ export const pedagogikaQuestions: Question[] = [
   },
   // 27. Metody výchovy
   {
-    id: 'ped-27',
+    id: 'ped-26',
     subject: 'Pedagogika',
     topic: 'Obecná pedagogika',
     question: 'Co jsou v pedagogice metody výchovy?',
@@ -422,7 +422,7 @@ export const pedagogikaQuestions: Question[] = [
   },
   // 28. Mentální retardace
   {
-    id: 'ped-28',
+    id: 'ped-27',
     subject: 'Pedagogika',
     topic: 'Speciální pedagogika',
     question: 'Jaký je rozdíl mezi mentální retardací (oligofrenií) a demencí?',
@@ -439,7 +439,7 @@ export const pedagogikaQuestions: Question[] = [
   },
   // 29. Zásada přiměřenosti
   {
-    id: 'ped-29',
+    id: 'ped-28',
     subject: 'Pedagogika',
     topic: 'Didaktické zásady',
     question: 'Co znamená v pedagogice zásada přiměřenosti (individuálního přístupu)?',
@@ -456,7 +456,7 @@ export const pedagogikaQuestions: Question[] = [
   },
   // 30. Andragogika
   {
-    id: 'ped-30',
+    id: 'ped-29',
     subject: 'Pedagogika',
     topic: 'Oborové členění',
     question: 'Čím se zabývá vědní obor andragogika?',

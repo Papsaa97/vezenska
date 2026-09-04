@@ -525,7 +525,7 @@ export const pravoQuestions: Question[] = [
 
   // 30. Nutná obrana (§ 29 TZ)
   {
-    id: 'pr-29b',
+    id: 'pr-30',
     subject: 'Právo',
     topic: 'Trestní právo hmotné',
     question: 'Jak je definována nutná obrana v § 29 TZ a jaké jsou její meze?',

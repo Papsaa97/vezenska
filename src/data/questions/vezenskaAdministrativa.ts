@@ -324,7 +324,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
   ,
   // 17. Záznam o použití DP
   {
-    id: 'adm-17',
+    id: 'va_21',
     subject: 'Vězeňská administrativa',
     topic: 'Úřední písemnosti',
     question: 'Kdo a do jaké lhůty zpracovává „Záznam o použití donucovacího prostředku“ po zákroku proti vězněné osobě?',
@@ -341,7 +341,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
   },
   // 18. Archivnictví a spisová služba
   {
-    id: 'adm-18',
+    id: 'va_22',
     subject: 'Vězeňská administrativa',
     topic: 'Spisová služba',
     question: 'Jaké jsou tři základní skartační znaky při vyřazování dokumentů z elektronické spisové služby (ETŘ)?',
@@ -358,7 +358,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
   },
   // 19. Poskytování informací
   {
-    id: 'adm-19',
+    id: 'va_23',
     subject: 'Vězeňská administrativa',
     topic: 'Práce ve VIS',
     question: 'Je dozorce oprávněn telefonicky sdělit rodinnému příslušníkovi informaci o tom, zda je konkrétní osoba ve výkonu vazby?',
@@ -375,7 +375,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
   },
   // 20. Evidence VIS - Stavy
   {
-    id: 'adm-20',
+    id: 'va_24',
     subject: 'Vězeňská administrativa',
     topic: 'Vězeňský informační systém',
     question: 'Co v modulu evidence osob ve VIS znamená rozdíl mezi "kmenovým stavem" a "fyzickým stavem" věznice?',
@@ -392,7 +392,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
   },
   // 21. Úřední styl
   {
-    id: 'adm-21',
+    id: 'va_25',
     subject: 'Vězeňská administrativa',
     topic: 'Úřední písemnosti',
     question: 'Která z následujících formulací ve Služebním záznamu nejlépe odpovídá pravidlům objektivního a formálního úředního stylu?',

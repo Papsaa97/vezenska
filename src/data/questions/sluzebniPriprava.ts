@@ -628,7 +628,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   ,
   // 36. Donucovací prostředky – Pouta
   {
-    id: 'sp-36',
+    id: 'sp-40',
     subject: 'Služební příprava',
     topic: 'Donucovací prostředky',
     question: 'Ve kterých situacích je příslušník VS ČR oprávněn použít pouta (nebo prostředky k zamezení prostorové orientace) jako donucovací prostředek?',
@@ -645,7 +645,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   // 37. Donucovací prostředky – Zákaz použití u zranitelných osob
   {
-    id: 'sp-37',
+    id: 'sp-41',
     subject: 'Služební příprava',
     topic: 'Donucovací prostředky',
     question: 'U jakých kategorií osob je příslušníkům VS ČR zakázáno použít úderů, kopů, slzotvorných prostředků, taseru a zbraně (neplatí pro nutnou obranu a krajní nouzi)?',
@@ -662,7 +662,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   // 38. Základní bezpečnostní pravidlo pro střelbu
   {
-    id: 'sp-38',
+    id: 'sp-42',
     subject: 'Služební příprava',
     topic: 'Zbraňová bezpečnost',
     question: 'Jak zní první a nejdůležitější pravidlo bezpečné manipulace se střelnou zbraní?',
@@ -679,7 +679,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   // 39. Taktická obrana proti noži
   {
-    id: 'sp-39',
+    id: 'sp-43',
     subject: 'Služební příprava',
     topic: 'Taktická sebeobrana',
     question: 'Jaké je základní taktické pravidlo při nečekaném útoku nožem na krátkou vzdálenost?',
@@ -696,7 +696,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   // 40. Použití elektrického paralyzéru (Taser)
   {
-    id: 'sp-40',
+    id: 'sp-44',
     subject: 'Služební příprava',
     topic: 'Donucovací prostředky',
     question: 'Jaký je princip účinku elektrického paralyzéru (např. Taser) používaného VS ČR?',
