@@ -251,7 +251,7 @@ interface UserBadgeProps {
 }
 
 export function UserBadge({ onLoginClick }: UserBadgeProps) {
-  const { profile, loading, signOut } = useAuth();
+  const { user, profile, loading, signOut } = useAuth();
 
   if (loading) {
     return (
@@ -262,7 +262,7 @@ export function UserBadge({ onLoginClick }: UserBadgeProps) {
     );
   }
 
-  if (!profile) {
+  if (!user) {
     return (
       <button
         onClick={onLoginClick}
@@ -274,10 +274,12 @@ export function UserBadge({ onLoginClick }: UserBadgeProps) {
     );
   }
 
-  const roleLabel = ROLE_LABELS[profile.role] ?? profile.role;
-  const roleColor = ROLE_COLORS[profile.role] ?? 'bg-slate-700/40 text-slate-300 border-slate-600';
+  const role: UserRole = profile?.role ?? 'student';
+  const roleLabel = ROLE_LABELS[role] ?? role;
+  const roleColor = ROLE_COLORS[role] ?? 'bg-slate-700/40 text-slate-300 border-slate-600';
 
-  const initials = (profile.full_name ?? profile.email)
+  const displayName = profile?.full_name || user.email || 'Uživatel';
+  const initials = displayName
     .split(' ')
     .slice(0, 2)
     .map((w) => w[0]?.toUpperCase() ?? '')
@@ -291,8 +293,8 @@ export function UserBadge({ onLoginClick }: UserBadgeProps) {
           {initials || '?'}
         </div>
         <div className="flex flex-col leading-none">
-          <span className="text-white text-[11px] font-semibold max-w-[100px] truncate">
-            {profile.full_name ?? profile.email}
+          <span className="text-white text-[11px] font-semibold max-w-[120px] truncate" title={displayName}>
+            {displayName}
           </span>
           <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border mt-0.5 w-fit ${roleColor}`}>
             {roleLabel}

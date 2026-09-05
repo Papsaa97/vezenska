@@ -75,6 +75,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setLoading(false);
       }
+    }).catch((err) => {
+      console.error('[Auth] Chyba při načítání relace:', err);
+      if (mounted) setLoading(false);
     });
 
     // Reagujeme na přihlášení / odhlášení
@@ -120,7 +123,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } finally {
+      setSession(null);
+      setUser(null);
+      setProfile(null);
+    }
   }, []);
 
   return (

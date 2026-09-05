@@ -42,11 +42,12 @@ import { QuizSessionRecord, MatchingRecord, Question } from './types';
 import { loadMatchingHistory, updateDailyStreak } from './utils/gamification';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useAuth } from './context/AuthContext';
+import AuthWall from './components/AuthWall';
 
 
 
 export default function App() {
-  const { profile } = useAuth();
+  const { session, profile, loading } = useAuth();
   const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
 
   const [activeTab, setActiveTab] = useState<NavTab>('subjects');
@@ -173,6 +174,33 @@ export default function App() {
   };
 
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
+
+  // 1. Ošetření načítání: Během úvodního ověřování session ze Supabase zobraz jednoduchý decentní spinner
+  if (loading) {
+    return (
+      <div className={`min-h-[100dvh] w-full flex flex-col items-center justify-center transition-colors ${
+        isDarkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-900 text-slate-100'
+      }`}>
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative flex items-center justify-center">
+            <div className="w-14 h-14 bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-500 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-blue-500/25 border border-blue-400/30 animate-pulse">
+              V
+            </div>
+            <div className="absolute -inset-2 border-2 border-blue-500/20 border-t-blue-500 rounded-3xl animate-spin" />
+          </div>
+          <div className="text-center">
+            <div className="text-sm font-bold text-white tracking-wide">AKADEMIE VS ČR</div>
+            <div className="text-xs text-slate-400 mt-1">Ověřování přihlášení…</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Auth Wall: Nepřihlášený uživatel (bez aktivní Supabase session) nesmí vidět žádný obsah aplikace
+  if (!session) {
+    return <AuthWall isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />;
+  }
 
   return (
     <div className={`flex flex-col h-[100dvh] w-full font-sans overflow-hidden transition-colors print:h-auto print:overflow-visible print:bg-white print:text-black ${isDarkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
