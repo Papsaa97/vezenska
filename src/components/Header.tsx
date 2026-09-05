@@ -17,13 +17,16 @@ import {
   HeartHandshake,
   ChevronDown,
   Shield,
-  Zap
+  Zap,
+  BookOpen,
+  Settings2,
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord } from '../types';
 import { calculateBaseXp, evaluateBadges, getUserRank, loadStreakInfo } from '../utils/gamification';
 import { UserBadge, AuthModal } from './AuthUI';
+import { useAuth } from '../context/AuthContext';
 
-export type NavTab = 'subjects' | 'quiz' | 'assistant' | 'compass' | 'admin' | 'ethics' | 'scenarios' | 'weapons' | 'flashcards' | 'matching' | 'badges' | 'statistics';
+export type NavTab = 'subjects' | 'quiz' | 'assistant' | 'compass' | 'admin' | 'ethics' | 'scenarios' | 'weapons' | 'flashcards' | 'matching' | 'badges' | 'statistics' | 'library' | 'content-manager';
 
 interface HeaderProps {
   activeTab: NavTab;
@@ -42,6 +45,9 @@ export default function Header({
   quizHistory = [],
   matchingHistory = []
 }: HeaderProps) {
+  const { profile } = useAuth();
+  const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
+
   const [openDropdown, setOpenDropdown] = useState<'practice' | 'drill' | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -316,6 +322,35 @@ export default function Header({
             <BarChart3 className="w-4 h-4" />
             <span>Statistiky</span>
           </button>
+
+          {/* 8. Material Library – for all users */}
+          <button
+            onClick={() => { setActiveTab('library'); setOpenDropdown(null); }}
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+              activeTab === 'library'
+                ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
+            }`}
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>Materiály</span>
+          </button>
+
+          {/* 9. Content Manager – lektor / admin only */}
+          {isPrivileged && (
+            <button
+              onClick={() => { setActiveTab('content-manager'); setOpenDropdown(null); }}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                activeTab === 'content-manager'
+                  ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-500/20'
+                  : 'text-emerald-300 bg-emerald-950/40 border border-emerald-500/30 hover:text-white hover:bg-emerald-900/60'
+              }`}
+              title="Správa obsahu – nahrávání a mazání materiálů"
+            >
+              <Settings2 className="w-4 h-4" />
+              <span>Správa obsahu</span>
+            </button>
+          )}
         </nav>
 
         {/* Right controls: Auth + Rank Badge + Theme Toggle */}

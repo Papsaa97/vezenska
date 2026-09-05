@@ -14,6 +14,8 @@ import BadgesView from './components/BadgesView';
 import Statistics from './components/Statistics';
 import CaptainExamAssistant from './components/CaptainExamAssistant';
 import OfflineBanner from './components/OfflineBanner';
+import MaterialLibrary from './components/MaterialLibrary';
+import ContentManager from './components/ContentManager';
 import { matchingCategories, defaultQuizHistory } from './data/initialData';
 import { academyQuestions } from './data/questionsData';
 import { 
@@ -32,14 +34,21 @@ import {
   X,
   Zap,
   GraduationCap,
-  Shield
+  Shield,
+  BookOpen,
+  Settings2,
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord, Question } from './types';
 import { loadMatchingHistory, updateDailyStreak } from './utils/gamification';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { useAuth } from './context/AuthContext';
+
 
 
 export default function App() {
+  const { profile } = useAuth();
+  const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
+
   const [activeTab, setActiveTab] = useState<NavTab>('subjects');
   const [favorites, setFavorites] = useState<string[]>(() => {
   if (typeof window !== 'undefined') {
@@ -281,6 +290,18 @@ export default function App() {
             onClearHistory={handleClearHistory}
             onLoadSampleData={handleLoadSampleData}
           />
+        )}
+
+        {activeTab === 'library' && (
+          <div className="w-full h-full overflow-y-auto pr-1">
+            <MaterialLibrary />
+          </div>
+        )}
+
+        {activeTab === 'content-manager' && isPrivileged && (
+          <div className="w-full h-full overflow-y-auto pr-1">
+            <ContentManager />
+          </div>
         )}
       </main>
 
@@ -538,6 +559,47 @@ export default function App() {
                     </div>
                     <BarChart3 className="w-5 h-5 text-blue-500" />
                   </button>
+                </div>
+              </div>
+
+              {/* Section 4: Materiály & Správa */}
+              <div className="space-y-2">
+                <div className="text-[11px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>Studijní materiály</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => { setActiveTab('library'); setIsMobileMenuOpen(false); }}
+                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                      activeTab === 'library'
+                        ? 'bg-indigo-500/10 border-indigo-500 text-indigo-900 dark:text-indigo-300 font-bold'
+                        : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/60 text-slate-800 dark:text-slate-200'
+                    }`}
+                  >
+                    <div>
+                      <div className="text-xs font-bold">Knihovna</div>
+                      <div className="text-[10px] text-slate-500">PDF, DOCX, PPTX</div>
+                    </div>
+                    <BookOpen className="w-5 h-5 text-indigo-500" />
+                  </button>
+
+                  {isPrivileged && (
+                    <button
+                      onClick={() => { setActiveTab('content-manager'); setIsMobileMenuOpen(false); }}
+                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                        activeTab === 'content-manager'
+                          ? 'bg-emerald-500/10 border-emerald-500 text-emerald-900 dark:text-emerald-300 font-bold'
+                          : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/60 text-slate-800 dark:text-slate-200'
+                      }`}
+                    >
+                      <div>
+                        <div className="text-xs font-bold">Správa obsahu</div>
+                        <div className="text-[10px] text-slate-500">Nahrávání souborů</div>
+                      </div>
+                      <Settings2 className="w-5 h-5 text-emerald-500" />
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>
