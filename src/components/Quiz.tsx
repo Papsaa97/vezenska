@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { BookOpen, Clock, Play, CheckCircle2, XCircle, Star, RotateCcw, Volume2, Award, Flag, Printer, ArrowRight, ArrowLeft, ShieldAlert, Sparkles } from 'lucide-react';
+import { BookOpen, Clock, Play, CheckCircle2, XCircle, Star, RotateCcw, Volume2, Award, Flag, Printer, ArrowRight, ArrowLeft, ShieldAlert, Sparkles, Cloud, Database } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Question, QuizSessionRecord, QuestionAttempt } from '../types';
 
@@ -13,6 +13,7 @@ interface QuizProps {
   onNavigateToBadges?: () => void;
   presetSubject?: string;
   presetTopic?: string;
+  questionsSource?: 'supabase' | 'local';
 }
 
 type GameState = 'setup' | 'playing' | 'results';
@@ -32,7 +33,8 @@ export default function Quiz({
   onSaveQuizResult,
   onNavigateToBadges,
   presetSubject,
-  presetTopic 
+  presetTopic,
+  questionsSource = 'local'
 }: QuizProps) {
   const [gameState, setGameState] = useState<GameState>('setup');
   const [sessionStats, setSessionStats] = useState<SessionStats>({ correct: 0, incorrect: 0, total: 0, history: [] });
@@ -104,18 +106,21 @@ export default function Quiz({
   };
 
   const shuffleQuestionOptions = (q: Question): Question => {
-    if (!q.options || q.options.length <= 1 || q.correctOption === undefined) return q;
-    const indexed = q.options.map((opt, idx) => ({ opt, isCorrect: idx === q.correctOption }));
+    const targetIdx = typeof q.correctOption === 'number' ? q.correctOption : q.correct_index;
+    if (!q.options || q.options.length <= 1 || targetIdx === undefined) return q;
+    const indexed = q.options.map((opt, idx) => ({ opt, isCorrect: idx === targetIdx }));
     for (let i = indexed.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [indexed[i], indexed[j]] = [indexed[j], indexed[i]];
     }
     const newOptions = indexed.map(item => item.opt);
     const newCorrectOption = indexed.findIndex(item => item.isCorrect);
+    const finalIdx = newCorrectOption >= 0 ? newCorrectOption : 0;
     return {
       ...q,
       options: newOptions,
-      correctOption: newCorrectOption >= 0 ? newCorrectOption : 0
+      correctOption: finalIdx,
+      correct_index: finalIdx,
     };
   };
 
@@ -175,7 +180,7 @@ export default function Quiz({
       }
     }
     
-    pool = pool.filter(q => q.options && q.options.length > 0 && q.correctOption !== undefined);
+    pool = pool.filter(q => q.options && q.options.length > 0 && (q.correctOption !== undefined || q.correct_index !== undefined));
     
     let finalQuestions = [...pool];
     if (isRandomOrder) {
@@ -591,6 +596,19 @@ export default function Quiz({
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2">
               Příprava na závěrečnou zkoušku ZOP A
             </h2>
+            <div className="mb-4">
+              {questionsSource === 'supabase' ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                  <Cloud className="w-3.5 h-3.5" />
+                  Banka otázek: Supabase Cloud ({questions.length} otázek)
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                  <Database className="w-3.5 h-3.5" />
+                  Banka otázek: Lokální záloha ({questions.length} otázek)
+                </span>
+              )}
+            </div>
             <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg leading-relaxed mb-6">
               Vyberte si režim: buď <strong>Ostrou závěrečnou zkoušku</strong> (50 otázek, 45 minut, generování protokolu) nebo <strong>Cvičný kvíz</strong> pro jednotlivé předměty.
             </p>

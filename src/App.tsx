@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Header, { NavTab } from './components/Header';
 import SubjectsHub from './components/SubjectsHub';
 import Quiz from './components/Quiz';
+import { fetchQuizQuestionsFromSupabase } from './utils/quizQuestionsLoader';
 import Flashcards from './components/Flashcards';
 import Scenarios from './components/Scenarios';
 import WeaponSimulator from './components/WeaponSimulator';
@@ -63,8 +64,39 @@ export default function App() {
   const [customQuestions, setCustomQuestions] = useState<Question[] | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   
-  // Use complete academy questions data
-  const allQuestions = academyQuestions;
+  // Otázky: primárně načtené ze Supabase tabulky quiz_questions, s fallbackem na lokální sadu
+  const [allQuestions, setAllQuestions] = useState<Question[]>(academyQuestions);
+  const [questionsSource, setQuestionsSource] = useState<'supabase' | 'local'>('local');
+  const [, setIsLoadingQuestions] = useState<boolean>(false);
+
+  const loadQuestions = useCallback(async () => {
+    setIsLoadingQuestions(true);
+    const dbQuestions = await fetchQuizQuestionsFromSupabase();
+    if (dbQuestions && dbQuestions.length > 0) {
+      setAllQuestions(dbQuestions);
+      setQuestionsSource('supabase');
+    } else {
+      setAllQuestions(academyQuestions);
+      setQuestionsSource('local');
+    }
+    setIsLoadingQuestions(false);
+  }, []);
+
+  useEffect(() => {
+    loadQuestions();
+
+    const handleUpdate = () => {
+      loadQuestions();
+    };
+
+    window.addEventListener('vscr:questions_updated', handleUpdate);
+    window.addEventListener('online', handleUpdate);
+
+    return () => {
+      window.removeEventListener('vscr:questions_updated', handleUpdate);
+      window.removeEventListener('online', handleUpdate);
+    };
+  }, [loadQuestions]);
 
   // Load quiz history from localStorage (or fallback to default)
   const [quizHistory, setQuizHistory] = useState<QuizSessionRecord[]>(() => {
@@ -238,6 +270,7 @@ export default function App() {
             onNavigateToBadges={() => setActiveTab('badges')}
             presetSubject={quizPreset.subject}
             presetTopic={quizPreset.topic}
+            questionsSource={questionsSource}
           />
         )}
 

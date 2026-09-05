@@ -6,6 +6,8 @@ export interface Question {
   answer: string;
   options?: string[];
   correctOption?: number;
+  correct_index?: number;
+  explanation?: string;
   rationale: string;
   source: string;
 }

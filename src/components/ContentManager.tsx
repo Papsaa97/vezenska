@@ -13,10 +13,12 @@ import {
   FolderOpen,
   CloudUpload,
   ShieldAlert,
+  HelpCircle,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { StudyMaterial, MaterialSubject } from './MaterialLibrary';
+import QuestionBankManager from './QuestionBankManager';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -133,6 +135,9 @@ export default function ContentManager() {
 }
 
 function ContentManagerInner() {
+  // ── Tab state ──
+  const [activeTab, setActiveTab] = useState<'materials' | 'questions'>('materials');
+
   // ── Upload form state ──
   const [selectedSubject, setSelectedSubject] = useState<MaterialSubject>('ZOP');
   const [displayName, setDisplayName] = useState('');
@@ -262,10 +267,43 @@ function ContentManagerInner() {
         </div>
         <div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">Správa obsahu</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Nahrávání a správa studijních materiálů</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Nahrávání a správa studijních materiálů a testových otázek</p>
         </div>
       </div>
 
+      {/* Tabs Switcher */}
+      <div className="flex items-center gap-2 p-1.5 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/60 w-fit">
+        <button
+          type="button"
+          onClick={() => setActiveTab('materials')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+            activeTab === 'materials'
+              ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <FolderOpen className="w-4 h-4 text-emerald-500" />
+          Studijní materiály
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('questions')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+            activeTab === 'questions'
+              ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 shadow-xs'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <HelpCircle className="w-4 h-4 text-blue-500" />
+          Banka otázek
+        </button>
+      </div>
+
+      {activeTab === 'questions' && <QuestionBankManager />}
+
+      {activeTab === 'materials' && (
+        <>
       {/* ── Upload form ── */}
       <div className="bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 space-y-4">
         <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
@@ -471,6 +509,8 @@ function ContentManagerInner() {
           </div>
         )}
       </div>
+      </>
+      )}
     </div>
   );
 }
