@@ -1027,7 +1027,7 @@ export default function LegalCompass() {
                     <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Číslo / Kód předpisu *</label>
                     <input
                       type="text"
-                      placeholder="např. NGŘ č. 45/2026 nebo Zákon č. 555/1992 Sb."
+                      placeholder="např. NGŘ č. 33/2019 nebo Zákon č. 555/1992 Sb."
                       value={editingRegulation.code || ''}
                       onChange={(e) => setEditingRegulation(prev => ({ ...prev, code: e.target.value }))}
                       className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"

@@ -225,7 +225,7 @@ export default function App() {
         <OfflineBanner />
       </div>
       
-      <main className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 sm:p-4 pb-24 lg:pb-4 md:p-6 gap-4 md:gap-6 w-full print:p-0 print:m-0 print:overflow-visible print:h-auto">
+      <main className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 sm:p-4 pb-24 md:pb-6 lg:pb-4 md:p-6 gap-4 md:gap-6 w-full print:p-0 print:m-0 print:overflow-visible print:h-auto">
         {activeTab === 'subjects' && (
           <div className="w-full h-full overflow-y-auto pr-1">
             <SubjectsHub
@@ -343,7 +343,7 @@ export default function App() {
       </main>
 
       {/* Mobile Bottom Navigation (5 Ergonomic Core Pillars) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 flex items-center justify-around px-2 py-1 z-40 shadow-[0_-4px_24px_rgba(0,0,0,0.12)] no-print" style={{ paddingBottom: 'calc(0.4rem + env(safe-area-inset-bottom))' }}>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 flex items-center justify-around px-2 py-1 z-40 shadow-[0_-4px_24px_rgba(0,0,0,0.12)] no-print" style={{ paddingBottom: 'calc(0.4rem + env(safe-area-inset-bottom))' }}>
         
         {/* 1. Subjects */}
         <button
@@ -424,7 +424,7 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 no-print"
+              className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 no-print"
             />
 
             {/* Sheet Container */}
@@ -433,7 +433,7 @@ export default function App() {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 rounded-t-3xl z-50 p-5 pb-8 max-h-[85vh] overflow-y-auto shadow-2xl space-y-5 no-print"
+              className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 rounded-t-3xl z-50 p-5 pb-8 max-h-[85vh] overflow-y-auto shadow-2xl space-y-5 no-print"
             >
               {/* Handle & Header */}
               <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">

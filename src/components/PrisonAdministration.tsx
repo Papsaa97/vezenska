@@ -559,7 +559,7 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.refNumber || ''}
                         onChange={(e) => handleFieldChange('refNumber', e.target.value)}
-                        placeholder="VS-XXXX-1/ČJ-2026-80XXXX-XXX"
+                        placeholder="VS-XXXX-1/ČJ-2024-80XXXX-XXX"
                         className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono font-bold text-xs"
                       />
                     </div>
