@@ -136,16 +136,24 @@ export async function fetchQuizQuestionsFromSupabase(): Promise<Question[] | nul
 }
 
 /**
- * Zkontroluje, které výchozí otázky z projektu (academyQuestions) ještě v Supabase nejsou,
- * a hromadně je do tabulky public.quiz_questions naimportuje.
- * 
+ * Synchronizuje výchozí otázky z projektu (academyQuestions) do tabulky public.quiz_questions.
+ *
+ * Používá `upsert` s konfliktním klíčem na unikátním sloupci `question` (viz
+ * supabase/quiz_questions.sql), takže otázka, která v Supabase již existuje (shoduje se
+ * text otázky), je AKTUALIZOVÁNA aktuální lokální revizí – včetně nově promíchaného pořadí
+ * `options` a odpovídajícího `correct_index`. Otázky, které v Supabase ještě nejsou, se
+ * novĕ vloží. Díky tomu se po per-subject přeuspořádání distraktorů (viz
+ * scripts/rebalanceOptionsPerSubject.ts) synchronizace korektně promítne i do už dříve
+ * naimportovaných řádků, ne jen do nových.
+ *
  * Schéma tabulky public.quiz_questions:
  * - subject: text
- * - question: text
+ * - question: text (UNIQUE – konfliktní klíč pro upsert)
  * - options: jsonb (pole stringů)
  * - correct_index: integer (0-3)
  * - explanation: text
- * DŮLEŽITÉ: Neposílá se lokální id (nechá se vygenerovat UUID v Supabase).
+ * DŮLEŽITÉ: Neposílá se lokální id (nechá se vygenerovat UUID v Supabase při vložení,
+ * při aktualizaci existujícího řádku zůstává zachováno).
  * DŮLEŽITÉ: Neposílají se sloupce 'answer', 'correct_option' ani 'rationale'.
  */
 export async function importDefaultQuestionsToSupabase(
@@ -155,6 +163,7 @@ export async function importDefaultQuestionsToSupabase(
 ): Promise<{
   success: boolean;
   importedCount: number;
+  updatedCount: number;
   alreadyExistingCount: number;
   totalLocalCount: number;
   errorMessage?: string;
@@ -165,6 +174,7 @@ export async function importDefaultQuestionsToSupabase(
     return {
       success: false,
       importedCount: 0,
+      updatedCount: 0,
       alreadyExistingCount: 0,
       totalLocalCount,
       errorMessage: 'Jste v offline režimu. Pro synchronizaci se Supabase se prosím připojte k internetu.',
@@ -172,7 +182,7 @@ export async function importDefaultQuestionsToSupabase(
   }
 
   try {
-    // 1. Získej existující texty otázek ze Supabase pro deduplikaci
+    // 1. Získej existující texty otázek ze Supabase (pro rozlišení nové / aktualizované ve statistice)
     const { data: existingRows, error: fetchErr } = await supabase
       .from('quiz_questions')
       .select('question');
@@ -182,6 +192,7 @@ export async function importDefaultQuestionsToSupabase(
         return {
           success: false,
           importedCount: 0,
+          updatedCount: 0,
           alreadyExistingCount: 0,
           totalLocalCount,
           errorMessage: 'Tabulka public.quiz_questions v Supabase dosud neexistuje. Spusťte prosím SQL skript v Supabase.',
@@ -190,6 +201,7 @@ export async function importDefaultQuestionsToSupabase(
       return {
         success: false,
         importedCount: 0,
+        updatedCount: 0,
         alreadyExistingCount: 0,
         totalLocalCount,
         errorMessage: `Chyba při kontrole existujících otázek: ${fetchErr.message}`,
@@ -204,38 +216,21 @@ export async function importDefaultQuestionsToSupabase(
         }
       }
     }
-
-    // 2. Najdi otázky, které v Supabase chybí
-    const missingQuestions = forceOverwrite
-      ? academyQuestions
-      : academyQuestions.filter((q) => {
-          const norm = q.question.trim().toLowerCase();
-          return !existingNormalized.has(norm);
-        });
+    const alreadyExistingCount = existingNormalized.size;
 
     if (forceOverwrite) {
-      // First, delete all existing questions to rewrite everything fresh
-      await supabase.from('quiz_questions').delete().neq('id', 0);
+      // Kompletní reset: smaž všechny řádky, upsert níže je pak nahraje od nuly
+      await supabase.from('quiz_questions').delete().not('id', 'is', null);
+      existingNormalized.clear();
     }
 
-
-    const alreadyExistingCount = totalLocalCount - missingQuestions.length;
-
-    if (missingQuestions.length === 0) {
-      return {
-        success: true,
-        importedCount: 0,
-        alreadyExistingCount,
-        totalLocalCount,
-      };
-    }
-
-    // 3. Dávkové vkládání (dávky po 50 otázkách)
+    // 2. Dávkový upsert (dávky po 50 otázkách) – konflikt se řeší podle unikátního textu otázky
     const BATCH_SIZE = 50;
     let importedTotal = 0;
+    let updatedTotal = 0;
 
-    for (let i = 0; i < missingQuestions.length; i += BATCH_SIZE) {
-      const batchSlice = missingQuestions.slice(i, i + BATCH_SIZE);
+    for (let i = 0; i < academyQuestions.length; i += BATCH_SIZE) {
+      const batchSlice = academyQuestions.slice(i, i + BATCH_SIZE);
 
       // Připrav payload odpovídající přesnému schématu tabulky public.quiz_questions
       const payload = batchSlice.map((q) => {
@@ -251,29 +246,39 @@ export async function importDefaultQuestionsToSupabase(
         };
       });
 
-      const { error: insertError } = await supabase
+      const { error: upsertError } = await supabase
         .from('quiz_questions')
-        .insert(payload);
+        .upsert(payload, { onConflict: 'question', ignoreDuplicates: false });
 
-      if (insertError) {
+      if (upsertError) {
         return {
           success: false,
           importedCount: importedTotal,
+          updatedCount: updatedTotal,
           alreadyExistingCount,
           totalLocalCount,
-          errorMessage: `Chyba při vkládání dávky (${importedTotal + 1} - ${importedTotal + batchSlice.length}): ${insertError.message}`,
+          errorMessage: `Chyba při synchronizaci dávky (${importedTotal + updatedTotal + 1} - ${importedTotal + updatedTotal + batchSlice.length}): ${upsertError.message}`,
         };
       }
 
-      importedTotal += batchSlice.length;
+      for (const q of batchSlice) {
+        const norm = q.question.trim().toLowerCase();
+        if (existingNormalized.has(norm)) {
+          updatedTotal++;
+        } else {
+          importedTotal++;
+        }
+      }
+
       if (onProgress) {
-        onProgress(importedTotal, missingQuestions.length);
+        onProgress(importedTotal + updatedTotal, academyQuestions.length);
       }
     }
 
     return {
       success: true,
       importedCount: importedTotal,
+      updatedCount: updatedTotal,
       alreadyExistingCount,
       totalLocalCount,
     };
@@ -282,6 +287,7 @@ export async function importDefaultQuestionsToSupabase(
     return {
       success: false,
       importedCount: 0,
+      updatedCount: 0,
       alreadyExistingCount: 0,
       totalLocalCount,
       errorMessage: msg,
