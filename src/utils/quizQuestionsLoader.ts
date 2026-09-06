@@ -150,7 +150,8 @@ export async function fetchQuizQuestionsFromSupabase(): Promise<Question[] | nul
  */
 export async function importDefaultQuestionsToSupabase(
   _userId?: string | null,
-  onProgress?: (imported: number, totalToImport: number) => void
+  onProgress?: (imported: number, totalToImport: number) => void,
+  forceOverwrite: boolean = false
 ): Promise<{
   success: boolean;
   importedCount: number;
@@ -205,10 +206,18 @@ export async function importDefaultQuestionsToSupabase(
     }
 
     // 2. Najdi otázky, které v Supabase chybí
-    const missingQuestions = academyQuestions.filter((q) => {
-      const norm = q.question.trim().toLowerCase();
-      return !existingNormalized.has(norm);
-    });
+    const missingQuestions = forceOverwrite
+      ? academyQuestions
+      : academyQuestions.filter((q) => {
+          const norm = q.question.trim().toLowerCase();
+          return !existingNormalized.has(norm);
+        });
+
+    if (forceOverwrite) {
+      // First, delete all existing questions to rewrite everything fresh
+      await supabase.from('quiz_questions').delete().neq('id', 0);
+    }
+
 
     const alreadyExistingCount = totalLocalCount - missingQuestions.length;
 
