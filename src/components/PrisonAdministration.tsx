@@ -1,36 +1,94 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  FileText, 
-  ShieldAlert, 
-  Layers, 
-  CheckCircle2, 
-  AlertTriangle, 
-  Search, 
-  Copy, 
-  Check, 
-  Printer, 
-  HelpCircle, 
-  BookOpen, 
-  Clock, 
-  UserCheck, 
-  Lock, 
-  Unlock, 
-  Shield, 
-  ArrowRight, 
-  Phone, 
-  Eye, 
-  Sparkles, 
-  Scale, 
-  Download, 
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import {
+  FileText,
+  ShieldAlert,
+  Layers,
+  CheckCircle2,
+  AlertTriangle,
+  Search,
+  Copy,
+  Check,
+  Printer,
+  HelpCircle,
+  BookOpen,
+  Clock,
+  UserCheck,
+  Lock,
+  Unlock,
+  Shield,
+  ArrowRight,
+  Phone,
+  Eye,
+  Sparkles,
+  Scale,
+  Download,
   RefreshCw,
   FolderOpen,
   Info,
-  Zap
+  Zap,
+  Eraser
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { updateDailyStreak } from '../utils/gamification';
 
 export type AdminSection = 'generator' | 'etr' | 'vis' | 'style-rules';
+
+interface NavSectionConfig {
+  id: AdminSection;
+  label: string;
+  shortLabel: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+// Single source of truth for section navigation (replaces the former duplicated
+// header-banner buttons + sub-tabs bar that both toggled the same state).
+const NAV_SECTIONS: NavSectionConfig[] = [
+  { id: 'generator', label: 'Generátor záznamů (DP, ZKP, SZ)', shortLabel: 'Generátor záznamů', icon: FileText },
+  { id: 'etr', label: 'ETŘ: Spisová služba & Číslo jednací', shortLabel: 'ETŘ Trenažér', icon: FolderOpen },
+  { id: 'vis', label: 'VIS: Evidence & Lustrace (§ 23a)', shortLabel: 'VIS Evidence', icon: Search },
+  { id: 'style-rules', label: '7 pravidel úředního stylu & Kontrola chyb', shortLabel: 'Styl & kontrola chyb', icon: Sparkles }
+];
+
+// Human-readable labels for mandatory field keys, used to build validation messages.
+const FIELD_LABELS: Record<string, string> = {
+  prisonName: 'Věznice & Adresa',
+  refNumber: 'Číslo jednací (Č.j.)',
+  officer: 'Zakročující příslušník',
+  dutyOrder: 'Velení do služby rozkazem',
+  targetPerson: 'Použito proti komu / Vězněná osoba',
+  targetCode: 'Kód / identifikační kód vězněné osoby',
+  datetimePlace: 'Datum, čas a místo použití DP',
+  precedingEvents: 'Co předcházelo použití DP',
+  officerAction: 'Popis jednání příslušníka (zákonná výzva)',
+  targetBehavior: 'Popis jednání vězněné osoby',
+  dpUsedDetails: 'Popis použitého donucovacího prostředku',
+  injuryDamage: 'Škoda a zranění',
+  firstAid: 'Poskytnutí první pomoci',
+  medicalExam: 'Lékařské ošetření',
+  bossInformed: 'Informování nadřízeného',
+  photoDoc: 'Fotodokumentace',
+  evaluation: 'Vyhodnocení zakročujícího příslušníka',
+  departmentHeadOpinion: 'Stanovisko vedoucího oddělení',
+  zrvReport: 'Zpráva o prošetření (1. ZŘV)',
+  directorDecision: 'Rozhodnutí ředitele věznice',
+  targetBirth: 'Datum narození',
+  prisonType: 'Typ věznice / stupeň zabezpečení',
+  actDescription: 'Popis skutku',
+  targetStatement: 'Vyjádření podezřelého',
+  evidenceList: 'Další důkazní prostředky',
+  docTitle: 'Název záznamu',
+  eventStory: 'Popis děje a zjištěné skutečnosti',
+  actionsTimeline: 'Provedená opatření',
+  witnesses: 'Svědci',
+  datetime: 'Datum a čas odnětí věci',
+  itemsList: 'Soupis odňatých věcí',
+  seizureReason: 'Důvod odnětí věcí',
+  surrenderedTo: 'Předání a naložení s věcí',
+  housingCell: 'Ubytování (oddíl, cela)',
+  officerReport: 'Opatření, informování IDS a VISS',
+  signatureDate: 'Místo a datum podpisu',
+  officerSignature: 'Podpisová doložka příslušníka'
+};
 
 // Pre-defined official templates based directly on VS ČR training documents
 interface RecordTemplate {
@@ -51,11 +109,11 @@ const RECORD_TEMPLATES: RecordTemplate[] = [
     subtitle: 'Příloha k PGŘ č. 3/2024 a §§ 6, 17–20 zákona č. 555/1992 Sb.',
     badge: 'PGŘ č. 3/2024',
     normReference: '§ 6 odst. 3 písm. b), §§ 17–20 zákona č. 555/1992 Sb.',
-    mandatoryFields: ['officer', 'dutyOrder', 'targetPerson', 'targetCode', 'datetimePlace', 'precedingEvents', 'officerAction', 'targetBehavior', 'dpUsedDetails', 'injuryDamage', 'firstAid', 'medicalExam', 'bossInformed', 'photoDoc', 'evaluation'],
+    mandatoryFields: ['officer', 'dutyOrder', 'targetPerson', 'targetCode', 'datetimePlace', 'precedingEvents', 'officerAction', 'targetBehavior', 'dpUsedDetails', 'injuryDamage', 'firstAid', 'medicalExam', 'bossInformed', 'photoDoc', 'evaluation', 'departmentHeadOpinion', 'zrvReport', 'directorDecision'],
     affectedBodyPartsDefault: ['hlava-oblicej', 'rameno-prave', 'zady-pouta', 'predlokti-prave'],
     defaultData: {
       prisonName: 'Věznice Ostrov, Vykmanov 22, 363 50 Ostrov',
-      refNumber: 'VS-1234/ČJ-2024-801345',
+      refNumber: 'VS-1234-1/ČJ-2024-801345-VYS',
       officer: 'pprap. Jan Mokrý, sl. č. 26 569, dozorce OVT',
       dutyOrder: '02.05.2024 / DR VOVT č. 19/2024 - 801345',
       cameraUsed: 'ANO',
@@ -72,7 +130,10 @@ const RECORD_TEMPLATES: RecordTemplate[] = [
       bossInformed: 'V čase 18:20 hod. byl osobně informován IDS ppor. Eduard Hebký.',
       photoDoc: 'Pořízena v čase 20:30 hod., pořídil VISS ppor. Milan Slizký.',
       witnesses: 'prap. Josef Suchý, sl. č. 25 014, dozorce OVT',
-      evaluation: 'Použití DP bylo oprávněné a přiměřené, splnilo svůj účel, neboť odsouzený zanechal protiprávního a destruktivního jednání. Ve 20:20 byl odsouzený ubytován na KO, cela č. 7.',
+      evaluation: 'Ze svého pohledu považuji použití DP za nutné, neboť jsem se domníval, že jinak nelze zajistit bezpečnost mou ani okolí, a jednání odsouzeného bezprostředně předcházelo. Ve 20:20 byl odsouzený ubytován na KO, cela č. 7.',
+      departmentHeadOpinion: 'Stanovisko vedoucího oddělení: Postup zakročujícího příslušníka pprap. Jana Mokrého odpovídal § 6 odst. 3 písm. b) a §§ 17–20 zákona č. 555/1992 Sb., zákonná výzva i použití slzotvorného prostředku a hmatů a chvatů byly přiměřené intenzitě útoku. Doporučuji uznat zákrok za oprávněný a přiměřený.',
+      zrvReport: 'Zpráva o prošetření okolností a důvodů použití DP (1. ZŘV): Na základě prošetření záznamu, fotodokumentace a vyjádření svědka prap. Josefa Suchého bylo zjištěno, že k použití DP došlo v souladu se zákonem a vnitřními předpisy. Nebyly zjištěny skutečnosti nasvědčující excesu ani nepřiměřenosti zákroku.',
+      directorDecision: 'Rozhodnutí ředitele věznice: Na základě stanoviska vedoucího oddělení a zprávy 1. ZŘV o prošetření okolností a důvodů podle Přílohy k PGŘ č. 3/2024 rozhoduji, že použití donucovacího prostředku dne 02.05.2024 bylo OPRÁVNĚNÉ A PŘIMĚŘENÉ.',
       signatureDate: 'V Ostrově nad Ohří dne 02.05.2024',
       officerSignature: 'v. ref. pprap. Jan Mokrý, sl. č. 26 569, dozorce OVT'
     }
@@ -152,15 +213,120 @@ const RECORD_TEMPLATES: RecordTemplate[] = [
   }
 ];
 
+interface StyleExerciseSegment {
+  id: number;
+  text: string;
+  isError: boolean;
+  correction: string;
+}
+
+interface StyleExercise {
+  title: string;
+  badge: string;
+  instruction: string;
+  originalTextSegments: StyleExerciseSegment[];
+}
+
+// Static training content — hoisted to module scope so it is not recreated on every render.
+const STYLE_EXERCISES: StyleExercise[] = [
+  {
+    title: 'Hledání chyb ve Služebním záznamu',
+    badge: 'Cvičení 1: Služební záznam',
+    instruction: 'V níže uvedeném textu označte všechny závažné chyby proti metodice VS ČR (kliknutím na problematická místa):',
+    originalTextSegments: [
+      { id: 1, text: 'Včera odpoledne kolem třetí hodiny ', isError: true, correction: 'Chyba: Vágní časové určení. Správně: „Dne 14.03.2024 v čase 15:10 hod.“' },
+      { id: 2, text: 'jsme byli s kolegou na oddíle ', isError: true, correction: 'Chyba: 1. osoba množného čísla bez uvedení rozkazu. Správně: „Dne ... jsem byl velen rozkazem... byl jsem přítomen s prap. Novákem...“' },
+      { id: 3, text: 'a viděli jsme tam tohoto vězně, jak dělal bordel na cele. ', isError: true, correction: 'Chyba: Nespisovný a obecný výraz („bordel“, „tento vězeň“). Správně: „ods. Petr Král, nar. ..., kopal do dveří cely č. 12.“' },
+      { id: 4, text: 'Řekl jsem mu, ať se uklidní, jinak dostane. ', isError: true, correction: 'Chyba: Chybí přesná zákonná výzva a citace. Správně: „Použil jsem zákonnou výzvu dle § 6 odst. 3 písm. b) z. č. 555/1992 Sb. slovy: ...“' },
+      { id: 5, text: 'Potom jsme ho odvedli k doktorovi a bylo to nahlášeno.', isError: true, correction: 'Chyba: Neurčitý časový sled a anonymní trpný rod. Správně: Uvést přesný čas předvedení k MUDr. a konkrétní orgány, kterým byla událost ohlášena (ISS-O, VISS).' }
+    ]
+  },
+  {
+    title: 'Hledání chyb v Záznamu o kázeňském přestupku',
+    badge: 'Cvičení 2: Kázeňský přestupek',
+    instruction: 'Najděte nedostatky v popisu skutku a právní kvalifikaci:',
+    originalTextSegments: [
+      { id: 1, text: 'Dne 10.02.2024 v čase 09:15 jsem zjistil odsouzeného Jana Malého na ložnici č. 201, ', isError: false, correction: 'V pořádku (přesný datum, čas, jméno i místo).' },
+      { id: 2, text: 'který porušil vnitřní řád věznice tím, že neměl uklizeno. ', isError: true, correction: 'Chyba: Nelze uvést POUZE porušení Vnitřního řádu! Vždy musí být uvedeno porušení zákonné povinnosti dle § 28 zákona č. 169/1999 Sb.' },
+      { id: 3, text: 'Odsouzený mi řekl, že na to kašle a uklízet nebude. ', isError: true, correction: 'Chyba: Chybí doslovná přímá řeč v uvozovkách. Správně: užil slov, cituji: „...“' },
+      { id: 4, text: 'Odsouzený odmítl se k věci vyjádřit, tak jsem to nechal být a podepsal sám bez svědků.', isError: true, correction: 'Chyba: Do protokolu se musí výslovně zapsat, že odsouzený odmítl vyjádření/podpis, a uvést svědky přítomné incidentu.' }
+    ]
+  }
+];
+
+interface BodyPart {
+  id: string;
+  label: string;
+}
+
+// Selectable body-part zones for the DP body-scheme widget — hoisted to module scope.
+const BODY_PARTS: BodyPart[] = [
+  { id: 'hlava-oblicej', label: 'Hlava & Obličej' },
+  { id: 'krk', label: 'Krk' },
+  { id: 'hrudnik', label: 'Hrudník' },
+  { id: 'bricho', label: 'Břicho' },
+  { id: 'rameno-leve', label: 'Levé rameno' },
+  { id: 'rameno-prave', label: 'Pravé rameno' },
+  { id: 'predlokti-leve', label: 'Levé předloktí' },
+  { id: 'predlokti-prave', label: 'Pravé předloktí' },
+  { id: 'zady-pouta', label: 'Záda (přiložení pout)' },
+  { id: 'bedra', label: 'Bedra' },
+  { id: 'stehna', label: 'Stehna' },
+  { id: 'kotniky-nohy', label: 'Kotníky & Nohy' }
+];
+
+const DRAFT_STORAGE_PREFIX = 'vs-cr-admin-draft:';
+
+interface RecordDraft {
+  formData: Record<string, string>;
+  selectedBodyParts: string[];
+}
+
+function loadDraft(templateId: string): RecordDraft | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(`${DRAFT_STORAGE_PREFIX}${templateId}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && parsed.formData) {
+      return parsed as RecordDraft;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function saveDraft(templateId: string, draft: RecordDraft) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(`${DRAFT_STORAGE_PREFIX}${templateId}`, JSON.stringify(draft));
+  } catch {
+    // localStorage may be unavailable (private mode, quota) — draft autosave is best-effort only.
+  }
+}
+
+function clearDraft(templateId: string) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.removeItem(`${DRAFT_STORAGE_PREFIX}${templateId}`);
+  } catch {
+    // ignore
+  }
+}
+
 export default function PrisonAdministration() {
   const [activeSection, setActiveSection] = useState<AdminSection>('generator');
-  
+
   // Generator state
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('dp');
   const [formData, setFormData] = useState<Record<string, string>>(() => RECORD_TEMPLATES[0].defaultData);
   const [selectedBodyParts, setSelectedBodyParts] = useState<string[]>(() => RECORD_TEMPLATES[0].affectedBodyPartsDefault || []);
   const [copiedSuccess, setCopiedSuccess] = useState(false);
+  const [copyError, setCopyError] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
+  const [draftNotice, setDraftNotice] = useState(false);
+  const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ETŘ Simulator State
   const [cjOrg, setCjOrg] = useState('VS');
@@ -173,72 +339,152 @@ export default function PrisonAdministration() {
   const [etrStep, setEtrStep] = useState(1);
   const [cjCopied, setCjCopied] = useState(false);
 
-  const generateCJ = () => {
+  const currentTemplate = useMemo(() => {
+    return RECORD_TEMPLATES.find(t => t.id === selectedTemplateId) || RECORD_TEMPLATES[0];
+  }, [selectedTemplateId]);
+
+  const handleFieldChange = useCallback((field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  }, []);
+
+  const generateCJ = useCallback(() => {
     const year = new Date().getFullYear();
     const seq = String(Math.floor(1000 + Math.random() * 9000));
     const sub = String(Math.floor(100000 + Math.random() * 900000));
     const num = String(Math.floor(100 + Math.random() * 900));
     const cj = `VS-${seq}-1/ČJ-${year}-80${sub.slice(0, 4)}-${num}`;
     handleFieldChange('refNumber', cj);
-  };
+  }, [handleFieldChange]);
 
-  const copyCJ = () => {
+  const copyCJ = useCallback(() => {
     if (formData.refNumber) {
       navigator.clipboard.writeText(formData.refNumber).then(() => {
         setCjCopied(true);
         setTimeout(() => setCjCopied(false), 2000);
+      }).catch(() => {
+        // Clipboard API unavailable (insecure context, permissions) — silently ignore, button state simply won't flip.
       });
     }
-  };
+  }, [formData.refNumber]);
 
   // Style Checker Exercise State
   const [selectedExercise, setSelectedExercise] = useState<number>(0);
   const [userErrorsFound, setUserErrorsFound] = useState<number[]>([]);
   const [exerciseChecked, setExerciseChecked] = useState(false);
 
-  const currentTemplate = useMemo(() => {
-    return RECORD_TEMPLATES.find(t => t.id === selectedTemplateId) || RECORD_TEMPLATES[0];
-  }, [selectedTemplateId]);
+  // Load a previously auto-saved draft for the initial template on first mount.
+  useEffect(() => {
+    const draft = loadDraft(selectedTemplateId);
+    if (draft) {
+      setFormData(draft.formData);
+      setSelectedBodyParts(draft.selectedBodyParts || []);
+      setDraftNotice(true);
+      setTimeout(() => setDraftNotice(false), 4000);
+    }
+    // Only ever run for the initial template — switching templates is handled by handleSelectTemplate.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const handleSelectTemplate = (tplId: string) => {
+  // Autosave the in-progress record as a draft (debounced) so a reload/tab-close doesn't lose it.
+  useEffect(() => {
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    autosaveTimer.current = setTimeout(() => {
+      saveDraft(selectedTemplateId, { formData, selectedBodyParts });
+    }, 400);
+    return () => {
+      if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    };
+  }, [formData, selectedBodyParts, selectedTemplateId]);
+
+  const handleSelectTemplate = useCallback((tplId: string) => {
     setSelectedTemplateId(tplId);
     const targetTpl = RECORD_TEMPLATES.find(t => t.id === tplId);
     if (targetTpl) {
-      setFormData({ ...targetTpl.defaultData });
-      setSelectedBodyParts(targetTpl.affectedBodyPartsDefault || []);
+      const draft = loadDraft(tplId);
+      if (draft) {
+        setFormData(draft.formData);
+        setSelectedBodyParts(draft.selectedBodyParts || []);
+        setDraftNotice(true);
+        setTimeout(() => setDraftNotice(false), 4000);
+      } else {
+        setFormData({ ...targetTpl.defaultData });
+        setSelectedBodyParts(targetTpl.affectedBodyPartsDefault || []);
+      }
       setShowValidation(false);
+      setCopyError(false);
     }
-  };
+  }, []);
 
-  const handleFieldChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const toggleBodyPart = (partId: string) => {
-    setSelectedBodyParts(prev => 
+  const toggleBodyPart = useCallback((partId: string) => {
+    setSelectedBodyParts(prev =>
       prev.includes(partId) ? prev.filter(p => p !== partId) : [...prev, partId]
     );
-  };
+  }, []);
 
-  const handleCopyRecord = () => {
-    const textOutput = buildRecordText();
-    navigator.clipboard.writeText(textOutput);
-    setCopiedSuccess(true);
-    updateDailyStreak();
-    setTimeout(() => setCopiedSuccess(false), 2500);
-  };
+  // Real validation: which of the current template's mandatory fields are still empty.
+  const missingMandatoryFields = useMemo(() => {
+    return currentTemplate.mandatoryFields.filter(field => !(formData[field] || '').trim());
+  }, [currentTemplate, formData]);
 
-  const handlePrint = () => {
+  const isFormDirty = useMemo(() => {
+    const defaultKeys = Object.keys(currentTemplate.defaultData);
+    const changedField = defaultKeys.some(key => (formData[key] || '') !== (currentTemplate.defaultData[key] || ''));
+    const defaultParts = (currentTemplate.affectedBodyPartsDefault || []).slice().sort().join(',');
+    const currentParts = selectedBodyParts.slice().sort().join(',');
+    return changedField || defaultParts !== currentParts;
+  }, [formData, selectedBodyParts, currentTemplate]);
+
+  const handleCopyRecord = useCallback(() => {
+    if (missingMandatoryFields.length > 0) {
+      setShowValidation(true);
+      return;
+    }
+    navigator.clipboard.writeText(recordText).then(() => {
+      setCopiedSuccess(true);
+      setCopyError(false);
+      updateDailyStreak();
+      setTimeout(() => setCopiedSuccess(false), 2500);
+    }).catch(() => {
+      setCopyError(true);
+      setTimeout(() => setCopyError(false), 3000);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [missingMandatoryFields]);
+
+  const handlePrint = useCallback(() => {
+    if (missingMandatoryFields.length > 0) {
+      setShowValidation(true);
+      return;
+    }
     window.print();
     updateDailyStreak();
-  };
+  }, [missingMandatoryFields]);
 
-  const handleResetToDefault = () => {
+  const handleResetToDefault = useCallback(() => {
+    if (isFormDirty && !window.confirm('Opravdu chcete obnovit ukázkový vzor? Vaše rozepsané změny v tomto formuláři budou nenávratně přepsány.')) {
+      return;
+    }
     setFormData({ ...currentTemplate.defaultData });
     setSelectedBodyParts(currentTemplate.affectedBodyPartsDefault || []);
-  };
+    setShowValidation(false);
+    setCopyError(false);
+    clearDraft(selectedTemplateId);
+  }, [isFormDirty, currentTemplate, selectedTemplateId]);
 
-  const buildRecordText = (): string => {
+  const handleClearForm = useCallback(() => {
+    if (!window.confirm('Opravdu chcete vymazat celý formulář do prázdna? Tuto akci nelze vrátit zpět.')) {
+      return;
+    }
+    const blank: Record<string, string> = {};
+    Object.keys(currentTemplate.defaultData).forEach(key => { blank[key] = ''; });
+    setFormData(blank);
+    setSelectedBodyParts([]);
+    setShowValidation(false);
+    setCopyError(false);
+    clearDraft(selectedTemplateId);
+  }, [currentTemplate, selectedTemplateId]);
+
+  const recordText = useMemo((): string => {
     if (selectedTemplateId === 'dp') {
       return `VĚZEŇSKÁ SLUŽBA ČESKÉ REPUBLIKY\n${formData.prisonName || ''}\nČ. j.: ${formData.refNumber || ''}\n\n` +
         `ZÁZNAM O POUŽITÍ DONUCOVACÍHO PROSTŘEDKU (Část první)\n` +
@@ -261,9 +507,14 @@ export default function PrisonAdministration() {
         `- Informování nadřízeného dle § 20 odst. 2: ${formData.bossInformed || ''}\n` +
         `- Pořízení fotodokumentace: ${formData.photoDoc || ''}\n\n` +
         `Svědci: ${formData.witnesses || 'Bez svědků'}\n` +
-        `Vyhodnocení: ${formData.evaluation || ''}\n\n` +
+        `Vlastní vyhodnocení zakročujícího příslušníka: ${formData.evaluation || ''}\n\n` +
         `${formData.signatureDate || ''}\n` +
-        `Podpis zakročujícího: ${formData.officerSignature || ''}`;
+        `Podpis zakročujícího: ${formData.officerSignature || ''}\n\n` +
+        `ZÁZNAM O POUŽITÍ DONUCOVACÍHO PROSTŘEDKU (Část druhá)\n` +
+        `------------------------------------------------------------------\n` +
+        `Stanovisko vedoucího oddělení: ${formData.departmentHeadOpinion || ''}\n\n` +
+        `Zpráva o prošetření okolností a důvodů (1. ZŘV): ${formData.zrvReport || ''}\n\n` +
+        `Rozhodnutí ředitele věznice o oprávněnosti a přiměřenosti: ${formData.directorDecision || ''}`;
     } else if (selectedTemplateId === 'zkp') {
       return `${formData.prisonName || ''}\n\n` +
         `ZÁZNAM O KÁZEŇSKÉM PŘESTUPKU\n` +
@@ -299,151 +550,72 @@ export default function PrisonAdministration() {
         `${formData.signatureDate || ''}\n` +
         `${formData.officerSignature || ''}`;
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTemplateId, formData, selectedBodyParts]);
 
   const fullGeneratedCj = `${cjOrg}-${cjSpisNumber}-${cjDocNumber}/${cjSpisType}-${cjYear}-${cjOrgCode}${cjCustomExt ? '-' + cjCustomExt : ''}`;
 
-  // Interactive Exercises for finding errors in official records
-  const STYLE_EXERCISES = [
-    {
-      title: 'Hledání chyb ve Služebním záznamu',
-      badge: 'Cvičení 1: Služební záznam',
-      instruction: 'V níže uvedeném textu označte všechny závažné chyby proti metodice VS ČR (kliknutím na problematická místa):',
-      originalTextSegments: [
-        { id: 1, text: 'Včera odpoledne kolem třetí hodiny ', isError: true, correction: 'Chyba: Vágní časové určení. Správně: „Dne 14.03.2024 v čase 15:10 hod.“' },
-        { id: 2, text: 'jsme byli s kolegou na oddíle ', isError: true, correction: 'Chyba: 1. osoba množného čísla bez uvedení rozkazu. Správně: „Dne ... jsem byl velen rozkazem... byl jsem přítomen s prap. Novákem...“' },
-        { id: 3, text: 'a viděli jsme tam tohoto vězně, jak dělal bordel na cele. ', isError: true, correction: 'Chyba: Nespisovný a obecný výraz („bordel“, „tento vězeň“). Správně: „ods. Petr Král, nar. ..., kopal do dveří cely č. 12.“' },
-        { id: 4, text: 'Řekl jsem mu, ať se uklidní, jinak dostane. ', isError: true, correction: 'Chyba: Chybí přesná zákonná výzva a citace. Správně: „Použil jsem zákonnou výzvu dle § 6 odst. 3 písm. b) z. č. 555/1992 Sb. slovy: ...“' },
-        { id: 5, text: 'Potom jsme ho odvedli k doktorovi a bylo to nahlášeno.', isError: true, correction: 'Chyba: Neurčitý časový sled a anonymní trpný rod. Správně: Uvést přesný čas předvedení k MUDr. a konkrétní orgány, kterým byla událost ohlášena (ISS-O, VISS).' }
-      ]
-    },
-    {
-      title: 'Hledání chyb v Záznamu o kázeňském přestupku',
-      badge: 'Cvičení 2: Kázeňský přestupek',
-      instruction: 'Najděte nedostatky v popisu skutku a právní kvalifikaci:',
-      originalTextSegments: [
-        { id: 1, text: 'Dne 10.02.2024 v čase 09:15 jsem zjistil odsouzeného Jana Malého na ložnici č. 201, ', isError: false, correction: 'V pořádku (přesný datum, čas, jméno i místo).' },
-        { id: 2, text: 'který porušil vnitřní řád věznice tím, že neměl uklizeno. ', isError: true, correction: 'Chyba: Nelze uvést POUZE porušení Vnitřního řádu! Vždy musí být uvedeno porušení zákonné povinnosti dle § 28 zákona č. 169/1999 Sb.' },
-        { id: 3, text: 'Odsouzený mi řekl, že na to kašle a uklízet nebude. ', isError: true, correction: 'Chyba: Chybí doslovná přímá řeč v uvozovkách. Správně: užil slov, cituji: „...“' },
-        { id: 4, text: 'Odsouzený odmítl se k věci vyjádřit, tak jsem to nechal být a podepsal sám bez svědků.', isError: true, correction: 'Chyba: Do protokolu se musí výslovně zapsat, že odsouzený odmítl vyjádření/podpis, a uvést svědky přítomné incidentu.' }
-      ]
-    }
-  ];
-
   const currentExerciseData = STYLE_EXERCISES[selectedExercise];
 
-  const handleToggleErrorSegment = (segmentId: number) => {
-    if (exerciseChecked) return;
-    setUserErrorsFound(prev => 
-      prev.includes(segmentId) ? prev.filter(id => id !== segmentId) : [...prev, segmentId]
-    );
-  };
+  const handleToggleErrorSegment = useCallback((segmentId: number) => {
+    setUserErrorsFound(prev => {
+      if (exerciseChecked) return prev;
+      return prev.includes(segmentId) ? prev.filter(id => id !== segmentId) : [...prev, segmentId];
+    });
+  }, [exerciseChecked]);
 
-  const handleCheckExercise = () => {
+  const handleCheckExercise = useCallback(() => {
     setExerciseChecked(true);
     updateDailyStreak();
-  };
+  }, []);
 
-  const handleResetExercise = () => {
+  const handleResetExercise = useCallback(() => {
     setUserErrorsFound([]);
     setExerciseChecked(false);
-  };
+  }, []);
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6 pb-12">
       
-      {/* Header Banner */}
+      {/* Header Banner — purely informative, no action buttons (navigation lives in the segmented control below) */}
       <div className="bg-gradient-to-r from-amber-600 via-amber-700 to-amber-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
         <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/30 border border-amber-300/30 text-amber-200 text-xs font-bold uppercase tracking-wider">
-              <FileText className="w-3.5 h-3.5" />
-              <span>Vězeňská administrativa & ETŘ</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Spisová služba, tiskopisy & informační systémy VS ČR
-            </h1>
-            <p className="text-amber-100 text-sm max-w-3xl leading-relaxed">
-              Interaktivní trenažér elektronické spisové služby ETŘ (pokyn GŘ č. 4/2016), generátor povinných úředních záznamů (PGŘ č. 3/2024, NGŘ č. 41/2024 a NGŘ č. 24/2022) a metodika informačního systému VIS.
-            </p>
+        <div className="relative z-10 space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/30 border border-amber-300/30 text-amber-200 text-xs font-bold uppercase tracking-wider">
+            <FileText className="w-3.5 h-3.5" />
+            <span>Vězeňská administrativa & ETŘ</span>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={() => setActiveSection('generator')}
-              className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer shadow-md ${
-                activeSection === 'generator'
-                  ? 'bg-white text-slate-950 ring-2 ring-white/50'
-                  : 'bg-amber-800/60 hover:bg-amber-800 text-white border border-amber-500/30'
-              }`}
-            >
-              <FileText className="w-4 h-4" />
-              <span>Generátor záznamů</span>
-            </button>
-            <button
-              onClick={() => setActiveSection('etr')}
-              className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer shadow-md ${
-                activeSection === 'etr'
-                  ? 'bg-white text-slate-950 ring-2 ring-white/50'
-                  : 'bg-amber-800/60 hover:bg-amber-800 text-white border border-amber-500/30'
-              }`}
-            >
-              <FolderOpen className="w-4 h-4" />
-              <span>ETŘ Trenažér</span>
-            </button>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            Spisová služba, tiskopisy & informační systémy VS ČR
+          </h1>
+          <p className="text-amber-100 text-sm max-w-3xl leading-relaxed">
+            Interaktivní trenažér elektronické spisové služby ETŘ (pokyn GŘ č. 4/2016), generátor povinných úředních záznamů (PGŘ č. 3/2024, NGŘ č. 41/2024 a NGŘ č. 24/2022) a metodika informačního systému VIS.
+          </p>
         </div>
       </div>
 
-      {/* Navigation Sub-Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
-        <button
-          onClick={() => setActiveSection('generator')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer ${
-            activeSection === 'generator'
-              ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
-          }`}
-        >
-          <FileText className="w-4 h-4" />
-          <span>Generátor & Vzorník záznamů (DP, ZKP, SZ)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveSection('etr')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer ${
-            activeSection === 'etr'
-              ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
-          }`}
-        >
-          <FolderOpen className="w-4 h-4" />
-          <span>ETŘ: Spisová služba & Číslo jednací</span>
-        </button>
-
-        <button
-          onClick={() => setActiveSection('vis')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer ${
-            activeSection === 'vis'
-              ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
-          }`}
-        >
-          <Search className="w-4 h-4" />
-          <span>VIS: Evidence & Lustrace (§ 23a)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveSection('style-rules')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer ${
-            activeSection === 'style-rules'
-              ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
-          }`}
-        >
-          <Sparkles className="w-4 h-4" />
-          <span>7 pravidel úředního stylu & Kontrola chyb</span>
-        </button>
+      {/* Section navigation — single segmented control (replaces the former duplicated header buttons + sub-tabs bar) */}
+      <div role="tablist" aria-label="Sekce modulu Administrativa a ETŘ" className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {NAV_SECTIONS.map(({ id, label, shortLabel, icon: Icon }) => {
+          const isActive = activeSection === id;
+          return (
+            <button
+              key={id}
+              role="tab"
+              aria-selected={isActive}
+              title={label}
+              onClick={() => setActiveSection(id)}
+              className={`px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                isActive
+                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
+              }`}
+            >
+              <Icon className="w-4 h-4 shrink-0" />
+              <span className="truncate">{shortLabel}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* SECTION 1: OFFICIAL RECORDS GENERATOR & BODY SCHEME */}
@@ -498,22 +670,40 @@ export default function PrisonAdministration() {
                     {currentTemplate.subtitle}
                   </p>
                 </div>
-                <button
-                  onClick={handleResetToDefault}
-                  className="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  <span>Obnovit vzor</span>
-                </button>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    onClick={handleClearForm}
+                    className="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 flex items-center gap-1.5 cursor-pointer"
+                    title="Vymazat všechna pole do prázdna"
+                  >
+                    <Eraser className="w-3.5 h-3.5" />
+                    <span>Vyčistit formulář</span>
+                  </button>
+                  <button
+                    onClick={handleResetToDefault}
+                    className="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 flex items-center gap-1.5 cursor-pointer"
+                    title="Obnovit ukázkový vzor (přepíše rozepsané změny)"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Obnovit vzor</span>
+                  </button>
+                </div>
               </div>
 
               {/* Notice regarding mandatory highlighted fields */}
               <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 flex items-start gap-2.5 text-xs text-amber-800 dark:text-amber-300">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
                 <div>
-                  <strong>Povinné náležitosti formuláře:</strong> Červeně ohraničená pole jsou dle metodiky VS ČR povinná a nesmí zůstat prázdná. Formulář lze upravit, zkopírovat či vytisknout.
+                  <strong>Povinné náležitosti formuláře:</strong> Červeně ohraničená pole jsou dle metodiky VS ČR povinná a nesmí zůstat prázdná. Před zkopírováním či tiskem se vyplnění povinných polí ověřuje. Rozepsaný koncept se průběžně ukládá automaticky do tohoto zařízení.
                 </div>
               </div>
+
+              {draftNotice && (
+                <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 flex items-center gap-2 text-xs text-emerald-800 dark:text-emerald-300">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span>Načten dříve rozpracovaný koncept tohoto záznamu z tohoto zařízení.</span>
+                </div>
+              )}
 
               {/* SPECIFIC FIELDS FOR DONUCOVACÍ PROSTŘEDEK */}
               {selectedTemplateId === 'dp' && (
@@ -627,20 +817,7 @@ export default function PrisonAdministration() {
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
-                      {[
-                        { id: 'hlava-oblicej', label: 'Hlava & Obličej' },
-                        { id: 'krk', label: 'Krk' },
-                        { id: 'hrudnik', label: 'Hrudník' },
-                        { id: 'bricho', label: 'Břicho' },
-                        { id: 'rameno-leve', label: 'Levé rameno' },
-                        { id: 'rameno-prave', label: 'Pravé rameno' },
-                        { id: 'predlokti-leve', label: 'Levé předloktí' },
-                        { id: 'predlokti-prave', label: 'Pravé předloktí' },
-                        { id: 'zady-pouta', label: 'Záda (přiložení pout)' },
-                        { id: 'bedra', label: 'Bedra' },
-                        { id: 'stehna', label: 'Stehna' },
-                        { id: 'kotniky-nohy', label: 'Kotníky & Nohy' }
-                      ].map(part => {
+                      {BODY_PARTS.map(part => {
                         const isMarked = selectedBodyParts.includes(part.id);
                         return (
                           <button
@@ -783,7 +960,7 @@ export default function PrisonAdministration() {
 
                   <div>
                     <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                      Vyhodnocení použití DP (oprávněnost, účel, umístění po zákroku) <span className="text-red-500">*</span>
+                      Vlastní vyhodnocení zakročujícího příslušníka (umístění po zákroku) <span className="text-red-500">*</span>
                     </label>
                     <textarea
                       rows={2}
@@ -791,6 +968,52 @@ export default function PrisonAdministration() {
                       onChange={(e) => handleFieldChange('evaluation', e.target.value)}
                       className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
                     />
+                  </div>
+
+                  {/* ČÁST DRUHÁ — schvalovací řetězec dle Přílohy k PGŘ č. 3/2024 (stanovisko, prošetření 1. ZŘV, rozhodnutí ředitele) */}
+                  <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                    <div className="flex items-start gap-2 p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 text-[11px] text-blue-900 dark:text-blue-200">
+                      <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-600 dark:text-blue-400" />
+                      <span>
+                        <strong>Část druhá záznamu</strong> — o oprávněnosti a přiměřenosti zákroku nerozhoduje zakročující příslušník sám. Tato část se vyplňuje až následně: stanovisko zpracovává vedoucí oddělení, zprávu o prošetření 1. zástupce ředitele věznice (1. ZŘV) a závazné rozhodnutí vydává ředitel věznice.
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        Stanovisko vedoucího oddělení <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={formData.departmentHeadOpinion || ''}
+                        onChange={(e) => handleFieldChange('departmentHeadOpinion', e.target.value)}
+                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        Zpráva o prošetření okolností a důvodů (1. ZŘV) <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={formData.zrvReport || ''}
+                        onChange={(e) => handleFieldChange('zrvReport', e.target.value)}
+                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        Rozhodnutí ředitele věznice o oprávněnosti a přiměřenosti <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={formData.directorDecision || ''}
+                        onChange={(e) => handleFieldChange('directorDecision', e.target.value)}
+                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -1075,10 +1298,50 @@ export default function PrisonAdministration() {
 
           {/* Right Column: Live Formatted Document Preview & Actions */}
           <div className="lg:col-span-5 space-y-4">
-            
+
+            {/* Print-only stylesheet: printing shows exclusively the document preview below, not the whole app shell. */}
+            <style>{`
+              @media print {
+                body * { visibility: hidden; }
+                #printable-record-area, #printable-record-area * { visibility: visible; }
+                #printable-record-area {
+                  position: absolute;
+                  inset: 0;
+                  width: 100%;
+                  max-height: none;
+                  overflow: visible;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0;
+                }
+              }
+            `}</style>
+
+            {/* Validation warning — real check against currentTemplate.mandatoryFields */}
+            {showValidation && missingMandatoryFields.length > 0 && (
+              <div className="p-3.5 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-900/60 text-xs text-red-800 dark:text-red-300 space-y-1.5">
+                <div className="font-bold flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <span>Nelze zkopírovat / vytisknout — chybí {missingMandatoryFields.length} povinných polí:</span>
+                </div>
+                <ul className="list-disc list-inside space-y-0.5">
+                  {missingMandatoryFields.map(field => (
+                    <li key={field}>{FIELD_LABELS[field] || field}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {copyError && (
+              <div className="p-3 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-900/60 text-xs text-red-800 dark:text-red-300 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>Kopírování do schránky selhalo (chybí oprávnění nebo nezabezpečený kontext). Zkuste text označit a zkopírovat ručně (Ctrl+C).</span>
+              </div>
+            )}
+
             {/* Action Bar */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
                   onClick={handleCopyRecord}
                   className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
@@ -1100,8 +1363,8 @@ export default function PrisonAdministration() {
             </div>
 
             {/* Document Paper Preview */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-800 shadow-md font-mono text-xs leading-relaxed text-slate-800 dark:text-slate-200 overflow-y-auto max-h-[750px] whitespace-pre-wrap select-all">
-              {buildRecordText()}
+            <div id="printable-record-area" className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-800 shadow-md font-mono text-xs leading-relaxed text-slate-800 dark:text-slate-200 overflow-y-auto max-h-[60vh] lg:max-h-[750px] whitespace-pre-wrap select-all">
+              {recordText}
             </div>
 
             {/* Explanatory Note Box */}
@@ -1155,7 +1418,7 @@ export default function PrisonAdministration() {
             </div>
 
             {/* Interactive Inputs for Segments */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
               
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
                 <label className="font-bold text-slate-700 dark:text-slate-300">1. Organizace</label>
