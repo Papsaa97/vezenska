@@ -104,11 +104,11 @@ export default function Header({
         </div>
         
         {/* Desktop Navigation (Categorized Masterpiece) */}
-        <nav className="hidden lg:flex items-center gap-1.5">
+        <nav className="hidden lg:flex items-center gap-1.5 overflow-x-auto hide-scrollbar whitespace-nowrap min-w-0">
           {/* 1. Subjects */}
           <button
             onClick={() => { setActiveTab('subjects'); setOpenDropdown(null); }}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
               activeTab === 'subjects' 
                 ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
@@ -121,7 +121,7 @@ export default function Header({
           {/* 2. Exam & Quiz */}
           <button
             onClick={() => { setActiveTab('quiz'); setOpenDropdown(null); }}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
               activeTab === 'quiz' 
                 ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
@@ -134,7 +134,7 @@ export default function Header({
           {/* 3. AI Captain Exam Assistant */}
           <button
             onClick={() => { setActiveTab('assistant'); setOpenDropdown(null); }}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 border ${
               activeTab === 'assistant' 
                 ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-indigo-400/40 shadow-sm shadow-indigo-500/25' 
                 : 'text-indigo-300 bg-indigo-950/40 border-indigo-500/30 hover:text-white hover:bg-indigo-900/60'
@@ -146,7 +146,7 @@ export default function Header({
           </button>
 
           {/* 4. Practice & Simulator Dropdown */}
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
               onClick={() => setOpenDropdown(openDropdown === 'practice' ? null : 'practice')}
               className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
@@ -226,7 +226,7 @@ export default function Header({
           </div>
 
           {/* 5. Drill & Knowledge Dropdown */}
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
               onClick={() => setOpenDropdown(openDropdown === 'drill' ? null : 'drill')}
               className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
@@ -295,7 +295,7 @@ export default function Header({
           {/* 6. Badges */}
           <button
             onClick={() => { setActiveTab('badges'); setOpenDropdown(null); }}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
               activeTab === 'badges' 
                 ? 'bg-amber-500 text-slate-950 shadow-sm shadow-amber-500/20' 
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
@@ -313,7 +313,7 @@ export default function Header({
           {/* 7. Statistics */}
           <button
             onClick={() => { setActiveTab('statistics'); setOpenDropdown(null); }}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
               activeTab === 'statistics' 
                 ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
@@ -326,7 +326,7 @@ export default function Header({
           {/* 8. Material Library – for all users */}
           <button
             onClick={() => { setActiveTab('library'); setOpenDropdown(null); }}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
               activeTab === 'library'
                 ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
@@ -340,7 +340,7 @@ export default function Header({
           {isPrivileged && (
             <button
               onClick={() => { setActiveTab('content-manager'); setOpenDropdown(null); }}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'content-manager'
                   ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-500/20'
                   : 'text-emerald-300 bg-emerald-950/40 border border-emerald-500/30 hover:text-white hover:bg-emerald-900/60'

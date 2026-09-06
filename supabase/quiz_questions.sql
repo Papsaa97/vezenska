@@ -19,6 +19,12 @@ ALTER TABLE public.quiz_questions ADD COLUMN IF NOT EXISTS explanation TEXT;
 CREATE INDEX IF NOT EXISTS idx_quiz_questions_subject ON public.quiz_questions(subject);
 CREATE INDEX IF NOT EXISTS idx_quiz_questions_created_at ON public.quiz_questions(created_at DESC);
 
+-- Unikátní index na textu otázky – slouží jako konfliktní klíč pro `upsert()` volané
+-- z funkce Synchronizovat/Importovat výchozí otázky (admin), aby se otázka se stejným
+-- textem při opakované synchronizaci AKTUALIZOVALA (např. nově promíchané pořadí
+-- odpovědí), místo aby vznikaly duplicity nebo se změna ignorovala.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_quiz_questions_question_unique ON public.quiz_questions(question);
+
 -- Zapnutí Row Level Security (RLS)
 ALTER TABLE public.quiz_questions ENABLE ROW LEVEL SECURITY;
 

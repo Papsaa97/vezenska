@@ -326,7 +326,7 @@ export default function QuestionBankManager() {
     if (isImporting) return;
     const msg = forceOverwrite
       ? 'POZOR! Opravdu chcete PŘEPSAT celou databázi v Supabase aktuální revizí z aplikace? Všechny stávající otázky v Supabase budou smazány a nahrazeny!'
-      : 'Chcete porovnat výchozí otázky v aplikaci se Supabase a chybějící otázky automaticky hromadně nahrát do tabulky quiz_questions?';
+      : 'Chcete synchronizovat výchozí otázky z aplikace se Supabase (tabulka quiz_questions)? Chybějící otázky se vloží a otázky se stejným textem, které se v aplikaci od poslední synchronizace změnily (např. přeuspořádané možnosti), se přepíšou aktuální revizí (upsert).';
 
     const confirmed = window.confirm(msg);
     if (!confirmed) return;
@@ -341,15 +341,15 @@ export default function QuestionBankManager() {
       }, forceOverwrite);
 
       if (result.success) {
-        if (result.importedCount > 0) {
+        if (result.importedCount > 0 || result.updatedCount > 0) {
           setImportMsg({
             type: 'success',
-            text: `Synchronizace dokončena: Úspěšně nahráno ${result.importedCount} nových otázek do Supabase (již existovalo: ${result.alreadyExistingCount}).`,
+            text: `Synchronizace dokončena (upsert): Nově vloženo ${result.importedCount} otázek, aktualizováno ${result.updatedCount} již existujících (celkem v aplikaci: ${result.totalLocalCount}).`,
           });
         } else {
           setImportMsg({
             type: 'info',
-            text: `Všechny výchozí otázky (${result.totalLocalCount}) již v Supabase existují. Žádné nové otázky nebylo třeba vkládat.`,
+            text: `Všechny výchozí otázky (${result.totalLocalCount}) jsou v Supabase již aktuální. Nebylo třeba nic měnit.`,
           });
         }
         await fetchQuestions();
@@ -688,7 +688,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
             </h4>
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-300">
-            Hromadně porovná otázky v projektu se Supabase a chybějící otázky ze všech předmětů ZOP automaticky vloží do tabulky <code className="font-mono text-[11px] px-1 bg-white/70 dark:bg-slate-800/80 rounded">quiz_questions</code>.
+            Hromadně porovná otázky v projektu se Supabase a pomocí <code className="font-mono text-[11px] px-1 bg-white/70 dark:bg-slate-800/80 rounded">upsert</code> (podle unikátního textu otázky) je zapíše do tabulky <code className="font-mono text-[11px] px-1 bg-white/70 dark:bg-slate-800/80 rounded">quiz_questions</code> – chybějící otázky vloží a již existující přepíše aktuální revizí (např. nově promíchané pořadí odpovědí A/B/C/D).
           </p>
           {importProgress && (
             <div className="pt-2 text-xs font-semibold text-blue-700 dark:text-blue-300 flex items-center gap-2">
