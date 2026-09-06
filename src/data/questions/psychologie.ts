@@ -688,37 +688,37 @@ export const psychologieQuestions: Question[] = [
       explanation: `Rozpoznání těchto tří signálů (uvedených Erwinem Ringelem) u vězně může personálu VS ČR pomoci včas odhalit riziko sebevraždy a zajistit psychologickou či psychiatrickou pomoc. (Právní úprava: Metodika krizové intervence a prevence sebevražd VS ČR)`
 },
     {
-        id: 'new_psychologie_01',
+        id: 'psy-41',
         subject: 'Psychologie',
-        topic: 'Nová modelová situace 1',
-        question: 'Dozorce ubytovny zjistí při ranní kontrole, že odsouzený nereaguje a leží nehybně na lůžku. Jaký je správný prvotní postup?',
-        answer: 'Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.',
+        topic: 'Krizová intervence',
+        question: 'Jaký je bezprostřední postup personálu při zjištění, že vězněná osoba vykazuje akutní suicidiální chování (např. sebepoškozování, příprava smyčky)?',
+        answer: 'Okamžitě zajistit bezpečí vězně (přerušit pokus o sebevraždu), neponechat osobu o samotě, informovat dozorčího/lékaře a předat vězně do odborné péče vězeňského psychologa.',
         options: [
-                  `Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.`,
-                  `Otevřít celu, zkontrolovat tep a pokud odsouzený nedýchá, ihned ho přenést na ošetřovnu.`,
-                  `Okamžitě vstoupit sám do cely, začít odsouzeným třást a pokusit se ho probudit.`,
-                  `Uzamknout celu, neprodleně nahlásit situaci veliteli směny a vyčkat na jeho příchod bez dalších akcí.`
-                ],
+            'Okamžitě zajistit bezpečí vězně (přerušit pokus o sebevraždu), neponechat osobu o samotě, informovat dozorčího/lékaře a předat vězně do odborné péče vězeňského psychologa.',
+            'Vězně uzamknout na samotku a počkat do ranní vizity praktického lékaře.',
+            'Uložit vězni ihned kázeňský trest za poškozování vězeňského majetku.',
+            'Ponechat vězně o samotě s poučením, aby situaci v klidu zvážil.'
+        ],
         correctOption: 0,
-        rationale: 'Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc.',
-        source: 'NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC)',
-        explanation: `Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc. (Právní úprava: NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC))`
+        rationale: 'Při akutním suicidiálním riziku je prioritou ochrana života, nepřetržitý dohled nad osobou a neodkladná krizová intervence odborníkem (psychologem/psychiatrem).',
+        source: 'NGŘ č. 19/2016 o prevenci sebevražedného jednání vězněných osob',
+        explanation: 'Při akutním suicidiálním riziku je nutné okamžitě přerušit pokus, nenechat osobu samotnou a zajistit odbornou krizovou péči.'
     },
     {
-        id: 'new_psychologie_02',
+        id: 'psy-42',
         subject: 'Psychologie',
-        topic: 'Nová modelová situace 2',
-        question: 'Při osobní prohlídce odsouzeného po eskortě naleznete ukrytý nepovolený předmět (mobilní telefon). Jaký je správný postup dle předpisů?',
-        answer: 'Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.',
+        topic: 'Verbální deeskalace konfliktů',
+        question: 'Který komunikační přístup je nejúčinnější při verbální deeskalaci agresivního a rozrušeného vězně?',
+        answer: 'Klidný a věcný tón hlasu, aktivní naslouchání, udržování bezpečného odstupu a vyhýbání se sarkasmu či výhrůžkám.',
         options: [
-                  `Okamžitě použít donucovací prostředky, předmět zabavit a umístit odsouzeného do samovazby.`,
-                  `Předmět ponechat odsouzenému s důrazným varováním, že při dalším nálezu bude potrestán.`,
-                  `Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.`,
-                  `Předmět zabavit, zničit ho před odsouzeným, aby se předešlo dalšímu použití a sepsat záznam.`
-                ],
-        correctOption: 2,
-        rationale: 'Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné.',
-        source: 'Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ)',
-        explanation: `Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné. (Právní úprava: Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ))`
+            'Zvýšení hlasu a okamžitá hrozba použitím donucovacích prostředků k demonstraci dominance.',
+            'Klidný a věcný tón hlasu, aktivní naslouchání, udržování bezpečného odstupu a vyhýbání se sarkasmu či výhrůžkám.',
+            'Úplné ignorování vězně a odchod z místnosti bez zajištění prostoru.',
+            'Fyzické přiblížení se k vězni a vstup do jeho intimní zóny pro vyvolání respektu.'
+        ],
+        correctOption: 1,
+        rationale: 'Verbální deeskalace vyžaduje profesionální klid, neeskalující neverbální projev a aktivní naslouchání, což snižuje afekt agresora a předchází nutnosti fyzického zákroku.',
+        source: 'Metodika penitenciární komunikace a deeskalace konfliktů',
+        explanation: 'Klidný tón hlasu, aktivní naslouchání a bezpečný odstup pomáhají deeskalovat napětí bez nutnosti fyzického zákroku.'
     }
 ];

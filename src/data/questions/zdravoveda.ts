@@ -467,37 +467,37 @@ export const zdravovedaQuestions: Question[] = [
       explanation: `Turniket okluduje krevní řečiště kompletním stlačením tkáně proti kosti. Na krku by to znemožnilo dýchání a zablokovalo průtok krve do mozku oběma karotidami. (Právní úprava: Mezinárodní taktický standard TCCC)`
 },
     {
-        id: 'new_zdravoveda_01',
+        id: 'zdr-28',
         subject: 'Zdravověda a první pomoc',
-        topic: 'Nová modelová situace 1',
-        question: 'Dozorce ubytovny zjistí při ranní kontrole, že odsouzený nereaguje a leží nehybně na lůžku. Jaký je správný prvotní postup?',
-        answer: 'Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.',
+        topic: 'Kardiopulmonální resuscitace',
+        question: 'Jaký je správný poměr stlačení hrudníku a umělých vdechů při poskytování KPR u dospělé osoby v bezvědomí bez normálního dýchání?',
+        answer: '30 stlačení ku 2 vdechům (frekvence stlačování 100–120 za minutu, hloubka 5–6 cm).',
         options: [
-                  `Otevřít celu, zkontrolovat tep a pokud odsouzený nedýchá, ihned ho přenést na ošetřovnu.`,
-                  `Uzamknout celu, neprodleně nahlásit situaci veliteli směny a vyčkat na jeho příchod bez dalších akcí.`,
-                  `Okamžitě vstoupit sám do cely, začít odsouzeným třást a pokusit se ho probudit.`,
-                  `Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.`
-                ],
-        correctOption: 3,
-        rationale: 'Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc.',
-        source: 'NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC)',
-        explanation: `Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc. (Právní úprava: NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC))`
+            '15 stlačení ku 2 vdechům s frekvencí 80 za minutu.',
+            '30 stlačení ku 2 vdechům (frekvence stlačování 100–120 za minutu, hloubka 5–6 cm).',
+            'Pouze 5 vdechů a následně vyčkání na příjezd záchranné služby.',
+            '50 stlačení ku 5 vdechům bez přerušení.'
+        ],
+        correctOption: 1,
+        rationale: 'Doporučené postupy ERC (European Resuscitation Council) stanovují pro dospělé poměr 30:2 s frekvencí kompresí 100–120/min a hloubkou 5–6 cm.',
+        source: 'Doporučené postupy ERC pro resuscitaci a NGŘ č. 33/2019 Sb.',
+        explanation: 'Standardní KPR u dospělého se provádí v poměru 30 stlačení ku 2 vdechům s frekvencí 100–120/min.'
     },
     {
-        id: 'new_zdravoveda_02',
+        id: 'zdr-29',
         subject: 'Zdravověda a první pomoc',
-        topic: 'Nová modelová situace 2',
-        question: 'Při osobní prohlídce odsouzeného po eskortě naleznete ukrytý nepovolený předmět (mobilní telefon). Jaký je správný postup dle předpisů?',
-        answer: 'Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.',
+        topic: 'Masivní končetinové krvácení',
+        question: 'Kam a jak se správně aplikuje taktické škrtidlo (turniket typu CAT) při masivním tepenném krvácení na končetině?',
+        answer: 'Přikládá se na končetinu přibližně 5–7 cm nad místo krvácení (nikdy přímo přes kloub), dotáhne se do zástavy krvácení a zaznamená se čas aplikace.',
         options: [
-                  `Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.`,
-                  `Okamžitě použít donucovací prostředky, předmět zabavit a umístit odsouzeného do samovazby.`,
-                  `Předmět zabavit, zničit ho před odsouzeným, aby se předešlo dalšímu použití a sepsat záznam.`,
-                  `Předmět ponechat odsouzenému s důrazným varováním, že při dalším nálezu bude potrestán.`
-                ],
-        correctOption: 0,
-        rationale: 'Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné.',
-        source: 'Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ)',
-        explanation: `Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné. (Právní úprava: Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ))`
+            'Přímo přes otevřenou ránu nebo přes kloub pod ránou.',
+            'Přikládá se na končetinu přibližně 5–7 cm nad místo krvácení (nikdy přímo přes kloub), dotáhne se do zástavy krvácení a zaznamená se čas aplikace.',
+            'Vždy co nejblíže k trupu bez ohledu na to, kde se nachází rána, a čas se nezaznamenává.',
+            'Turniket se nesmí utahovat napevno, aby se nepřerušila cirkulace krve.'
+        ],
+        correctOption: 1,
+        rationale: 'Turniket CAT se umísťuje 5–7 cm proximálně od rány mimo kloub. Zápis času naložení na bílý pásek (TIME) je nezbytný pro lékařský tým v nemocnici k prevenci ischemického poškození.',
+        source: 'Standardy Tactical Combat Casualty Care (TCCC) a metodika VS ČR',
+        explanation: 'Turniket se aplikuje 5–7 cm nad ránu mimo kloub, utáhne se do zástavy masivního krvácení a poznamená se čas nasazení.'
     }
 ];

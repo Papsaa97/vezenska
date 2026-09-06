@@ -433,37 +433,37 @@ export const vezenskaAdministrativaQuestions: Question[] = [
       explanation: `Úřední záznam musí být objektivní (bez emocí a nepodložených diagnóz), chronologický, přesný (čas, místo) a musí psát v 1. osobě čísla jednotného (já jsem zjistil). Osobní názory či domněnky do něj nepatří. (Právní úprava: Pravidla pro tvorbu úředních písemností VS ČR)`
 },
     {
-        id: 'new_vezenskaAdministrativa_01',
+        id: 'va_26',
         subject: 'Vězeňská administrativa',
-        topic: 'Nová modelová situace 1',
-        question: 'Dozorce ubytovny zjistí při ranní kontrole, že odsouzený nereaguje a leží nehybně na lůžku. Jaký je správný prvotní postup?',
-        answer: 'Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.',
+        topic: 'Elektronický trestní rejstřík a VIS',
+        question: 'Jaké povinné identifikační a časové údaje musí obsahovat Služební záznam o mimořádné události sepsaný příslušníkem v systému ETŘ/VIS?',
+        answer: 'Datum, přesný čas a místo události, jména a služební čísla zasahujících příslušníků, přesnou identifikaci vězněných osob a chronologický popis skutkového děje.',
         options: [
-                  `Okamžitě vstoupit sám do cely, začít odsouzeným třást a pokusit se ho probudit.`,
-                  `Uzamknout celu, neprodleně nahlásit situaci veliteli směny a vyčkat na jeho příchod bez dalších akcí.`,
-                  `Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.`,
-                  `Otevřít celu, zkontrolovat tep a pokud odsouzený nedýchá, ihned ho přenést na ošetřovnu.`
-                ],
-        correctOption: 2,
-        rationale: 'Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc.',
-        source: 'NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC)',
-        explanation: `Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc. (Právní úprava: NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC))`
+            'Pouze přezdívku vězně a stručnou osobní úvahu dozorce o příčinách konfliktu.',
+            'Datum, přesný čas a místo události, jména a služební čísla zasahujících příslušníků, přesnou identifikaci vězněných osob a chronologický popis skutkového děje.',
+            'Výhradně datum a razítko podatelny věznice bez nutnosti popisu děje.',
+            'Pouze jméno ředitele věznice a číslo jednací bez uvedení zasahujících osob.'
+        ],
+        correctOption: 1,
+        rationale: 'Dle spisového řádu VS ČR a metodiky zpracování úředních záznamů musí každý záznam splňovat formální náležitosti (kdo, kdy, kde, co a jak), aby byl použitelný v kázeňském či trestním řízení.',
+        source: 'Spisový řád VS ČR a NGŘ o vedení administrativy v informačních systémech',
+        explanation: 'Služební záznam musí obsahovat přesný čas, místo, identifikaci zúčastněných osob a věcný popis děje.'
     },
     {
-        id: 'new_vezenskaAdministrativa_02',
+        id: 'va_27',
         subject: 'Vězeňská administrativa',
-        topic: 'Nová modelová situace 2',
-        question: 'Při osobní prohlídce odsouzeného po eskortě naleznete ukrytý nepovolený předmět (mobilní telefon). Jaký je správný postup dle předpisů?',
-        answer: 'Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.',
+        topic: 'Kázeňské řízení a lhůty',
+        question: 'V jaké zákonné lhůtě od zjištění kázeňského přestupku odsouzeného musí být přestupek projednán a uložen kázeňský trest dle § 52 zákona o VTOS?',
+        answer: 'Kázeňský trest lze uložit do 1 měsíce ode dne, kdy se o přestupku dozvěděl kterýkoliv zaměstnanec VS ČR, nejpozději však do 1 roku od spáchání přestupku.',
         options: [
-                  `Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.`,
-                  `Předmět zabavit, zničit ho před odsouzeným, aby se předešlo dalšímu použití a sepsat záznam.`,
-                  `Předmět ponechat odsouzenému s důrazným varováním, že při dalším nálezu bude potrestán.`,
-                  `Okamžitě použít donucovací prostředky, předmět zabavit a umístit odsouzeného do samovazby.`
-                ],
-        correctOption: 0,
-        rationale: 'Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné.',
-        source: 'Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ)',
-        explanation: `Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné. (Právní úprava: Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ))`
+            'Do 24 hodin od spáchání, jinak je přestupek automaticky promlčen.',
+            'Kázeňský trest lze uložit do 1 měsíce ode dne, kdy se o přestupku dozvěděl kterýkoliv zaměstnanec VS ČR, nejpozději však do 1 roku od spáchání přestupku.',
+            'Lhůta není zákonem omezena, kázeňský trest lze uložit kdykoliv po dobu výkonu trestu.',
+            'Přesně do 6 měsíců od podání písemného návrhu dozorce oddělení.'
+        ],
+        correctOption: 1,
+        rationale: 'Dle § 52 odst. 3 zákona č. 169/1999 Sb. o VTOS platí subjektivní prekluzivní lhůta 1 měsíc od okamžiku, kdy se o přestupku dozvěděl zaměstnanec VS, a objektivní lhůta 1 rok od jeho spáchání.',
+        source: '§ 52 odst. 3 zákona č. 169/1999 Sb., o výkonu trestu odnětí svobody',
+        explanation: 'Dle § 52 odst. 3 ZVTOS je subjektivní lhůta 1 měsíc a objektivní lhůta 1 rok od spáchání kázeňského přestupku.'
     }
 ];

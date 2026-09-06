@@ -117,7 +117,8 @@ export async function fetchQuizQuestionsFromSupabase(): Promise<Question[] | nul
     const { data, error } = await supabase
       .from('quiz_questions')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(5000);
 
     if (error) {
       console.warn('[QuizQuestionsLoader] Chyba při čtení ze Supabase, použije se fallback:', error.message);
@@ -156,6 +157,15 @@ export async function fetchQuizQuestionsFromSupabase(): Promise<Question[] | nul
  * při aktualizaci existujícího řádku zůstává zachováno).
  * DŮLEŽITÉ: Neposílají se sloupce 'answer', 'correct_option' ani 'rationale'.
  */
+/**
+ * Vrátí výchozí otázky po striktní deduplikaci podle textu otázky (q.question.trim().toLowerCase()).
+ */
+export function getUniqueDefaultQuestions(allQuestions: Question[] = academyQuestions): Question[] {
+  return Array.from(
+    new Map(allQuestions.map((q) => [q.question.trim().toLowerCase(), q])).values()
+  );
+}
+
 export async function importDefaultQuestionsToSupabase(
   _userId?: string | null,
   onProgress?: (imported: number, totalToImport: number) => void,
@@ -168,7 +178,9 @@ export async function importDefaultQuestionsToSupabase(
   totalLocalCount: number;
   errorMessage?: string;
 }> {
-  const totalLocalCount = academyQuestions.length;
+  // Striktní deduplikace podle textu otázky před rozdělením do dávek (zamezí chybě ON CONFLICT v PostgreSQL)
+  const uniqueQuestions = getUniqueDefaultQuestions();
+  const totalLocalCount = uniqueQuestions.length;
 
   if (typeof navigator !== 'undefined' && !navigator.onLine) {
     return {
@@ -224,13 +236,13 @@ export async function importDefaultQuestionsToSupabase(
       existingNormalized.clear();
     }
 
-    // 2. Dávkový upsert (dávky po 50 otázkách) – konflikt se řeší podle unikátního textu otázky
+    // 2. Dávkový upsert (dávky po 50 otázkách) – posílá se výhradně deduplikované pole
     const BATCH_SIZE = 50;
     let importedTotal = 0;
     let updatedTotal = 0;
 
-    for (let i = 0; i < academyQuestions.length; i += BATCH_SIZE) {
-      const batchSlice = academyQuestions.slice(i, i + BATCH_SIZE);
+    for (let i = 0; i < uniqueQuestions.length; i += BATCH_SIZE) {
+      const batchSlice = uniqueQuestions.slice(i, i + BATCH_SIZE);
 
       // Připrav payload odpovídající přesnému schématu tabulky public.quiz_questions
       const payload = batchSlice.map((q) => {
@@ -271,7 +283,7 @@ export async function importDefaultQuestionsToSupabase(
       }
 
       if (onProgress) {
-        onProgress(importedTotal + updatedTotal, academyQuestions.length);
+        onProgress(importedTotal + updatedTotal, uniqueQuestions.length);
       }
     }
 

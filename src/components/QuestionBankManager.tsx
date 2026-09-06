@@ -17,10 +17,14 @@ import {
   Copy,
   UploadCloud,
   Sparkles,
+  RotateCcw,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { importDefaultQuestionsToSupabase } from '../utils/quizQuestionsLoader';
+import {
+  importDefaultQuestionsToSupabase,
+  getUniqueDefaultQuestions,
+} from '../utils/quizQuestionsLoader';
 
 // ─── Constants & Types ────────────────────────────────────────────────────────
 
@@ -125,7 +129,11 @@ function parseQuestionRow(row: Record<string, unknown>): QuizQuestionItem {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function QuestionBankManager() {
+interface QuestionBankManagerProps {
+  onQuestionsUpdated?: () => void;
+}
+
+export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBankManagerProps = {}) {
   const { user } = useAuth();
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -150,6 +158,7 @@ export default function QuestionBankManager() {
   const [isImporting, setIsImporting] = useState(false);
   const [importProgress, setImportProgress] = useState<{ current: number; total: number } | null>(null);
   const [importMsg, setImportMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+  const uniqueDefaultQuestionsCount = useMemo(() => getUniqueDefaultQuestions().length, []);
 
   // ── Fetch Questions ──
   const fetchQuestions = useCallback(async () => {
@@ -159,7 +168,8 @@ export default function QuestionBankManager() {
       const { data, error } = await supabase
         .from('quiz_questions')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(5000);
 
       if (error) {
         // PostgREST 42P01: relation "public.quiz_questions" does not exist
@@ -182,6 +192,14 @@ export default function QuestionBankManager() {
 
   useEffect(() => {
     fetchQuestions();
+
+    const handleQuestionsUpdated = () => {
+      fetchQuestions();
+    };
+    window.addEventListener('vscr:questions_updated', handleQuestionsUpdated);
+    return () => {
+      window.removeEventListener('vscr:questions_updated', handleQuestionsUpdated);
+    };
   }, [fetchQuestions]);
 
   // ── Form Handlers ──
@@ -281,6 +299,9 @@ export default function QuestionBankManager() {
         setFormData(INITIAL_FORM);
         setEditingId(null);
         await fetchQuestions();
+        if (onQuestionsUpdated) {
+          onQuestionsUpdated();
+        }
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('vscr:questions_updated'));
         }
@@ -309,6 +330,9 @@ export default function QuestionBankManager() {
         if (editingId === id) {
           handleCancelEdit();
         }
+        if (onQuestionsUpdated) {
+          onQuestionsUpdated();
+        }
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('vscr:questions_updated'));
         }
@@ -333,7 +357,7 @@ export default function QuestionBankManager() {
 
     setIsImporting(true);
     setImportMsg(null);
-    setImportProgress({ current: 0, total: 373 }); // updated total
+    setImportProgress({ current: 0, total: uniqueDefaultQuestionsCount });
 
     try {
       const result = await importDefaultQuestionsToSupabase(user?.id, (current, total) => {
@@ -352,21 +376,31 @@ export default function QuestionBankManager() {
             text: `Všechny výchozí otázky (${result.totalLocalCount}) jsou v Supabase již aktuální. Nebylo třeba nic měnit.`,
           });
         }
-        await fetchQuestions();
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('vscr:questions_updated'));
-        }
       } else {
         setImportMsg({
           type: 'error',
           text: result.errorMessage || 'Synchronizace selhala.',
         });
       }
+      await fetchQuestions();
+      if (onQuestionsUpdated) {
+        onQuestionsUpdated();
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('vscr:questions_updated'));
+      }
     } catch (err) {
       setImportMsg({
         type: 'error',
         text: err instanceof Error ? err.message : 'Neznámá chyba při importu.',
       });
+      await fetchQuestions();
+      if (onQuestionsUpdated) {
+        onQuestionsUpdated();
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('vscr:questions_updated'));
+      }
     } finally {
       setIsImporting(false);
       setImportProgress(null);
@@ -396,6 +430,8 @@ CREATE TABLE IF NOT EXISTS public.quiz_questions (
   explanation TEXT,
   created_at TIMESTAMPTZ DEFAULT now()
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_quiz_questions_question_unique ON public.quiz_questions(question);
 
 ALTER TABLE public.quiz_questions ENABLE ROW LEVEL SECURITY;
 
@@ -684,7 +720,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
             <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-              Synchronizace výchozích otázek (373 otázek)
+              Synchronizace výchozích otázek ({uniqueDefaultQuestionsCount} otázek)
             </h4>
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-300">
@@ -753,6 +789,21 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
                 </span>
               )}
             </h3>
+            <button
+              type="button"
+              onClick={async () => {
+                await fetchQuestions();
+                if (onQuestionsUpdated) onQuestionsUpdated();
+                if (typeof window !== 'undefined') {
+                  window.dispatchEvent(new CustomEvent('vscr:questions_updated'));
+                }
+              }}
+              disabled={loading}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all cursor-pointer disabled:opacity-50"
+              title="Obnovit / znovu načíst otázky ze Supabase"
+            >
+              <RotateCcw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            </button>
           </div>
 
           {/* Filtry & Search */}

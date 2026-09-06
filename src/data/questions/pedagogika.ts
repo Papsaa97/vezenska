@@ -501,37 +501,37 @@ export const pedagogikaQuestions: Question[] = [
       explanation: `Penitenciární pedagogika do značné míry vychází z poznatků andragogiky, protože většina vězeňské populace je tvořena dospělými jedinci, kteří mají již utvořené postoje a zkušenosti. (Právní úprava: Základy andragogiky)`
 },
     {
-        id: 'new_pedagogika_01',
+        id: 'ped-30',
         subject: 'Pedagogika',
-        topic: 'Nová modelová situace 1',
-        question: 'Dozorce ubytovny zjistí při ranní kontrole, že odsouzený nereaguje a leží nehybně na lůžku. Jaký je správný prvotní postup?',
-        answer: 'Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.',
+        topic: 'Zásady penitenciární pedagogiky',
+        question: 'V čem spočívá princip individuálního přístupu v pedagogickém působení na vězněné osoby?',
+        answer: 'V přizpůsobení výchovných metod, cílů zacházení a zátěže osobnostním zvláštnostem, intelektové úrovni a možnostem konkrétního odsouzeného.',
         options: [
-                  `Otevřít celu, zkontrolovat tep a pokud odsouzený nedýchá, ihned ho přenést na ošetřovnu.`,
-                  `Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.`,
-                  `Okamžitě vstoupit sám do cely, začít odsouzeným třást a pokusit se ho probudit.`,
-                  `Uzamknout celu, neprodleně nahlásit situaci veliteli směny a vyčkat na jeho příchod bez dalších akcí.`
-                ],
+            'V poskytování individuálních finančních odměn odsouzeným bez ohledu na jejich chování.',
+            'V přizpůsobení výchovných metod, cílů zacházení a zátěže osobnostním zvláštnostem, intelektové úrovni a možnostem konkrétního odsouzeného.',
+            'V uplatňování naprosto shodného režimu a stejných úkolů pro všechny odsouzené ve věznici.',
+            'V oddělení každého vězně na samostatnou celu bez možnosti kontaktu s ostatními.'
+        ],
         correctOption: 1,
-        rationale: 'Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc.',
-        source: 'NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC)',
-        explanation: `Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc. (Právní úprava: NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC))`
+        rationale: 'Individuální přístup respektuje specifické kriminogenní faktory, mentální kapacitu a motivaci odsouzeného pro dosažení reálného resocializačního účinku.',
+        source: 'Penitenciární pedagogika a metodika zacházení VS ČR',
+        explanation: 'Individuální přístup přizpůsobuje metody zacházení možnostem a osobnosti konkrétního odsouzeného.'
     },
     {
-        id: 'new_pedagogika_02',
+        id: 'ped-31',
         subject: 'Pedagogika',
-        topic: 'Nová modelová situace 2',
-        question: 'Při osobní prohlídce odsouzeného po eskortě naleznete ukrytý nepovolený předmět (mobilní telefon). Jaký je správný postup dle předpisů?',
-        answer: 'Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.',
+        topic: 'Hodnocení odsouzených pro soud',
+        question: 'Která kritéria pedagogického hodnocení odsouzeného jsou stěžejní pro podklad soudu k rozhodování o podmíněném propuštění dle § 88 TZ?',
+        answer: 'Aktivní plnění programu zacházení, pracovní zapojení, chování a vystupování, udělené odměny či kázeňské tresty a postoj k trestné činnosti a náhradě škody.',
         options: [
-                  `Předmět zabavit, zničit ho před odsouzeným, aby se předešlo dalšímu použití a sepsat záznam.`,
-                  `Okamžitě použít donucovací prostředky, předmět zabavit a umístit odsouzeného do samovazby.`,
-                  `Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.`,
-                  `Předmět ponechat odsouzenému s důrazným varováním, že při dalším nálezu bude potrestán.`
-                ],
+            'Pouze počet návštěv rodiny a množství přijatých balíčků za celou dobu trestu.',
+            'Výhradně fyzická zdatnost a účast na sportovních aktivitách věznice.',
+            'Aktivní plnění programu zacházení, pracovní zapojení, chování a vystupování, udělené odměny či kázeňské tresty a postoj k trestné činnosti a náhradě škody.',
+            'Zda odsouzený podepsal dohodu o vině a trestu v původním trestním řízení.'
+        ],
         correctOption: 2,
-        rationale: 'Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné.',
-        source: 'Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ)',
-        explanation: `Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné. (Právní úprava: Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ))`
+        rationale: 'Soud při podmíněném propuštění hodnotí, zda odsouzený ve výkonu trestu svým chováním a plněním svých povinností prokázal polepšení (§ 88 trestního zákoníku).',
+        source: '§ 88 trestního zákoníku (zákon č. 40/2009 Sb.) a Metodika hodnocení odsouzených',
+        explanation: 'Hodnocení pro soud shrnuje plnění programu zacházení, kázeňskou historii, pracovní morálku a postoj ke škodě.'
     }
 ];

@@ -144,17 +144,19 @@ export default function Statistics({
 
     // First seed with known topics from questions catalog if needed
     questions.forEach(q => {
-      if (!map.has(q.topic)) {
-        map.set(q.topic, { topic: q.topic, subject: q.subject, total: 0, correct: 0, lastTime: 0 });
+      const t = q.topic || 'Základní okruh';
+      if (!map.has(t)) {
+        map.set(t, { topic: t, subject: q.subject, total: 0, correct: 0, lastTime: 0 });
       }
     });
 
     // Populate with actual attempts
     allAttempts.forEach(att => {
-      const entry = map.get(att.topic) || { topic: att.topic, subject: att.subject, total: 0, correct: 0, lastTime: 0 };
+      const t = att.topic || 'Základní okruh';
+      const entry = map.get(t) || { topic: t, subject: att.subject, total: 0, correct: 0, lastTime: 0 };
       entry.total += 1;
       if (att.isCorrect) entry.correct += 1;
-      map.set(att.topic, entry);
+      map.set(t, entry);
     });
 
     const result: TopicPerformance[] = [];

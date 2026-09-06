@@ -115,7 +115,11 @@ function getFileIcon(mimeType: string): React.ReactElement {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function ContentManager() {
+interface ContentManagerProps {
+  onQuestionsUpdated?: () => void;
+}
+
+export default function ContentManager({ onQuestionsUpdated }: ContentManagerProps = {}) {
   const { profile } = useAuth();
 
   // Guard: only lektor or admin
@@ -131,10 +135,10 @@ export default function ContentManager() {
     );
   }
 
-  return <ContentManagerInner />;
+  return <ContentManagerInner onQuestionsUpdated={onQuestionsUpdated} />;
 }
 
-function ContentManagerInner() {
+function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
   // ── Tab state ──
   const [activeTab, setActiveTab] = useState<'materials' | 'questions'>('materials');
 
@@ -300,7 +304,7 @@ function ContentManagerInner() {
         </button>
       </div>
 
-      {activeTab === 'questions' && <QuestionBankManager />}
+      {activeTab === 'questions' && <QuestionBankManager onQuestionsUpdated={onQuestionsUpdated} />}
 
       {activeTab === 'materials' && (
         <>

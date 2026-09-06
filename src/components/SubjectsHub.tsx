@@ -16,7 +16,6 @@ import {
   Star, 
   ArrowLeft, 
   FileText, 
-  Filter, 
   Sparkles,
   Award,
   HeartHandshake,
@@ -25,67 +24,108 @@ import {
   Volume2
 } from 'lucide-react';
 import { Question } from '../types';
-import { subjectsMeta, SubjectInfo } from '../data/questions/subjectsInfo';
+import { subjectsMeta, SubjectInfo, getSubjectInfo } from '../data/questions/subjectsInfo';
 import { speakText, isSpeechSupported } from '../utils/speech';
 
 interface SubjectsHubProps {
-  questions: Question[];
-  favorites: string[];
+  questions?: Question[];
+  favorites?: string[];
   toggleFavorite: (id: string) => void;
-  onStartQuiz: (subject: string, topic?: string) => void;
+  onStartQuiz: (subject: string) => void;
   onStartFlashcards: (subject: string) => void;
 }
 
+export const normalizeSubject = (str?: string | null): string => {
+  return (str || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+};
+
+export const matchesSubject = (qSubject: string | undefined | null, subject: SubjectInfo): boolean => {
+  if (!qSubject || !subject) return false;
+  const nQ = normalizeSubject(qSubject);
+  const nId = normalizeSubject(subject.id);
+  const nName = normalizeSubject(subject.name);
+  const nCode = normalizeSubject(subject.code);
+
+  const cleanQ = nQ.replace(/[-_]/g, ' ');
+  const cleanId = nId.replace(/[-_]/g, ' ');
+  const cleanName = nName.replace(/[-_]/g, ' ');
+
+  return (
+    nQ === nId ||
+    nQ === nName ||
+    nQ === nCode ||
+    cleanQ === cleanId ||
+    cleanQ === cleanName
+  );
+};
+
 export default function SubjectsHub({
-  questions,
-  favorites,
+  questions = [],
+  favorites = [],
   toggleFavorite,
   onStartQuiz,
   onStartFlashcards
 }: SubjectsHubProps) {
   const [selectedSubjectKey, setSelectedSubjectKey] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedTopic, setSelectedTopic] = useState<string>('all');
   const [expandedQuestionIds, setExpandedQuestionIds] = useState<Set<string>>(new Set());
   const [speakingId, setSpeakingId] = useState<string | null>(null);
 
   const subjectNames = useMemo(() => Object.keys(subjectsMeta), []);
 
-  // Compute question counts and topics per subject
+  // Compute question counts per subject safely
   const subjectStats = useMemo(() => {
-    const stats: Record<string, { totalQuestions: number; topics: string[] }> = {};
+    const stats: Record<string, { totalQuestions: number }> = {};
+    const safeQuestions = questions || [];
     subjectNames.forEach(subj => {
-      const subjQuestions = questions.filter(q => q.subject === subj);
-      const topics = Array.from(new Set(subjQuestions.map(q => q.topic)));
+      const info = getSubjectInfo(subj);
+      const subjQuestions = safeQuestions.filter(
+        q => q?.subject && matchesSubject(q.subject, info)
+      );
       stats[subj] = {
-        totalQuestions: subjQuestions.length,
-        topics
+        totalQuestions: subjQuestions.length
       };
     });
     return stats;
   }, [questions, subjectNames]);
 
-  // Selected subject details
-  const activeSubjectInfo: SubjectInfo | null = selectedSubjectKey ? subjectsMeta[selectedSubjectKey] || null : null;
-  const activeSubjectQuestions = useMemo(() => {
-    if (!selectedSubjectKey) return [];
-    return questions.filter(q => q.subject === selectedSubjectKey);
-  }, [questions, selectedSubjectKey]);
-
-  // Filtered questions within selected subject
-  const filteredQuestions = useMemo(() => {
-    return activeSubjectQuestions.filter(q => {
-      const matchesTopic = selectedTopic === 'all' || q.topic === selectedTopic;
-      const qLower = searchQuery.toLowerCase();
-      const matchesSearch = 
-        q.question.toLowerCase().includes(qLower) || 
-        q.answer.toLowerCase().includes(qLower) || 
-        q.topic.toLowerCase().includes(qLower) || 
-        q.source.toLowerCase().includes(qLower) ||
-        (q.rationale && q.rationale.toLowerCase().includes(qLower));
-      return matchesTopic && matchesSearch;
+  // Pouze předměty s alespoň jednou otázkou (skrytí prázdných okruhů např. Ostatní)
+  const visibleSubjectNames = useMemo(() => {
+    return subjectNames.filter(subjKey => {
+      const count = subjectStats[subjKey]?.totalQuestions ?? 0;
+      return count > 0;
     });
-  }, [activeSubjectQuestions, selectedTopic, searchQuery]);
+  }, [subjectNames, subjectStats]);
+
+  // Selected subject details - safe fallback guaranteed
+  const activeSubjectInfo: SubjectInfo | null = selectedSubjectKey ? getSubjectInfo(selectedSubjectKey) : null;
+  const activeSubjectQuestions = useMemo(() => {
+    if (!selectedSubjectKey || !activeSubjectInfo) return [];
+    const safeQuestions = questions || [];
+    return safeQuestions.filter(
+      q => q?.subject && matchesSubject(q.subject, activeSubjectInfo)
+    );
+  }, [questions, selectedSubjectKey, activeSubjectInfo]);
+
+  // Filtered questions within selected subject (by search query across questions, answers, rationale and citations)
+  const filteredQuestions = useMemo(() => {
+    return (activeSubjectQuestions || []).filter(q => {
+      if (!q) return false;
+      const qLower = (searchQuery || '').toLowerCase();
+      const matchesSearch = 
+        (q.question || '').toLowerCase().includes(qLower) || 
+        (q.answer || '').toLowerCase().includes(qLower) || 
+        (q.topic ? q.topic.toLowerCase().includes(qLower) : false) || 
+        (q.source || '').toLowerCase().includes(qLower) ||
+        (q.rationale ? q.rationale.toLowerCase().includes(qLower) : false) ||
+        (q.explanation ? q.explanation.toLowerCase().includes(qLower) : false);
+      return matchesSearch;
+    });
+  }, [activeSubjectQuestions, searchQuery]);
 
   const getSubjectIcon = (iconName: string, className = "w-6 h-6") => {
     switch (iconName) {
@@ -175,7 +215,6 @@ export default function SubjectsHub({
   // If a single subject is selected, display its comprehensive dedicated view
   if (selectedSubjectKey && activeSubjectInfo) {
     const styles = getSubjectColorStyles(activeSubjectInfo.accentColor);
-    const availableTopics = subjectStats[selectedSubjectKey]?.topics || [];
 
     return (
       <AnimatePresence mode="wait">
@@ -192,7 +231,6 @@ export default function SubjectsHub({
           <button
             onClick={() => {
               setSelectedSubjectKey(null);
-              setSelectedTopic('all');
               setSearchQuery('');
             }}
             className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors bg-slate-100 dark:bg-slate-800 px-3.5 py-2 rounded-lg cursor-pointer"
@@ -211,11 +249,16 @@ export default function SubjectsHub({
               <span>Tisk přehledu</span>
             </button>
             <button
-              onClick={() => onStartQuiz(selectedSubjectKey, selectedTopic !== 'all' ? selectedTopic : undefined)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm shadow-sm transition-colors cursor-pointer"
+              onClick={() => onStartQuiz(selectedSubjectKey)}
+              disabled={(activeSubjectQuestions || []).length === 0}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg font-medium text-sm shadow-sm transition-colors ${
+                (activeSubjectQuestions || []).length === 0
+                  ? 'bg-slate-300 dark:bg-slate-800 text-slate-500 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+              }`}
             >
               <GraduationCap className="w-4 h-4" />
-              Spustit test ({activeSubjectQuestions.length} otázek)
+              Spustit test ({activeSubjectQuestions?.length ?? 0} otázek)
             </button>
             <button
               onClick={() => onStartFlashcards(selectedSubjectKey)}
@@ -256,7 +299,7 @@ export default function SubjectsHub({
                 Prameny práva a předpisy
               </h2>
               <ul className="space-y-2">
-                {activeSubjectInfo.legalFramework.map((law, idx) => (
+                {(activeSubjectInfo?.legalFramework || []).map((law, idx) => (
                   <li key={idx} className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2">
                     <span className="text-blue-500 font-bold">•</span>
                     <span>{law}</span>
@@ -271,7 +314,7 @@ export default function SubjectsHub({
                 Klíčové tematické okruhy
               </h2>
               <ul className="space-y-2">
-                {activeSubjectInfo.keyTopics.map((item, idx) => (
+                {(activeSubjectInfo?.keyTopics || []).map((item, idx) => (
                   <li key={idx} className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2">
                     <span className="text-blue-500 font-bold">•</span>
                     <span>{item}</span>
@@ -286,7 +329,7 @@ export default function SubjectsHub({
                 Požadavky ke zkoušce ZOP A
               </h2>
               <div className="bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                {activeSubjectInfo.examRequirements}
+                {activeSubjectInfo?.examRequirements || 'Standardní požadavky k závěrečné zkoušce ZOP A.'}
               </div>
             </div>
           </div>
@@ -298,7 +341,7 @@ export default function SubjectsHub({
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-blue-600" />
-                Studijní databáze otázek z předmětu ({filteredQuestions.length} z {activeSubjectQuestions.length})
+                Studijní databáze otázek z předmětu ({filteredQuestions?.length ?? 0} z {activeSubjectQuestions?.length ?? 0})
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Kompletní přehled testových otázek s přesným zákonným odůvodněním a citacemi předpisů.
@@ -306,7 +349,7 @@ export default function SubjectsHub({
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <div className="relative flex-1 sm:w-64">
+              <div className="relative flex-1 sm:w-72">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
@@ -316,54 +359,18 @@ export default function SubjectsHub({
                   className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-
-              <select
-                value={selectedTopic}
-                onChange={(e) => setSelectedTopic(e.target.value)}
-                className="px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">Všechna témata ({availableTopics.length})</option>
-                {availableTopics.map((topic, i) => (
-                  <option key={i} value={topic}>{topic}</option>
-                ))}
-              </select>
             </div>
           </div>
 
-          {/* Topics Chips & Expand All Bar */}
+          {/* Action Bar - Count & Expand/Collapse */}
           <div className="flex items-center justify-between gap-2 flex-wrap pt-1 border-t border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin flex-1">
-              <button
-                onClick={() => setSelectedTopic('all')}
-                className={`px-3 py-1 rounded-lg text-xs font-medium shrink-0 transition-colors cursor-pointer ${
-                  selectedTopic === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-                }`}
-              >
-                Vše ({activeSubjectQuestions.length})
-              </button>
-              {availableTopics.map((top, idx) => {
-                const count = activeSubjectQuestions.filter(q => q.topic === top).length;
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedTopic(top)}
-                    className={`px-3 py-1 rounded-lg text-xs font-medium shrink-0 transition-colors cursor-pointer ${
-                      selectedTopic === top
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-                    }`}
-                  >
-                    {top} ({count})
-                  </button>
-                );
-              })}
-            </div>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              Celkem {filteredQuestions?.length ?? 0} otázek ke studiu
+            </span>
 
             <div className="flex items-center gap-1.5 shrink-0">
               <button
-                onClick={() => setExpandedQuestionIds(new Set(filteredQuestions.map(q => q.id)))}
+                onClick={() => setExpandedQuestionIds(new Set((filteredQuestions || []).map(q => q?.id).filter((id): id is string => Boolean(id))))}
                 className="px-2.5 py-1 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg transition-colors font-medium cursor-pointer"
               >
                 Rozbalit vše
@@ -380,15 +387,16 @@ export default function SubjectsHub({
 
           {/* Questions Accordion List */}
           <div className="space-y-3 pt-2">
-            {filteredQuestions.length === 0 ? (
+            {(filteredQuestions || []).length === 0 ? (
               <div className="text-center py-12 text-slate-400">
                 <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
                 <p className="text-sm">Pro zadaná kritéria nebyla nalezena žádná otázka.</p>
               </div>
             ) : (
-              filteredQuestions.map((q, index) => {
-                const isExpanded = expandedQuestionIds.has(q.id);
-                const isFav = favorites.includes(q.id);
+              (filteredQuestions || []).map((q, index) => {
+                if (!q) return null;
+                const isExpanded = q?.id ? expandedQuestionIds.has(q.id) : false;
+                const isFav = q?.id ? (favorites || []).includes(q.id) : false;
 
                 const toggleExpand = () => {
                   setExpandedQuestionIds(prev => {
@@ -425,9 +433,11 @@ export default function SubjectsHub({
                         </span>
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded">
-                              {q.topic}
-                            </span>
+                            {q.topic && (
+                              <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded">
+                                {q.topic}
+                              </span>
+                            )}
                             <span className="text-[11px] text-slate-500 dark:text-slate-400">
                               {q.source}
                             </span>
@@ -535,47 +545,43 @@ export default function SubjectsHub({
 
       {/* Grid of Subject Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {subjectNames.map(subjKey => {
-          const info = subjectsMeta[subjKey];
-          if (!info) return null;
-          const stats = subjectStats[subjKey] || { totalQuestions: 0, topics: [] };
-          const styles = getSubjectColorStyles(info.accentColor);
+        {visibleSubjectNames.map(subjKey => {
+          const info = getSubjectInfo(subjKey);
+          const stats = subjectStats?.[subjKey] || { totalQuestions: 0 };
+          const styles = getSubjectColorStyles(info?.accentColor || 'indigo');
 
           return (
             <div
               key={subjKey}
+              onClick={() => setSelectedSubjectKey(subjKey)}
               className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col justify-between transition-all duration-200 hover:shadow-md hover:-translate-y-1 hover:shadow-lg cursor-pointer ${styles.cardBg} group`}
             >
               <div className="space-y-4">
                 {/* Header with Icon and Code */}
                 <div className="flex items-center justify-between">
                   <div className={`p-3 rounded-xl ${styles.iconBg} shadow-sm transition-transform group-hover:scale-105`}>
-                    {getSubjectIcon(info.iconName, "w-6 h-6")}
+                    {getSubjectIcon(info?.iconName || 'BookOpen', "w-6 h-6")}
                   </div>
                   <span className={`px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider border ${styles.badge}`}>
-                    {info.code}
+                    {info?.code || subjKey.substring(0, 3).toUpperCase()}
                   </span>
                 </div>
 
                 {/* Title & Description */}
                 <div>
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {info.name}
+                    {info?.name || subjKey}
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 line-clamp-3 leading-relaxed">
-                    {info.description}
+                    {info?.description || ''}
                   </p>
                 </div>
 
-                {/* Stats Pills */}
+                {/* Stats Pills - Only total questions */}
                 <div className="flex items-center gap-2 pt-1 flex-wrap">
                   <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md">
                     <FileText className="w-3.5 h-3.5 text-blue-500" />
-                    {stats.totalQuestions} otázek
-                  </span>
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md">
-                    <Filter className="w-3.5 h-3.5 text-indigo-500" />
-                    {stats.topics.length} témat
+                    {stats?.totalQuestions ?? 0} otázek
                   </span>
                 </div>
               </div>
@@ -583,8 +589,11 @@ export default function SubjectsHub({
               {/* Action Buttons */}
               <div className="space-y-2 mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <button
-                  onClick={() => setSelectedSubjectKey(subjKey)}
-                  className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors shadow-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedSubjectKey(subjKey);
+                  }}
+                  className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors shadow-sm cursor-pointer"
                 >
                   <BookOpen className="w-4 h-4" />
                   Otevřít předmět a studium
@@ -593,16 +602,22 @@ export default function SubjectsHub({
 
                 <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={() => onStartQuiz(subjKey)}
-                    className={`py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors ${styles.lightBtn}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onStartQuiz(subjKey);
+                    }}
+                    className={`py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${styles.lightBtn}`}
                     title="Spustit test z tohoto předmětu"
                   >
                     <GraduationCap className="w-3.5 h-3.5" />
                     Spustit test
                   </button>
                   <button
-                    onClick={() => onStartFlashcards(subjKey)}
-                    className="py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onStartFlashcards(subjKey);
+                    }}
+                    className="py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
                     title="Procvičovat kartičky z tohoto předmětu"
                   >
                     <Layers className="w-3.5 h-3.5" />

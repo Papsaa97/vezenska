@@ -515,40 +515,40 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     correctOption: 1,
     rationale: 'Zákonná výzva („Jménem zákona, upusťte od...“) je obligatorní podmínkou použití DP, pokud to situace umožňuje. Dále platí zásada subsidiarity (využít mírnější prostředky) a proporcionality (intenzita nesmí zjevně převýšit hrozbu).',
     source: '§ 17 a § 21 zákona č. 555/1992 Sb., o VS a JS ČR',
-      explanation: `Zákonná výzva („Jménem zákona, upusťte od...“) je obligatorní podmínkou použití DP, pokud to situace umožňuje. Dále platí zásada subsidiarity (využít mírnější prostředky) a proporcionality (intenzita nesmí zjevně převýšit hrozbu). (Právní úprava: § 17 a § 21 zákona č. 555/1992 Sb., o VS a JS ČR)`
-},
-    {
-        id: 'new_bezpecnostniSluzba_01',
-        subject: 'Bezpečnostní služba',
-        topic: 'Nová modelová situace 1',
-        question: 'Dozorce ubytovny zjistí při ranní kontrole, že odsouzený nereaguje a leží nehybně na lůžku. Jaký je správný prvotní postup?',
-        answer: 'Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.',
-        options: [
-                  `Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.`,
-                  `Otevřít celu, zkontrolovat tep a pokud odsouzený nedýchá, ihned ho přenést na ošetřovnu.`,
-                  `Uzamknout celu, neprodleně nahlásit situaci veliteli směny a vyčkat na jeho příchod bez dalších akcí.`,
-                  `Okamžitě vstoupit sám do cely, začít odsouzeným třást a pokusit se ho probudit.`
-                ],
-        correctOption: 0,
-        rationale: 'Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc.',
-        source: 'NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC)',
-        explanation: `Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc. (Právní úprava: NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC))`
-    },
-    {
-        id: 'new_bezpecnostniSluzba_02',
-        subject: 'Bezpečnostní služba',
-        topic: 'Nová modelová situace 2',
-        question: 'Při osobní prohlídce odsouzeného po eskortě naleznete ukrytý nepovolený předmět (mobilní telefon). Jaký je správný postup dle předpisů?',
-        answer: 'Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.',
-        options: [
-                  `Okamžitě použít donucovací prostředky, předmět zabavit a umístit odsouzeného do samovazby.`,
-                  `Předmět zabavit, zničit ho před odsouzeným, aby se předešlo dalšímu použití a sepsat záznam.`,
-                  `Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.`,
-                  `Předmět ponechat odsouzenému s důrazným varováním, že při dalším nálezu bude potrestán.`
-                ],
-        correctOption: 2,
-        rationale: 'Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné.',
-        source: 'Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ)',
-        explanation: `Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné. (Právní úprava: Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ))`
-    }
+  },
+  {
+    id: 'bs-31',
+    subject: 'Bezpečnostní služba',
+    topic: 'Eskortní služba',
+    question: 'Jaké jsou povinnosti velitele eskorty při přepravě vězněných osob k soudnímu jednání?',
+    answer: 'Seznámit členy eskorty s úkolem, provést kontrolu výzbroje a spojení, zkontrolovat totožnost eskortovaných a bezpečné upevnění poutacích prostředků, a řídit činnost hlídky po celou dobu eskorty.',
+    options: [
+      `Umožnit eskortovaným osobám telefonovat příbuzným ze služebního telefonu během přepravy vozidlem.`,
+      `Seznámit členy eskorty s úkolem, provést kontrolu výzbroje a spojení, zkontrolovat totožnost eskortovaných a bezpečné upevnění poutacích prostředků, a řídit činnost hlídky po celou dobu eskorty.`,
+      `Předat velení eskorty řidiči vozidla a provádět eskortu bez použití zbraní.`,
+      `Povolit eskortovaným volný pohyb v jednací síni bez dozoru justiční stráže.`
+    ],
+    correctOption: 1,
+    rationale: 'Velitel eskorty odpovídá za bezpečnost eskorty, připravenost příslušníků, kontrolu vězněných osob a dodržení bezpečnostních standardů při přepravě.',
+    source: 'NGŘ č. 33/2019, o strážní, dozorčí a eskortní službě',
+    explanation: `Velitel eskorty odpovídá za bezpečnost eskorty, připravenost příslušníků, kontrolu vězněných osob a dodržení bezpečnostních standardů při přepravě. (Právní úprava: NGŘ č. 33/2019, o strážní, dozorčí a eskortní službě)`
+  },
+  {
+    id: 'bs-32',
+    subject: 'Bezpečnostní služba',
+    topic: 'Technická ochrana a režim věznice',
+    question: 'Co je účelem a základním principem bezpečnostního propusťového systému (komory) při vjezdu vozidel do věznice?',
+    answer: 'Zajistit, aby nebyla nikdy současně otevřena vnější a vnitřní vrata, a provést důkladnou technickou kontrolu vozidla včetně podvozku a nákladového prostoru.',
+    options: [
+      `Umožnit rychlý průjezd vozidel bez zastavení otevřením obou vrat současně.`,
+      `Vozidla pouze zaevidovat v knize návštěv bez fyzické prohlídky nákladu.`,
+      `Zajistit, aby nebyla nikdy současně otevřena vnější a vnitřní vrata, a provést důkladnou technickou kontrolu vozidla včetně podvozku a nákladového prostoru.`,
+      `Provádět kontrolu výhradně u nákladních automobilů, osobní vozidla zaměstnanců kontrole nepodléhají.`
+    ],
+    correctOption: 2,
+    rationale: 'Komorový systém zamezuje přímému průjezdu a útěku vězněných osob. Při vjezdu do propusti strážný provádí fyzickou a technickou kontrolu zrcadly, detektory i vizuálně.',
+    source: 'NGŘ č. 2/2026, o pravidlech vstupu a vjezdu do objektů VS ČR',
+    explanation: `Komorový systém zamezuje přímému průjezdu a útěku vězněných osob. Při vjezdu do propusti strážný provádí fyzickou a technickou kontrolu zrcadly, detektory i vizuálně. (Právní úprava: NGŘ č. 2/2026, o pravidlech vstupu a vjezdu do objektů VS ČR)`
+  }
 ];
+

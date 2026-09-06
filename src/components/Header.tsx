@@ -22,6 +22,7 @@ import {
   Settings2,
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord } from '../types';
+import { tacticalScenarios } from '../data/scenariosData';
 import { calculateBaseXp, evaluateBadges, getUserRank, loadStreakInfo } from '../utils/gamification';
 import { UserBadge, AuthModal } from './AuthUI';
 import { useAuth } from '../context/AuthContext';
@@ -63,11 +64,25 @@ export default function Header({
     return getUserRank(totalXpWithBadges);
   }, [totalXpWithBadges]);
 
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number } | null>(null);
+
+  const toggleDropdown = (type: 'practice' | 'drill', e: React.MouseEvent<HTMLButtonElement>) => {
+    if (openDropdown === type) {
+      setOpenDropdown(null);
+      setDropdownPos(null);
+    } else {
+      const rect = e.currentTarget.getBoundingClientRect();
+      setDropdownPos({ top: rect.bottom + 8, left: Math.min(rect.left, window.innerWidth - 270) });
+      setOpenDropdown(type);
+    }
+  };
+
   // Close dropdown on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setOpenDropdown(null);
+        setDropdownPos(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -78,15 +93,16 @@ export default function Header({
   const isDrillActive = ['compass', 'flashcards', 'matching'].includes(activeTab);
 
   return (
-    <div className="shrink-0 relative z-30" ref={dropdownRef}>
+    <div className="shrink-0 relative z-50" ref={dropdownRef}>
       <div className="h-16 bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md flex items-center justify-between px-3 sm:px-6 border-b border-slate-800 transition-colors">
         
-        {/* Brand Logo & Title */}
+        {/* Brand Logo & Title - Levý kontejner */}
         <div 
-          className="flex items-center gap-3 cursor-pointer group shrink-0" 
+          className="flex-shrink-0 flex items-center gap-3 cursor-pointer group" 
           onClick={() => {
             setActiveTab('subjects');
             setOpenDropdown(null);
+            setDropdownPos(null);
           }}
         >
           <div className="w-9 h-9 bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-500 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform border border-blue-400/30">
@@ -103,11 +119,14 @@ export default function Header({
           </div>
         </div>
         
-        {/* Desktop Navigation (Categorized Masterpiece) */}
-        <nav className="hidden lg:flex items-center gap-1.5 overflow-x-auto hide-scrollbar whitespace-nowrap min-w-0">
+        {/* Desktop Navigation - Středový kontejner */}
+        <nav 
+          onScroll={() => { if (openDropdown) { setOpenDropdown(null); setDropdownPos(null); } }}
+          className="flex-1 min-w-0 mx-4 overflow-x-auto hide-scrollbar hidden lg:flex items-center gap-2"
+        >
           {/* 1. Subjects */}
           <button
-            onClick={() => { setActiveTab('subjects'); setOpenDropdown(null); }}
+            onClick={() => { setActiveTab('subjects'); setOpenDropdown(null); setDropdownPos(null); }}
             className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
               activeTab === 'subjects' 
                 ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
@@ -115,12 +134,12 @@ export default function Header({
             }`}
           >
             <FolderKanban className="w-4 h-4" />
-            <span>Předměty (9)</span>
+            <span>Předměty</span>
           </button>
 
           {/* 2. Exam & Quiz */}
           <button
-            onClick={() => { setActiveTab('quiz'); setOpenDropdown(null); }}
+            onClick={() => { setActiveTab('quiz'); setOpenDropdown(null); setDropdownPos(null); }}
             className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
               activeTab === 'quiz' 
                 ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
@@ -133,7 +152,7 @@ export default function Header({
 
           {/* 3. AI Captain Exam Assistant */}
           <button
-            onClick={() => { setActiveTab('assistant'); setOpenDropdown(null); }}
+            onClick={() => { setActiveTab('assistant'); setOpenDropdown(null); setDropdownPos(null); }}
             className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 border ${
               activeTab === 'assistant' 
                 ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-indigo-400/40 shadow-sm shadow-indigo-500/25' 
@@ -148,7 +167,7 @@ export default function Header({
           {/* 4. Practice & Simulator Dropdown */}
           <div className="relative shrink-0">
             <button
-              onClick={() => setOpenDropdown(openDropdown === 'practice' ? null : 'practice')}
+              onClick={(e) => toggleDropdown('practice', e)}
               className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 isPracticeActive
                   ? 'bg-amber-500 text-slate-950 shadow-sm shadow-amber-500/20'
@@ -161,16 +180,17 @@ export default function Header({
             </button>
 
             <AnimatePresence>
-              {openDropdown === 'practice' && (
+              {openDropdown === 'practice' && dropdownPos && (
                 <motion.div
                   initial={{ opacity: 0, y: 8, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 4, scale: 0.96 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute top-full left-0 mt-2 w-64 bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl p-2 space-y-1 z-50 backdrop-blur-xl"
+                  style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left }}
+                  className="w-64 bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl p-2 space-y-1 z-50 backdrop-blur-xl"
                 >
                   <button
-                    onClick={() => { setActiveTab('scenarios'); setOpenDropdown(null); }}
+                    onClick={() => { setActiveTab('scenarios'); setOpenDropdown(null); setDropdownPos(null); }}
                     className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                       activeTab === 'scenarios' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-slate-800'
                     }`}
@@ -178,12 +198,12 @@ export default function Header({
                     <ShieldAlert className={`w-4 h-4 shrink-0 ${activeTab === 'scenarios' ? 'text-slate-950' : 'text-amber-400'}`} />
                     <div>
                       <div className="font-bold">Taktické scénáře</div>
-                      <div className="text-[10px] opacity-75">10 modelových situací z praxe</div>
+                      <div className="text-[10px] opacity-75">{tacticalScenarios.length} modelových situací z praxe</div>
                     </div>
                   </button>
 
                   <button
-                    onClick={() => { setActiveTab('weapons'); setOpenDropdown(null); }}
+                    onClick={() => { setActiveTab('weapons'); setOpenDropdown(null); setDropdownPos(null); }}
                     className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                       activeTab === 'weapons' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-slate-800'
                     }`}
@@ -196,7 +216,7 @@ export default function Header({
                   </button>
 
                   <button
-                    onClick={() => { setActiveTab('admin'); setOpenDropdown(null); }}
+                    onClick={() => { setActiveTab('admin'); setOpenDropdown(null); setDropdownPos(null); }}
                     className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                       activeTab === 'admin' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-slate-800'
                     }`}
@@ -209,7 +229,7 @@ export default function Header({
                   </button>
 
                   <button
-                    onClick={() => { setActiveTab('ethics'); setOpenDropdown(null); }}
+                    onClick={() => { setActiveTab('ethics'); setOpenDropdown(null); setDropdownPos(null); }}
                     className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                       activeTab === 'ethics' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-slate-800'
                     }`}
@@ -228,7 +248,7 @@ export default function Header({
           {/* 5. Drill & Knowledge Dropdown */}
           <div className="relative shrink-0">
             <button
-              onClick={() => setOpenDropdown(openDropdown === 'drill' ? null : 'drill')}
+              onClick={(e) => toggleDropdown('drill', e)}
               className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 isDrillActive
                   ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20'
@@ -241,16 +261,17 @@ export default function Header({
             </button>
 
             <AnimatePresence>
-              {openDropdown === 'drill' && (
+              {openDropdown === 'drill' && dropdownPos && (
                 <motion.div
                   initial={{ opacity: 0, y: 8, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 4, scale: 0.96 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute top-full left-0 mt-2 w-64 bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl p-2 space-y-1 z-50 backdrop-blur-xl"
+                  style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left }}
+                  className="w-64 bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl p-2 space-y-1 z-50 backdrop-blur-xl"
                 >
                   <button
-                    onClick={() => { setActiveTab('compass'); setOpenDropdown(null); }}
+                    onClick={() => { setActiveTab('compass'); setOpenDropdown(null); setDropdownPos(null); }}
                     className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                       activeTab === 'compass' ? 'bg-blue-600 text-white font-bold' : 'text-slate-200 hover:bg-slate-800'
                     }`}
@@ -263,7 +284,7 @@ export default function Header({
                   </button>
 
                   <button
-                    onClick={() => { setActiveTab('flashcards'); setOpenDropdown(null); }}
+                    onClick={() => { setActiveTab('flashcards'); setOpenDropdown(null); setDropdownPos(null); }}
                     className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                       activeTab === 'flashcards' ? 'bg-blue-600 text-white font-bold' : 'text-slate-200 hover:bg-slate-800'
                     }`}
@@ -276,7 +297,7 @@ export default function Header({
                   </button>
 
                   <button
-                    onClick={() => { setActiveTab('matching'); setOpenDropdown(null); }}
+                    onClick={() => { setActiveTab('matching'); setOpenDropdown(null); setDropdownPos(null); }}
                     className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                       activeTab === 'matching' ? 'bg-blue-600 text-white font-bold' : 'text-slate-200 hover:bg-slate-800'
                     }`}
@@ -294,7 +315,7 @@ export default function Header({
 
           {/* 6. Badges */}
           <button
-            onClick={() => { setActiveTab('badges'); setOpenDropdown(null); }}
+            onClick={() => { setActiveTab('badges'); setOpenDropdown(null); setDropdownPos(null); }}
             className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
               activeTab === 'badges' 
                 ? 'bg-amber-500 text-slate-950 shadow-sm shadow-amber-500/20' 
@@ -312,7 +333,7 @@ export default function Header({
 
           {/* 7. Statistics */}
           <button
-            onClick={() => { setActiveTab('statistics'); setOpenDropdown(null); }}
+            onClick={() => { setActiveTab('statistics'); setOpenDropdown(null); setDropdownPos(null); }}
             className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
               activeTab === 'statistics' 
                 ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
@@ -325,7 +346,7 @@ export default function Header({
 
           {/* 8. Material Library – for all users */}
           <button
-            onClick={() => { setActiveTab('library'); setOpenDropdown(null); }}
+            onClick={() => { setActiveTab('library'); setOpenDropdown(null); setDropdownPos(null); }}
             className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
               activeTab === 'library'
                 ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
@@ -335,12 +356,15 @@ export default function Header({
             <BookOpen className="w-4 h-4" />
             <span>Materiály</span>
           </button>
+        </nav>
 
-          {/* 9. Content Manager – lektor / admin only */}
+        {/* Right controls: Správa obsahu + Auth + Rank Badge + Theme Toggle - Pravý kontejner */}
+        <div className="flex-shrink-0 flex items-center gap-3">
+          {/* Správa obsahu – lektor / admin only */}
           {isPrivileged && (
             <button
-              onClick={() => { setActiveTab('content-manager'); setOpenDropdown(null); }}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
+              onClick={() => { setActiveTab('content-manager'); setOpenDropdown(null); setDropdownPos(null); }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'content-manager'
                   ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-500/20'
                   : 'text-emerald-300 bg-emerald-950/40 border border-emerald-500/30 hover:text-white hover:bg-emerald-900/60'
@@ -348,18 +372,16 @@ export default function Header({
               title="Správa obsahu – nahrávání a mazání materiálů"
             >
               <Settings2 className="w-4 h-4" />
-              <span>Správa obsahu</span>
+              <span className="hidden xl:inline">Správa obsahu</span>
             </button>
           )}
-        </nav>
 
-        {/* Right controls: Auth + Rank Badge + Theme Toggle */}
-        <div className="flex items-center gap-2.5">
           {/* Auth user badge / login button */}
           <UserBadge onLoginClick={() => setIsAuthModalOpen(true)} />
 
+          {/* Rank Badge */}
           <button
-            onClick={() => { setActiveTab('badges'); setOpenDropdown(null); }}
+            onClick={() => { setActiveTab('badges'); setOpenDropdown(null); setDropdownPos(null); }}
             className="cursor-pointer hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700/80 rounded-xl transition-all text-xs text-slate-200 hover:border-amber-400/50 hover:ring-1 hover:ring-amber-500/30 shadow-sm"
             title="Zobrazit hodnostní postup VS ČR a odznaky"
           >
@@ -376,6 +398,7 @@ export default function Header({
             </div>
           </button>
 
+          {/* Theme Toggle */}
           <button 
             onClick={toggleDarkMode}
             className="p-2 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-slate-700"

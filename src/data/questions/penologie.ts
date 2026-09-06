@@ -858,37 +858,37 @@ export const penologieQuestions: Question[] = [
       explanation: `Osoby v kategorii DVO jsou obzvlášť zranitelné (riziko viktimizace) nebo hůře zvladatelné běžnými metodami, proto se pro ně zřizují specializovaná oddělení s intenzivnějším dohledem odborných zaměstnanců. (Právní úprava: NGŘ č. 24/2022, o předcházení násilí mezi vězněnými osobami)`
 },
     {
-        id: 'new_penologie_01',
+        id: 'pen-51',
         subject: 'Penologie',
-        topic: 'Nová modelová situace 1',
-        question: 'Dozorce ubytovny zjistí při ranní kontrole, že odsouzený nereaguje a leží nehybně na lůžku. Jaký je správný prvotní postup?',
-        answer: 'Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.',
+        topic: 'Diferenciace výkonu trestu',
+        question: 'Kdo a na jakém základě rozhoduje o zařazení odsouzeného do konkrétního stupně zabezpečení v rámci věznice s ostrahou?',
+        answer: 'Ředitel věznice na základě doporučení odborné komise a výsledků komplexní zprávy (včetně SARPO).',
         options: [
-                  `Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.`,
-                  `Okamžitě vstoupit sám do cely, začít odsouzeným třást a pokusit se ho probudit.`,
-                  `Uzamknout celu, neprodleně nahlásit situaci veliteli směny a vyčkat na jeho příchod bez dalších akcí.`,
-                  `Otevřít celu, zkontrolovat tep a pokud odsouzený nedýchá, ihned ho přenést na ošetřovnu.`
-                ],
-        correctOption: 0,
-        rationale: 'Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc.',
-        source: 'NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC)',
-        explanation: `Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc. (Právní úprava: NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC))`
+            'Soudce okresního soudu v místě výkonu trestu při vstupním řízení.',
+            'Ředitel věznice na základě doporučení odborné komise a výsledků komplexní zprávy (včetně SARPO).',
+            'Výhradně dozorový státní zástupce na návrh vedoucího oddělení výkonu vazby a trestu.',
+            'Vedoucí oddělení vězeňské stráže bez nutnosti posouzení odbornou komisí.'
+        ],
+        correctOption: 1,
+        rationale: 'Dle § 9a zákona č. 169/1999 Sb. o VTOS soud zařazuje odsouzeného do typu věznice (ostraha / zvýšená ostraha), ale o umístění do konkrétního stupně zabezpečení (nízký, střední, vysoký) v rámci věznice s ostrahou rozhoduje ředitel věznice po doporučení komise.',
+        source: '§ 9a zákona č. 169/1999 Sb., o výkonu trestu odnětí svobody',
+        explanation: 'Dle § 9a zákona č. 169/1999 Sb. o VTOS soud zařazuje odsouzeného do typu věznice, ale o umístění do konkrétního stupně zabezpečení rozhoduje ředitel věznice po doporučení odborné komise.'
     },
     {
-        id: 'new_penologie_02',
+        id: 'pen-52',
         subject: 'Penologie',
-        topic: 'Nová modelová situace 2',
-        question: 'Při osobní prohlídce odsouzeného po eskortě naleznete ukrytý nepovolený předmět (mobilní telefon). Jaký je správný postup dle předpisů?',
-        answer: 'Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.',
+        topic: 'Program zacházení odsouzených',
+        question: 'Jak často se standardně provádí komplexní hodnocení plnění individuálního programu zacházení u odsouzeného ve VTOS?',
+        answer: 'Zpravidla jedenkrát za 3 měsíce (u mladistvých častěji), nebo vždy při významné změně v chování či zařazení.',
         options: [
-                  `Předmět ponechat odsouzenému s důrazným varováním, že při dalším nálezu bude potrestán.`,
-                  `Předmět zabavit, zničit ho před odsouzeným, aby se předešlo dalšímu použití a sepsat záznam.`,
-                  `Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.`,
-                  `Okamžitě použít donucovací prostředky, předmět zabavit a umístit odsouzeného do samovazby.`
-                ],
+            'Pouze jednou za kalendářní rok bez ohledu na délku uloženého trestu.',
+            'Každý týden v rámci ranní prověrky na ubytovně.',
+            'Zpravidla jedenkrát za 3 měsíce (u mladistvých častěji), nebo vždy při významné změně v chování či zařazení.',
+            'Výhradně těsně před podáním žádosti o podmíněné propuštění na soud.'
+        ],
         correctOption: 2,
-        rationale: 'Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné.',
-        source: 'Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ)',
-        explanation: `Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné. (Právní úprava: Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ))`
+        rationale: 'Dle prováděcí vyhlášky k zákonu o VTOS se plnění programu zacházení vyhodnocuje pravidelně ve čtvrtletních intervalech za účasti odborných zaměstnanců (vychovatel, psycholog, speciální pedagog).',
+        source: '§ 40 vyhlášky MS ČR č. 345/1999 Sb., řád výkonu trestu odnětí svobody',
+        explanation: 'Dle vyhlášky č. 345/1999 Sb. se plnění programu zacházení vyhodnocuje pravidelně ve čtvrtletních intervalech za účasti odborných zaměstnanců.'
     }
 ];

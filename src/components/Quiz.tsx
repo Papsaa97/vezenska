@@ -2,8 +2,9 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { BookOpen, Clock, Play, CheckCircle2, XCircle, Star, RotateCcw, Volume2, Award, Flag, Printer, ArrowRight, ArrowLeft, ShieldAlert, Sparkles, Cloud, Database } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Question, QuizSessionRecord, QuestionAttempt } from '../types';
-
+import { normalizeSubject } from './SubjectsHub';
 import { speakText, isSpeechSupported } from '../utils/speech';
+import { getSubjectInfo } from '../data/questions/subjectsInfo';
 
 interface QuizProps {
   questions: Question[];
@@ -12,7 +13,6 @@ interface QuizProps {
   onSaveQuizResult?: (result: QuizSessionRecord) => void;
   onNavigateToBadges?: () => void;
   presetSubject?: string;
-  presetTopic?: string;
   questionsSource?: 'supabase' | 'local';
 }
 
@@ -27,13 +27,12 @@ interface SessionStats {
 }
 
 export default function Quiz({ 
-  questions, 
-  favorites, 
+  questions = [], 
+  favorites = [], 
   toggleFavorite, 
   onSaveQuizResult,
   onNavigateToBadges,
   presetSubject,
-  presetTopic,
   questionsSource = 'local'
 }: QuizProps) {
   const [gameState, setGameState] = useState<GameState>('setup');
@@ -41,7 +40,6 @@ export default function Quiz({
   
   // Setup state
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>(['all']);
-  const [selectedTopic, setSelectedTopic] = useState<string>('all');
   const [timeLimit, setTimeLimit] = useState<number | null>(null);
   const [questionCount, setQuestionCount] = useState<number>(10);
   const [isRandomOrder, setIsRandomOrder] = useState<boolean>(true);
@@ -68,30 +66,21 @@ export default function Quiz({
   const timerRef = useRef<number | null>(null);
   const examTimerRef = useRef<number | null>(null);
   
-  const subjects = useMemo(() => Array.from(new Set(questions.map(q => q.subject))), [questions]);
-  
-  const topics = useMemo(() => {
-    let pool = questions;
-    if (!selectedSubjects.includes('all')) {
-      pool = pool.filter(q => selectedSubjects.includes(q.subject));
-    }
-    return Array.from(new Set(pool.map(q => q.topic)));
-  }, [questions, selectedSubjects]);
+  const subjects = useMemo(
+    () => Array.from(new Set((questions || []).map(q => q?.subject).filter((s): s is string => Boolean(s)))),
+    [questions]
+  );
 
-  // Handle preset subject or topic from navigation
+  // Handle preset subject from navigation
   useEffect(() => {
     if (presetSubject) {
       setSelectedSubjects([presetSubject]);
     }
-    if (presetTopic) {
-      setSelectedTopic(presetTopic);
-    }
-  }, [presetSubject, presetTopic]);
+  }, [presetSubject]);
 
   const handleSubjectToggle = (subject: string) => {
     if (subject === 'all') {
       setSelectedSubjects(['all']);
-      setSelectedTopic('all');
     } else {
       let newSubjects = selectedSubjects.filter(s => s !== 'all');
       if (newSubjects.includes(subject)) {
@@ -101,7 +90,6 @@ export default function Quiz({
       }
       if (newSubjects.length === 0) newSubjects = ['all'];
       setSelectedSubjects(newSubjects);
-      setSelectedTopic('all');
     }
   };
 
@@ -125,23 +113,29 @@ export default function Quiz({
   };
 
   const startExamMode = () => {
-    // Generate 50 questions proportionally from all subjects
-    const subList = ['Právo', 'Bezpečnostní služba', 'Penologie', 'Služební příprava', 'Psychologie', 'Profesní etika', 'Pedagogika', 'Zdravověda a první pomoc', 'Vězeňská administrativa'];
+    // Generate 50 questions proportionally from all subjects (including newly separated Zbraně, Taktika, ZOP)
+    const uniqueSubjects = Array.from(
+      new Set((questions || []).map(q => q?.subject).filter((s): s is string => Boolean(s)))
+    );
     let examSelected: Question[] = [];
+    const perSubjectTarget = Math.max(2, Math.floor(50 / (uniqueSubjects.length || 1)));
 
-    subList.forEach((subName) => {
-      const subQuestions = questions.filter(q => q.subject === subName && q.options && q.options.length > 0);
+    uniqueSubjects.forEach((subName) => {
+      const subQuestions = (questions || []).filter(q => q?.subject === subName && q?.options && q.options.length > 0);
       const shuffled = [...subQuestions].sort(() => Math.random() - 0.5);
-      // Allocate 5-6 questions per subject to reach 50 total
-      const count = (subName === 'Právo' || subName === 'Bezpečnostní služba' || subName === 'Penologie' || subName === 'Služební příprava' || subName === 'Profesní etika') ? 6 : 5;
-      examSelected.push(...shuffled.slice(0, count));
+      examSelected.push(...shuffled.slice(0, perSubjectTarget));
     });
 
     // If still less than 50, fill from remaining
     if (examSelected.length < 50) {
-      const remaining = questions.filter(q => !examSelected.some(eq => eq.id === q.id) && q.options);
+      const remaining = (questions || []).filter(q => !examSelected.some(eq => eq.id === q?.id) && q?.options && q.options.length > 0);
       const extra = [...remaining].sort(() => Math.random() - 0.5).slice(0, 50 - examSelected.length);
       examSelected.push(...extra);
+    }
+
+    if (examSelected.length === 0) {
+      alert('V databázi nejsou dostupné žádné testové otázky pro spuštění zkoušky.');
+      return;
     }
 
     // Shuffle full exam and shuffle options of every question
@@ -163,24 +157,22 @@ export default function Quiz({
 
   const startQuiz = () => {
     setIsExamMode(false);
-    let pool = questions;
+    let pool = questions || [];
     
     if (isMistakesMode) {
-      pool = questions.filter(q => mistakeHistory.has(q.id));
+      pool = (questions || []).filter(q => q?.id && mistakeHistory.has(q.id));
       if (pool.length === 0) {
         alert('Nemáte žádné zaznamenané chyby k procvičení.');
         return;
       }
     } else {
       if (!selectedSubjects.includes('all')) {
-        pool = questions.filter(q => selectedSubjects.includes(q.subject));
-      }
-      if (selectedTopic !== 'all') {
-        pool = pool.filter(q => q.topic === selectedTopic);
+        const normSelected = selectedSubjects.map(s => normalizeSubject(s));
+        pool = pool.filter(q => q?.subject && (selectedSubjects.includes(q.subject) || normSelected.includes(normalizeSubject(q.subject))));
       }
     }
     
-    pool = pool.filter(q => q.options && q.options.length > 0 && (q.correctOption !== undefined || q.correct_index !== undefined));
+    pool = pool.filter(q => q?.options && q.options.length > 0 && (q.correctOption !== undefined || q.correct_index !== undefined));
     
     let finalQuestions = [...pool];
     if (isRandomOrder) {
@@ -503,29 +495,12 @@ export default function Quiz({
                 onChange={(e) => handleSubjectToggle(e.target.value)}
                 disabled={gameState === 'playing'}
               >
-                <option value="all">Všechny předměty</option>
+                <option value="all">Všechny předměty (Souhrnný test)</option>
                 {subjects.map(subject => (
-                  <option key={subject} value={subject}>{subject}</option>
+                  <option key={subject} value={subject}>{getSubjectInfo(subject).name}</option>
                 ))}
               </select>
             </div>
-
-            {topics.length > 1 && (
-              <div className={isMistakesMode ? 'opacity-50 pointer-events-none' : ''}>
-                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Tematický okruh</label>
-                <select 
-                  className="w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 dark:text-slate-200"
-                  value={selectedTopic}
-                  onChange={(e) => setSelectedTopic(e.target.value)}
-                  disabled={gameState === 'playing'}
-                >
-                  <option value="all">Všechny okruhy</option>
-                  {topics.map(t => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
-              </div>
-            )}
 
             <div className={isMistakesMode ? 'opacity-50 pointer-events-none' : ''}>
               <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Časový limit na otázku</label>
@@ -857,7 +832,7 @@ export default function Quiz({
                     <div key={q.id} className="bg-slate-50 dark:bg-slate-800/80 p-5 rounded-xl border border-slate-200 dark:border-slate-700">
                       <div className="flex items-start justify-between gap-2 mb-3">
                         <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
-                          {q.subject} • {q.topic}
+                          {q.subject}{q.topic ? ` • ${q.topic}` : ''}
                         </span>
                       </div>
                       <p className="font-bold text-sm sm:text-base text-slate-900 dark:text-white mb-3">
@@ -923,7 +898,7 @@ export default function Quiz({
                 Otázka {currentIndex + 1} / {quizQuestions.length}
               </span>
               <span className="text-slate-400 dark:text-slate-500 font-semibold text-xs hidden sm:block">
-                {currentQ.subject} • {currentQ.topic}
+                {getSubjectInfo(currentQ.subject).name}{currentQ.topic ? ` • ${currentQ.topic}` : ''}
               </span>
             </div>
             

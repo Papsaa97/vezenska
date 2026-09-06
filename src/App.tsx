@@ -19,6 +19,7 @@ import MaterialLibrary from './components/MaterialLibrary';
 import ContentManager from './components/ContentManager';
 import { matchingCategories, defaultQuizHistory } from './data/initialData';
 import { academyQuestions } from './data/questionsData';
+import { tacticalScenarios } from './data/scenariosData';
 import { 
   FolderKanban,  
   Layers, 
@@ -60,7 +61,7 @@ export default function App() {
   }
   return [];
 });
-  const [quizPreset, setQuizPreset] = useState<{ subject?: string; topic?: string }>({});
+  const [quizPreset, setQuizPreset] = useState<{ subject?: string }>({});
   const [flashcardPresetSubject, setFlashcardPresetSubject] = useState<string | undefined>(undefined);
   const [customQuestions, setCustomQuestions] = useState<Question[] | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -170,9 +171,9 @@ export default function App() {
     setMatchingHistory(prev => [record, ...prev]);
   };
 
-  const handleStartSubjectQuiz = (subject: string, topic?: string) => {
+  const handleStartSubjectQuiz = (subject: string) => {
     setCustomQuestions(null);
-    setQuizPreset({ subject, topic });
+    setQuizPreset({ subject });
     setActiveTab('quiz');
   };
 
@@ -228,7 +229,7 @@ export default function App() {
         {activeTab === 'subjects' && (
           <div className="w-full h-full overflow-y-auto pr-1">
             <SubjectsHub
-              questions={allQuestions}
+              questions={allQuestions || []}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
               onStartQuiz={handleStartSubjectQuiz}
@@ -239,13 +240,12 @@ export default function App() {
 
         {activeTab === 'quiz' && (
           <Quiz 
-            questions={customQuestions || allQuestions} 
+            questions={customQuestions || allQuestions || []} 
             favorites={favorites} 
             toggleFavorite={toggleFavorite}
             onSaveQuizResult={handleSaveQuizResult}
             onNavigateToBadges={() => setActiveTab('badges')}
             presetSubject={quizPreset.subject}
-            presetTopic={quizPreset.topic}
             questionsSource={questionsSource}
           />
         )}
@@ -293,7 +293,7 @@ export default function App() {
         
         {activeTab === 'flashcards' && (
           <Flashcards 
-            questions={customQuestions || allQuestions} 
+            questions={customQuestions || allQuestions || []} 
             favorites={favorites} 
             toggleFavorite={toggleFavorite}
             presetSubject={flashcardPresetSubject}
@@ -337,7 +337,7 @@ export default function App() {
 
         {activeTab === 'content-manager' && isPrivileged && (
           <div className="w-full h-full overflow-y-auto pr-1">
-            <ContentManager />
+            <ContentManager onQuestionsUpdated={loadQuestions} />
           </div>
         )}
       </main>
@@ -468,7 +468,7 @@ export default function App() {
                   >
                     <ShieldAlert className="w-5 h-5 text-amber-500 mb-1.5" />
                     <div className="text-xs font-bold leading-snug">Taktické scénáře</div>
-                    <div className="text-[10px] text-slate-500 leading-tight mt-0.5">10 situací z praxe</div>
+                    <div className="text-[10px] text-slate-500 leading-tight mt-0.5">{tacticalScenarios.length} modelových situací</div>
                   </button>
 
                   <button

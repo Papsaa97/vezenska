@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { tacticalScenarios, Scenario, ScenarioStep, ScenarioChoice } from '../data/scenariosData';
 import { ShieldAlert, CheckCircle2, XCircle, ArrowRight, RotateCcw, Award, BookOpen, AlertTriangle, ChevronRight, Compass } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -21,8 +21,39 @@ export default function Scenarios() {
   const [score, setScore] = useState<{ correct: number; total: number }>({ correct: 0, total: 0 });
   const [activeCategory, setActiveCategoryFilter] = useState<string>('all');
 
+  useEffect(() => {
+    const handleStorageUpdate = () => {
+      try {
+        const saved = localStorage.getItem('vscr_completed_scenarios');
+        if (saved) {
+          setCompletedScenarios(JSON.parse(saved));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    window.addEventListener('storage', handleStorageUpdate);
+    return () => window.removeEventListener('storage', handleStorageUpdate);
+  }, []);
+
   const categories = useMemo(() => Array.from(new Set(tacticalScenarios.map(s => s.category))), []);
   const filteredScenarios = activeCategory === 'all' ? tacticalScenarios : tacticalScenarios.filter(s => s.category === activeCategory);
+
+  const markScenarioCompleted = (scenarioId: string) => {
+    setCompletedScenarios(prev => {
+      if (!prev.includes(scenarioId)) {
+        const next = [...prev, scenarioId];
+        try {
+          localStorage.setItem('vscr_completed_scenarios', JSON.stringify(next));
+          window.dispatchEvent(new Event('storage'));
+        } catch (e) {
+          console.error(e);
+        }
+        return next;
+      }
+      return prev;
+    });
+  };
 
   const handleSelectScenario = (scenario: Scenario) => {
     setSelectedScenario(scenario);
@@ -37,6 +68,11 @@ export default function Scenarios() {
       correct: prev.correct + (choice.isCorrect ? 1 : 0),
       total: prev.total + 1
     }));
+
+    // Pokud je to poslední krok scénáře a volba je správná, scénář je úspěšně dokončen
+    if (selectedScenario && choice.isCorrect && !choice.nextStepId) {
+      markScenarioCompleted(selectedScenario.id);
+    }
   };
 
   const handleNextStep = () => {
@@ -53,19 +89,7 @@ export default function Scenarios() {
 
     // Finished scenario
     if (selectedChoice.isCorrect) {
-      setCompletedScenarios(prev => {
-        if (!prev.includes(selectedScenario.id)) {
-          const next = [...prev, selectedScenario.id];
-          try {
-            localStorage.setItem('vscr_completed_scenarios', JSON.stringify(next));
-            window.dispatchEvent(new Event('storage'));
-          } catch {
-            // ignore
-          }
-          return next;
-        }
-        return prev;
-      });
+      markScenarioCompleted(selectedScenario.id);
     }
   };
 
@@ -75,6 +99,9 @@ export default function Scenarios() {
   };
 
   const handleBackToList = () => {
+    if (selectedScenario && selectedChoice?.isCorrect && !selectedChoice.nextStepId) {
+      markScenarioCompleted(selectedScenario.id);
+    }
     setSelectedScenario(null);
     setCurrentStepIndex(0);
     setSelectedChoice(null);
@@ -151,15 +178,23 @@ export default function Scenarios() {
                     <span className="text-xs font-semibold px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-md border border-slate-200 dark:border-slate-700">
                       {scenario.category}
                     </span>
-                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
-                      scenario.difficulty === 'Expertní' 
-                        ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400' 
-                        : scenario.difficulty === 'Pokročilá'
-                        ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400'
-                        : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400'
-                    }`}>
-                      {scenario.difficulty}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {isCompleted && (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300/60 dark:border-emerald-800/60">
+                          <CheckCircle2 className="w-3 h-3" />
+                          Vyřešeno
+                        </span>
+                      )}
+                      <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                        scenario.difficulty === 'Expertní' 
+                          ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400' 
+                          : scenario.difficulty === 'Pokročilá'
+                          ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400'
+                          : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400'
+                      }`}>
+                        {scenario.difficulty}
+                      </span>
+                    </div>
                   </div>
 
                   <h3 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2">

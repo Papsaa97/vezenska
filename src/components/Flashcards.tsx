@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Star, Shuffle, ChevronLeft, ChevronRight, BookOpen, Volume2, Layers, CheckCircle2, RotateCcw, BrainCircuit } from 'lucide-react';
 import { Question } from '../types';
+import { normalizeSubject } from './SubjectsHub';
 import { speakText, isSpeechSupported } from '../utils/speech';
+import { getSubjectInfo } from '../data/questions/subjectsInfo';
 
 interface FlashcardsProps {
   questions: Question[];
@@ -10,7 +12,7 @@ interface FlashcardsProps {
   presetSubject?: string;
 }
 
-export default function Flashcards({ questions, favorites, toggleFavorite, presetSubject }: FlashcardsProps) {
+export default function Flashcards({ questions = [], favorites = [], toggleFavorite, presetSubject }: FlashcardsProps) {
   const [selectedSubject, setSelectedSubject] = useState<string>(presetSubject || 'all');
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -57,28 +59,32 @@ export default function Flashcards({ questions, favorites, toggleFavorite, prese
     }
   }, [presetSubject]);
 
-  const subjects = useMemo(() => Array.from(new Set(questions.map(q => q.subject))), [questions]);
+  const subjects = useMemo(
+    () => Array.from(new Set((questions || []).map(q => q?.subject).filter(Boolean))),
+    [questions]
+  );
 
   const filteredQuestions = useMemo(() => {
-    let filtered = questions;
+    let filtered = questions || [];
     if (selectedSubject !== 'all') {
-      filtered = filtered.filter(q => q.subject === selectedSubject);
+      const normSel = normalizeSubject(selectedSubject);
+      filtered = filtered.filter(q => q?.subject && (q.subject === selectedSubject || normalizeSubject(q.subject) === normSel));
     }
     if (showOnlyFavorites) {
-      filtered = filtered.filter(q => favorites.includes(q.id));
+      filtered = filtered.filter(q => q?.id && (favorites || []).includes(q.id));
     }
     if (isLeitnerMode && selectedLeitnerBox !== 'all') {
       filtered = filtered.filter(q => {
-        const box = leitnerBoxes[q.id] || 1;
+        const box = q?.id ? (leitnerBoxes[q.id] || 1) : 1;
         return box === selectedLeitnerBox;
       });
     }
     if (searchQuery.trim()) {
       const lowerQuery = searchQuery.toLowerCase();
       filtered = filtered.filter(q => 
-        q.question.toLowerCase().includes(lowerQuery) || 
-        q.answer.toLowerCase().includes(lowerQuery) ||
-        q.topic.toLowerCase().includes(lowerQuery)
+        (q?.question || '').toLowerCase().includes(lowerQuery) || 
+        (q?.answer || '').toLowerCase().includes(lowerQuery) ||
+        (q?.topic || '').toLowerCase().includes(lowerQuery)
       );
     }
     return filtered;
@@ -164,9 +170,9 @@ export default function Flashcards({ questions, favorites, toggleFavorite, prese
   const currentQuestion = shuffledQuestions[currentCardIndex];
 
   // Box counts for Leitner
-  const box1Count = questions.filter(q => (leitnerBoxes[q.id] || 1) === 1).length;
-  const box2Count = questions.filter(q => (leitnerBoxes[q.id] || 1) === 2).length;
-  const box3Count = questions.filter(q => (leitnerBoxes[q.id] || 1) === 3).length;
+  const box1Count = (questions || []).filter(q => q?.id && (leitnerBoxes[q.id] || 1) === 1).length;
+  const box2Count = (questions || []).filter(q => q?.id && (leitnerBoxes[q.id] || 1) === 2).length;
+  const box3Count = (questions || []).filter(q => q?.id && (leitnerBoxes[q.id] || 1) === 3).length;
 
   return (
     <>
@@ -278,7 +284,7 @@ export default function Flashcards({ questions, favorites, toggleFavorite, prese
               >
                 <option value="all">Všechny předměty</option>
                 {subjects.map(subject => (
-                  <option key={subject} value={subject}>{subject}</option>
+                  <option key={subject} value={subject}>{getSubjectInfo(subject).name}</option>
                 ))}
               </select>
             </div>
@@ -372,7 +378,7 @@ export default function Flashcards({ questions, favorites, toggleFavorite, prese
                 <div className="absolute w-full h-full backface-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-8 flex flex-col hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start mb-6">
                     <div className="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-900/30 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-400">
-                      {currentQuestion.subject} • {currentQuestion.topic}
+                      {getSubjectInfo(currentQuestion.subject).name} • {currentQuestion.topic}
                     </div>
                     <div className="flex items-center gap-1">
                       <button 

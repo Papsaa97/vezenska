@@ -7,7 +7,7 @@ export interface SubjectInfo {
   accentColor: string;
   description: string;
   legalFramework: string[];
-  keyTopics: string[];
+  keyTopics?: string[];
   examRequirements: string;
 }
 
@@ -244,5 +244,119 @@ export const subjectsMeta: Record<string, SubjectInfo> = {
       'Duchovní péče ve vězeňství (VDP z.s. dobrovolníci, VDS kaplani VS ČR, dohody ČBK, ERC a NSSJ)'
     ],
     examRequirements: 'Ústní i písemný test (50 otázek). Schopnost etické analýzy situací, aplikace Kodexu etiky a znalost mezinárodních standardů LP.'
+  },
+  'Zbraně': {
+    id: 'zbrane',
+    name: 'Zbraně',
+    code: 'ZBR',
+    iconName: 'Crosshair',
+    badgeColor: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800',
+    accentColor: 'rose',
+    description: 'Nauka o zbraních a střelivu používaných ve Vězeňské službě ČR, konstrukce a manipulace se služební zbraní, bezpečnostní zásady střelby a údržby.',
+    legalFramework: [
+      'Zákon č. 119/2002 Sb., o střelných zbraních a střelivu',
+      'Zákon č. 555/1992 Sb., o Vězeňské službě a justiční stráži ČR',
+      'Interní předpisy a metodické pokyny pro střeleckou přípravu VS ČR'
+    ],
+    keyTopics: [
+      'Konstrukce a funkce služební pistole a samopalu',
+      'Bezpečnostní zásady při manipulaci se zbraní',
+      'Střelivo, balistika a zastavovací účinek',
+      'Údržba, čištění a kontrola technického stavu zbraně'
+    ],
+    examRequirements: 'Praktické zvládnutí bezpečné manipulace se zbraní a teoretická znalost konstrukce, střeliva a zásad bezpečné střelby.'
+  },
+  'Taktika': {
+    id: 'taktika',
+    name: 'Taktika',
+    code: 'TAK',
+    iconName: 'Crosshair',
+    badgeColor: 'bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-200 dark:border-teal-800',
+    accentColor: 'teal',
+    description: 'Taktické postupy při řešení standardních i krizových situací ve věznicích a vazebních věznicích, zásahy pod jednotným velením a týmová spolupráce.',
+    legalFramework: [
+      'Zákon č. 555/1992 Sb., o Vězeňské službě a justiční stráži ČR',
+      'NGŘ č. 33/2019, o strážní, dozorčí a eskortní službě',
+      'Typové plány a metodické pokyny pro mimořádné události'
+    ],
+    keyTopics: [
+      'Taktika zákroku v uzavřených prostorách cely',
+      'Řešení vzpoury, barikádování a držení rukojmích',
+      'Zásady jištění a vzájemného krytí příslušníků',
+      'Použití taktických pomůcek a ochranného vybavení'
+    ],
+    examRequirements: 'Znalost taktických postupů při modelových situacích a správné rozhodování v krizových scénářích.'
+  },
+  'ZOP': {
+    id: 'zop',
+    name: 'ZOP',
+    code: 'ZOP',
+    iconName: 'GraduationCap',
+    badgeColor: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800',
+    accentColor: 'blue',
+    description: 'Základní odborná příprava příslušníků a zaměstnanců Vězeňské služby ČR – obecné základy výkonu služby a organizace resortu.',
+    legalFramework: [
+      'Zákon č. 555/1992 Sb., o Vězeňské službě a justiční stráži ČR',
+      'Zákon č. 361/2003 Sb., o služebním poměru příslušníků bezpečnostních sborů',
+      'Řád Akademie Vězeňské služby ČR'
+    ],
+    keyTopics: [
+      'Organizace a struktura Vězeňské služby ČR',
+      'Práva a povinnosti nového příslušníka',
+      'Základní terminologie a resortní předpisy',
+      'Průběh a hodnocení základní odborné přípravy'
+    ],
+    examRequirements: 'Přehled o struktuře VS ČR, základních povinnostech a průběhu vzdělávání v Akademii VS ČR.'
+  },
+  'Ostatní': {
+    id: 'ostatni',
+    name: 'Ostatní',
+    code: 'OST',
+    iconName: 'BookOpen',
+    badgeColor: 'bg-slate-500/10 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-800',
+    accentColor: 'purple',
+    description: 'Doplňková témata a mezioborové otázky v rámci profesního rozvoje a přípravy personálu Vězeňské služby ČR.',
+    legalFramework: [
+      'Příslušné resortní předpisy a metodické materiály VS ČR'
+    ],
+    keyTopics: [
+      'Mezioborová témata',
+      'Novinky v legislativě a resortních předpisech',
+      'Všeobecný přehled'
+    ],
+    examRequirements: 'Základní orientace v doplňkových a všeobecných otázkách výkonu služby.'
   }
 };
+
+/**
+ * Bezpečně vrátí metadata předmětu. Pokud předmět není v metadatech nalezen,
+ * vygeneruje bezpečný fallback objekt, aby komponenta nikdy nespadla na undefined.
+ */
+export function getSubjectInfo(name?: string | null): SubjectInfo {
+  if (!name) {
+    return subjectsMeta['Právo'] || Object.values(subjectsMeta)[0];
+  }
+  if (subjectsMeta[name]) {
+    return subjectsMeta[name];
+  }
+  const foundKey = Object.keys(subjectsMeta).find(
+    k => k.trim().toLowerCase() === name.trim().toLowerCase()
+  );
+  if (foundKey && subjectsMeta[foundKey]) {
+    return subjectsMeta[foundKey];
+  }
+
+  const safeName = String(name).trim() || 'Neznámý předmět';
+  return {
+    id: safeName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+    name: safeName,
+    code: safeName.substring(0, 3).toUpperCase(),
+    iconName: 'BookOpen',
+    badgeColor: 'bg-slate-500/10 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-800',
+    accentColor: 'indigo',
+    description: `Studijní modul pro oblast ${safeName}.`,
+    legalFramework: ['Resortní předpisy a metodické materiály VS ČR'],
+    keyTopics: ['Základní okruhy pro vybraný předmět'],
+    examRequirements: 'Znalost základních zásad a postupů pro danou oblast služby.',
+  };
+}

@@ -1,7 +1,7 @@
 export interface Question {
   id: string;
   subject: string;
-  topic: string;
+  topic?: string;
   question: string;
   answer: string;
   options?: string[];
@@ -40,7 +40,7 @@ export interface QuestionAttempt {
   questionId: string;
   questionText: string;
   subject: string;
-  topic: string;
+  topic?: string;
   isCorrect: boolean;
   selectedOption: number;
   correctOption: number;

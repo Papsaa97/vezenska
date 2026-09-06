@@ -1042,37 +1042,37 @@ export const pravoQuestions: Question[] = [
       explanation: `Přestupky upravuje zákon č. 250/2016 Sb. o odpovědnosti za přestupky a o řízení o nich. Mají nižší materiální škodlivost. O trestech za trestné činy (sankční dualismus – tresty a ochranná opatření) smí rozhodovat pouze soud (čl. 39 a 40 LZPS). (Právní úprava: Zákon č. 250/2016 Sb. a Zákon č. 40/2009 Sb.)`
 },
     {
-        id: 'new_pravo_01',
+        id: 'pr-56',
         subject: 'Právo',
-        topic: 'Nová modelová situace 1',
-        question: 'Dozorce ubytovny zjistí při ranní kontrole, že odsouzený nereaguje a leží nehybně na lůžku. Jaký je správný prvotní postup?',
-        answer: 'Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.',
+        topic: 'Trestní právo procesní',
+        question: 'Který orgán je oprávněn rozhodovat o vzetí obviněného do vazby (§ 68 trestního řádu)?',
+        answer: 'O vzetí do vazby rozhoduje v přípravném řízení soudce na návrh státního zástupce, po podání obžaloby soudce nebo předseda senátu.',
         options: [
-                  `Okamžitě vstoupit sám do cely, začít odsouzeným třást a pokusit se ho probudit.`,
-                  `Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.`,
-                  `Otevřít celu, zkontrolovat tep a pokud odsouzený nedýchá, ihned ho přenést na ošetřovnu.`,
-                  `Uzamknout celu, neprodleně nahlásit situaci veliteli směny a vyčkat na jeho příchod bez dalších akcí.`
+                  `O vzetí do vazby rozhoduje v přípravném řízení soudce na návrh státního zástupce, po podání obžaloby soudce nebo předseda senátu.`,
+                  `Výhradně státní zástupce bez nutnosti rozhodnutí soudu.`,
+                  `Policejní orgán provádějící vyšetřování se souhlasem ředitele vazební věznice.`,
+                  `Ředitel vazební věznice na základě žádosti vyšetřovatele Policie ČR.`
                 ],
-        correctOption: 1,
-        rationale: 'Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc.',
-        source: 'NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC)',
-        explanation: `Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc. (Právní úprava: NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC))`
+        correctOption: 0,
+        rationale: 'Omezení osobní svobody vazbou je zásadním zásahem do základních práv (čl. 8 LZPS), proto o vzetí do vazby smí rozhodnout výhradně nezávislý soudce.',
+        source: '§ 68 zákona č. 141/1961 Sb., trestní řád',
+        explanation: `Omezení osobní svobody vazbou je zásadním zásahem do základních práv (čl. 8 LZPS), proto o vzetí do vazby smí rozhodnout výhradně nezávislý soudce. (Právní úprava: § 68 zákona č. 141/1961 Sb., trestní řád)`
     },
     {
-        id: 'new_pravo_02',
+        id: 'pr-57',
         subject: 'Právo',
-        topic: 'Nová modelová situace 2',
-        question: 'Při osobní prohlídce odsouzeného po eskortě naleznete ukrytý nepovolený předmět (mobilní telefon). Jaký je správný postup dle předpisů?',
-        answer: 'Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.',
+        topic: 'Správní řízení a zákon o VS ČR',
+        question: 'Jaký je opravný prostředek proti rozhodnutí ředitele věznice ve věcech služebního poměru (§ 190 zákona č. 361/2003 Sb.)?',
+        answer: 'Odvolání, o kterém rozhoduje generální ředitel Vězeňské služby ČR jako nadřízený služební funkcionář.',
         options: [
-                  `Předmět zabavit, zničit ho před odsouzeným, aby se předešlo dalšímu použití a sepsat záznam.`,
-                  `Okamžitě použít donucovací prostředky, předmět zabavit a umístit odsouzeného do samovazby.`,
-                  `Předmět ponechat odsouzenému s důrazným varováním, že při dalším nálezu bude potrestán.`,
-                  `Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.`
+                  `Stížnost podaná k obecnímu úřadu v místě sídla věznice.`,
+                  `Odvolání, o kterém rozhoduje generální ředitel Vězeňské služby ČR jako nadřízený služební funkcionář.`,
+                  `Dovolání k Nejvyššímu správnímu soudu do 15 dnů od doručení.`,
+                  `Kázeňská žaloba podaná k rukám předsedy okresního soudu.`
                 ],
-        correctOption: 3,
-        rationale: 'Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné.',
-        source: 'Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ)',
-        explanation: `Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné. (Právní úprava: Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ))`
+        correctOption: 1,
+        rationale: 'Proti rozhodnutí služebního funkcionáře lze podat odvolání do 15 dnů ode dne doručení rozhodnutí. O odvolání rozhoduje služební funkcionář nadřízený tomu, který rozhodnutí vydal.',
+        source: '§ 190 zákona č. 361/2003 Sb., o služebním poměru příslušníků bezpečnostních sborů',
+        explanation: `Proti rozhodnutí služebního funkcionáře lze podat odvolání do 15 dnů ode dne doručení rozhodnutí. O odvolání rozhoduje služební funkcionář nadřízený tomu, který rozhodnutí vydal. (Právní úprava: § 190 zákona č. 361/2003 Sb., o služebním poměru příslušníků bezpečnostních sborů)`
     }
 ];

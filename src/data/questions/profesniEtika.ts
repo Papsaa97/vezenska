@@ -943,37 +943,37 @@ export const profesniEtikaQuestions: Question[] = [
       explanation: `Nestrannost a rovný přístup (zákaz diskriminace) tvoří základní pilíř spravedlivého výkonu trestu. Vězeň musí vnímat, že s ním stát jedná férově a na základě pravidel, nikoli na základě osobních sympatií dozorce. (Právní úprava: Kodex profesní etiky VS ČR)`
 },
     {
-        id: 'new_profesniEtika_01',
+        id: 'pe_56',
         subject: 'Profesní etika',
-        topic: 'Nová modelová situace 1',
-        question: 'Dozorce ubytovny zjistí při ranní kontrole, že odsouzený nereaguje a leží nehybně na lůžku. Jaký je správný prvotní postup?',
-        answer: 'Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.',
+        topic: 'Střet zájmů a přijímání darů',
+        question: 'Může příslušník nebo zaměstnanec VS ČR přijmout peněžitý dar nebo pozornost od rodinného příslušníka vězněné osoby jako poděkování za lidský přístup?',
+        answer: 'Ne, přijetí jakéhokoliv daru nebo výhody v souvislosti s výkonem služby je striktně zakázáno a zakládá podezření z korupčního jednání.',
         options: [
-                  `Okamžitě vstoupit sám do cely, začít odsouzeným třást a pokusit se ho probudit.`,
-                  `Otevřít celu, zkontrolovat tep a pokud odsouzený nedýchá, ihned ho přenést na ošetřovnu.`,
-                  `Uzamknout celu, neprodleně nahlásit situaci veliteli směny a vyčkat na jeho příchod bez dalších akcí.`,
-                  `Okamžitě přivolat dalšího příslušníka (zálohu), otevřít celu s jištěním, zkontrolovat životní funkce (vědomí, dýchání) a v případě potřeby zahájit KPR a volat ZZS.`
-                ],
-        correctOption: 3,
-        rationale: 'Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc.',
-        source: 'NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC)',
-        explanation: `Z bezpečnostního hlediska nesmí příslušník vstupovat na celu sám. Prvním krokem je zajištění bezpečnosti přivoláním zálohy, následný vstup, posouzení stavu a neodkladná první pomoc. (Právní úprava: NGŘ č. 33/2019 Sb. a standardy poskytování PP (TCCC/ERC))`
+            'Ano, pokud hodnota daru nepřesáhne částku 500 Kč a je o tom sepsán neformální záznam.',
+            'Ne, přijetí jakéhokoliv daru nebo výhody v souvislosti s výkonem služby je striktně zakázáno a zakládá podezření z korupčního jednání.',
+            'Ano, ale pouze pokud se jedná o kávu, čokoládu nebo jiné trvanlivé potraviny.',
+            'Ano, pokud k předání dojde mimo areál věznice v době osobního volna.'
+        ],
+        correctOption: 1,
+        rationale: 'Dle zákona č. 361/2003 Sb. i Kodexu etiky VS ČR nesmí příslušník v souvislosti s výkonem služby požadovat ani přijímat dary nebo jiné výhody pro sebe ani pro jiného.',
+        source: '§ 46 zákona č. 361/2003 Sb. a Etický kodex VS ČR',
+        explanation: 'Přijetí daru nebo výhody v souvislosti s výkonem služby je striktně zakázáno zákonem i etickým kodexem.'
     },
     {
-        id: 'new_profesniEtika_02',
+        id: 'pe_57',
         subject: 'Profesní etika',
-        topic: 'Nová modelová situace 2',
-        question: 'Při osobní prohlídce odsouzeného po eskortě naleznete ukrytý nepovolený předmět (mobilní telefon). Jaký je správný postup dle předpisů?',
-        answer: 'Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.',
+        topic: 'Důstojnost a lidská práva',
+        question: 'Která mezinárodní úmluva a evropská pravidla tvoří základní etický standard zacházení s vězněnými osobami v podmínkách VS ČR?',
+        answer: 'Evropská úmluva o lidských právech a Evropská vězeňská pravidla Rady Evropy.',
         options: [
-                  `Předmět zabavit, zničit ho před odsouzeným, aby se předešlo dalšímu použití a sepsat záznam.`,
-                  `Okamžitě použít donucovací prostředky, předmět zabavit a umístit odsouzeného do samovazby.`,
-                  `Předmět odnít s vystavením potvrzení o odnětí věci, sepsat Záznam o kázeňském přestupku, informovat nadřízeného a předmět uložit do úschovy.`,
-                  `Předmět ponechat odsouzenému s důrazným varováním, že při dalším nálezu bude potrestán.`
-                ],
-        correctOption: 2,
-        rationale: 'Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné.',
-        source: 'Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ)',
-        explanation: `Zabavení věci vyžaduje úřední postup (Potvrzení o odnětí věci) a projednání v kázeňském řízení (Záznam o kázeňském přestupku). Fyzická likvidace nebo neoprávněné užití donucovacích prostředků je nezákonné. (Právní úprava: Zákon č. 169/1999 Sb. a NGŘ o Vězeňské administrativě (VIS/ETŘ))`
+            'Ženevské úmluvy o válečných zajatcích výhradně pro případ válečného stavu.',
+            'Evropská úmluva o lidských právech a Evropská vězeňská pravidla Rady Evropy.',
+            'Mezinárodní obchodní kodex pro nápravná zařízení.',
+            'Vnitřní předpisy Mezinárodní vězeňské asociace pro soukromé věznice.'
+        ],
+        correctOption: 1,
+        rationale: 'Evropská vězeňská pravidla a Úmluva o ochraně lidských práv a základních svobod vymezují nepřekročitelný etický i právní rámec lidské důstojnosti a zákazu nelidského zacházení.',
+        source: 'Evropská vězeňská pravidla (Doporučení Rec(2006)2) a EÚLP',
+        explanation: 'Evropská vězeňská pravidla a EÚLP vymezují nepřekročitelný standard lidské důstojnosti a humánního zacházení ve vězeňství.'
     }
 ];
