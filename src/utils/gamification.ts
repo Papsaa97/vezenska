@@ -425,10 +425,11 @@ export function importAllUserData(jsonString: string): { success: boolean; messa
   if (typeof window === 'undefined') return { success: false, message: 'Prohlížeč není dostupný' };
   
   try {
-    const data = JSON.parse(jsonString);
-    if (!data || typeof data !== 'object') {
+    const rawData: unknown = JSON.parse(jsonString);
+    if (!rawData || typeof rawData !== 'object') {
       return { success: false, message: 'Neplatný formát souboru se zálohou.' };
     }
+    const data = rawData as Partial<UserBackupData>;
 
     if (Array.isArray(data.quizHistory)) {
       localStorage.setItem('vscr_quiz_history', JSON.stringify(data.quizHistory));
@@ -456,7 +457,8 @@ export function importAllUserData(jsonString: string): { success: boolean; messa
     }
 
     return { success: true, message: 'Záloha byla úspěšně nahrána.' };
-  } catch (err: any) {
-    return { success: false, message: `Chyba při čtení JSON: ${err.message || 'neznámá chyba'}` };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'neznámá chyba';
+    return { success: false, message: `Chyba při čtení JSON: ${errorMsg}` };
   }
 }

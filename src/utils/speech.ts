@@ -10,7 +10,7 @@ export function speakText(text: string, onEnd?: () => void): boolean {
     return false;
   }
 
-  // Cancel any ongoing speech
+  // Cancel previous speech if running
   window.speechSynthesis.cancel();
 
   const utterance = new SpeechSynthesisUtterance(text);

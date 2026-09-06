@@ -24,6 +24,7 @@ import { useAuth } from '../context/AuthContext';
 import {
   importDefaultQuestionsToSupabase,
   getUniqueDefaultQuestions,
+  SupabaseQuizQuestionRow,
 } from '../utils/quizQuestionsLoader';
 
 // ─── Constants & Types ────────────────────────────────────────────────────────
@@ -78,7 +79,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'] as const;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function parseQuestionRow(row: Record<string, unknown>): QuizQuestionItem {
+function parseQuestionRow(row: SupabaseQuizQuestionRow): QuizQuestionItem {
   let optionsArray: string[] = [];
   if (Array.isArray(row.options)) {
     optionsArray = row.options.map(String);
@@ -180,7 +181,7 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
         }
         setQuestions([]);
       } else if (data) {
-        const parsed = (data as Record<string, unknown>[]).map(parseQuestionRow);
+        const parsed = (data as SupabaseQuizQuestionRow[]).map(parseQuestionRow);
         setQuestions(parsed);
       }
     } catch (err) {

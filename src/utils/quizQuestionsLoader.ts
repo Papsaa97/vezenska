@@ -2,18 +2,39 @@ import { Question } from '../types';
 import { academyQuestions } from '../data/questionsData';
 import { supabase } from '../lib/supabase';
 
+export interface SupabaseQuizQuestionRow {
+  id?: string | number | null;
+  subject?: string | null;
+  topic?: string | null;
+  question?: string | null;
+  answer?: string | number | null;
+  options?: string[] | string | null;
+  correct_index?: number | null;
+  correct_option?: number | null;
+  correctOption?: number | null;
+  correctAnswer?: number | null;
+  rationale?: string | null;
+  explanation?: string | null;
+  source?: string | null;
+  created_at?: string | null;
+  [key: string]: unknown;
+}
+
 /**
  * Bezpečně extrahuje index správné odpovědi (0-3) z libovolné formy otázky
  * (q.answer, q.correctAnswer, q.correctOption, q.correct_index).
  */
-export function extractCorrectIndex(q: Question | Record<string, unknown>): number {
-  const record = q as Record<string, unknown>;
+export function extractCorrectIndex(q: Question | SupabaseQuizQuestionRow | Record<string, unknown>): number {
+  const record = q as SupabaseQuizQuestionRow;
 
   if (typeof record.correct_index === 'number') {
     return Math.min(Math.max(record.correct_index, 0), 3);
   }
   if (typeof record.correctOption === 'number') {
     return Math.min(Math.max(record.correctOption, 0), 3);
+  }
+  if (typeof record.correct_option === 'number') {
+    return Math.min(Math.max(record.correct_option, 0), 3);
   }
   if (typeof record.correctAnswer === 'number') {
     return Math.min(Math.max(record.correctAnswer, 0), 3);
@@ -53,7 +74,7 @@ export function extractCorrectIndex(q: Question | Record<string, unknown>): numb
  * Převede surový záznam z tabulky public.quiz_questions na typ Question.
  * Správně mapuje `correct_index` i `explanation` zpět na formát očekávaný testovacím enginem.
  */
-export function mapRowToQuestion(row: Record<string, unknown>): Question {
+export function mapRowToQuestion(row: SupabaseQuizQuestionRow): Question {
   const correctIdx = typeof row.correct_index === 'number'
     ? row.correct_index
     : typeof row.correct_option === 'number'
@@ -126,7 +147,7 @@ export async function fetchQuizQuestionsFromSupabase(): Promise<Question[] | nul
     }
 
     if (data && data.length > 0) {
-      return (data as Record<string, unknown>[]).map(mapRowToQuestion);
+      return (data as SupabaseQuizQuestionRow[]).map(mapRowToQuestion);
     }
 
     return null;

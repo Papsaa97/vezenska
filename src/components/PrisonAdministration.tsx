@@ -1194,7 +1194,7 @@ export default function PrisonAdministration() {
                 <label className="font-bold text-slate-700 dark:text-slate-300">4. Typ spisu</label>
                 <select
                   value={cjSpisType}
-                  onChange={(e) => setCjSpisType(e.target.value as any)}
+                  onChange={(e) => setCjSpisType(e.target.value as 'ČJ' | 'PŘ' | 'TČ')}
                   className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono cursor-pointer"
                 >
                   <option value="ČJ">ČJ (Běžné / Svodkové)</option>

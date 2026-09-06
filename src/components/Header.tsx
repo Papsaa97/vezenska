@@ -352,24 +352,8 @@ export default function Header({
           )}
         </div>
 
-        {/* Right controls: Správa obsahu + Merged Profile & Rank + Theme Toggle */}
+        {/* Right controls: Merged Profile & Rank + Theme Toggle */}
         <div className="flex-shrink-0 flex items-center gap-2 sm:gap-2.5">
-          {/* Správa obsahu – lektor / admin only */}
-          {isPrivileged && (
-            <button
-              onClick={() => { setActiveTab('content-manager'); setOpenDropdown(null); setDropdownPos(null); }}
-              className={`p-2 xl:px-3 xl:py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
-                activeTab === 'content-manager'
-                  ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-500/20'
-                  : 'text-emerald-300 bg-emerald-950/40 border border-emerald-500/30 hover:text-white hover:bg-emerald-900/60'
-              }`}
-              title="Správa obsahu – nahrávání a mazání materiálů"
-            >
-              <Settings2 className="w-4 h-4" />
-              <span className="hidden 2xl:inline">Správa obsahu</span>
-            </button>
-          )}
-
           {/* Combined Profile + Rank Element */}
           <div className="relative shrink-0">
             <button
@@ -809,6 +793,19 @@ export default function Header({
                 <span>Hodnostní žebříček a odznaky</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
+
+              {isPrivileged && (
+                <button
+                  onClick={() => { setActiveTab('content-manager'); setOpenDropdown(null); setDropdownPos(null); }}
+                  className="w-full mt-1.5 py-1.5 px-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-lg text-emerald-300 text-[11px] font-bold flex items-center justify-between transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <Settings2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Správa obsahu</span>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
 
             {/* Actions: Sign in or Sign out */}

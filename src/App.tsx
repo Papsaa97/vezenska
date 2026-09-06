@@ -212,7 +212,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <ProtectedRoute isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}>
-        <div className={`flex flex-col h-[100dvh] w-full font-sans overflow-hidden transition-colors print:h-auto print:overflow-visible print:bg-white print:text-black ${isDarkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
+        <div className={`flex flex-col min-h-[100dvh] h-[100dvh] w-full font-sans overflow-hidden transition-colors print:h-auto print:overflow-visible print:bg-white print:text-black ${isDarkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
       <div className="no-print">
         <Header 
           activeTab={activeTab} 
@@ -260,7 +260,7 @@ export default function App() {
         )}
 
         {activeTab === 'compass' && (
-          <div className="w-full h-full min-h-[calc(100vh-170px)] md:min-h-0 flex flex-col overflow-hidden">
+          <div className="w-full h-full min-h-[calc(100dvh-170px)] md:min-h-0 flex flex-col overflow-hidden">
             <LegalCompass />
           </div>
         )}

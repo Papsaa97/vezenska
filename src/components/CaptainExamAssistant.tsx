@@ -77,7 +77,7 @@ export default function CaptainExamAssistant({
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false);
   const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(0);
-  const audioTimerRef = useRef<any>(null);
+  const audioTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -166,8 +166,8 @@ export default function CaptainExamAssistant({
         questions: result.questions
       });
       setSavedExams(getSavedCustomExams());
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Chyba při zpracování zadání.');
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : 'Chyba při zpracování zadání.');
     } finally {
       setIsLoading(false);
     }

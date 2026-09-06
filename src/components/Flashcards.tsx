@@ -311,7 +311,7 @@ export default function Flashcards({ questions = [], favorites = [], toggleFavor
       </aside>
 
       {/* Main Flashcard Area */}
-      <section className="flex-1 flex flex-col h-full overflow-hidden shrink-0 min-h-[400px]">
+      <section className="flex-1 flex flex-col min-h-[100dvh] md:min-h-0 h-auto md:h-full overflow-y-auto md:overflow-hidden shrink-0">
         {shuffledQuestions.length === 0 ? (
           <div className="w-full h-full bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-12 text-center">
             <p className="text-slate-500 dark:text-slate-400 mb-2">Nenalezeny žádné otázky odpovídající filtrům.</p>
@@ -369,13 +369,13 @@ export default function Flashcards({ questions = [], favorites = [], toggleFavor
             </div>
 
             {/* The 3D Card */}
-            <div className="relative h-96 w-full perspective-1000">
+            <div className="relative min-h-[360px] md:min-h-[420px] h-auto w-full perspective-1000">
               <div 
-                className={`w-full h-full transition-all duration-500 preserve-3d cursor-pointer ${isFlipped ? 'rotate-y-180' : ''}`}
+                className={`w-full min-h-[360px] md:min-h-[420px] h-full transition-all duration-500 preserve-3d cursor-pointer ${isFlipped ? 'rotate-y-180' : ''}`}
                 onClick={handleFlip}
               >
                 {/* Front Side */}
-                <div className="absolute w-full h-full backface-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-8 flex flex-col hover:shadow-md transition-shadow">
+                <div className="absolute inset-0 w-full h-full min-h-[360px] md:min-h-[420px] backface-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8 flex flex-col hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start mb-6">
                     <div className="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-900/30 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-400">
                       {getSubjectInfo(currentQuestion.subject).name} • {currentQuestion.topic}
@@ -404,7 +404,7 @@ export default function Flashcards({ questions = [], favorites = [], toggleFavor
                 </div>
 
                 {/* Back Side */}
-                <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-slate-50 dark:bg-slate-800/80 border border-blue-200 dark:border-blue-900/50 rounded-2xl shadow-sm p-8 flex flex-col hover:shadow-md transition-shadow">
+                <div className="absolute inset-0 w-full h-full min-h-[360px] md:min-h-[420px] backface-hidden rotate-y-180 bg-slate-50 dark:bg-slate-800/80 border border-blue-200 dark:border-blue-900/50 rounded-2xl shadow-sm p-6 sm:p-8 flex flex-col hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start mb-4">
                     <div className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Odpověď</div>
                   </div>

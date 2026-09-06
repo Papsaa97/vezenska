@@ -343,7 +343,7 @@ export default function BadgesView({
         <div className="flex items-center gap-2">
           <select
             value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value as any)}
+            onChange={(e) => setSelectedStatus(e.target.value as 'all' | 'unlocked' | 'locked')}
             aria-label="Filtrovat odznaky podle stavu odemčení"
             className="p-1.5 px-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >

@@ -1062,7 +1062,7 @@ export default function LegalCompass() {
                     <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Typ předpisu</label>
                     <select
                       value={editingRegulation.type || 'ngr'}
-                      onChange={(e) => setEditingRegulation(prev => ({ ...prev, type: e.target.value as any }))}
+                      onChange={(e) => setEditingRegulation(prev => ({ ...prev, type: e.target.value as VscrRegulation['type'] }))}
                       className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
                     >
                       <option value="zakon">Zákon (Sb.)</option>
@@ -1088,7 +1088,7 @@ export default function LegalCompass() {
                     <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Důležitost pro ZOP</label>
                     <select
                       value={editingRegulation.importanceForZOP || 'Vysoký'}
-                      onChange={(e) => setEditingRegulation(prev => ({ ...prev, importanceForZOP: e.target.value as any }))}
+                      onChange={(e) => setEditingRegulation(prev => ({ ...prev, importanceForZOP: e.target.value as VscrRegulation['importanceForZOP'] }))}
                       className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
                     >
                       <option value="Klíčový (ZOP A)">Klíčový (ZOP A)</option>

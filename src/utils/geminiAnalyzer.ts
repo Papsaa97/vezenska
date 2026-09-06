@@ -25,7 +25,7 @@ export function getSavedApiKey(): string {
     const saved = localStorage.getItem(STORAGE_KEY_API_KEY);
     if (saved) return saved.trim();
   }
-  return (import.meta as any).env?.VITE_GEMINI_API_KEY || '';
+  return (import.meta as unknown as { env?: Record<string, string | undefined> }).env?.VITE_GEMINI_API_KEY || '';
 }
 
 export function setSavedApiKey(key: string): void {
@@ -68,10 +68,19 @@ export function deleteCustomExam(id: string): void {
   }
 }
 
+export interface GeminiInlineDataPart {
+  inlineData: {
+    data: string;
+    mimeType: string;
+  };
+}
+
+export type GeminiContentPart = string | GeminiInlineDataPart;
+
 /**
  * Converts a File object to base64 inline data format for Gemini API
  */
-export async function fileToGenerativePart(file: File): Promise<{ inlineData: { data: string; mimeType: string } }> {
+export async function fileToGenerativePart(file: File): Promise<GeminiInlineDataPart> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -136,7 +145,7 @@ export async function analyzeExamContent(
 
   const ai = new GoogleGenAI({ apiKey: apiKey.trim() });
 
-  const contents: any[] = [];
+  const contents: GeminiContentPart[] = [];
 
   if (imageFile) {
     const imagePart = await fileToGenerativePart(imageFile);
@@ -150,7 +159,7 @@ export async function analyzeExamContent(
   contents.push(promptText);
 
   const modelsToTry = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash'];
-  let lastError: any = null;
+  let lastError: unknown = null;
 
   for (const modelName of modelsToTry) {
     try {
@@ -192,7 +201,7 @@ export async function analyzeExamContent(
       }));
 
       return parsed;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.warn(`Model ${modelName} failed, trying next...`, err);
       lastError = err;
       continue;
@@ -203,7 +212,7 @@ export async function analyzeExamContent(
   if (lastError) {
     console.error('Gemini Analysis Error:', lastError);
 
-    let rawMessage = lastError.message || String(lastError);
+    let rawMessage = lastError instanceof Error ? lastError.message : String(lastError);
 
     // Try to parse raw JSON error if present
     if (typeof rawMessage === 'string') {
