@@ -19,6 +19,7 @@ import {
   exportRegulationsToJSON,
   importRegulationsFromJSON
 } from '../utils/regulationsStorage';
+import PrintHeader from './common/PrintHeader';
 
 export default function LegalCompass() {
   const [viewMode, setViewMode] = useState<'articles' | 'registry'>('articles');
@@ -705,7 +706,7 @@ export default function LegalCompass() {
         ref={listContainerRef}
         className={`${
           mobileDetailOpen ? 'hidden md:flex' : 'flex'
-        } flex-col w-full md:w-80 lg:w-96 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shrink-0 shadow-sm h-[calc(100dvh-8rem)] md:h-auto max-h-[calc(100dvh-8rem)] md:max-h-none`}
+        } flex-col w-full md:w-80 lg:w-96 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shrink-0 shadow-sm h-[calc(100dvh-8rem)] md:h-auto max-h-[calc(100dvh-8rem)] md:max-h-none no-print`}
       >
         {/* Search Header */}
         <div className="p-3 sm:p-4 border-b border-slate-200 dark:border-slate-800 space-y-3 bg-slate-50/50 dark:bg-slate-900/50">
@@ -812,7 +813,7 @@ export default function LegalCompass() {
         {currentArticle ? (
           <>
             {/* Mobile Back Button — fixed sticky header */}
-            <div className="md:hidden flex items-center justify-between px-3 py-2.5 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900">
+            <div className="md:hidden flex items-center justify-between px-3 py-2.5 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900 no-print">
               <button
                 onClick={() => setMobileDetailOpen(false)}
                 className="flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 cursor-pointer min-h-[44px] min-w-[44px] px-1"
@@ -827,6 +828,13 @@ export default function LegalCompass() {
 
             {/* Scrollable body */}
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain [touch-action:pan-y] p-3 sm:p-6 md:p-8 space-y-6">
+
+            {/* Print Header – viditelná pouze při tisku */}
+            <PrintHeader 
+              subject={`Právní kompas VS ČR – ${currentArticle.actTitle}`} 
+              docTitle={`${currentArticle.section} – ${currentArticle.title} (${currentArticle.actNumber})`} 
+              subtext="Aplikační metodika a zkušební chytáky pro příslušníky VS ČR" 
+            />
 
             {/* Header: Title, Tags, Actions */}
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
@@ -845,7 +853,16 @@ export default function LegalCompass() {
               </div>
 
               {/* Action Buttons — 44px touch targets */}
-              <div className="flex items-center gap-1.5 shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0 no-print">
+                <button
+                  onClick={() => window.print()}
+                  className="min-h-[44px] px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer border border-slate-200 dark:border-slate-700 shadow-xs"
+                  title="Vytisknout text normy s výkladem a chytáky nebo uložit do PDF"
+                >
+                  <Printer className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <span className="hidden sm:inline">Tisk / PDF</span>
+                </button>
+
                 <button
                   onClick={() => toggleFavorite(currentArticle.id)}
                   className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl border transition-colors cursor-pointer ${
@@ -892,38 +909,38 @@ export default function LegalCompass() {
             </div>
 
             {/* Block 1: Exact Legal Text */}
-            <div className="space-y-2">
+            <div className="space-y-2 print-card">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5 text-blue-500" />
                   Doslovné znění zákona
                 </span>
               </div>
-              <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 font-mono text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed shadow-inner whitespace-pre-wrap select-text">
+              <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 font-mono text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed shadow-inner whitespace-pre-wrap select-text print:bg-white print:border-none print:p-0">
                 {currentArticle.exactText}
               </div>
             </div>
 
             {/* Block 2: Methodological Explanation */}
-            <div className="space-y-2">
+            <div className="space-y-2 print-card">
               <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
                 Aplikační a metodický výklad pro praxi VS ČR
               </span>
-              <div className="p-4 sm:p-5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed space-y-2">
+              <div className="p-4 sm:p-5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed space-y-2 print:bg-white print:border-none print:p-0">
                 <p>{currentArticle.explanation}</p>
               </div>
             </div>
 
             {/* Block 3: Exam Traps & Key Takeaways */}
-            <div className="space-y-2">
+            <div className="space-y-2 print-card">
               <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
                 Zkušební chytáky u zkoušek ZOP & Důležité body
               </span>
-              <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 text-xs sm:text-sm text-amber-950 dark:text-amber-200 leading-relaxed">
+              <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 text-xs sm:text-sm text-amber-950 dark:text-amber-200 leading-relaxed print:bg-white print:border-none print:p-0">
                 <div className="flex items-start gap-2.5">
-                  <div className="p-1 rounded-lg bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 shrink-0 mt-0.5">
+                  <div className="p-1 rounded-lg bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 shrink-0 mt-0.5 print:hidden">
                     💡
                   </div>
                   <div>{currentArticle.examTips}</div>
@@ -932,7 +949,7 @@ export default function LegalCompass() {
             </div>
 
             {/* Desktop Stepper (Prev / Next) */}
-            <div className="hidden md:flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-800">
+            <div className="hidden md:flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-800 no-print">
               <button
                 disabled={currentIndex <= 0}
                 onClick={goToPrev}
@@ -1269,7 +1286,7 @@ export default function LegalCompass() {
       <AnimatePresence>
         {activeModalRegulation && (
           <div 
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 md:p-6 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 md:p-6 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200 print:relative print:inset-auto print:bg-white print:p-0 print:block"
             onClick={(e) => {
               if (e.target === e.currentTarget) {
                 setActiveModalRegulation(null);
@@ -1285,11 +1302,17 @@ export default function LegalCompass() {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.96, opacity: 0, y: 16 }}
               transition={{ duration: 0.2 }}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-2xl sm:rounded-3xl shadow-2xl w-full max-w-4xl h-[100dvh] sm:h-auto sm:max-h-[92vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-2xl sm:rounded-3xl shadow-2xl w-full max-w-4xl h-[100dvh] sm:h-auto sm:max-h-[92vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100 print:w-full print:max-w-none print:h-auto print:max-h-none print:border-none print:shadow-none print:rounded-none"
             >
               {/* Modal Header */}
-              <div className="p-3 sm:p-5 border-b border-slate-200 dark:border-slate-800 space-y-2 sm:space-y-3 shrink-0 bg-slate-50/70 dark:bg-slate-950/70">
-                <div className="flex items-start justify-between gap-2">
+              <div className="p-3 sm:p-5 border-b border-slate-200 dark:border-slate-800 space-y-2 sm:space-y-3 shrink-0 bg-slate-50/70 dark:bg-slate-950/70 print:bg-white print:border-b-2 print:border-slate-900 print:p-0 print:mb-4">
+                <PrintHeader 
+                  subject={`Předpis VS ČR: ${activeModalRegulation.shortTitle}`} 
+                  docTitle={`${activeModalRegulation.code} • ${activeModalRegulation.authority} (Účinnost od: ${activeModalRegulation.effectiveFrom || 'neuvedeno'})`} 
+                  subtext="Sbírka předpisů Akademie Vězeňské služby ČR – Plné znění" 
+                />
+
+                <div className="flex items-start justify-between gap-2 no-print">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5 flex-wrap mb-1">
                       <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 uppercase tracking-wider">
@@ -1350,14 +1373,14 @@ export default function LegalCompass() {
                       <span className="uppercase text-[10px]">{fontSize}</span>
                     </button>
 
-                    {/* Print — hidden on mobile */}
+                    {/* Print Button */}
                     <button
                       onClick={() => window.print()}
-                      className="hidden md:flex min-w-[44px] min-h-[44px] items-center justify-center gap-1 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer border border-slate-300/60 dark:border-slate-700"
-                      title="Vytisknout nebo uložit jako PDF soubor"
+                      className="flex min-w-[44px] min-h-[44px] items-center justify-center gap-1.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                      title="Vytisknout znění předpisu nebo uložit jako PDF soubor"
                     >
-                      <Printer className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
-                      <span className="hidden lg:inline text-[11px]">Tisk</span>
+                      <Printer className="w-4 h-4 text-white" />
+                      <span className="inline text-xs">Tisk / PDF</span>
                     </button>
 
                     {/* Audio TTS */}
@@ -1378,7 +1401,7 @@ export default function LegalCompass() {
                     {/* Copy Full Text */}
                     <button
                       onClick={() => handleCopy(activeModalRegulation.fullLegalText, `modal-${activeModalRegulation.id}`)}
-                      className="min-w-[44px] min-h-[44px] flex items-center justify-center gap-1.5 px-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+                      className="min-w-[44px] min-h-[44px] flex items-center justify-center gap-1.5 px-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
                       title="Zkopírovat celé doslovné znění do schránky"
                     >
                       {copiedId === `modal-${activeModalRegulation.id}` ? (
@@ -1412,7 +1435,7 @@ export default function LegalCompass() {
                 </div>
 
                 {/* In-Modal Search Bar & Official Link & Sync */}
-                <div className="space-y-2">
+                <div className="space-y-2 no-print">
                   <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                     <div className="relative flex-1 min-w-[200px]">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
@@ -1501,11 +1524,11 @@ export default function LegalCompass() {
               </div>
 
               {/* Modal Body: Scrollable Legal Text / PDF Sheet */}
-              <div className={`flex-1 min-h-0 overflow-y-auto overscroll-contain [touch-action:pan-y] p-4 sm:p-6 space-y-4 font-sans leading-relaxed ${
+              <div className={`flex-1 min-h-0 overflow-y-auto overscroll-contain [touch-action:pan-y] p-4 sm:p-6 space-y-4 font-sans leading-relaxed print:p-0 print:overflow-visible print:h-auto print:bg-white ${
                 pdfViewMode === 'paper' ? 'bg-slate-200/70 dark:bg-slate-950/80' : 'bg-slate-100 dark:bg-slate-900'
               }`}>
                 {/* Summary & Application Callout */}
-                <div className="p-3.5 rounded-xl bg-white dark:bg-slate-800/60 border border-slate-300/80 dark:border-slate-700/60 text-xs space-y-1.5 shadow-xs">
+                <div className="p-3.5 rounded-xl bg-white dark:bg-slate-800/60 border border-slate-300/80 dark:border-slate-700/60 text-xs space-y-1.5 shadow-xs print-avoid-break print:bg-white print:border-slate-300">
                   <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                     <span>Předmět a rozsah úpravy:</span>
@@ -1520,7 +1543,7 @@ export default function LegalCompass() {
 
                 {/* PDF Paper Mode View */}
                 {pdfViewMode === 'paper' ? (
-                  <div className="bg-white text-slate-900 border border-slate-300 rounded-sm shadow-2xl p-6 sm:p-12 font-serif max-w-3xl mx-auto my-2 border-t-8 border-t-slate-800">
+                  <div className="bg-white text-slate-900 border border-slate-300 rounded-sm shadow-2xl p-6 sm:p-12 font-serif max-w-3xl mx-auto my-2 border-t-8 border-t-slate-800 print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:border-t-0">
                     {/* Official Sbírka Zákonů PDF Header */}
                     <div className="border-b-2 border-slate-900 pb-4 mb-6 text-center space-y-1.5 font-sans">
                       <div className="text-[11px] uppercase tracking-widest font-black text-slate-600">

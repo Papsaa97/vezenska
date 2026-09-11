@@ -26,6 +26,7 @@ import {
 import { Question } from '../types';
 import { subjectsMeta, SubjectInfo, getSubjectInfo } from '../data/questions/subjectsInfo';
 import { speakText, isSpeechSupported } from '../utils/speech';
+import PrintHeader from './common/PrintHeader';
 
 interface SubjectsHubProps {
   questions?: Question[];
@@ -226,8 +227,17 @@ export default function SubjectsHub({
         transition={{ duration: 0.2 }}
         className="max-w-6xl mx-auto px-4 py-6 space-y-6"
       >
+        {/* Tisková hlavička – viditelná výhradně při tisku */}
+        {activeSubjectInfo && (
+          <PrintHeader 
+            subject={`Předmět ZOP A: ${activeSubjectInfo.name} (${activeSubjectInfo.code})`} 
+            docTitle={`Kompletní přehled testových otázek a pramenů práva (${filteredQuestions?.length ?? 0} otázek)`} 
+            subtext="Akademie Vězeňské služby ČR – Oficiální studijní materiály pro přípravu na zkoušky" 
+          />
+        )}
+
         {/* Navigation Top Bar */}
-        <div className="flex items-center justify-between flex-wrap gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-between flex-wrap gap-4 pb-4 border-b border-slate-200 dark:border-slate-800 no-print">
           <button
             onClick={() => {
               setSelectedSubjectKey(null);
@@ -242,11 +252,11 @@ export default function SubjectsHub({
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => window.print()}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-sm transition-colors cursor-pointer border border-slate-200 dark:border-slate-700"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition-colors cursor-pointer shadow-xs"
               title="Vytisknout přehled nebo uložit jako PDF"
             >
-              <Printer className="w-4 h-4 text-slate-500" />
-              <span>Tisk přehledu</span>
+              <Printer className="w-4 h-4 text-white" />
+              <span>Tisk / PDF</span>
             </button>
             <button
               onClick={() => onStartQuiz(selectedSubjectKey)}
@@ -271,7 +281,7 @@ export default function SubjectsHub({
         </div>
 
         {/* Subject Header Banner */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden print-avoid-break print:p-4 print:mb-4 print:border-slate-300 print:shadow-none">
           <div className="flex items-start gap-5">
             <div className={`p-4 rounded-xl shrink-0 ${styles.iconBg} shadow-md`}>
               {getSubjectIcon(activeSubjectInfo.iconName, "w-8 h-8")}
@@ -344,11 +354,11 @@ export default function SubjectsHub({
                 Studijní databáze otázek z předmětu ({filteredQuestions?.length ?? 0} z {activeSubjectQuestions?.length ?? 0})
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Kompletní přehled testových otázek s přesným zákonným odůvodněním a citacemi předpisů.
+                Kompletní přehled testových otázek s přesným odůvodněním a zákonným pramenem.
               </p>
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex items-center gap-2 w-full sm:w-auto no-print">
               <div className="relative flex-1 sm:w-72">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
@@ -363,7 +373,7 @@ export default function SubjectsHub({
           </div>
 
           {/* Action Bar - Count & Expand/Collapse */}
-          <div className="flex items-center justify-between gap-2 flex-wrap pt-1 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-between gap-2 flex-wrap pt-1 border-t border-slate-100 dark:border-slate-800 no-print">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
               Celkem {filteredQuestions?.length ?? 0} otázek ke studiu
             </span>
@@ -388,7 +398,7 @@ export default function SubjectsHub({
           {/* Questions Accordion List */}
           <div className="space-y-3 pt-2">
             {(filteredQuestions || []).length === 0 ? (
-              <div className="text-center py-12 text-slate-400">
+              <div className="text-center py-12 text-slate-400 no-print">
                 <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
                 <p className="text-sm">Pro zadaná kritéria nebyla nalezena žádná otázka.</p>
               </div>
@@ -421,34 +431,34 @@ export default function SubjectsHub({
                 return (
                   <div
                     key={q.id}
-                    className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-slate-50/50 dark:bg-slate-800/30 transition-all hover:border-slate-300 dark:hover:border-slate-700"
+                    className="print-card border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-slate-50/50 dark:bg-slate-800/30 transition-all hover:border-slate-300 dark:hover:border-slate-700"
                   >
                     <div 
                       onClick={toggleExpand}
                       className="p-4 flex items-start justify-between gap-4 cursor-pointer select-none"
                     >
                       <div className="flex items-start gap-3 flex-1">
-                        <span className="w-6 h-6 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="w-6 h-6 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 print:bg-slate-100 print:text-slate-900">
                           {index + 1}
                         </span>
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 flex-wrap">
                             {q.topic && (
-                              <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded">
+                              <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded print:bg-white print:border print:border-slate-300">
                                 {q.topic}
                               </span>
                             )}
-                            <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
                               {q.source}
                             </span>
                           </div>
-                          <p className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white leading-snug">
+                          <p className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug print:text-[10.5pt]">
                             {q.question}
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0 no-print">
                         {isSpeechSupported() && (
                           <button
                             type="button"
@@ -482,28 +492,61 @@ export default function SubjectsHub({
                       </div>
                     </div>
 
-                      <div className={`px-4 pb-4 pt-1 border-t border-slate-200/60 dark:border-slate-700/60 bg-white dark:bg-slate-900/80 space-y-3.5 text-xs sm:text-sm ${isExpanded ? 'block' : 'hidden print:block'}`}>
+                    <div className={`px-4 pb-4 pt-1 border-t border-slate-200/60 dark:border-slate-700/60 bg-white dark:bg-slate-900/80 space-y-3.5 text-xs sm:text-sm ${isExpanded ? 'block' : 'hidden print:block'}`}>
+                      {q.options && q.options.length > 0 ? (
+                        <div className="space-y-1.5">
+                          <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1 text-xs uppercase tracking-wider print:text-slate-900">
+                            Možnosti odpovědí:
+                          </span>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 print:grid-cols-1 print:gap-1">
+                            {q.options.map((opt, oIdx) => {
+                              const targetIdx = typeof q.correctOption === 'number' ? q.correctOption : q.correct_index;
+                              const isCorrect = (targetIdx !== undefined && targetIdx === oIdx) || opt.trim().toLowerCase() === (q.answer || '').trim().toLowerCase();
+                              const labels = ['A', 'B', 'C', 'D'];
+                              return (
+                                <div
+                                  key={oIdx}
+                                  className={`flex items-start gap-2 p-2 rounded-xl text-xs transition-colors print:p-1 ${
+                                    isCorrect
+                                      ? 'bg-emerald-50/90 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 font-bold border border-emerald-300 dark:border-emerald-800 print:text-slate-950 print:border-emerald-600 print:bg-white'
+                                      : 'bg-slate-100/60 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 border border-slate-200/50 dark:border-slate-700/50 print:bg-transparent print:border-none print:text-slate-700'
+                                  }`}
+                                >
+                                  <span className={`w-5 h-5 rounded-md font-bold flex items-center justify-center shrink-0 text-xs ${isCorrect ? 'bg-emerald-600 text-white print:bg-emerald-700 print:text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}`}>
+                                    {labels[oIdx] || String(oIdx + 1)}
+                                  </span>
+                                  <span className="flex-1 leading-normal">{opt}</span>
+                                  {isCorrect && (
+                                    <span className="text-emerald-700 font-black shrink-0 ml-1 text-xs">✓ Správně</span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ) : (
                         <div>
                           <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1 text-xs uppercase tracking-wider">
                             Správná odpověď ke zkoušce:
                           </span>
-                          <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-900 dark:text-emerald-300 rounded-xl font-medium leading-relaxed">
-                            {q.answer}
+                          <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-900 dark:text-emerald-300 rounded-xl font-bold leading-relaxed print:bg-white print:text-slate-950 print:border-emerald-500">
+                            ✓ {q.answer}
                           </div>
                         </div>
+                      )}
 
-                        {/* Rationale and Source */}
-                        <div className="bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl p-3.5 text-xs sm:text-sm space-y-1.5 text-slate-800 dark:text-slate-200">
-                          <div className="flex items-center gap-1.5 font-bold text-blue-900 dark:text-blue-300">
-                            <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                            <span>Odůvodnění a metodika:</span>
-                          </div>
-                          <p className="leading-relaxed">{q.rationale}</p>
-                          <div className="pt-1.5 text-[11px] text-blue-700 dark:text-blue-400 font-medium">
-                            <strong>Citace:</strong> {q.source}
-                          </div>
+                      {/* Rationale and Source */}
+                      <div className="bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl p-3 text-xs space-y-1 text-slate-800 dark:text-slate-200 print:bg-white print:border-slate-200 print:text-slate-800">
+                        <div className="flex items-center gap-1.5 font-bold text-blue-900 dark:text-blue-300 print:text-slate-900">
+                          <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 print:hidden" />
+                          <span>Zákonné odůvodnění:</span>
+                        </div>
+                        <p className="leading-relaxed">{q.rationale}</p>
+                        <div className="pt-1 text-[11px] text-blue-800 dark:text-blue-400 font-medium print:text-slate-700">
+                          <strong>Citace / pramen práva:</strong> {q.source}
                         </div>
                       </div>
+                    </div>
                   </div>
                 );
               })

@@ -5,6 +5,7 @@ import { Question, QuizSessionRecord, QuestionAttempt } from '../types';
 import { normalizeSubject } from './SubjectsHub';
 import { speakText, isSpeechSupported } from '../utils/speech';
 import { getSubjectInfo } from '../data/questions/subjectsInfo';
+import PrintHeader from './common/PrintHeader';
 
 interface QuizProps {
   questions: Question[];
@@ -51,6 +52,7 @@ export default function Quiz({
   const [examStudentName, setExamStudentName] = useState<string>('Frekventant ZOP A');
   const [examGlobalTimeLeft, setExamGlobalTimeLeft] = useState<number>(45 * 60); // 45 minutes
   const [flaggedQuestions, setFlaggedQuestions] = useState<Set<string>>(new Set());
+  const [reviewFilter, setReviewFilter] = useState<'mistakes' | 'all'>('mistakes');
 
   // Playing state
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
@@ -646,8 +648,8 @@ export default function Quiz({
         >
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col h-full p-6 sm:p-8 overflow-y-auto">
             
-            {/* Exam Header */}
-            <div className="text-center pb-6 border-b border-slate-200 dark:border-slate-800">
+            {/* Exam Header (Screen only) */}
+            <div className="text-center pb-6 border-b border-slate-200 dark:border-slate-800 no-print">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider mb-2">
                 <Award className="w-4 h-4 text-amber-500" />
                 <span>Protokol o testu ZOP A</span>
@@ -666,14 +668,14 @@ export default function Quiz({
               </p>
             </div>
 
-            {/* XP Award & Progress Banner */}
+            {/* XP Award & Progress Banner (Screen only) */}
             {(() => {
               let earnedXp = (correctCount * 15) + 50;
               if (percentage === 100 && totalCount >= 5) earnedXp += 100;
               else if (percentage >= 80 && totalCount >= 5) earnedXp += 50;
 
               return (
-                <div className="my-5 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-blue-500/10 border border-amber-400/30 dark:border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="my-5 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-blue-500/10 border border-amber-400/30 dark:border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-3 no-print">
                   <div className="flex items-center gap-3 text-center sm:text-left">
                     <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-extrabold shadow-sm shrink-0">
                       <Sparkles className="w-5 h-5 fill-current" />
@@ -691,7 +693,7 @@ export default function Quiz({
                   {onNavigateToBadges && (
                     <button
                       onClick={onNavigateToBadges}
-                      className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-xs transition-colors shadow-sm flex items-center gap-1.5 shrink-0"
+                      className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-xs transition-colors shadow-sm flex items-center gap-1.5 shrink-0 cursor-pointer"
                     >
                       <Award className="w-4 h-4" />
                       <span>Zkontrolovat odznaky</span>
@@ -701,8 +703,8 @@ export default function Quiz({
               );
             })()}
 
-            {/* Personalization for Protocol */}
-            <div className="my-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+            {/* Personalization for Protocol (Screen only) */}
+            <div className="my-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3 no-print">
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <span className="text-xs font-bold text-slate-600 dark:text-slate-300 whitespace-nowrap">Jméno na protokolu:</span>
                 <input
@@ -718,8 +720,8 @@ export default function Quiz({
               </span>
             </div>
 
-            {/* Subject Breakdown Table */}
-            <div className="my-6">
+            {/* Subject Breakdown Table (Screen only) */}
+            <div className="my-6 no-print">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">
                 Výsledky podle jednotlivých předmětů (9 předmětů ZOP A):
               </h3>
@@ -749,14 +751,14 @@ export default function Quiz({
             </div>
 
             {/* Official Printable Certificate (Visible during print) */}
-            <div className="hidden print:block my-8 p-8 border-2 border-slate-900 text-slate-900 bg-white">
-              <div className="text-center border-b-2 border-slate-900 pb-4 mb-6">
-                <h1 className="text-xl font-bold uppercase tracking-widest">Generální ředitelství Vězeňské služby ČR</h1>
-                <h2 className="text-lg font-extrabold uppercase mt-1">Akademie Vězeňské služby • Stráž pod Ralskem</h2>
-                <h3 className="text-base font-bold mt-2 underline">PROTOKOL O VYKONÁNÍ ZÁVĚREČNÉ ZKOUŠKY ZOP A</h3>
+            <div className="hidden print:block my-4 p-6 border-2 border-slate-900 text-slate-900 bg-white print-card print-avoid-break">
+              <div className="text-center border-b-2 border-slate-900 pb-3 mb-4">
+                <h1 className="text-base font-bold uppercase tracking-widest text-slate-950">Generální ředitelství Vězeňské služby ČR</h1>
+                <h2 className="text-sm font-extrabold uppercase mt-1 text-slate-800">Akademie Vězeňské služby • Stráž pod Ralskem</h2>
+                <h3 className="text-sm font-black mt-2 underline uppercase">PROTOKOL O VYKONÁNÍ ZÁVĚREČNÉ ZKOUŠKY ZOP A</h3>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+              <div className="grid grid-cols-2 gap-3 text-xs mb-4">
                 <div><strong>Frekventant:</strong> {examStudentName || 'Frekventant ZOP A'}</div>
                 <div><strong>Datum a čas konání:</strong> {new Date().toLocaleString('cs-CZ')}</div>
                 <div><strong>Typ zkoušky:</strong> Komisionální písemný test ZOP A</div>
@@ -765,9 +767,9 @@ export default function Quiz({
                 <div><strong>Časový limit:</strong> 45 minut</div>
               </div>
 
-              <div className="mb-6">
-                <h4 className="font-bold text-sm border-b border-slate-900 pb-1 mb-2">Rozpad hodnocení podle předmětů ZOP A:</h4>
-                <table className="w-full text-xs text-left border-collapse">
+              <div className="mb-4">
+                <h4 className="font-bold text-xs border-b border-slate-900 pb-1 mb-2">Rozpad hodnocení podle předmětů ZOP A:</h4>
+                <table className="w-full text-[11px] text-left border-collapse">
                   <thead>
                     <tr className="border-b border-slate-400">
                       <th className="py-1">Předmět</th>
@@ -789,28 +791,56 @@ export default function Quiz({
                 </table>
               </div>
 
-              <div className="mt-12 pt-8 grid grid-cols-3 gap-6 text-center text-xs">
-                <div className="border-t border-slate-800 pt-2">
+              <div className="mt-8 pt-4 grid grid-cols-3 gap-6 text-center text-[11px]">
+                <div className="border-t border-slate-800 pt-1">
                   <span>Předseda zkušební komise</span>
                 </div>
-                <div className="border-t border-slate-800 pt-2">
-                  <span>Člen komise pro právní přípravu</span>
+                <div className="border-t border-slate-800 pt-1">
+                  <span>Člen pro právní přípravu</span>
                 </div>
-                <div className="border-t border-slate-800 pt-2">
-                  <span>Člen komise pro bezpečnostní službu</span>
+                <div className="border-t border-slate-800 pt-1">
+                  <span>Člen pro bezpečnostní službu</span>
                 </div>
               </div>
             </div>
 
-            {/* Action buttons */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
-              <button
-                onClick={() => window.print()}
-                className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
-              >
-                <Printer className="w-4 h-4 text-blue-600" />
-                <span>Vytisknout / PDF protokol</span>
-              </button>
+            {/* Action buttons (Screen only) */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-200 dark:border-slate-800 no-print">
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={() => window.print()}
+                  className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
+                  title="Vytisknout zkušební protokol a rozbor otázek ve formátu A4"
+                >
+                  <Printer className="w-4 h-4 text-blue-600" />
+                  <span>Vytisknout / PDF protokol</span>
+                </button>
+
+                {percentage < 100 && (
+                  <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-semibold">
+                    <button
+                      onClick={() => setReviewFilter('mistakes')}
+                      className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                        reviewFilter === 'mistakes'
+                          ? 'bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 shadow-xs font-bold'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                      }`}
+                    >
+                      Jen chyby ({quizQuestions.filter(q => answers[q.id] !== q.correctOption).length})
+                    </button>
+                    <button
+                      onClick={() => setReviewFilter('all')}
+                      className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                        reviewFilter === 'all'
+                          ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs font-bold'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                      }`}
+                    >
+                      Všechny otázky ({quizQuestions.length})
+                    </button>
+                  </div>
+                )}
+              </div>
 
               <button
                 onClick={() => setGameState('setup')}
@@ -821,49 +851,127 @@ export default function Quiz({
               </button>
             </div>
 
-            {/* Detailed Mistake Breakdown */}
-            {percentage < 100 && (
-              <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800">
-                <h3 className="font-bold text-base text-slate-900 dark:text-white mb-4">
-                  Rozbor chybných odpovědí a zákonné prameny:
-                </h3>
-                <div className="space-y-4">
-                  {quizQuestions.filter(q => answers[q.id] !== q.correctOption).map(q => (
-                    <div key={q.id} className="bg-slate-50 dark:bg-slate-800/80 p-5 rounded-xl border border-slate-200 dark:border-slate-700">
-                      <div className="flex items-start justify-between gap-2 mb-3">
-                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
-                          {q.subject}{q.topic ? ` • ${q.topic}` : ''}
-                        </span>
-                      </div>
-                      <p className="font-bold text-sm sm:text-base text-slate-900 dark:text-white mb-3">
-                        {q.question}
-                      </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                        <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 p-3 rounded-lg text-xs">
-                          <span className="font-bold text-rose-700 dark:text-rose-400 block mb-0.5">Vaše odpověď:</span>
-                          <span className="text-slate-800 dark:text-slate-200">
-                            {answers[q.id] === undefined || answers[q.id] === -1 ? 'Nezodpovězeno' : q.options?.[answers[q.id]]}
-                          </span>
+            {/* Questions Review & Analysis Section */}
+            {(() => {
+              const wrongQuestions = quizQuestions.filter(q => answers[q.id] !== q.correctOption);
+              const questionsToDisplay = reviewFilter === 'mistakes' && wrongQuestions.length > 0 ? wrongQuestions : quizQuestions;
+
+              if (questionsToDisplay.length === 0) return null;
+
+              return (
+                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 print:mt-4 print:pt-4">
+                  <div className="hidden print:block mb-4">
+                    <PrintHeader
+                      subject={`Protokol o zkoušce ZOP A – ${reviewFilter === 'all' || wrongQuestions.length === 0 ? 'Přehled všech testových otázek' : 'Rozbor chybných odpovědí'}`}
+                      docTitle="Detailní přehled testových otázek, variant A–D a zákonných pramenů"
+                    />
+                  </div>
+
+                  <h3 className="font-bold text-base text-slate-900 dark:text-white mb-4 flex items-center justify-between no-print">
+                    <span>
+                      {reviewFilter === 'mistakes' && wrongQuestions.length > 0 
+                        ? `Rozbor chybných odpovědí (${wrongQuestions.length}):` 
+                        : `Přehled všech testových otázek (${quizQuestions.length}):`}
+                    </span>
+                  </h3>
+
+                  <div className="space-y-4">
+                    {questionsToDisplay.map((q, index) => {
+                      const isWrong = answers[q.id] !== q.correctOption;
+                      const studentAnswerIdx = answers[q.id];
+
+                      return (
+                        <div 
+                          key={q.id} 
+                          className={`p-5 rounded-xl border print-card print-avoid-break ${
+                            isWrong 
+                              ? 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 print:border-slate-300' 
+                              : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 print:border-slate-300'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <span className="text-xs font-bold text-blue-600 dark:text-blue-400 print:text-slate-700">
+                              {q.subject}{q.topic ? ` • ${q.topic}` : ''}
+                            </span>
+                            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                              isWrong 
+                                ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300' 
+                                : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300'
+                            }`}>
+                              {isWrong ? 'Chybná odpověď' : 'Správně zodpovězeno'}
+                            </span>
+                          </div>
+
+                          <p className="font-bold text-sm sm:text-base text-slate-900 dark:text-white mb-3">
+                            {index + 1}. {q.question}
+                          </p>
+
+                          {/* Options A-D with correct option marked ✓ in bold */}
+                          {q.options && q.options.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                              {q.options.map((opt, optIdx) => {
+                                const isCorrect = optIdx === q.correctOption;
+                                const isUserPick = studentAnswerIdx === optIdx;
+
+                                let optClass = 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300';
+                                if (isCorrect) {
+                                  optClass = 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 font-bold print:bg-slate-100 print:border-slate-700 print:text-slate-950';
+                                } else if (isUserPick && !isCorrect) {
+                                  optClass = 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-300 print:text-slate-700 line-through';
+                                }
+
+                                return (
+                                  <div key={optIdx} className={`p-2.5 rounded-lg border text-xs flex items-start gap-2 ${optClass}`}>
+                                    <span className="font-bold min-w-[20px]">{String.fromCharCode(65 + optIdx)})</span>
+                                    <span className="flex-1">{opt}</span>
+                                    {isCorrect && (
+                                      <span className="font-extrabold text-emerald-700 dark:text-emerald-400 print:text-slate-950" title="Správná varianta">
+                                        ✓
+                                      </span>
+                                    )}
+                                    {isUserPick && !isCorrect && (
+                                      <span className="font-bold text-rose-600 dark:text-rose-400" title="Vaše chybná volba">
+                                        ✗
+                                      </span>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3 text-xs">
+                              <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 p-2.5 rounded-lg">
+                                <span className="font-bold text-rose-700 dark:text-rose-400 block mb-0.5">Vaše odpověď:</span>
+                                <span className="text-slate-800 dark:text-slate-200">
+                                  {studentAnswerIdx === undefined || studentAnswerIdx === -1 ? 'Nezodpovězeno' : String(studentAnswerIdx)}
+                                </span>
+                              </div>
+                              <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 p-2.5 rounded-lg">
+                                <span className="font-bold text-emerald-700 dark:text-emerald-400 block mb-0.5">Správná odpověď:</span>
+                                <span className="text-slate-800 dark:text-slate-200 font-bold">
+                                  {q.answer || 'Správná varianta'}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Rationale & Source */}
+                          <div className="p-3 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80 rounded-lg text-xs text-slate-700 dark:text-slate-300">
+                            <span className="font-bold block mb-1 text-slate-900 dark:text-slate-100">
+                              Odůvodnění:
+                            </span>
+                            <p className="leading-relaxed">{q.rationale}</p>
+                            <div className="mt-2 text-blue-700 dark:text-blue-400 print:text-slate-800 font-medium">
+                              <strong>Zákonný pramen:</strong> {q.source}
+                            </div>
+                          </div>
                         </div>
-                        <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 p-3 rounded-lg text-xs">
-                          <span className="font-bold text-emerald-700 dark:text-emerald-400 block mb-0.5">Správná odpověď:</span>
-                          <span className="text-slate-800 dark:text-slate-200">
-                            {q.options?.[q.correctOption!]}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-600 dark:text-slate-300">
-                        <span className="font-bold block mb-1">Odůvodnění:</span>
-                        {q.rationale}
-                        <div className="mt-2 text-blue-600 dark:text-blue-400 font-mono font-semibold">
-                          Pramen: {q.source}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </motion.section>
       );

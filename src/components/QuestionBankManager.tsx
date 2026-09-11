@@ -18,9 +18,11 @@ import {
   UploadCloud,
   Sparkles,
   RotateCcw,
+  Printer,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import PrintHeader from './common/PrintHeader';
 import {
   importDefaultQuestionsToSupabase,
   getUniqueDefaultQuestions,
@@ -452,7 +454,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
     <div className="space-y-8">
       {/* Missing Table Notice */}
       {tableMissing && (
-        <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 space-y-3">
+        <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 space-y-3 no-print">
           <div className="flex items-start gap-3">
             <Database className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             <div className="flex-1">
@@ -490,7 +492,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
       {/* ── Form Section ── */}
       <div
         ref={formRef}
-        className="bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 sm:p-6 space-y-5 transition-all shadow-sm"
+        className="bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 sm:p-6 space-y-5 transition-all shadow-sm no-print"
       >
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700/60 pb-3">
           <div className="flex items-center gap-2.5">
@@ -716,7 +718,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
       </div>
 
       {/* ── Synchronization Box ── */}
-      <div className="bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-emerald-50/80 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-emerald-950/20 border border-blue-200/80 dark:border-blue-800/60 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
+      <div className="bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-emerald-50/80 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-emerald-950/20 border border-blue-200/80 dark:border-blue-800/60 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs no-print">
         <div className="space-y-1.5 flex-1">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
@@ -779,7 +781,14 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
 
       {/* ── Existing Questions List ── */}
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {/* Tisková hlavička – viditelná výhradně při tisku */}
+        <PrintHeader 
+          subject="Banka zkušebních otázek Akademie VS ČR" 
+          docTitle={`Výběr: ${filterSubject === 'all' ? 'Všechny předměty' : filterSubject} (${filteredQuestions.length} ${filteredQuestions.length === 1 ? 'otázka' : filteredQuestions.length < 5 ? 'otázky' : 'otázek'})`} 
+          subtext="Oficiální studijní a zkušební přehled otázek pro přípravu na zkoušky ZOP A" 
+        />
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
           <div className="flex items-center gap-2">
             <HelpCircle className="w-5 h-5 text-blue-500" />
             <h3 className="font-bold text-base text-slate-900 dark:text-white">
@@ -807,8 +816,19 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
             </button>
           </div>
 
-          {/* Filtry & Search */}
+          {/* Filtry & Search & Print */}
           <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => window.print()}
+              disabled={loading || filteredQuestions.length === 0}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-xs transition-all cursor-pointer disabled:opacity-50"
+              title="Vytisknout filtrované otázky nebo exportovat do PDF"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Tisk otázek / PDF</span>
+            </button>
+
             {/* Subject filter */}
             <div className="relative flex items-center">
               <Filter className="w-3.5 h-3.5 absolute left-3 text-slate-400 pointer-events-none" />
@@ -842,7 +862,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
 
         {/* Loading state */}
         {loading && (
-          <div className="flex items-center justify-center gap-2 text-slate-400 text-sm py-12">
+          <div className="flex items-center justify-center gap-2 text-slate-400 text-sm py-12 no-print">
             <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
             Načítám otázky ze Supabase…
           </div>
@@ -850,7 +870,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
 
         {/* Empty state */}
         {!loading && questions.length === 0 && !tableMissing && (
-          <div className="p-8 text-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/40 space-y-2">
+          <div className="p-8 text-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/40 space-y-2 no-print">
             <HelpCircle className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
             <div className="font-semibold text-sm text-slate-700 dark:text-slate-300">
               V bance zatím nejsou žádné otázky
@@ -863,7 +883,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
 
         {/* Empty search/filter state */}
         {!loading && questions.length > 0 && filteredQuestions.length === 0 && (
-          <div className="p-6 text-center text-xs text-slate-400 bg-white dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700">
+          <div className="p-6 text-center text-xs text-slate-400 bg-white dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700 no-print">
             Žádná otázka neodpovídá zvolenému filtru nebo hledání.
           </div>
         )}
@@ -879,7 +899,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
               return (
                 <div
                   key={q.id}
-                  className={`p-4 rounded-2xl border transition-all ${
+                  className={`print-card p-4 rounded-2xl border transition-all ${
                     isEditing
                       ? 'bg-amber-50/50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-700 shadow-sm'
                       : 'bg-white dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
@@ -889,32 +909,32 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
                     <div className="space-y-1.5 flex-1">
                       {/* Badge & Meta */}
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 print:bg-white print:border-slate-300 print:text-slate-800">
                           {q.subject}
                         </span>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-slate-400 font-mono print:text-slate-700">
                           #{qIndex + 1}
                         </span>
                         {q.created_at && (
-                          <span className="text-xs text-slate-400">
+                          <span className="text-xs text-slate-400 print:hidden">
                             · {new Date(q.created_at).toLocaleDateString('cs-CZ')}
                           </span>
                         )}
                         {isEditing && (
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 no-print">
                             Právě editujete
                           </span>
                         )}
                       </div>
 
                       {/* Question Text */}
-                      <div className="font-semibold text-sm text-slate-900 dark:text-white pt-1">
-                        {q.question}
+                      <div className="font-bold text-sm text-slate-900 dark:text-white pt-1 print:text-[10.5pt] leading-snug">
+                        {qIndex + 1}. {q.question}
                       </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex items-center gap-1 shrink-0 no-print">
                       {isConfirming ? (
                         <div className="flex items-center gap-1.5 p-1 bg-red-50 dark:bg-red-950/40 rounded-xl border border-red-200 dark:border-red-800">
                           <span className="text-xs text-red-600 dark:text-red-400 font-semibold px-1">
@@ -960,39 +980,52 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
                   </div>
 
                   {/* 4 Options Preview */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60 print:grid-cols-1 print:gap-1.5">
                     {q.options.map((opt, oIdx) => {
                       const isCorrect = q.correct_option === oIdx;
                       return (
                         <div
                           key={oIdx}
-                          className={`flex items-start gap-2 p-2 rounded-xl text-xs transition-colors ${
+                          className={`flex items-start gap-2 p-2 rounded-xl text-xs transition-colors print:p-1.5 print:bg-white print:border-slate-200 ${
                             isCorrect
-                              ? 'bg-emerald-50/80 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-200 font-medium border border-emerald-200 dark:border-emerald-800/60'
-                              : 'bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 border border-slate-100 dark:border-slate-700/40'
+                              ? 'bg-emerald-50/80 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-200 font-medium border border-emerald-200 dark:border-emerald-800/60 print:font-bold print:text-slate-950 print:border-emerald-500'
+                              : 'bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 border border-slate-100 dark:border-slate-700/40 print:text-slate-700'
                           }`}
                         >
                           <span
-                            className={`w-5 h-5 rounded-md font-bold flex items-center justify-center shrink-0 ${
+                            className={`w-5 h-5 rounded-md font-bold flex items-center justify-center shrink-0 text-xs ${
                               isCorrect
-                                ? 'bg-emerald-600 text-white shadow-xs'
-                                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                                ? 'bg-emerald-600 text-white shadow-xs print:bg-emerald-700 print:text-white'
+                                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 print:bg-slate-100 print:text-slate-700'
                             }`}
                           >
                             {OPTION_LABELS[oIdx]}
                           </span>
-                          <span className="flex-1 break-words">{opt}</span>
-                          {isCorrect && <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />}
+                          <span className={`flex-1 break-words ${isCorrect ? 'font-bold text-slate-950' : ''}`}>
+                            {opt}
+                          </span>
+                          {isCorrect && (
+                            <span className="text-emerald-700 font-bold shrink-0 ml-1 text-xs">✓ Správně</span>
+                          )}
                         </div>
                       );
                     })}
                   </div>
 
-                  {/* Rationale if present */}
-                  {q.rationale && (
-                    <div className="mt-2.5 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/30 text-xs text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-700/30">
-                      <span className="font-semibold text-slate-700 dark:text-slate-200">Vysvětlení: </span>
-                      {q.rationale}
+                  {/* Rationale and Source */}
+                  {(q.rationale || q.answer) && (
+                    <div className="mt-2.5 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/30 text-xs text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-700/30 print:bg-white print:border-slate-200 print:text-slate-800">
+                      {q.rationale && (
+                        <div>
+                          <strong className="text-slate-900 dark:text-slate-200 font-bold">Zákonné odůvodnění: </strong>
+                          {q.rationale}
+                        </div>
+                      )}
+                      {q.answer && (
+                        <div className="mt-1 text-[11px] text-slate-600 dark:text-slate-400 font-medium">
+                          <strong>Správná odpověď dle předpisu:</strong> {q.answer}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

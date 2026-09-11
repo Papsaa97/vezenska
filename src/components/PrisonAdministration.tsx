@@ -578,7 +578,7 @@ export default function PrisonAdministration() {
     <div className="w-full max-w-7xl mx-auto space-y-6 pb-12">
       
       {/* Header Banner — purely informative, no action buttons (navigation lives in the segmented control below) */}
-      <div className="bg-gradient-to-r from-amber-600 via-amber-700 to-amber-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-r from-amber-600 via-amber-700 to-amber-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden no-print">
         <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/30 border border-amber-300/30 text-amber-200 text-xs font-bold uppercase tracking-wider">
@@ -595,7 +595,7 @@ export default function PrisonAdministration() {
       </div>
 
       {/* Section navigation — single segmented control (replaces the former duplicated header buttons + sub-tabs bar) */}
-      <div role="tablist" aria-label="Sekce modulu Administrativa a ETŘ" className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div role="tablist" aria-label="Sekce modulu Administrativa a ETŘ" className="grid grid-cols-2 sm:grid-cols-4 gap-2 no-print">
         {NAV_SECTIONS.map(({ id, label, shortLabel, icon: Icon }) => {
           const isActive = activeSection === id;
           return (
@@ -623,7 +623,7 @@ export default function PrisonAdministration() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           {/* Left Column: Template Selection & Form Fields */}
-          <div className="lg:col-span-7 space-y-5">
+          <div className="lg:col-span-7 space-y-5 no-print">
             
             {/* Template Selector Bar */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
@@ -1297,29 +1297,11 @@ export default function PrisonAdministration() {
           </div>
 
           {/* Right Column: Live Formatted Document Preview & Actions */}
-          <div className="lg:col-span-5 space-y-4">
-
-            {/* Print-only stylesheet: printing shows exclusively the document preview below, not the whole app shell. */}
-            <style>{`
-              @media print {
-                body * { visibility: hidden; }
-                #printable-record-area, #printable-record-area * { visibility: visible; }
-                #printable-record-area {
-                  position: absolute;
-                  inset: 0;
-                  width: 100%;
-                  max-height: none;
-                  overflow: visible;
-                  border: none;
-                  box-shadow: none;
-                  padding: 0;
-                }
-              }
-            `}</style>
+          <div className="lg:col-span-5 space-y-4 print:col-span-12 print:w-full">
 
             {/* Validation warning — real check against currentTemplate.mandatoryFields */}
             {showValidation && missingMandatoryFields.length > 0 && (
-              <div className="p-3.5 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-900/60 text-xs text-red-800 dark:text-red-300 space-y-1.5">
+              <div className="p-3.5 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-900/60 text-xs text-red-800 dark:text-red-300 space-y-1.5 no-print">
                 <div className="font-bold flex items-center gap-1.5">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   <span>Nelze zkopírovat / vytisknout — chybí {missingMandatoryFields.length} povinných polí:</span>
@@ -1333,14 +1315,14 @@ export default function PrisonAdministration() {
             )}
 
             {copyError && (
-              <div className="p-3 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-900/60 text-xs text-red-800 dark:text-red-300 flex items-center gap-2">
+              <div className="p-3 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-900/60 text-xs text-red-800 dark:text-red-300 flex items-center gap-2 no-print">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 <span>Kopírování do schránky selhalo (chybí oprávnění nebo nezabezpečený kontext). Zkuste text označit a zkopírovat ručně (Ctrl+C).</span>
               </div>
             )}
 
             {/* Action Bar */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between gap-2 flex-wrap">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between gap-2 flex-wrap no-print">
               <div className="flex items-center gap-2 flex-wrap">
                 <button
                   onClick={handleCopyRecord}
@@ -1362,13 +1344,13 @@ export default function PrisonAdministration() {
               </span>
             </div>
 
-            {/* Document Paper Preview */}
-            <div id="printable-record-area" className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-800 shadow-md font-mono text-xs leading-relaxed text-slate-800 dark:text-slate-200 overflow-y-auto max-h-[60vh] lg:max-h-[750px] whitespace-pre-wrap select-all">
+            {/* Document Paper Preview (Screen Only) */}
+            <div id="printable-record-area" className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-800 shadow-md font-mono text-xs leading-relaxed text-slate-800 dark:text-slate-200 overflow-y-auto max-h-[60vh] lg:max-h-[750px] whitespace-pre-wrap select-all no-print">
               {recordText}
             </div>
 
             {/* Explanatory Note Box */}
-            <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 space-y-1.5 text-xs text-blue-900 dark:text-blue-200">
+            <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 space-y-1.5 text-xs text-blue-900 dark:text-blue-200 no-print">
               <div className="font-bold flex items-center gap-1.5">
                 <Info className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 <span>Metodické upozornění pro závěrečnou zkoušku ZOP:</span>
@@ -1376,6 +1358,373 @@ export default function PrisonAdministration() {
               <p className="text-[11px] leading-normal">
                 U ústní i písemné zkoušky komisaři striktně vyžadují dodržení struktury 7 povinných bodů záznamu, přesnou citaci zákonné výzvy dle § 6 odst. 3 písm. b) zákona č. 555/1992 Sb. a správné uvedení porušeného ustanovení § 28 zákona č. 169/1999 Sb. u kázeňského přestupku.
               </p>
+            </div>
+
+            {/* =========================================================================
+                OFFICIAL ADMINISTRATIVE A4 PRINTABLE DOCUMENT LAYOUTS READY FOR SIGNATURE
+               ========================================================================= */}
+            <div className="hidden print:block w-full text-slate-950 bg-white">
+              
+              {/* Common Official VS CR Letterhead Header */}
+              <div className="border-b-2 border-slate-950 pb-2 mb-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h1 className="text-sm font-bold uppercase tracking-wider text-slate-950">
+                      VĚZEŇSKÁ SLUŽBA ČESKÉ REPUBLIKY
+                    </h1>
+                    <h2 className="text-xs font-semibold text-slate-800">
+                      {formData.prisonName || 'Věznice'}
+                    </h2>
+                  </div>
+                  <div className="text-right text-xs">
+                    <div className="font-mono font-bold text-slate-900">
+                      {selectedTemplateId === 'dp' && formData.refNumber ? `Č. j.: ${formData.refNumber}` : 'Č. j.: VS-......................../ČJ-2024-........'}
+                    </div>
+                    <div className="text-slate-600 text-[11px]">
+                      {formData.signatureDate || new Date().toLocaleDateString('cs-CZ')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* TEMPLATE 1: DONUCOVACÍ PROSTŘEDEK (DP) */}
+              {selectedTemplateId === 'dp' && (
+                <div>
+                  <div className="text-center my-3">
+                    <h2 className="text-base font-black uppercase tracking-wide text-slate-950">
+                      ZÁZNAM O POUŽITÍ DONUCOVACÍHO PROSTŘEDKU
+                    </h2>
+                    <p className="text-[11px] text-slate-600 italic">
+                      podle § 19 odst. 1 a § 20 zákona č. 555/1992 Sb. a NGŘ č. 39/2013
+                    </p>
+                    <div className="mt-1 inline-block px-3 py-0.5 bg-slate-100 border border-slate-400 font-bold text-[11px] uppercase tracking-wider">
+                      Část první – Vyhotovení zakročujícím příslušníkem
+                    </div>
+                  </div>
+
+                  {/* Metadata Grid */}
+                  <div className="print-card my-3 border border-slate-400 text-xs">
+                    <div className="grid grid-cols-2 border-b border-slate-300">
+                      <div className="p-2 border-r border-slate-300">
+                        <strong>Zakročující příslušník:</strong> {formData.officer}
+                      </div>
+                      <div className="p-2">
+                        <strong>Velen do služby rozkazem:</strong> {formData.dutyOrder}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 border-b border-slate-300">
+                      <div className="p-2 border-r border-slate-300">
+                        <strong>Použito proti:</strong> {formData.targetPerson} {formData.targetCode ? `(${formData.targetCode})` : ''}
+                      </div>
+                      <div className="p-2">
+                        <strong>Záznam z osobní kamery:</strong> {formData.cameraUsed || 'ANO'}
+                      </div>
+                    </div>
+                    <div className="p-2">
+                      <strong>Čas a místo zákroku:</strong> {formData.datetimePlace}
+                    </div>
+                  </div>
+
+                  {/* Body impact zones */}
+                  <div className="print-card my-2 p-2 border border-slate-300 text-xs">
+                    <strong>Zasažená místa těla dle schématu zásahových zón:</strong>{' '}
+                    {selectedBodyParts.length > 0 ? selectedBodyParts.join(', ') : 'Bez zasažení rizikových zón'}
+                  </div>
+
+                  {/* Structured Report Sections */}
+                  <div className="space-y-2 text-xs">
+                    <div className="print-card p-2.5 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-0.5">1. Události předcházející použití DP:</div>
+                      <p className="whitespace-pre-wrap">{formData.precedingEvents}</p>
+                    </div>
+
+                    <div className="print-card p-2.5 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-0.5">2. Zákonná výzva a jednání příslušníka dle § 6 odst. 3 písm. b):</div>
+                      <p className="whitespace-pre-wrap">{formData.officerAction}</p>
+                    </div>
+
+                    <div className="print-card p-2.5 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-0.5">3. Jednání vězněné osoby (včetně přímé řeči):</div>
+                      <p className="whitespace-pre-wrap">{formData.targetBehavior}</p>
+                    </div>
+
+                    <div className="print-card p-2.5 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-0.5">4. Použitý donucovací prostředek a průběh zákroku:</div>
+                      <p className="whitespace-pre-wrap">{formData.dpUsedDetails}</p>
+                    </div>
+
+                    <div className="print-card p-2.5 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-1">5. Činnost po použití donucovacího prostředku:</div>
+                      <ul className="list-disc list-inside space-y-0.5 pl-1">
+                        <li><strong>Zranění osob a vzniklá škoda:</strong> {formData.injuryDamage || 'Bez zranění a škody'}</li>
+                        <li><strong>Poskytnutí první pomoci:</strong> {formData.firstAid || 'Nebylo nutné'}</li>
+                        <li><strong>Lékařské ošetření:</strong> {formData.medicalExam || 'Provedeno lékařem'}</li>
+                        <li><strong>Ohlášení nadřízenému (§ 20 odst. 2):</strong> {formData.bossInformed || 'Provedeno ihned'}</li>
+                        <li><strong>Fotodokumentace:</strong> {formData.photoDoc || 'Pořízena'}</li>
+                      </ul>
+                    </div>
+
+                    <div className="print-card p-2.5 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-0.5">6. Svědci události a další zúčastněné osoby:</div>
+                      <p className="whitespace-pre-wrap">{formData.witnesses || 'Beze svědků'}</p>
+                    </div>
+
+                    <div className="print-card p-2.5 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-0.5">7. Vlastní vyhodnocení zakročujícího příslušníka:</div>
+                      <p className="whitespace-pre-wrap">{formData.evaluation}</p>
+                    </div>
+                  </div>
+
+                  {/* Officer Signature Block */}
+                  <div className="print-avoid-break mt-4 pt-3 flex justify-between items-end text-xs">
+                    <div>
+                      <div>V ........................................ dne {formData.signatureDate || '........................'}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-56 border-b border-dotted border-slate-700 mb-1"></div>
+                      <div>{formData.officerSignature || 'Podpis a služební číslo zakročujícího'}</div>
+                    </div>
+                  </div>
+
+                  {/* Part Two - Supervisors evaluation */}
+                  <div className="print-avoid-break mt-6 pt-4 border-t-2 border-slate-900">
+                    <div className="text-center mb-3">
+                      <div className="font-bold text-xs uppercase tracking-wider">
+                        ČÁST DRUHÁ – STANOVISKA A ROZHODNUTÍ SLUŽEBNÍCH FUNKCIONÁŘŮ
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 text-xs">
+                      <div className="print-card p-2.5 border border-slate-300">
+                        <div className="font-bold mb-1">Stanovisko vedoucího oddělení / oddílu:</div>
+                        <p className="min-h-[28px] whitespace-pre-wrap">{formData.departmentHeadOpinion || 'Použití DP shledávám oprávněným a v souladu se zákonem č. 555/1992 Sb.'}</p>
+                        <div className="mt-4 flex justify-between text-[10px] text-slate-600">
+                          <span>Datum: ........................................</span>
+                          <span>Podpis vedoucího oddělení: ....................................................</span>
+                        </div>
+                      </div>
+
+                      <div className="print-card p-2.5 border border-slate-300">
+                        <div className="font-bold mb-1">Zpráva o prošetření okolností a důvodů použití DP (1. ZŘV):</div>
+                        <p className="min-h-[28px] whitespace-pre-wrap">{formData.zrvReport || 'Okolnosti použití DP byly prošetřeny, postup příslušníka byl v mezích zákona.'}</p>
+                        <div className="mt-4 flex justify-between text-[10px] text-slate-600">
+                          <span>Datum: ........................................</span>
+                          <span>Podpis 1. zástupce ředitele: ....................................................</span>
+                        </div>
+                      </div>
+
+                      <div className="print-card p-2.5 border border-slate-300">
+                        <div className="font-bold mb-1">Rozhodnutí ředitele věznice o oprávněnosti a přiměřenosti (§ 20 odst. 4):</div>
+                        <p className="min-h-[28px] whitespace-pre-wrap">{formData.directorDecision || 'Použití donucovacího prostředku bylo OPRÁVNĚNÉ a PŘIMĚŘENÉ.'}</p>
+                        <div className="mt-6 flex justify-between text-[10px] text-slate-600">
+                          <span>Datum: ........................................</span>
+                          <span>Otisk úředního razítka a podpis ředitele věznice: ....................................................</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TEMPLATE 2: KÁZEŇSKÝ PŘESTUPEK (ZKP) */}
+              {selectedTemplateId === 'zkp' && (
+                <div>
+                  <div className="text-center my-3">
+                    <h2 className="text-base font-black uppercase tracking-wide text-slate-950">
+                      ZÁZNAM O KÁZEŇSKÉM PŘESTUPKU
+                    </h2>
+                    <p className="text-[11px] text-slate-600 italic">
+                      podle § 46 zákona č. 169/1999 Sb., o výkonu trestu odnětí svobody
+                    </p>
+                  </div>
+
+                  {/* Metadata Grid */}
+                  <div className="print-card my-3 border border-slate-400 text-xs">
+                    <div className="grid grid-cols-2 border-b border-slate-300">
+                      <div className="p-2 border-r border-slate-300">
+                        <strong>Jméno a příjmení odsouzeného:</strong> {formData.targetPerson}
+                      </div>
+                      <div className="p-2">
+                        <strong>Datum narození:</strong> {formData.targetBirth}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2">
+                      <div className="p-2 border-r border-slate-300">
+                        <strong>Typ věznice / oddělení:</strong> {formData.prisonType}
+                      </div>
+                      <div className="p-2">
+                        <strong>Datum a čas sepsání:</strong> {formData.signatureDate}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Content Sections */}
+                  <div className="space-y-3 text-xs">
+                    <div className="print-card p-3 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-1">
+                        I. Popis skutku, v němž je spatřován kázeňský přestupek:
+                      </div>
+                      <p className="whitespace-pre-wrap">{formData.actDescription}</p>
+                    </div>
+
+                    <div className="print-card p-3 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-1">
+                        II. Vyjádření podezřelého ze spáchání kázeňského přestupku:
+                      </div>
+                      <p className="whitespace-pre-wrap">{formData.targetStatement}</p>
+                      <div className="mt-8 flex justify-between items-end pt-2">
+                        <span className="text-[10px] text-slate-600">Vyjádření převzato dne: {formData.signatureDate}</span>
+                        <div className="text-center">
+                          <div className="w-56 border-b border-dotted border-slate-700 mb-1"></div>
+                          <span className="text-[10px] font-bold">Vlastnoruční podpis odsouzeného</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="print-card p-3 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-1">
+                        III. Důkazní prostředky a zjištěné skutečnosti:
+                      </div>
+                      <p className="whitespace-pre-wrap">{formData.evidenceList}</p>
+                    </div>
+                  </div>
+
+                  {/* Signatures */}
+                  <div className="print-avoid-break mt-8 pt-4 border-t border-slate-400 flex justify-between text-xs">
+                    <div>
+                      <div>V ........................................ dne {formData.signatureDate}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-56 border-b border-dotted border-slate-700 mb-1"></div>
+                      <div>{formData.officerSignature || 'Podpis příslušníka / zaměstnance'}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TEMPLATE 3: ODNĚTÍ VĚCI */}
+              {selectedTemplateId === 'odneti' && (
+                <div>
+                  <div className="text-center my-3">
+                    <h2 className="text-base font-black uppercase tracking-wide text-slate-950">
+                      ZÁZNAM O ODNĚTÍ VĚCI
+                    </h2>
+                    <p className="text-[11px] text-slate-600 italic">
+                      podle § 12 zákona č. 555/1992 Sb., o Vězeňské službě a justiční stráži České republiky
+                    </p>
+                  </div>
+
+                  <div className="print-card my-3 border border-slate-400 text-xs">
+                    <div className="grid grid-cols-2">
+                      <div className="p-2 border-r border-slate-300">
+                        <strong>Vězněná osoba (od koho odňato):</strong> {formData.targetPerson}
+                      </div>
+                      <div className="p-2">
+                        <strong>Čas a datum odnětí:</strong> {formData.datetime}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 text-xs">
+                    <div className="print-card p-3 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-1">
+                        I. Seznam a přesný popis odňatých věcí (včetně množství a stavu):
+                      </div>
+                      <p className="whitespace-pre-wrap font-mono text-[11px]">{formData.itemsList}</p>
+                    </div>
+
+                    <div className="print-card p-3 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-1">
+                        II. Důvod odnětí věcí (ustanovení zákona, bezpečnostní riziko):
+                      </div>
+                      <p className="whitespace-pre-wrap">{formData.seizureReason}</p>
+                    </div>
+
+                    <div className="print-card p-3 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-1">
+                        III. Předání a naložení s odňatou věcí:
+                      </div>
+                      <p className="whitespace-pre-wrap">{formData.surrenderedTo}</p>
+                    </div>
+                  </div>
+
+                  {/* Signatures 3 blocks */}
+                  <div className="print-avoid-break mt-8 pt-4 border-t border-slate-400 grid grid-cols-3 gap-4 text-center text-xs">
+                    <div>
+                      <div className="w-full border-b border-dotted border-slate-700 h-10 mb-1"></div>
+                      <div className="font-bold">Podpis vězněné osoby</div>
+                      <div className="text-[10px] text-slate-500">(potvrzení o odnětí)</div>
+                    </div>
+                    <div>
+                      <div className="w-full border-b border-dotted border-slate-700 h-10 mb-1"></div>
+                      <div className="font-bold">Odnětí provedl</div>
+                      <div className="text-[10px] text-slate-500">{formData.officerSignature || 'příslušník VS ČR'}</div>
+                    </div>
+                    <div>
+                      <div className="w-full border-b border-dotted border-slate-700 h-10 mb-1"></div>
+                      <div className="font-bold">Věc převzal do úschovy</div>
+                      <div className="text-[10px] text-slate-500">(sklad / pověřená osoba)</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TEMPLATE 4: SLUŽEBNÍ ZÁZNAM (SZ) */}
+              {(selectedTemplateId === 'sz' || (selectedTemplateId !== 'dp' && selectedTemplateId !== 'zkp' && selectedTemplateId !== 'odneti')) && (
+                <div>
+                  <div className="text-center my-3">
+                    <h2 className="text-base font-black uppercase tracking-wide text-slate-950">
+                      {formData.docTitle || 'SLUŽEBNÍ ZÁZNAM'}
+                    </h2>
+                    <p className="text-[11px] text-slate-600 italic">
+                      podle Pokynu generálního ředitele VS ČR č. 4/2016 o spisové službě
+                    </p>
+                  </div>
+
+                  <div className="print-card my-3 border border-slate-400 text-xs">
+                    <div className="grid grid-cols-2">
+                      <div className="p-2 border-r border-slate-300">
+                        <strong>Velení do služby:</strong> {formData.dutyOrder}
+                      </div>
+                      <div className="p-2">
+                        <strong>Datum sepsání:</strong> {formData.signatureDate}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 text-xs">
+                    <div className="print-card p-3 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-1">I. Popis děje a zjištěné skutečnosti:</div>
+                      <p className="whitespace-pre-wrap">{formData.eventStory}</p>
+                    </div>
+
+                    <div className="print-card p-3 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-1">II. Provedená opatření a řešení situace:</div>
+                      <p className="whitespace-pre-wrap">{formData.actionsTimeline}</p>
+                    </div>
+
+                    <div className="print-card p-3 border border-slate-300">
+                      <div className="font-bold text-slate-900 mb-1">III. Svědci / další zúčastněné osoby:</div>
+                      <p className="whitespace-pre-wrap">{formData.witnesses || 'Beze svědků'}</p>
+                    </div>
+                  </div>
+
+                  {/* Signatures */}
+                  <div className="print-avoid-break mt-8 pt-4 border-t border-slate-400 flex justify-between text-xs">
+                    <div>
+                      <div>V ........................................ dne {formData.signatureDate}</div>
+                      <div className="mt-4 text-[10px] text-slate-500">
+                        Vzal na vědomí nadřízený: ....................................................
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-56 border-b border-dotted border-slate-700 mb-1"></div>
+                      <div>{formData.officerSignature || 'Vyhotovil příslušník / zaměstnanec'}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
             </div>
 
           </div>

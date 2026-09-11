@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { LayoutGrid, CheckCircle2, RotateCcw, Timer, AlertCircle, Sparkles, Trophy, ArrowRight, Zap, Award } from 'lucide-react';
+import { LayoutGrid, CheckCircle2, RotateCcw, Timer, AlertCircle, Sparkles, Trophy, ArrowRight, Zap, Award, Printer } from 'lucide-react';
 import { MatchingCategory, MatchingRecord } from '../types';
 import DiagramGame from "./DiagramGame";
 import { recordMatchingCompletion, loadMatchingHistory } from '../utils/gamification';
+import PrintHeader from './common/PrintHeader';
 
 interface MatchingGameProps {
   categories: MatchingCategory[];
@@ -31,6 +32,11 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
   const startTimeRef = useRef<number>(Date.now());
 
   const activeCategory = useMemo(() => categories.find(c => c.id === selectedCategoryId), [categories, selectedCategoryId]);
+
+  const printRights = useMemo(() => {
+    if (!activeCategory || activeCategory.type === 'diagram') return [];
+    return [...activeCategory.pairs].map(p => ({ id: p.id, text: p.right })).sort((a, b) => a.text.localeCompare(b.text, 'cs'));
+  }, [activeCategory]);
 
   const initGame = () => {
     if (!activeCategory) return;
@@ -135,7 +141,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
     <section className="flex-1 flex flex-col h-full overflow-hidden items-center justify-start min-h-[600px] md:min-h-0">
       <div className="w-full max-w-4xl bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-full">
         {/* Header toolbar */}
-        <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex flex-col sm:flex-row justify-between items-center gap-3 shrink-0">
+        <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex flex-col sm:flex-row justify-between items-center gap-3 shrink-0 no-print">
           <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
@@ -160,20 +166,30 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
             </div>
           </div>
           
-          <select 
-            aria-label="Vybrat kategorii poznávačky"
-            className="w-full sm:w-auto p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm dark:text-slate-200"
-            value={selectedCategoryId}
-            onChange={(e) => setSelectedCategoryId(e.target.value)}
-          >
-            {categories.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.title}</option>
-            ))}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <select 
+              aria-label="Vybrat kategorii poznávačky"
+              className="w-full sm:w-auto p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm dark:text-slate-200"
+              value={selectedCategoryId}
+              onChange={(e) => setSelectedCategoryId(e.target.value)}
+            >
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.title}</option>
+              ))}
+            </select>
 
-
-
-              </select>
-            </div>
+            {activeCategory?.type !== 'diagram' && (
+              <button
+                onClick={() => window.print()}
+                className="inline-flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer shrink-0"
+                title="Vytisknout pracovní list poznávačky"
+              >
+                <Printer className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                <span>Tisk listu</span>
+              </button>
+            )}
+          </div>
+        </div>
             
             {/* Main Content Area */}
             <div className="p-4 sm:p-6 overflow-y-auto flex-1">
@@ -277,78 +293,152 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
                   </div>
                 </div>
               ) : (
-                <div>
-                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
-                    <span>Spojte správné dvojice kliknutím na pojem a odpovídající definici:</span>
-                    <span className="font-bold text-blue-600 dark:text-blue-400">
-                      {matchedPairs.length} / {activeCategory?.pairs.length || 0} spojeno
-                    </span>
+                <>
+                  <div className="no-print">
+                    <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
+                      <span>Spojte správné dvojice kliknutím na pojem a odpovídající definici:</span>
+                      <span className="font-bold text-blue-600 dark:text-blue-400">
+                        {matchedPairs.length} / {activeCategory?.pairs.length || 0} spojeno
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                      {/* Left Column */}
+                      <div className="space-y-2.5">
+                        <h4 className="font-bold text-slate-400 dark:text-slate-500 text-[11px] tracking-wider uppercase mb-2 border-b border-slate-100 dark:border-slate-800 pb-1.5 flex items-center justify-between">
+                          <span>Pojem / Zkratka / Téma</span>
+                          <span className="text-[10px] font-normal text-slate-400">1. Vyberte</span>
+                        </h4>
+                        {leftItems.map(item => {
+                          const isMatched = matchedPairs.includes(item.id);
+                          const isSelected = selectedLeft === item.id;
+                          const isError = errorPair?.left === item.id;
+                          
+                          let btnClass = "bg-white dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/20";
+                          if (isMatched) btnClass = "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-400 opacity-40 cursor-not-allowed line-through";
+                          else if (isError) btnClass = "bg-red-50 dark:bg-red-950/40 border-red-500 dark:border-red-700 text-red-800 dark:text-red-300 font-bold ring-2 ring-red-500/20";
+                          else if (isSelected) btnClass = "bg-blue-50 dark:bg-blue-950/50 border-blue-500 dark:border-blue-600 text-blue-900 dark:text-blue-200 font-bold ring-2 ring-blue-500/30";
+                          
+                          return (
+                            <button
+                              key={`l-${item.id}`}
+                              disabled={isMatched || errorPair !== null}
+                              onClick={() => setSelectedLeft(isSelected ? null : item.id)}
+                              className={`w-full text-left p-3.5 sm:p-4 rounded-xl border-2 transition-all text-xs sm:text-sm font-medium ${btnClass}`}
+                            >
+                              {item.text}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      
+                      {/* Right Column */}
+                      <div className="space-y-2.5">
+                        <h4 className="font-bold text-slate-400 dark:text-slate-500 text-[11px] tracking-wider uppercase mb-2 border-b border-slate-100 dark:border-slate-800 pb-1.5 flex items-center justify-between">
+                          <span>Definice / Význam</span>
+                          <span className="text-[10px] font-normal text-slate-400">2. Přiřaďte</span>
+                        </h4>
+                        {rightItems.map(item => {
+                          const isMatched = matchedPairs.includes(item.id);
+                          const isSelected = selectedRight === item.id;
+                          const isError = errorPair?.right === item.id;
+                          
+                          let btnClass = "bg-white dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/20";
+                          if (isMatched) btnClass = "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-400 opacity-40 cursor-not-allowed line-through";
+                          else if (isError) btnClass = "bg-red-50 dark:bg-red-950/40 border-red-500 dark:border-red-700 text-red-800 dark:text-red-300 font-bold ring-2 ring-red-500/20";
+                          else if (isSelected) btnClass = "bg-blue-50 dark:bg-blue-950/50 border-blue-500 dark:border-blue-600 text-blue-900 dark:text-blue-200 font-bold ring-2 ring-blue-500/30";
+                          
+                          return (
+                            <button
+                              key={`r-${item.id}`}
+                              disabled={isMatched || errorPair !== null}
+                              onClick={() => setSelectedRight(isSelected ? null : item.id)}
+                              className={`w-full text-left p-3.5 sm:p-4 rounded-xl border-2 transition-all text-xs sm:text-sm font-medium ${btnClass}`}
+                            >
+                              {item.text}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                    {/* Left Column */}
-                    <div className="space-y-2.5">
-                  <h4 className="font-bold text-slate-400 dark:text-slate-500 text-[11px] tracking-wider uppercase mb-2 border-b border-slate-100 dark:border-slate-800 pb-1.5 flex items-center justify-between">
-                    <span>Pojem / Zkratka / Téma</span>
-                    <span className="text-[10px] font-normal text-slate-400">1. Vyberte</span>
-                  </h4>
-                  {leftItems.map(item => {
-                    const isMatched = matchedPairs.includes(item.id);
-                    const isSelected = selectedLeft === item.id;
-                    const isError = errorPair?.left === item.id;
-                    
-                    let btnClass = "bg-white dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/20";
-                    if (isMatched) btnClass = "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-400 opacity-40 cursor-not-allowed line-through";
-                    else if (isError) btnClass = "bg-red-50 dark:bg-red-950/40 border-red-500 dark:border-red-700 text-red-800 dark:text-red-300 font-bold ring-2 ring-red-500/20";
-                    else if (isSelected) btnClass = "bg-blue-50 dark:bg-blue-950/50 border-blue-500 dark:border-blue-600 text-blue-900 dark:text-blue-200 font-bold ring-2 ring-blue-500/30";
-                    
-                    return (
-                      <button
-                        key={`l-${item.id}`}
-                        disabled={isMatched || errorPair !== null}
-                        onClick={() => setSelectedLeft(isSelected ? null : item.id)}
-                        className={`w-full text-left p-3.5 sm:p-4 rounded-xl border-2 transition-all text-xs sm:text-sm font-medium ${btnClass}`}
-                      >
-                        {item.text}
-                      </button>
-                    );
-                  })}
-                </div>
-                
-                {/* Right Column */}
-                <div className="space-y-2.5">
-                  <h4 className="font-bold text-slate-400 dark:text-slate-500 text-[11px] tracking-wider uppercase mb-2 border-b border-slate-100 dark:border-slate-800 pb-1.5 flex items-center justify-between">
-                    <span>Definice / Význam</span>
-                    <span className="text-[10px] font-normal text-slate-400">2. Přiřaďte</span>
-                  </h4>
-                  {rightItems.map(item => {
-                    const isMatched = matchedPairs.includes(item.id);
-                    const isSelected = selectedRight === item.id;
-                    const isError = errorPair?.right === item.id;
-                    
-                    let btnClass = "bg-white dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/20";
-                    if (isMatched) btnClass = "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-400 opacity-40 cursor-not-allowed line-through";
-                    else if (isError) btnClass = "bg-red-50 dark:bg-red-950/40 border-red-500 dark:border-red-700 text-red-800 dark:text-red-300 font-bold ring-2 ring-red-500/20";
-                    else if (isSelected) btnClass = "bg-blue-50 dark:bg-blue-950/50 border-blue-500 dark:border-blue-600 text-blue-900 dark:text-blue-200 font-bold ring-2 ring-blue-500/30";
-                    
-                    return (
-                      <button
-                        key={`r-${item.id}`}
-                        disabled={isMatched || errorPair !== null}
-                        onClick={() => setSelectedRight(isSelected ? null : item.id)}
-                        className={`w-full text-left p-3.5 sm:p-4 rounded-xl border-2 transition-all text-xs sm:text-sm font-medium ${btnClass}`}
-                      >
-                        {item.text}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+                  {/* Printable Worksheet View for Classic Matching (Visible exclusively in print) */}
+                  <div className="hidden print:block w-full text-slate-900 bg-white">
+                    <PrintHeader
+                      subject={`Pracovní list: Poznávačka a přiřazování – ${activeCategory?.title || ''}`}
+                      docTitle="Pracovní list k prověření odborných znalostí"
+                    />
+
+                    <div className="print-card mb-4 p-3 border border-slate-400 rounded-lg text-xs grid grid-cols-3 gap-3">
+                      <div><span className="font-bold">Frekventant / Příslušník:</span> ............................................</div>
+                      <div><span className="font-bold">Datum:</span> .........................</div>
+                      <div><span className="font-bold">Hodnocení:</span> ......... / {activeCategory?.pairs.length || 0} bodů</div>
+                    </div>
+
+                    <p className="text-xs text-slate-700 italic mb-4">
+                      Pokyn: K jednotlivým pojmům v levém sloupci přiřaďte správnou definici z pravého sloupce. Do prázdné hranaté závorky vepište odpovídající písmeno (A, B, C...).
+                    </p>
+
+                    <div className="print-card print-avoid-break mb-6 border border-slate-300 rounded-lg p-4 grid grid-cols-2 gap-6 text-xs">
+                      <div>
+                        <h4 className="font-bold uppercase tracking-wider text-slate-800 mb-3 border-b border-slate-200 pb-1">
+                          1. Pojmy k přiřazení:
+                        </h4>
+                        <div className="space-y-3">
+                          {activeCategory?.pairs.map((p, idx) => (
+                            <div key={p.id} className="flex items-start gap-2">
+                              <span className="font-bold w-6">{idx + 1}.</span>
+                              <span className="font-mono font-bold border-b border-slate-700 px-1.5 py-0.5 text-center min-w-[28px]">[ &nbsp; ]</span>
+                              <span className="font-semibold text-slate-900">{p.left}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-bold uppercase tracking-wider text-slate-800 mb-3 border-b border-slate-200 pb-1">
+                          2. Možnosti definic:
+                        </h4>
+                        <div className="space-y-3">
+                          {printRights.map((item, idx) => (
+                            <div key={item.id} className="flex items-start gap-2">
+                              <span className="font-bold text-slate-900">{String.fromCharCode(65 + idx)})</span>
+                              <span className="text-slate-800">{item.text}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Separate Answer Key at the end */}
+                    <div className="print-avoid-break mt-6 pt-3 border-t-2 border-dashed border-slate-400">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-bold text-xs uppercase tracking-wider text-slate-900">
+                          Klíč správných odpovědí (pro lektora / instruktora)
+                        </span>
+                        <span className="text-[10px] text-slate-600 italic">
+                          Zde odstřihněte nebo přeložte před zahájením zkoušení
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                        {activeCategory?.pairs.map((p, idx) => {
+                          const letterIdx = printRights.findIndex(r => r.id === p.id);
+                          const letter = letterIdx >= 0 ? String.fromCharCode(65 + letterIdx) : '?';
+                          return (
+                            <div key={p.id} className="flex items-baseline gap-1.5">
+                              <span className="font-bold text-slate-900">{idx + 1}.</span>
+                              <span>{p.left} &rarr; <strong>[{letter}]</strong></span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
+          </div>
+        </section>
+      );
+    }
 

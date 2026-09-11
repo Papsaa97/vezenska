@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Trophy, RotateCcw, ArrowRight, Award, Timer, Sparkles, Zap, CheckCircle2 } from 'lucide-react';
+import { Trophy, RotateCcw, ArrowRight, Award, Timer, Sparkles, Zap, CheckCircle2, Printer } from 'lucide-react';
 import { MatchingCategory, MatchingRecord, MatchingDiagramPart } from '../types';
 import { recordMatchingCompletion } from '../utils/gamification';
+import PrintHeader from './common/PrintHeader';
 import { 
   DndContext, 
   useDraggable, 
@@ -278,82 +279,204 @@ export default function DiagramGame({ category, onGameComplete, onNavigateToBadg
 
   return (
     <div className="flex flex-col h-full gap-3 sm:gap-4 overflow-x-hidden select-none">
-      <div className="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300 px-1">
-        <span className="flex items-center gap-1.5"><Timer className="w-4 h-4 text-blue-500"/> Čas: {formatTime(timeElapsed)}</span>
-        <span className="flex items-center gap-1.5 text-amber-600">Chyby: {mistakesCount}</span>
-        <span className="text-emerald-600 dark:text-emerald-400">{matchedIds.length} / {category.parts?.length || 0}</span>
+      <div className="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300 px-1 no-print">
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1.5"><Timer className="w-4 h-4 text-blue-500"/> Čas: {formatTime(timeElapsed)}</span>
+          <span className="flex items-center gap-1.5 text-amber-600">Chyby: {mistakesCount}</span>
+          <span className="text-emerald-600 dark:text-emerald-400">{matchedIds.length} / {category.parts?.length || 0}</span>
+        </div>
+        <button
+          onClick={() => window.print()}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+          title="Vytisknout pracovní list A4 pro výuku / testování"
+        >
+          <Printer className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+          <span>Tisk pracovního listu</span>
+        </button>
       </div>
 
-      <DndContext autoScroll={false} sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        {/* Container strictly locked to 1:1 aspect ratio with overflow protection and touch isolation */}
-        <div className="relative w-full max-w-[55vh] mx-auto aspect-square bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-inner flex items-center justify-center p-1 sm:p-3 shrink-0 touch-none select-none overscroll-contain overflow-hidden">
-          <div className="relative w-full h-full pointer-events-auto">
-            <img src={category.imageUrl} alt={category.title} className="w-full h-full object-contain pointer-events-none select-none opacity-95 dark:opacity-90 mix-blend-multiply dark:mix-blend-normal" draggable={false} />
-            
-            {/* SVG lines connecting the actual part to the label drop zone */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+      {/* Screen Interactive Game Area (Hidden when printing) */}
+      <div className="no-print flex flex-col gap-3 sm:gap-4">
+        <DndContext autoScroll={false} sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+          {/* Container strictly locked to 1:1 aspect ratio with overflow protection and touch isolation */}
+          <div className="relative w-full max-w-[55vh] mx-auto aspect-square bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-inner flex items-center justify-center p-1 sm:p-3 shrink-0 touch-none select-none overscroll-contain overflow-hidden">
+            <div className="relative w-full h-full pointer-events-auto">
+              <img src={category.imageUrl} alt={category.title} className="w-full h-full object-contain pointer-events-none select-none opacity-95 dark:opacity-90 mix-blend-multiply dark:mix-blend-normal" draggable={false} />
+              
+              {/* SVG lines connecting the actual part to the label drop zone */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+                {category.parts?.map(part => {
+                  if (part.labelTop === undefined || part.labelLeft === undefined) return null;
+                  return (
+                    <line 
+                      key={`line-${part.id}`}
+                      x1={`${part.labelLeft}%`} 
+                      y1={`${part.labelTop}%`} 
+                      x2={`${part.left}%`} 
+                      y2={`${part.top}%`} 
+                      stroke="currentColor" 
+                      strokeWidth="1.5" 
+                      className="text-slate-400/60 dark:text-slate-500/60" 
+                      strokeDasharray="4 2" 
+                    />
+                  );
+                })}
+              </svg>
+
+              {/* Render a clear anchor dot directly on the weapon */}
               {category.parts?.map(part => {
                 if (part.labelTop === undefined || part.labelLeft === undefined) return null;
                 return (
-                  <line 
-                    key={`line-${part.id}`}
-                    x1={`${part.labelLeft}%`} 
-                    y1={`${part.labelTop}%`} 
-                    x2={`${part.left}%`} 
-                    y2={`${part.top}%`} 
-                    stroke="currentColor" 
-                    strokeWidth="1.5" 
-                    className="text-slate-400/60 dark:text-slate-500/60" 
-                    strokeDasharray="4 2" 
+                  <div 
+                    key={`dot-${part.id}`} 
+                    className="absolute w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-blue-500 border border-white dark:border-slate-900 shadow-sm transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[5]"
+                    style={{ top: `${part.top}%`, left: `${part.left}%` }} 
+                  />
+                );
+              })}
+              
+              {/* Drop Zones (positioned at labelTop / labelLeft so they don't crowd the image center) */}
+              {category.parts?.map(part => (
+                <DroppableZone 
+                  key={part.id} 
+                  part={part} 
+                  isMatched={matchedIds.includes(part.id)} 
+                  isActive={activeDragId === part.id}
+                  isSelectedTarget={selectedPartId === part.id}
+                  onZoneClick={() => handleZoneClick(part.id)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Draggable Parts list at the bottom */}
+          <div className="bg-slate-50 dark:bg-slate-800/50 p-2.5 sm:p-4 rounded-xl border border-slate-200 dark:border-slate-700/80 shrink-0">
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mb-2 font-semibold uppercase tracking-wider text-center">
+              Přetáhněte pojem nebo klikněte pro výběr a umístění
+            </p>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
+              {shuffledParts.map(part => (
+                <DraggablePart 
+                  key={part.id} 
+                  part={part} 
+                  isMatched={matchedIds.includes(part.id)} 
+                  isSelected={selectedPartId === part.id}
+                  onSelect={() => handlePartSelect(part.id)}
+                />
+              ))}
+            </div>
+          </div>
+        </DndContext>
+      </div>
+
+      {/* Printable Worksheet View (Visible strictly during print) */}
+      <div className="hidden print:block w-full text-slate-900 bg-white">
+        <PrintHeader
+          subject={`Pracovní list: Poznávačka výzbroje a materiálu – ${category.title}`}
+          docTitle="Pracovní list k prověření odborných znalostí"
+        />
+
+        {/* Student metadata header */}
+        <div className="print-card mb-4 p-3 border border-slate-400 rounded-lg text-xs grid grid-cols-3 gap-3">
+          <div><span className="font-bold">Frekventant / Příslušník:</span> ............................................</div>
+          <div><span className="font-bold">Datum:</span> .........................</div>
+          <div><span className="font-bold">Hodnocení:</span> ......... / {category.parts?.length || 0} bodů</div>
+        </div>
+
+        <p className="text-xs text-slate-700 italic mb-3">
+          Pokyn: Podle vyznačených číselných pozic na níže uvedeném diagramu doplňte do očíslovaných řádků správné oficiální názvy součástí zbraně / materiálu.
+        </p>
+
+        {/* Printable Diagram with numbered indicator badges (1..N) */}
+        <div className="print-card print-avoid-break relative w-full max-w-[170mm] mx-auto aspect-[4/3] max-h-[110mm] border border-slate-300 rounded-xl p-2 flex items-center justify-center mb-5 overflow-hidden">
+          <div className="relative w-full h-full">
+            <img
+              src={category.imageUrl}
+              alt={category.title}
+              className="w-full h-full object-contain pointer-events-none select-none filter contrast-125"
+            />
+
+            {/* Connecting lines from indicator badges to actual anchor points */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+              {category.parts?.map((part) => {
+                const targetX = part.labelLeft ?? part.left;
+                const targetY = part.labelTop ?? part.top;
+                return (
+                  <line
+                    key={`print-line-${part.id}`}
+                    x1={`${targetX}%`}
+                    y1={`${targetY}%`}
+                    x2={`${part.left}%`}
+                    y2={`${part.top}%`}
+                    stroke="#0f172a"
+                    strokeWidth="1.5"
+                    strokeDasharray="3 2"
                   />
                 );
               })}
             </svg>
 
-            {/* Render a clear anchor dot directly on the weapon */}
-            {category.parts?.map(part => {
-              if (part.labelTop === undefined || part.labelLeft === undefined) return null;
+            {/* Solid anchor dots on the actual part */}
+            {category.parts?.map((part) => (
+              <div
+                key={`print-dot-${part.id}`}
+                className="absolute w-2 h-2 rounded-full bg-slate-900 transform -translate-x-1/2 -translate-y-1/2 z-[5]"
+                style={{ top: `${part.top}%`, left: `${part.left}%` }}
+              />
+            ))}
+
+            {/* Numbered circular badges (1..N) at label position */}
+            {category.parts?.map((part, index) => {
+              const posX = part.labelLeft ?? part.left;
+              const posY = part.labelTop ?? part.top;
               return (
-                <div 
-                  key={`dot-${part.id}`} 
-                  className="absolute w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-blue-500 border border-white dark:border-slate-900 shadow-sm transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[5]"
-                  style={{ top: `${part.top}%`, left: `${part.left}%` }} 
-                />
+                <div
+                  key={`print-badge-${part.id}`}
+                  style={{ top: `${posY}%`, left: `${posX}%`, transform: 'translate(-50%, -50%)' }}
+                  className="absolute z-10 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white border-2 border-slate-900 text-slate-900 font-black text-[11px] flex items-center justify-center shadow-xs"
+                >
+                  {index + 1}
+                </div>
               );
             })}
-            
-            {/* Drop Zones (positioned at labelTop / labelLeft so they don't crowd the image center) */}
-            {category.parts?.map(part => (
-              <DroppableZone 
-                key={part.id} 
-                part={part} 
-                isMatched={matchedIds.includes(part.id)} 
-                isActive={activeDragId === part.id}
-                isSelectedTarget={selectedPartId === part.id}
-                onZoneClick={() => handleZoneClick(part.id)}
-              />
+          </div>
+        </div>
+
+        {/* Blank response lines for student answers */}
+        <div className="print-card print-avoid-break mb-5 p-3.5 border border-slate-300 rounded-lg">
+          <h4 className="font-bold text-xs uppercase tracking-wider text-slate-800 mb-2.5 border-b border-slate-200 pb-1">
+            Záznam odpovědí frekventanta:
+          </h4>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-xs">
+            {category.parts?.map((_, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <span className="font-bold w-6 text-right text-slate-900">{idx + 1}.</span>
+                <span className="flex-1 border-b border-dotted border-slate-600 h-4" />
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Draggable Parts list at the bottom */}
-        <div className="bg-slate-50 dark:bg-slate-800/50 p-2.5 sm:p-4 rounded-xl border border-slate-200 dark:border-slate-700/80 shrink-0">
-          <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mb-2 font-semibold uppercase tracking-wider text-center">
-            Přetáhněte pojem nebo klikněte pro výběr a umístění
-          </p>
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
-            {shuffledParts.map(part => (
-              <DraggablePart 
-                key={part.id} 
-                part={part} 
-                isMatched={matchedIds.includes(part.id)} 
-                isSelected={selectedPartId === part.id}
-                onSelect={() => handlePartSelect(part.id)}
-              />
+        {/* Separate Answer Key at the end */}
+        <div className="print-avoid-break mt-6 pt-3 border-t-2 border-dashed border-slate-400">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-bold text-xs uppercase tracking-wider text-slate-900">
+              Klíč správných odpovědí (pro lektora / instruktora výcviku)
+            </span>
+            <span className="text-[10px] text-slate-600 italic">
+              Zde odstřihněte nebo přeložte před zahájením zkoušení
+            </span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-1.5 text-xs text-slate-800">
+            {category.parts?.map((part, idx) => (
+              <div key={part.id} className="flex items-baseline gap-1.5">
+                <span className="font-bold text-slate-900">{idx + 1}.</span>
+                <span>{part.label}</span>
+              </div>
             ))}
           </div>
         </div>
-      </DndContext>
+      </div>
     </div>
   );
 }

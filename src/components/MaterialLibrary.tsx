@@ -11,8 +11,10 @@ import {
   FolderOpen,
   AlertCircle,
   Loader2,
+  Printer,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import PrintHeader from './common/PrintHeader';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -240,8 +242,15 @@ export default function MaterialLibrary() {
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-6 pb-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Tisková hlavička – viditelná pouze při tisku */}
+      <PrintHeader 
+        subject="Knihovna studijních materiálů" 
+        docTitle={`Katalog výukových podkladů a předpisů (Filtr: ${activeSubject})`} 
+        subtext="Akademie Vězeňské služby ČR – Interní studijní materiály" 
+      />
+
+      {/* Header na obrazovce */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-md shadow-indigo-500/25">
             <BookOpen className="w-5 h-5 text-white" />
@@ -251,18 +260,29 @@ export default function MaterialLibrary() {
             <p className="text-xs text-slate-500 dark:text-slate-400">Studijní podklady ke stažení</p>
           </div>
         </div>
-        <button
-          onClick={loadMaterials}
-          disabled={loading}
-          className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 transition-all cursor-pointer disabled:opacity-50"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          Obnovit
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => window.print()}
+            disabled={loading || materials.length === 0}
+            className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 transition-all cursor-pointer disabled:opacity-50 shadow-xs"
+            title="Vytisknout katalog studijních materiálů nebo uložit do PDF"
+          >
+            <Printer className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+            Tisk / PDF
+          </button>
+          <button
+            onClick={loadMaterials}
+            disabled={loading}
+            className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 transition-all cursor-pointer disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            Obnovit
+          </button>
+        </div>
       </div>
 
       {/* Search */}
-      <div className="relative">
+      <div className="relative no-print">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <input
           type="text"
@@ -274,7 +294,7 @@ export default function MaterialLibrary() {
       </div>
 
       {/* Subject filter tabs */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 no-print">
         {(['Vše', ...ALL_SUBJECTS] as (MaterialSubject | 'Vše')[]).map((subj) => (
           <button
             key={subj}
@@ -292,21 +312,21 @@ export default function MaterialLibrary() {
 
       {/* States */}
       {loading && (
-        <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
+        <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400 no-print">
           <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
           <span className="text-sm">Načítám materiály…</span>
         </div>
       )}
 
       {!loading && error && (
-        <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-2xl text-red-700 dark:text-red-300 text-sm">
+        <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-2xl text-red-700 dark:text-red-300 text-sm no-print">
           <AlertCircle className="w-5 h-5 shrink-0" />
           {error}
         </div>
       )}
 
       {!loading && !error && materials.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 gap-4 text-slate-400">
+        <div className="flex flex-col items-center justify-center py-20 gap-4 text-slate-400 no-print">
           <FolderOpen className="w-14 h-14 opacity-30" />
           <div className="text-center">
             <div className="font-semibold text-slate-500 dark:text-slate-400">Žádné materiály k zobrazení</div>
@@ -316,7 +336,7 @@ export default function MaterialLibrary() {
       )}
 
       {!loading && !error && materials.length > 0 && filtered.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
+        <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400 no-print">
           <Search className="w-10 h-10 opacity-30" />
           <span className="text-sm">Žádné výsledky pro „{searchQuery}"</span>
         </div>
@@ -332,33 +352,38 @@ export default function MaterialLibrary() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
+                className="print-avoid-break"
               >
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-3 border-b border-slate-200 dark:border-slate-800 pb-1.5">
                   <span className={`px-2.5 py-0.5 rounded-lg text-xs font-bold border ${SUBJECT_COLORS[subject]}`}>
                     {subject}
                   </span>
-                  <span className="text-xs text-slate-400">{grouped[subject].length} souborů</span>
+                  <span className="text-xs text-slate-400 font-medium">
+                    {grouped[subject].length} {grouped[subject].length === 1 ? 'materiál' : grouped[subject].length < 5 ? 'materiály' : 'materiálů'}
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-1 print:gap-2">
                   {grouped[subject].map((material) => {
                     const typeBadge = getFileTypeBadge(material.mimeType);
                     const isDownloading = downloadingName === material.name;
                     return (
                       <div
                         key={material.name}
-                        className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-indigo-300 dark:hover:border-indigo-600 transition-all"
+                        className="print-card flex items-center gap-3 p-4 bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-indigo-300 dark:hover:border-indigo-600 transition-all"
                       >
-                        {getFileIcon(material.mimeType)}
+                        <div className="print:hidden">
+                          {getFileIcon(material.mimeType)}
+                        </div>
                         <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-sm text-slate-900 dark:text-white truncate">
+                          <div className="font-semibold text-sm text-slate-900 dark:text-white truncate print:whitespace-normal">
                             {material.displayName}
                           </div>
                           <div className="flex items-center gap-2 mt-1">
                             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadge.color}`}>
                               {typeBadge.label}
                             </span>
-                            <span className="text-[11px] text-slate-400">
+                            <span className="text-[11px] text-slate-400 font-mono">
                               {formatFileSize(material.size)}
                             </span>
                           </div>
@@ -366,7 +391,7 @@ export default function MaterialLibrary() {
                         <button
                           onClick={() => handleDownload(material)}
                           disabled={isDownloading}
-                          className="shrink-0 p-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-800/50 border border-indigo-200 dark:border-indigo-700 transition-all cursor-pointer disabled:opacity-50"
+                          className="no-print shrink-0 p-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-800/50 border border-indigo-200 dark:border-indigo-700 transition-all cursor-pointer disabled:opacity-50"
                           title="Stáhnout"
                         >
                           {isDownloading ? (
