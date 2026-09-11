@@ -18,6 +18,7 @@ import OfflineBanner from './components/OfflineBanner';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import MaterialLibrary from './components/MaterialLibrary';
 import ContentManager from './components/ContentManager';
+import FeedbackButton from './components/FeedbackButton';
 import { matchingCategories, defaultQuizHistory } from './data/initialData';
 import { academyQuestions } from './data/questionsData';
 import { tacticalScenarios } from './data/scenariosData';
@@ -49,6 +50,23 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 
 
+
+const NAV_TAB_LABELS: Record<NavTab, string> = {
+  subjects: 'Předměty',
+  quiz: 'Zkouška',
+  assistant: 'AI Asistent',
+  compass: 'Kompas zákonů',
+  admin: 'Administrativa & ETŘ',
+  ethics: 'Profesní etika',
+  scenarios: 'Taktické scénáře',
+  weapons: 'Zbraně & Střelba',
+  flashcards: 'Kartičky',
+  matching: 'Poznávačka',
+  badges: 'Odznaky & Úrovně',
+  statistics: 'Statistiky',
+  library: 'Knihovna',
+  'content-manager': 'Správa obsahu',
+};
 
 export default function App() {
   const { profile } = useAuth();
@@ -226,6 +244,7 @@ export default function App() {
         <OfflineBanner />
       </div>
       <PWAInstallPrompt />
+      <FeedbackButton screenLabel={NAV_TAB_LABELS[activeTab] ?? activeTab} />
       
       <main className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 sm:p-4 pb-24 md:pb-6 lg:pb-4 md:p-6 gap-4 md:gap-6 w-full print:p-0 print:m-0 print:overflow-visible print:h-auto">
         {activeTab === 'subjects' && (
