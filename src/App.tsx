@@ -15,6 +15,7 @@ import BadgesView from './components/BadgesView';
 import Statistics from './components/Statistics';
 import CaptainExamAssistant from './components/CaptainExamAssistant';
 import OfflineBanner from './components/OfflineBanner';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 import MaterialLibrary from './components/MaterialLibrary';
 import ContentManager from './components/ContentManager';
 import { matchingCategories, defaultQuizHistory } from './data/initialData';
@@ -224,6 +225,7 @@ export default function App() {
         />
         <OfflineBanner />
       </div>
+      <PWAInstallPrompt />
       
       <main className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 sm:p-4 pb-24 md:pb-6 lg:pb-4 md:p-6 gap-4 md:gap-6 w-full print:p-0 print:m-0 print:overflow-visible print:h-auto">
         {activeTab === 'subjects' && (
