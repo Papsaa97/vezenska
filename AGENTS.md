@@ -20,3 +20,6 @@ Technologický stack: React, Vite, TypeScript, Tailwind CSS.
 * **Zachování typů:** Nepoužívej typ `any`. Všechny nové stavy a vlastnosti musí mít explicitní TypeScript definice.
 * **Integrita build procesu:** Před dokončením úkolu vždy ověř typovou kontrolu a úspěšný build (`npm run build` nebo `npx tsc --noEmit`).
 
+## 3. Autonoma testovací data (`src/autonoma/`)
+
+Autonoma je nástroj pro end-to-end testování, který generuje realistická testovací data prostřednictvím integračního endpointu `/api/autonoma` a definovaných factories (`src/autonoma/factories/`). Factories vytvářejí a mažou entity (`quiz_questions`, `user_feedback`) přímo přes aplikační logiku a Supabase rozhraní. Při přidání nového datového modelu nebo změně způsobu vytváření entit vždy přidejte nebo aktualizujte odpovídající factory v `src/autonoma/factories/`.
