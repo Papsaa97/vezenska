@@ -45,6 +45,7 @@ import {
 import { QuizSessionRecord, MatchingRecord, Question } from './types';
 import { loadMatchingHistory, updateDailyStreak } from './utils/gamification';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { Analytics } from '@vercel/analytics/react';
 import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -665,6 +666,7 @@ export default function App() {
         )}
       </AnimatePresence>
       <SpeedInsights />
+      <Analytics />
         </div>
       </ProtectedRoute>
     </ErrorBoundary>
