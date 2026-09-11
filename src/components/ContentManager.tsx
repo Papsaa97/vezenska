@@ -14,11 +14,13 @@ import {
   CloudUpload,
   ShieldAlert,
   HelpCircle,
+  MessageSquareWarning,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { StudyMaterial, MaterialSubject } from './MaterialLibrary';
 import QuestionBankManager from './QuestionBankManager';
+import FeedbackManager from './FeedbackManager';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -140,7 +142,8 @@ export default function ContentManager({ onQuestionsUpdated }: ContentManagerPro
 
 function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
   // ── Tab state ──
-  const [activeTab, setActiveTab] = useState<'materials' | 'questions'>('materials');
+  const [activeTab, setActiveTab] = useState<'materials' | 'questions' | 'feedback'>('materials');
+  const [newFeedbackCount, setNewFeedbackCount] = useState(0);
 
   // ── Upload form state ──
   const [selectedSubject, setSelectedSubject] = useState<MaterialSubject>('ZOP');
@@ -186,6 +189,21 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
   useEffect(() => {
     loadMaterials();
   }, [loadMaterials]);
+
+  // Načte počet nevyřešených zpráv zpětné vazby nezávisle na aktivní záložce (pro odznak)
+  useEffect(() => {
+    let mounted = true;
+    supabase
+      .from('user_feedback')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'new')
+      .then(({ count }) => {
+        if (mounted && typeof count === 'number') setNewFeedbackCount(count);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // ── File picking ──
 
@@ -302,9 +320,29 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
           <HelpCircle className="w-4 h-4 text-blue-500" />
           Banka otázek
         </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('feedback')}
+          className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+            activeTab === 'feedback'
+              ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <MessageSquareWarning className="w-4 h-4 text-indigo-500" />
+          Zpětná vazba
+          {newFeedbackCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center shadow-sm">
+              {newFeedbackCount > 99 ? '99+' : newFeedbackCount}
+            </span>
+          )}
+        </button>
       </div>
 
       {activeTab === 'questions' && <QuestionBankManager onQuestionsUpdated={onQuestionsUpdated} />}
+
+      {activeTab === 'feedback' && <FeedbackManager onNewCountChange={setNewFeedbackCount} />}
 
       {activeTab === 'materials' && (
         <>
