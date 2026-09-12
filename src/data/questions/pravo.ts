@@ -183,7 +183,7 @@ export const pravoQuestions: Question[] = [
               `Protiprávnost jednání, Společenská škodlivost přesahující přestupek, Vývojové stadium pokusu a Druh uloženého trestu podle § 52 trestního zákoníku.`,
               `Procesní způsobilost obviněného, Důkazní břemeno státního zástupce, Právní kvalifikace skutku v obžalobě a Pravomocný výrok soudu o vině.`,
               `Objekt (chráněný společenský zájem), Objektivní stránka (jednání, následek, příčinná souvislost), Subjekt (pachatel – věk 15+, příčetnost) a Subjektivní stránka (zavinění – úmysl nebo nedbalost).`,
-              `Motiv činu (pohnutka pachatele), Kriminalistická stopa (materiální důkaz), Místo a čas spáchání a Přitěžující okolnosti podle § 42 trestního zákoníku.`
+              `Motiv činu (pohnutka pachatele), Věcná stopa (materiální důkaz), Místo a čas spáchání a Přitěžující okolnosti podle § 42 trestního zákoníku.`
             ],
     correctOption: 2,
     rationale: 'Skutková podstava je souhrn zákonných znaků charakterizujících určitý typ TČ. Všechny 4 prvky (objekt, objektivní stránka, subjekt, subjektivní stránka) musí být naplněny současně, jinak se nejedná o trestný čin.',

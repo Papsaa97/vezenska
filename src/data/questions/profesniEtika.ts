@@ -468,9 +468,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'Axiologie.',
     options: [
               `Axiologie.`,
-              `Deskriptivní etika. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
-              `Profesní deontologie. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
-              `Normativní kriminologie. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`
+              `Deskriptivní etika.`,
+              `Profesní deontologie.`,
+              `Normativní kriminologie.`
             ],
     correctOption: 0,
     rationale: 'Axiologie třídí hodnoty a hodnotí jejich postavení v hierarchii lidských motivů a cílů.',
@@ -897,9 +897,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'K jakémukoliv projevu mučení, nelidského či ponižujícího zacházení, rasismu, diskriminace a korupce. Na tyto činy neexistuje žádná omluva ani polehčující okolnost (jako je stres, vyčerpání nebo příkaz nadřízeného).',
     options: [
               `K jakémukoliv projevu mučení, nelidského či ponižujícího zacházení, rasismu, diskriminace a korupce. Na tyto činy neexistuje žádná omluva ani polehčující okolnost (jako je stres, vyčerpání nebo příkaz nadřízeného).`,
-              `K užívání vulgarismů při komunikaci s kolegy. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
+              `K užívání vulgarismů při komunikaci s kolegy.`,
               `K pozdním příchodům do služby a nedodržování přestávek na jídlo.`,
-              `Ke ztrátě klíčů od kanceláří a skladů. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`
+              `Ke ztrátě klíčů od kanceláří a skladů.`
             ],
     correctOption: 0,
     rationale: 'Zákaz mučení a nelidského zacházení je absolutním lidským právem (čl. 3 EÚLP), které nelze omezit ani v době války či výjimečného stavu. Kodex etiky tento zákaz plně přejímá.',

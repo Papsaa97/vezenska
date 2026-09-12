@@ -178,10 +178,10 @@ export const pedagogikaQuestions: Question[] = [
     question: 'Která ze speciálně pedagogických disciplín se primárně zabývá výchovou a vzděláváním osob s poruchami chování?',
     answer: 'Etopedie.',
     options: [
-              `Somatopedie. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
+              `Somatopedie.`,
               `Etopedie.`,
-              `Psychopedie. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
-              `Surdopedie. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`
+              `Psychopedie.`,
+              `Surdopedie.`
             ],
     correctOption: 1,
     rationale: 'Etopedie (z řeckého ethos = mrav, pedie = výchova) se zaměřuje na sociálně narušené jedince, osoby s poruchami v oblasti sociálních dovedností a chování.',
@@ -246,10 +246,10 @@ export const pedagogikaQuestions: Question[] = [
     question: 'Která aplikovaná pedagogická disciplína se zaměřuje na výchovu a vzdělávání osob odsouzených k výkonu trestu odnětí svobody?',
     answer: 'Penitenciární pedagogika.',
     options: [
-              `Postpenitenciární andragogika. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
+              `Postpenitenciární andragogika.`,
               `Penitenciární pedagogika.`,
-              `Sociální patologie a etopedie. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
-              `Forenzní psychopedie. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`
+              `Sociální patologie a etopedie.`,
+              `Forenzní psychopedie.`
             ],
     correctOption: 1,
     rationale: 'Název oboru pochází z latinského poenitentia (pokání, lítost, trest) a zabývá se specifiky výchovného působení na vězněné osoby.',

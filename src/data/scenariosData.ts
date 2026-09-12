@@ -55,10 +55,10 @@ export const tacticalScenarios: Scenario[] = [
           },
           {
             id: 'c1-3',
-            text: 'Odebrat ženě občanský průkaz a balík vyhodit do popelnice.',
+            text: 'Poučit ženu, že balík může nechat u vrátnice pro pozdější předání po schválení VISS, dítě se švagrem však vpustit dovnitř do čekárny bez zápisu do žádanky, „aby na ně nepršelo“.',
             isCorrect: false,
-            feedback: 'CHYBA: Strážný nesmí svévolně odebírat doklady ani ničit cizí majetek.',
-            legalBasis: '§ 6 zákona č. 555/1992 Sb.'
+            feedback: 'CHYBA: Strážný nesmí svévolně obcházet pravidla pro vstupy osob ani provádět neschválenou úschovu balíků. Všechny osoby vstupující do věznice musí být řádně evidovány v návštěvním systému (žádance) se souhlasem VISS.',
+            legalBasis: '§ 80 NGŘ č. 33/2019 a Řád výkonu vazby'
           }
         ]
       },
@@ -69,17 +69,17 @@ export const tacticalScenarios: Scenario[] = [
         choices: [
           {
             id: 'c2-1',
-            text: 'Zůstat v bezpečí strážního stanoviště za neprůstřelným sklem, zachovat klid, vyzvat osobu jménem zákona k opuštění vstupního koše a prostřednictvím VISS přivolat hlídku PČR k vyvedení z veřejné části.',
+            text: 'Zůstat v bezpečí strážního stanoviště za neprůstřelným sklem, zachovat klid, vyzvat osobu slovy „Jménem zákona“ k opuštění vstupního koše a prostřednictvím VISS přivolat hlídku PČR k vyvedení z veřejné části.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Strážní stanoviště zůstává bezpečně uzamčeno. Při neuposlechnutí výzvy k opuštění objektu civilní osobou se vyžaduje součinnost Policie ČR.',
-            legalBasis: '§ 13 odst. 1 zákona č. 555/1992 Sb. a § 80 NGŘ č. 33/2019'
+            feedback: 'SPRÁVNĚ: Strážní stanoviště zůstává bezpečně uzamčeno a neopouští se bez zajištění. Před užitím donucovacích opatření musí předcházet zákonná výzva slovy „Jménem zákona“ (§ 6 odst. 3 písm. b). Nelze-li situaci s civilní osobou zvládnout vlastními silami bez opuštění stanoviště, vyžaduje se součinnost Policie ČR (§ 24 odst. 2).',
+            legalBasis: '§ 6 odst. 3 písm. b) a § 24 odst. 2 zákona č. 555/1992 Sb.'
           },
           {
             id: 'c2-2',
             text: 'Otevřít dveře stanoviště, vyběhnout ven a použít proti ženě obušek a slzotvorný prostředek.',
             isCorrect: false,
-            feedback: 'CHYBA: Nepřiměřený zásah. Navíc je zakázáno otevírat stanoviště bez zajištění dalším příslušníkem.',
-            legalBasis: '§ 17 a § 19 zákona č. 555/1992 Sb.'
+            feedback: 'CHYBA: Nepřiměřený zásah (porušení zásady proporcionality a subsidiarity dle § 6 odst. 2 a § 17 odst. 3 zákona). Navíc je zakázáno svévolně opouštět a otevírat stanoviště bez zajištění dalším příslušníkem.',
+            legalBasis: '§ 6 odst. 2 a § 17 odst. 3 zákona č. 555/1992 Sb.'
           }
         ]
       }
@@ -178,7 +178,7 @@ export const tacticalScenarios: Scenario[] = [
             text: 'Předat věc Pověřenému orgánu VS ČR k prošetření podezření z trestného činu maření výkonu úředního rozhodnutí, celu zapečetit a obviněné přemístit do cely se zesílenými stavebně technickými prostředky.',
             isCorrect: true,
             feedback: 'SPRÁVNĚ: Příprava k útěku vyžaduje umístění na celu se zesílenými STP (dvojitý okenní katr, armatura) a předání Pověřenému orgánu.',
-            legalBasis: '§ 3 odst. 8 zákona č. 555/1992 Sb. a NGŘ č. 24/2022'
+            legalBasis: '§ 3 odst. 8 zákona č. 555/1992 Sb. (postavení pověřeného orgánu) a NGŘ č. 24/2022 (umístění na celu se zesílenými STP)'
           },
           {
             id: 'c2-2',
@@ -323,8 +323,8 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Okamžitě zahájit palbu ze služebního samopalu na dron ve vzduchu.',
             isCorrect: false,
-            feedback: 'HRUBÁ CHYBA: Střelba do vzduchu na pohyblivý cíl nad střeženým areálem je přísně zakázána! Hrozí dopad střel mimo areál věznice, usmrcení civilních osob nebo zásah vězňů na dvoře.',
-            legalBasis: '§ 18 a § 20 zákona č. 555/1992 Sb.'
+            feedback: 'HRUBÁ CHYBA: Použití střelné zbraně je přípustné jen pro taxativně vymezené účely (§ 18 odst. 1), což přelet dronu nezakládá. Střelba do vzduchu nad dvorem by navíc hrubě porušila povinnost dbát nutné opatrnosti a neohrozit životy osob (§ 18 odst. 4).',
+            legalBasis: '§ 18 odst. 1 písm. a) až e) a § 18 odst. 4 zákona č. 555/1992 Sb.'
           },
           {
             id: 'c1-2',
@@ -342,18 +342,18 @@ export const tacticalScenarios: Scenario[] = [
         description: 'Dron odletěl a na zemi zůstal ležet neznámý černý balíček obalený lepicí páskou. Jak probíhá zajištění?',
         choices: [
           {
-            id: 'c1-3',
+            id: 'c2-1',
             text: 'Vezmete balíček, nožem jej okamžitě rozříznete a obsah vysypete na stůl.',
             isCorrect: false,
             feedback: 'CHYBA: Riziko výbušného systému, biologického materiálu nebo nebezpečných chemikálií (fentanyl).',
             legalBasis: 'Zásady pyrotechnické a chemické bezpečnosti'
           },
           {
-            id: 'c1-4',
+            id: 'c2-2',
             text: 'Uzavřít prostor, za pomoci technických prostředků (detektor kovů / RTG / psovod) vyloučit přítomnost nástražného výbušného systému, v ochranných rukavicích balíček zadokumentovat, zajistit a vyrozumět Policii ČR.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Bezpečné zajištění podezřelého předmětu s ochranou kriminalistických stop (DNA, otisky prstů) pro další vyšetřování.',
-            legalBasis: 'Trestní řád a směrnice pro nález nepovolených předmětů VS ČR'
+            feedback: 'SPRÁVNĚ: Bezpečné zajištění podezřelého předmětu s ochranou stop (DNA, otisky prstů) pro další vyšetřování Policií ČR bez rizika výbušného, biologického či chemického ohrožení.',
+            legalBasis: '§ 12 zákona č. 555/1992 Sb., § 78–79 trestního řádu a interní směrnice VS ČR'
           }
         ]
       }
@@ -416,7 +416,7 @@ export const tacticalScenarios: Scenario[] = [
     id: 'sc-09',
     title: 'Modelová situace 9: Hladovka a odmítání stravy odsouzeným',
     category: 'Mimořádné události & Zásah',
-    badge: '§ 16 zák. 169/1999 Sb.',
+    badge: '§ 16 zák. 169/1999 Sb. & Řád VTOS',
     difficulty: 'Základní',
     briefing: 'Odsouzený na oddělení se zvýšenou ostrahou odmítne třetí den po sobě převzít stravu (snídani, oběd i večeři). Tvrdí, že drží protestní hladovku kvůli zamítnutí přeřazení do mírnějšího typu věznice.',
     steps: [
@@ -429,8 +429,8 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Každé odmítnutí stravy přesně zaznamenat do stravovací knihy a ETŘ, odebrat nevydanou stravu a neprodleně písemně uvědomit vězeňského lékaře, psychologa a velitele oddílu.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Zákon č. 169/1999 Sb. stanoví povinnost lékařského dohledu a monitorace zdravotního stavu hladovkáře.',
-            legalBasis: '§ 16 odst. 3 zákona č. 169/1999 Sb. a Řád výkonu trestu',
+            feedback: 'SPRÁVNĚ: Zákon č. 169/1999 Sb. (§ 16 odst. 1 a 6) a Řád výkonu trestu stanoví právo na zdravotní péči a povinnost lékařského dohledu a monitorace zdravotního stavu hladovkáře.',
+            legalBasis: '§ 16 odst. 1 a 6 zákona č. 169/1999 Sb. a vyhláška č. 345/1999 Sb. (Řád VTOS)',
             nextStepId: 'step-2'
           },
           {
@@ -456,10 +456,10 @@ export const tacticalScenarios: Scenario[] = [
           },
           {
             id: 'c2-2',
-            text: 'Umístit odsouzeného do temnice bez přístupu k pitné vodě.',
+            text: 'Umístit odsouzeného do samovazby bez přístupu k pitné vodě.',
             isCorrect: false,
-            feedback: 'ZÁKAZ: Odsouzený musí mít nepřetržitý přístup k pitné vodě!',
-            legalBasis: 'Zákon č. 169/1999 Sb.'
+            feedback: 'ZÁKAZ: Odsouzený musí mít nepřetržitý přístup k pitné vodě! Takový postup je hrubě nezákonný a představuje nelidské a ponižující zacházení v rozporu s mezinárodními standardy.',
+            legalBasis: '§ 16 zákona č. 169/1999 Sb. a čl. 3 Evropské úmluvy o lidských právech'
           }
         ]
       }
@@ -618,7 +618,255 @@ export const tacticalScenarios: Scenario[] = [
             text: 'Klíče nevydáte. Předáte řízení situace vyjednavači a VISS a nadále pouze plníte jejich pokyny (např. zabezpečení vnějšího okruhu, odsunutí ostatních vězňů z dohledu).',
             isCorrect: true,
             feedback: 'SPRÁVNĚ: Řízení přebírá krizový manažer/vyjednavač. Klíče se nesmí za žádných okolností vydat. Váš úkol se mění na podpůrný a zajišťovací.',
-            legalBasis: 'Směrnice pro řešení krizových situací (Rukojmí)'
+            legalBasis: 'Směrnice pro řešení krizových situací (Rukojmí)',
+            nextStepId: 'step-3'
+          }
+        ]
+      },
+      {
+        id: 'step-3',
+        title: 'Krok 3: Vyústění vyjednávání a taktické zajištění rukojmího',
+        description: 'Vyjednavači se podařilo pachatele částečně uklidnit. Pachatel souhlasí s odložením bodce a propuštěním rukojmího pod podmínkou osobního jednání s ředitelem věznice. Pachatel odhodil zbraň na zem a ustoupil. Jaký je správný postup v této fázi?',
+        choices: [
+          {
+            id: 'c3-1',
+            text: 'Jako dozorce okamžitě vběhnete do místnosti a sám se pokusíte vězně povalit a spoutat, abyste incident ukončil co nejrychleji.',
+            isCorrect: false,
+            feedback: 'CHYBA: Narušení plánu vyjednávání a taktického postupu. Zajištění pachatele a evakuaci rukojmího provádí určený zásahový tým (ZJ) dle pokynů velitele zásahu, nikoli neorganizovaně jednotlivý dozorce.',
+            legalBasis: 'Taktika služebních zákroků & NGŘ č. 16/2022'
+          },
+          {
+            id: 'c3-2',
+            text: 'Ponecháte realizaci zákroku a bezpečné převzetí pachatele na připravené zásahové jednotce pod velením VISS. Po zajištění pachatele pomůžete s evakuací zraněného rukojmího a zajištěním lékařského ošetření.',
+            isCorrect: true,
+            feedback: 'SPRÁVNĚ: Velení zákroku a taktické zajištění odzbrojeného pachatele provádí specialisté ZJ. Vaší prioritou je okamžitá péče o propuštěného rukojmího a zajištění poskytnutí první pomoci a lékařského ošetření.',
+            legalBasis: '§ 20 zákona č. 555/1992 Sb. a NGŘ č. 16/2022'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'sc-13',
+    title: 'Modelová situace 13: Eskorta – pokus o útěk při zastávce eskortního vozidla',
+    category: 'Eskorty & Střelba',
+    badge: '§ 15 & § 18 zák. č. 555/1992 Sb.',
+    difficulty: 'Expertní',
+    briefing: 'Jste členem dvoučlenné eskorty vezoucí odsouzeného zařazeného do věznice s ostrahou (kategorie rizika: útěkový sklon) k soudnímu jednání. Na frekventované silnici mimo obec dojde k technické závadě vozidla. Při kontrolním výstupu z vozidla se odsouzený náhle vytrhne z úchopu, přeskočí svodidla a běží směrem k lesnímu porostu cca 80 m od vozovky. V dohledu se nenacházejí žádné třetí osoby.',
+    steps: [
+      {
+        id: 'step-1',
+        title: 'Krok 1: Prvotní reakce a zahájení pronásledování',
+        description: 'Odsouzený prchá přes příkop k lesnímu porostu. Jaký je bezprostřední postup zasahujícího příslušníka?',
+        choices: [
+          {
+            id: 'c1-1',
+            text: 'Okamžitě bez výzvy vystřelit ze služební zbraně na prchajícího odsouzeného.',
+            isCorrect: false,
+            feedback: 'HRUBÁ CHYBA: Před použitím střelné zbraně k zamezení útěku dle § 18 odst. 1 písm. c) musí zásadně předcházet výzva a výstraha (§ 18 odst. 3). Výjimka platí pouze při bezprostředním ohrožení života nebo zdraví, které zde nenastalo.',
+            legalBasis: '§ 18 odst. 1 písm. c) a odst. 3 zákona č. 555/1992 Sb.'
+          },
+          {
+            id: 'c1-2',
+            text: 'Bezprostředně zahájit pronásledování, hlasitě vyzvat slovy „Jménem zákona, stůj!“ s výstrahou, že bude použito zbraně. Druhý člen eskorty zajišťuje vozidlo a přivolává posilu/PČR vysílačkou.',
+            isCorrect: true,
+            feedback: 'SPRÁVNĚ: Příslušník má zákonnou povinnost bezprostředního pronásledování (§ 15). Před použitím zbraně je nezbytná zákonná výzva a výstraha (§ 18 odst. 3). Zároveň je zajištěno eskortní vozidlo a relace na operační středisko.',
+            legalBasis: '§ 15 a § 18 odst. 1 písm. c), odst. 3 zákona č. 555/1992 Sb.',
+            nextStepId: 'step-2'
+          },
+          {
+            id: 'c1-3',
+            text: 'Útěk neřešit pronásledováním, vrátit se do vozidla a událost nahlásit až po návratu do kmenové věznice.',
+            isCorrect: false,
+            feedback: 'ZÁVAŽNÉ PORUŠENÍ POVINNOSTI: Příslušník je povinen prchajícího bezprostředně pronásledovat a učinit vše pro jeho zadržení. Zanedbání zakládá kázeňskou i trestní odpovědnost.',
+            legalBasis: '§ 15 zákona č. 555/1992 Sb. a zákon č. 361/2003 Sb.'
+          }
+        ]
+      },
+      {
+        id: 'step-2',
+        title: 'Krok 2: Odsouzený na výzvu nereaguje a hrozí jeho zmizení v lese',
+        description: 'Odsouzený ignoruje opakovanou výzvu i výstrahu, zrychluje a vbíhá do okraje lesa. Vzdálenost činí cca 60 metrů, mírnější donucovací prostředky (hmaty, chvaty, slzotvorný prostředek) nelze použít. Třetí osoby nejsou ohroženy.',
+        choices: [
+          {
+            id: 'c2-1',
+            text: 'Jelikož nelze útěk odvrátit mírnějšími prostředky a výzva byla marná, použít střelnou zbraň s maximální mírou šetrnosti k životu a zdraví (mířený výstřel na dolní končetiny) a bez ohrožení nezúčastněných osob.',
+            isCorrect: true,
+            feedback: 'SPRÁVNĚ: Použití střelné zbraně k zamezení útěku při eskortě (§ 18 odst. 1 písm. c) je přípustné jako krajní prostředek, nelze-li osobu zadržet jinak, za dodržení nutné opatrnosti (§ 18 odst. 4).',
+            legalBasis: '§ 18 odst. 1 písm. c) a odst. 4 zákona č. 555/1992 Sb.'
+          },
+          {
+            id: 'c2-2',
+            text: 'Pronásledování okamžitě vzdát, protože odsouzený je již příliš daleko a střelba je při eskortách vždy absolutně zakázána.',
+            isCorrect: false,
+            feedback: 'CHYBA: Střelba k zamezení útěku při eskortě není absolutně zakázána – zákon ji výslovně upravuje v § 18 odst. 1 písm. c) při splnění zákonných podmínek subsidiarity.',
+            legalBasis: '§ 18 odst. 1 písm. c) zákona č. 555/1992 Sb.'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'sc-14',
+    title: 'Modelová situace 14: Postupná korupční příprava (grooming) nového příslušníka',
+    category: 'Právo & Donucovací prostředky',
+    badge: 'Protikorupční program VS ČR & NGŘ č. 28/2018 Sb.',
+    difficulty: 'Pokročilá',
+    briefing: 'Jste tři týdny po nástupu do samostatné služby na ubytovně odsouzených. Jeden z odsouzených vám opakovaně nabízí drobné laskavosti – upozorňuje vás „v zájmu klidu“ na dění mezi ostatními, chválí vás před nadřízeným za „lidský přístup“ a zanechá vám na stole kávu. Po dvou týdnech takového jednání vás osloví: „Pane dozorce, jste tu jediný rozumný chlap. Mohl byste mi jen na dvě minuty půjčit mobil, abych napsal nemocné mámě? Hned ho vrátím, nikdo se to nedozví.“',
+    steps: [
+      {
+        id: 'step-1',
+        title: 'Krok 1: Rozpoznání manipulace v rané fázi budování neformálního vztahu',
+        description: 'Jak reagovat na počáteční nabízení drobných pozorností, neformálních informací a kávy ze strany odsouzeného?',
+        choices: [
+          {
+            id: 'c1-1',
+            text: 'Laskavosti a kávu přijmout s tím, že jde o projev dobrých vztahů a informace od odsouzeného pomohou k udržení pořádku.',
+            isCorrect: false,
+            feedback: 'CHYBA: Příslušník nesmí přijímat od vězněných osob žádné dary, výhody ani pozornosti. Budování pocitu neformálního závazku je typickou první fází korupčního nátlaku (groomingu).',
+            legalBasis: 'Kodex profesní etiky VS ČR a NGŘ č. 28/2018 Sb.'
+          },
+          {
+            id: 'c1-2',
+            text: 'Zdvořile, ale nekompromisně odmítnout jakékoliv dary a pozornosti, udržovat striktně profesionální odstup a o opakovaném nestandardním chování vězně preventivně informovat velitele oddělení.',
+            isCorrect: true,
+            feedback: 'SPRÁVNĚ: Udržení profesních hranic a okamžité preventivní hlášení nadřízenému eliminuje riziko vydírání či prohlubování manipulace již v zárodku.',
+            legalBasis: 'Katalog korupčních rizik (příloha NGŘ č. 28/2018 Sb.) a Kodex profesní etiky VS ČR',
+            nextStepId: 'step-2'
+          }
+        ]
+      },
+      {
+        id: 'step-2',
+        title: 'Krok 2: Přímá žádost o nedovolenou službu (zapůjčení mobilního telefonu)',
+        description: 'Odsouzený nyní přechází k přímé žádosti o krátké zapůjčení osobního telefonu pro kontakt s rodinou. Jak postupovat?',
+        choices: [
+          {
+            id: 'c2-1',
+            text: 'Telefon pod dohledem na minutu zapůjčit, protože jde o nemocnou matku a nehrozí žádné bezpečnostní riziko.',
+            isCorrect: false,
+            feedback: 'HRUBÁ CHYBA: Půjčení telefonu odsouzenému je závažným bezpečnostním incidentem a porušením služebních povinností. Vězeň tím získává kompromitující materiál a páku k dalšímu vydírání.',
+            legalBasis: 'Zákon č. 555/1992 Sb., zákon č. 169/1999 Sb. a zákon č. 361/2003 Sb.'
+          },
+          {
+            id: 'c2-2',
+            text: 'Žádost věcně a klidně odmítnout, poučit odsouzeného o možnosti legálního telefonování dle Řádu VTOS, sepsat úřední záznam o incidentu a předat jej nadřízenému a OPaS.',
+            isCorrect: true,
+            feedback: 'SPRÁVNĚ: Jednoznačné odmítnutí nedovoleného požadavku, odkázání na legální komunikační kanály a písemné zadokumentování události pro ochranu sboru i samotného příslušníka.',
+            legalBasis: '§ 6 zákona č. 555/1992 Sb., Řád výkonu trestu a NGŘ č. 28/2018 Sb.'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'sc-15',
+    title: 'Modelová situace 15: Pasivní rezistence při plánované prohlídce cely',
+    category: 'Mimořádné události & Zásah',
+    badge: '§ 6 & § 17 zák. č. 555/1992 Sb.',
+    difficulty: 'Pokročilá',
+    briefing: 'Během plánované technické prohlídky ubytovny odmítá jeden z odsouzených opustit celu. Sedne si na podlahu uprostřed místnosti, založí ruce na prsou a odmítá se pohnout. Nejeví známky fyzické agresivity, nekřičí, na výzvy však reaguje mlčením.',
+    steps: [
+      {
+        id: 'step-1',
+        title: 'Krok 1: Gradace a zákonná výzva před použitím donucovacích prostředků',
+        description: 'Odsouzený sedí na zemi v pasivním odporu. Jaký je správný postup zasahujících příslušníků v souladu se zásadou subsidiarity?',
+        choices: [
+          {
+            id: 'c1-1',
+            text: 'Okamžitě použít teleskopický obušek a slzotvorný prostředek k rychlému zjednání poslušnosti.',
+            isCorrect: false,
+            feedback: 'CHYBA: Použití úderného či chemického prostředku proti pasivně sedící osobě je nepřiměřené (exces z intenzity i volby prostředku). Donucovací prostředky se volí od nejmírnějších a pouze po předchozí výzvě.',
+            legalBasis: '§ 6 odst. 2 a § 17 odst. 3 zákona č. 555/1992 Sb.'
+          },
+          {
+            id: 'c1-2',
+            text: 'Zajistit prostor minimálně dvěma příslušníky, důrazně odsouzeného vyzvat jménem zákona k opuštění cely a upozornit ho, že při neuposlechnutí budou použity donucovací prostředky (hmaty a chvaty).',
+            isCorrect: true,
+            feedback: 'SPRÁVNĚ: Zásada dvojic, zákonná výzva slovy „Jménem zákona“ a výstraha před použitím konkrétního donucovacího prostředku dle § 6 odst. 3 a § 17 odst. 3 zákona.',
+            legalBasis: '§ 6 odst. 3 a § 17 odst. 3 zákona č. 555/1992 Sb.',
+            nextStepId: 'step-2'
+          },
+          {
+            id: 'c1-3',
+            text: 'Nechat odsouzeného sedět na zemi a prohlídku cely zrušit, aby nevznikl zbytečný konflikt.',
+            isCorrect: false,
+            feedback: 'CHYBA: Rezignace na výkon služby a neprovedení bezpečnostní prohlídky je nepřípustné zanedbání povinností dozorce.',
+            legalBasis: '§ 6 zákona č. 555/1992 Sb. a NGŘ č. 33/2019'
+          }
+        ]
+      },
+      {
+        id: 'step-2',
+        title: 'Krok 2: Realizace zákroku při přetrvávajícím pasivním odporu',
+        description: 'Odsouzený ani po zákonné výzvě s výstrahou nevstává a nadále pasivně sedí na podlaze. Jaký způsob překonání odporu zvolíte?',
+        choices: [
+          {
+            id: 'c2-1',
+            text: 'Za využití hmatů a chvatů (zvedací a odváděcí páky) ve dvou příslušnících odsouzeného kontrolovaně zvednout, vyvést z cely do vyhrazeného prostoru a v případě potřeby přiložit pouta.',
+            isCorrect: true,
+            feedback: 'SPRÁVNĚ: Volba mírnějšího donucovacího prostředku (hmaty a chvaty dle § 17 odst. 2 písm. a)), který postačuje k dosažení účelu sledovaného zákrokem, plně odpovídá zákonným mantinelům přiměřenosti.',
+            legalBasis: '§ 6 odst. 2 a § 17 odst. 2 písm. a), odst. 3 zákona č. 555/1992 Sb.'
+          },
+          {
+            id: 'c2-2',
+            text: 'Použít proti odsouzenému elektrický paralyzér (taser), aby se ušetřila fyzická námaha personálu.',
+            isCorrect: false,
+            feedback: 'HRUBÁ CHYBA: Použití taseru proti neagresivní, pasivně odporující osobě je hrubým porušením zásady subsidiarity a mezinárodních úmluv proti mučení a zlému zacházení (CPT).',
+            legalBasis: '§ 17 odst. 3 zákona č. 555/1992 Sb. a Doporučení CPT'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'sc-16',
+    title: 'Modelová situace 16: Hromadné testování hranic a skupinová neposlušnost na oddíle',
+    category: 'Mimořádné události & Zásah',
+    badge: '§ 21 zák. č. 555/1992 Sb. & Zásah pod velením',
+    difficulty: 'Expertní',
+    briefing: 'Během ukončení vycházky na vycházkovém dvoře skupina 6 odsouzených demonstrativně ignoruje povel dozorce k návratu na oddíl. Odsouzení hlučně skandují, vulgárně pokřikují a začínají dozorce v kruhu obstupovat ve vzdálenosti cca 3 metrů. Fyzický útok zatím neprobíhá, situace však rychle eskaluje.',
+    steps: [
+      {
+        id: 'step-1',
+        title: 'Krok 1: Taktická reakce osamoceného dozorce',
+        description: 'Skupina 6 odsouzených vás obkličuje a odmítá uposlechnout povel. Jste na dvoře v této chvíli sám. Jak se zachováte?',
+        choices: [
+          {
+            id: 'c1-1',
+            text: 'Vytáhnete obušek a sám se vrhnete na nejhlasitějšího odsouzeného s cílem ho okamžitě zpacifikovat a ukázat autoritu.',
+            isCorrect: false,
+            feedback: 'FATÁLNÍ TAKTICKÁ CHYBA: Osamocený fyzický útok proti přesile 6 osob vede k odzbrojení dozorce, jeho těžkému zranění nebo vzetí jako rukojmí. Příslušník nikdy nesmí riskovat ztrátu kontroly a donucovacích prostředků.',
+            legalBasis: 'Zásady taktiky zákroku a bezpečnostní metodika VS ČR'
+          },
+          {
+            id: 'c1-2',
+            text: 'Udržíte bezpečnou distanci, ustoupíte zády ke krytému vstupu/zdi, okamžitě rádiem/hlásičem vyhlásíte signál pomoci (kód pro skupinové narušení), situaci slovně uklidňujete zákonnou výzvou a vyčkáte na příjezd pořádkové jednotky/posil.',
+            isCorrect: true,
+            feedback: 'SPRÁVNĚ: Udržení odstupu, krytí zad, okamžité přivolání posily a zabránění vzniku rukojmí. Izolace hrozby a vyčkání na organizovaný zákrok.',
+            legalBasis: '§ 6 a § 24 zákona č. 555/1992 Sb. a NGŘ č. 16/2022',
+            nextStepId: 'step-2'
+          }
+        ]
+      },
+      {
+        id: 'step-2',
+        title: 'Krok 2: Organizovaný zákrok pod jednotným velením',
+        description: 'Na vycházkový dvůr dorazila pohotovostní jednotka pod velením velitele směny (VISS) s ochrannými štíty a služebním psem. Odsouzení nadále odmítají uposlechnout. Jak probíhá zákrok?',
+        choices: [
+          {
+            id: 'c2-1',
+            text: 'Každý dozorce si samostatně vybere jednoho vězně a na vlastní pěst použije slzotvorný sprej nebo obušek bez koordinace s velitelem.',
+            isCorrect: false,
+            feedback: 'CHYBA: Při hromadném zákroku je individuální neřízený postup přísně zakázán. Zákrok více příslušníků musí probíhat pod jednotným velením a o použití donucovacích prostředků rozhoduje velitel zákroku.',
+            legalBasis: '§ 21 zákona č. 555/1992 Sb.'
+          },
+          {
+            id: 'c2-2',
+            text: 'Zákrok probíhá výhradně pod jednotným velením VISS dle § 21 zákona č. 555/1992 Sb. Velitel vydá zákonnou výzvu s výstrahou, nařídí kordonový postup se štíty k rozdělení skupiny, nasazení donucovacích prostředků probíhá na jeho povel a odsouzení jsou postupně izolováni a spoutáni.',
+            isCorrect: true,
+            feedback: 'SPRÁVNĚ: Zákrok pod jednotným velením dle § 21 zákona č. 555/1992 Sb. zajišťuje koordinaci, přiměřenost a bezpečnost. O použití DP rozhoduje velitel zákroku, který nese odpovědnost za jeho zákonné provedení.',
+            legalBasis: '§ 21 zákona č. 555/1992 Sb. (Zákrok pod jednotným velením)'
           }
         ]
       }

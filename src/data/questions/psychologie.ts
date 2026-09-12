@@ -414,11 +414,11 @@ export const psychologieQuestions: Question[] = [
     subject: 'Psychologie',
     topic: 'Forenzní psychologie a její podobory',
     question: 'Kým a čím se zabývá forenzní psychologie a jak se dělí na další podobory?',
-    answer: 'Zabývá se chováním a prožíváním lidí v situacích uplatňování práva (pachatelé, oběti, svědci, soudci, policisté, příslušníci VS). Dělí se na: 1. Kriminalistickou PS (typologie pachatelů, motivace), 2. Soudní PS (soudní líčení, výslech, svědectví), 3. Penitenciární PS (vězeňská psychologie – VV a VTOS), 4. Postpenitenciární PS (reintegrace po propuštění).',
+    answer: 'Zabývá se chováním a prožíváním lidí v situacích uplatňování práva (pachatelé, oběti, svědci, soudci, policisté, příslušníci VS). Dělí se na: 1. Vyšetřovací PS (typologie pachatelů, motivace), 2. Soudní PS (soudní líčení, výslech, svědectví), 3. Penitenciární PS (vězeňská psychologie – VV a VTOS), 4. Postpenitenciární PS (reintegrace po propuštění).',
     options: [
               `Zabývá se výhradně laboratorní analýzou stop DNA a biologického materiálu na místě činu. Dělí se na: 1. Forenzní genetiku, 2. Forenzní toxikologii, 3. Forenzní balistiku, 4. Daktyloskopickou psychologii.`,
               `Zabývá se psychoterapií hospitalizovaných pacientů v civilních psychiatrických léčebnách. Dělí se na: 1. Psychoanalýzu, 2. Kognitivně-behaviorální terapii, 3. Gestalt psychologii, 4. Existenciální logoterapii.`,
-              `Zabývá se chováním a prožíváním lidí v situacích uplatňování práva (pachatelé, oběti, svědci, soudci, policisté, příslušníci VS). Dělí se na: 1. Kriminalistickou PS (typologie pachatelů, motivace), 2. Soudní PS (soudní líčení, výslech, svědectví), 3. Penitenciární PS (vězeňská psychologie – VV a VTOS), 4. Postpenitenciární PS (reintegrace po propuštění).`,
+              `Zabývá se chováním a prožíváním lidí v situacích uplatňování práva (pachatelé, oběti, svědci, soudci, policisté, příslušníci VS). Dělí se na: 1. Vyšetřovací PS (typologie pachatelů, motivace), 2. Soudní PS (soudní líčení, výslech, svědectví), 3. Penitenciární PS (vězeňská psychologie – VV a VTOS), 4. Postpenitenciární PS (reintegrace po propuštění).`,
               `Zabývá se statistickým zkoumáním recidivy a tvorbou zákonných trestních sazeb. Dělí se na: 1. Penologii, 2. Kriminologii, 3. Viktimologii, 4. Trestní právo procesní.`
             ],
     correctOption: 2,
@@ -680,7 +680,7 @@ export const psychologieQuestions: Question[] = [
               `1. Agresivita k okolí, 2. Plánování útěku, 3. Odmítání komunikace s policií.`,
               `1. Nadměrná radost, 2. Rozdávání majetku, 3. Zvýšený apetit.`,
               `1. Zúžení (zúžení vnímání možností, ztráta zájmů, izolace), 2. Zadržovaná agresivita (obrácená vůči sobě), 3. Suicidiální fantazie (časté myšlenky nebo mluvení o smrti a sebevraždě).`,
-              `Tento syndrom v psychologii neexistuje. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`
+              `Tento syndrom v psychologii neexistuje.`
             ],
     correctOption: 2,
     rationale: 'Rozpoznání těchto tří signálů (uvedených Erwinem Ringelem) u vězně může personálu VS ČR pomoci včas odhalit riziko sebevraždy a zajistit psychologickou či psychiatrickou pomoc.',

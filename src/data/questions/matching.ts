@@ -6,7 +6,7 @@ export const matchingCategories: MatchingCategory[] = [
     title: 'Vedení VS ČR a resortu justice',
     pairs: [
       { id: 'v1', left: 'Ministr spravedlnosti ČR', right: 'JUDr. Jeroným Tejc (stojí v čele resortu justice)' },
-      { id: 'v2', left: 'Generální ředitel VS ČR', right: 'genmjr. Mgr. Tomáš Hůlka, LL.M. (řídí Vězeňskou službu ČR)' },
+      { id: 'v2', left: 'Generální ředitel VS ČR', right: 'genpor. PhDr. Simon Michailidis, MBA (stojí v čele Vězeňské služby ČR)' },
       { id: 'v3', left: 'Náměstek GŘ pro bezpečnost, kontrolu a odb. zacházení', right: 'brig. gen. PhDr. Petr Červený, MBA, LL.M.' },
       { id: 'v4', left: 'Náměstek GŘ pro ekonomiku a logistiku', right: 'Ing. Jaroslav Myšička, MBA' },
       { id: 'v5', left: 'Náměstek GŘ pro penologii a správní činnost', right: 'plk. Ing. Zbyšek Trepeš' },
@@ -32,13 +32,14 @@ export const matchingCategories: MatchingCategory[] = [
     id: 'paragrafy_555',
     title: 'Klíčové paragrafy zákona č. 555/1992 Sb.',
     pairs: [
-      { id: 'p1', left: '§ 6 zákona č. 555/1992 Sb.', right: 'Oprávnění vyzvat k prokázání totožnosti' },
-      { id: 'p2', left: '§ 10 zákona č. 555/1992 Sb.', right: 'Oprávnění k provádění osobní a věcné prohlídky' },
-      { id: 'p3', left: '§ 13 zákona č. 555/1992 Sb.', right: 'Oprávnění k zákazu vstupu a vykázání osob z objektu' },
-      { id: 'p4', left: '§ 17 zákona č. 555/1992 Sb.', right: 'Taxativní katalog donucovacích prostředků' },
-      { id: 'p5', left: '§ 18 zákona č. 555/1992 Sb.', right: 'Zákonné důvody a podmínky pro použití služební zbraně' },
-      { id: 'p6', left: '§ 19 zákona č. 555/1992 Sb.', right: 'Zvláštní omezení použití DP a zbraně (těhotné, děti, senioři, postižení)' },
-      { id: 'p7', left: '§ 20 zákona č. 555/1992 Sb.', right: 'Povinnosti příslušníka po použití DP a zbraně (první pomoc, hlášení, záznam)' }
+      { id: 'p1', left: '§ 6 zákona č. 555/1992 Sb.', right: 'Zásada přiměřenosti, cti a zákonná výzva („Jménem zákona“)' },
+      { id: 'p2', left: '§ 10 zákona č. 555/1992 Sb.', right: 'Oprávnění požadovat potřebné vysvětlení' },
+      { id: 'p3', left: '§ 11 zákona č. 555/1992 Sb.', right: 'Oprávnění zjišťovat totožnost a provádět osobní prohlídku' },
+      { id: 'p4', left: '§ 13 zákona č. 555/1992 Sb.', right: 'Oprávnění k zákazu vstupu a vykázání osob z objektu' },
+      { id: 'p5', left: '§ 17 zákona č. 555/1992 Sb.', right: 'Taxativní katalog donucovacích prostředků' },
+      { id: 'p6', left: '§ 18 zákona č. 555/1992 Sb.', right: 'Zákonné důvody a podmínky pro použití služební zbraně' },
+      { id: 'p7', left: '§ 19 zákona č. 555/1992 Sb.', right: 'Zvláštní omezení použití DP a zbraně (těhotné, děti, senioři, postižení)' },
+      { id: 'p8', left: '§ 20 zákona č. 555/1992 Sb.', right: 'Povinnosti příslušníka po použití DP a zbraně (první pomoc, hlášení, záznam)' }
     ]
   },
   {
@@ -82,7 +83,7 @@ export const matchingCategories: MatchingCategory[] = [
   },
   {
     id: 'druhy_veznic',
-    title: 'Typy věznic a stupně zabezpečení (§ 39a TZ)',
+    title: 'Typy věznic a stupně zabezpečení (§ 56 TZ a § 39a zák. č. 169/1999 Sb.)',
     pairs: [
       { id: 'dv1', left: 'Věznice s ostrahou – nízký stupeň zabezpečení', right: 'Volný pohyb v ubytovně, možnost zaměstnání mimo věznici bez přímého dozoru' },
       { id: 'dv2', left: 'Věznice s ostrahou – střední stupeň zabezpečení', right: 'Organizovaný pohyb pod dozorem, práce uvnitř věznice nebo na střežených pracovištích' },
@@ -96,12 +97,12 @@ export const matchingCategories: MatchingCategory[] = [
     id: 'kazenske_tresty',
     title: 'Kázeňská řízení a tresty odsouzených (§ 46 zák. 169/1999 Sb.)',
     pairs: [
-      { id: 'kt1', left: 'Písemná důtka', right: 'Nejmírnější kázeňský trest za méně závažné porušení vězeňského řádu' },
-      { id: 'kt2', left: 'Snížení kapesného', right: 'Finanční postih až o jednu třetinu na dobu až 3 měsíců' },
-      { id: 'kt3', left: 'Propadnutí věci', right: 'Trvalé odebrání nedovoleného předmětu (např. nepovolený elektrospotřebič)' },
-      { id: 'kt4', left: 'Zákaz přijetí balíčku', right: 'Zákaz příjmu nárokového balíčku s potravinami až na dobu 1 roku' },
-      { id: 'kt5', left: 'Celodenní umístění do uzavřeného oddílu', right: 'Zpřísněný režim mimo pracovní dobu na dobu až 30 dnů' },
-      { id: 'kt6', left: 'Umístění do samovazby', right: 'Nejpřísnější trest: izolace na samovazbě až na 20 dnů (u mladistvých max. 10 dnů)' }
+      { id: 'kt1', left: 'Písemná důtka', right: 'Nejmírnější kázeňský trest za méně závažné zaviněné porušení povinností' },
+      { id: 'kt2', left: 'Zákaz nákupu potravin a věcí osobní potřeby', right: 'Zákaz nákupu potravin a věcí (mimo hygienu) až na dobu 3 měsíců' },
+      { id: 'kt3', left: 'Propadnutí věci', right: 'Trvalé odebrání nedovolené věci patřící odsouzenému' },
+      { id: 'kt4', left: 'Umístění do uzavřeného oddílu v mimopracovní době (UOMPZ)', right: 'Zpřísněný režim mimo pracovní dobu na dobu až 28 dnů' },
+      { id: 'kt5', left: 'Celodenní umístění do uzavřeného oddílu (CUO)', right: 'Izolace bez práce a aktivit na dobu až 20 dnů (s lékařským posouzením)' },
+      { id: 'kt6', left: 'Umístění do samovazby', right: 'Nejpřísnější trest: samovazba až na 20 dnů (u mladistvých max. 10 dnů)' }
     ]
   },
   {

@@ -100,8 +100,8 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
             ],
     correctOption: 1,
     rationale: 'Dle § 18 odst. 1 písm. c) zákona č. 555/1992 Sb. je příslušník oprávněn použít střelnou zbraň k zamezení útěku osoby ve VTOS ze střeženého objektu nebo při eskortě, nelze-li tuto osobu jinak zadržet. Tomu předchází výzva, výstraha a varovný výstřel, nelze-li od nich upustit pro bezprostřední ohrožení života/zdraví.',
-    source: '§ 18 a § 20 zákona č. 555/1992 Sb. a NGŘ č. 33/2019',
-      explanation: `Dle § 18 odst. 1 písm. c) zákona č. 555/1992 Sb. je příslušník oprávněn použít střelnou zbraň k zamezení útěku osoby ve VTOS ze střeženého objektu nebo při eskortě, nelze-li tuto osobu jinak zadržet. Tomu předchází výzva, výstraha a varovný výstřel, nelze-li od nich upustit pro bezprostřední ohrožení života/zdraví. (Právní úprava: § 18 a § 20 zákona č. 555/1992 Sb. a NGŘ č. 33/2019)`
+    source: '§ 18 odst. 1 písm. c), odst. 3 a 4 zákona č. 555/1992 Sb. a NGŘ č. 33/2019',
+      explanation: `Dle § 18 odst. 1 písm. c) zákona č. 555/1992 Sb. je příslušník oprávněn použít střelnou zbraň k zamezení útěku osoby ve VTOS ze střeženého objektu nebo při eskortě, nelze-li tuto osobu jinak zadržet. Tomu předchází výzva, výstraha a varovný výstřel, nelze-li od nich upustit pro bezprostřední ohrožení života/zdraví. (Právní úprava: § 18 odst. 1 písm. c), odst. 3 a 4 zákona č. 555/1992 Sb. a NGŘ č. 33/2019)`
 },
   {
     id: 'bs-07',
@@ -151,8 +151,8 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
             ],
     correctOption: 1,
     rationale: 'Důkladná osobní prohlídka musí respektovat lidskou důstojnost: provádí ji zásadně příslušník stejného pohlaví v soukromí. Příslušník provádí kontrolu těla pohledem a kontrolu oděvu; invazivní prohlídku tělesných dutin je oprávněn provádět pouze lékař.',
-    source: '§ 10 zákona č. 555/1992 Sb. a Směrnice pro provádění prohlídek',
-      explanation: `Důkladná osobní prohlídka musí respektovat lidskou důstojnost: provádí ji zásadně příslušník stejného pohlaví v soukromí. Příslušník provádí kontrolu těla pohledem a kontrolu oděvu; invazivní prohlídku tělesných dutin je oprávněn provádět pouze lékař. (Právní úprava: § 10 zákona č. 555/1992 Sb. a Směrnice pro provádění prohlídek)`
+    source: '§ 11 odst. 2 zákona č. 555/1992 Sb. a Směrnice pro provádění prohlídek',
+      explanation: `Důkladná osobní prohlídka musí respektovat lidskou důstojnost: provádí ji zásadně příslušník stejného pohlaví v soukromí (§ 11 odst. 2 zák. č. 555/1992 Sb.). Příslušník provádí kontrolu těla pohledem a kontrolu oděvu; invazivní prohlídku tělesných dutin je oprávněn provádět pouze lékař. (Právní úprava: § 11 odst. 2 zákona č. 555/1992 Sb. a Směrnice pro provádění prohlídek)`
 },
   {
     id: 'bs-10',
@@ -315,7 +315,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     answer: 'Dělí se na psy všestranné (hlídkové, obranáře pro eskorty a zákroky) a psy speciální (vyhledávání drog/OPL, výbušnin a mobilních telefonů).',
     options: [
               `Dělí se výhradně na psy záchranářské (vyhledávání zavalených osob) a psy pastevecké pro střežení vnějších zemědělských ploch věznice.`,
-              `Využívají se výhradně psi se specializací na vyhledávání akcelerantů hoření a biologických stop pro potřeby kriminalistického oddělení.`,
+              `Využívají se výhradně psi se specializací na vyhledávání akcelerantů hoření a biologických stop pro potřeby oddělení vyšetřování PČR.`,
               `Dělí se na psy hlídkové (výhradně pro noční pochůzkovou službu na perimetru) a psy terapeutické určené pro výkon trestu mladistvých.`,
               `Dělí se na psy všestranné (hlídkové, obranáře pro eskorty a zákroky) a psy speciální (vyhledávání drog/OPL, výbušnin a mobilních telefonů).`
             ],
@@ -406,8 +406,8 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
             ],
     correctOption: 1,
     rationale: 'Dle zákona a Řádu VTOS důkladnou osobní prohlídku (včetně kontroly tělesných záhybů a dutin) smí provádět pouze příslušník stejného pohlaví v určené vyšetřovací/prohlížecí místnosti za dodržení důstojnosti a hygienických standardů.',
-    source: '§ 9 zákona č. 555/1992 Sb. a NGŘ o bezpečnostních prohlídkách',
-      explanation: `Dle zákona a Řádu VTOS důkladnou osobní prohlídku (včetně kontroly tělesných záhybů a dutin) smí provádět pouze příslušník stejného pohlaví v určené vyšetřovací/prohlížecí místnosti za dodržení důstojnosti a hygienických standardů. (Právní úprava: § 9 zákona č. 555/1992 Sb. a NGŘ o bezpečnostních prohlídkách)`
+    source: '§ 11 odst. 2 zákona č. 555/1992 Sb. a NGŘ o bezpečnostních prohlídkách',
+      explanation: `Dle § 11 odst. 2 zákona č. 555/1992 Sb. a Řádu VTOS důkladnou osobní prohlídku smí provádět výhradně příslušník stejného pohlaví nebo lékař v určené místnosti za dodržení lidské důstojnosti a hygienických standardů. (Právní úprava: § 11 odst. 2 zákona č. 555/1992 Sb. a NGŘ o bezpečnostních prohlídkách)`
 },
   {
     id: 'bs-25',
@@ -437,7 +437,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     options: [
               `Při každé službě musí být přítomni dva velitelé oddělení.`,
               `Strážný na věži musí mít u sebe vždy dva typy donucovacích prostředků.`,
-              `Každý vězeň musí mít přidělené dva vychovatele. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
+              `Každý vězeň musí mít přidělené dva vychovatele.`,
               `Příslušníci nesmí provádět otevírání cel nebo zasahovat na ubytovnách o samotě. Úkony, při nichž hrozí napadení (např. řešení konfliktů, prohlídky, předvádění agresivních vězňů, vstup do cely v noční době), se provádějí vždy za přítomnosti minimálně dvou příslušníků (jeden koná, druhý jistí).`
             ],
     correctOption: 3,
@@ -514,7 +514,8 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
             ],
     correctOption: 1,
     rationale: 'Zákonná výzva („Jménem zákona, upusťte od...“) je obligatorní podmínkou použití DP, pokud to situace umožňuje. Dále platí zásada subsidiarity (využít mírnější prostředky) a proporcionality (intenzita nesmí zjevně převýšit hrozbu).',
-    source: '§ 17 a § 21 zákona č. 555/1992 Sb., o VS a JS ČR',
+    source: '§ 6 odst. 2 a 3 a § 17 odst. 3 zákona č. 555/1992 Sb., o VS a JS ČR',
+    explanation: 'Zákonná výzva slovy „Jménem zákona“ a výstraha je povinnou podmínkou použití DP, pokud to okolnosti nezbytně nevylučují. Zákrok podléhá zásadám subsidiarity a proporcionality. (Právní úprava: § 6 odst. 2 a 3 a § 17 odst. 3 zákona č. 555/1992 Sb.)'
   },
   {
     id: 'bs-31',

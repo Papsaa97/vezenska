@@ -65,9 +65,9 @@ export const zdravovedaQuestions: Question[] = [
               `Okamžitě nadzvednout a zajistit tělo proti pádu, přeříznout/přestřihnout smyčku (ne v uzlu, uzel nechat pro šetření), položit na pevnou podložku na záda, zprůchodnit dýchací cesty, zkontrolovat dech a v případě zástavy ihned zahájit KPR a přivolat lékaře/ZZS.`
             ],
     correctOption: 3,
-    rationale: 'Záchrana lidského života má absolutní přednost. Příslušník tělo jistí, odřízne smyčku mimo uzel (z důvodu zachování kriminalistické stopy) a bez prodlení zahajuje resuscitaci, protože mozek bez kyslíku odumírá po 4–5 minutách.',
+    rationale: 'Záchrana lidského života má absolutní přednost. Příslušník tělo jistí, odřízne smyčku mimo uzel (z důvodu zachování stop pro orgány činné v trestním řízení) a bez prodlení zahajuje resuscitaci, protože mozek bez kyslíku odumírá po 4–5 minutách.',
     source: 'Metodika řešení mimořádných událostí a suicidálního jednání VS ČR',
-      explanation: `Záchrana lidského života má absolutní přednost. Příslušník tělo jistí, odřízne smyčku mimo uzel (z důvodu zachování kriminalistické stopy) a bez prodlení zahajuje resuscitaci, protože mozek bez kyslíku odumírá po 4–5 minutách. (Právní úprava: Metodika řešení mimořádných událostí a suicidálního jednání VS ČR)`
+      explanation: `Záchrana lidského života má absolutní přednost. Příslušník tělo jistí, odřízne smyčku mimo uzel (z důvodu zachování stop pro orgány činné v trestním řízení) a bez prodlení zahajuje resuscitaci, protože mozek bez kyslíku odumírá po 4–5 minutách. (Právní úprava: Metodika řešení mimořádných událostí a suicidálního jednání VS ČR)`
 },
   {
     id: 'zdr-05',
