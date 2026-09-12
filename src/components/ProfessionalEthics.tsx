@@ -26,10 +26,12 @@ import {
   KeyRound,
   Eye,
   Check,
-  X
+  X,
+  Printer
 } from 'lucide-react';
 import { profesniEtikaQuestions } from '../data/questions/profesniEtika';
 import { Question } from '../types';
+import PrintHeader from './common/PrintHeader';
 
 export const ProfessionalEthics: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<'concepts' | 'code' | 'anticorruption' | 'conventions' | 'simulator' | 'test'>('concepts');
@@ -56,6 +58,7 @@ export const ProfessionalEthics: React.FC = () => {
   const [currentTestIdx, setCurrentTestIdx] = useState<number>(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, number>>({});
   const [testFinished, setTestFinished] = useState<boolean>(false);
+  const currentQuestion = testQuestions[currentTestIdx];
 
   // 36 Essential Concepts for ZOP A Study Guide
   const conceptsList = [
@@ -547,31 +550,61 @@ export const ProfessionalEthics: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12 max-w-7xl mx-auto">
+      {/* Tisková hlavička – viditelná výhradně při tisku */}
+      <div className="hidden print:block">
+        <PrintHeader
+          subject="Profesní etika & Deontologie"
+          docTitle={
+            activeSubTab === 'concepts'
+              ? 'Přehled 36 klíčových pojmů pro zkoušku ZOP A'
+              : activeSubTab === 'code'
+              ? 'Etický kodex VS ČR (Příloha č. 6 k NGŘ č. 28/2018 Sb.)'
+              : activeSubTab === 'anticorruption'
+              ? 'Protikorupční program a katalog korupčních rizik VS ČR'
+              : activeSubTab === 'conventions'
+              ? 'Evropská vězeňská pravidla a mezinárodní úmluvy'
+              : activeSubTab === 'simulator'
+              ? 'Trenažér etických dilemat a deontologických situací'
+              : 'Zkušební test z Profesní etiky'
+          }
+          category="NGŘ 28/2018"
+          subtext="Akademie Vězeňské služby ČR – Interní studijní materiál pro zkoušku ZOP A"
+        />
+      </div>
+
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 border border-emerald-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+      <div className="bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 border border-emerald-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden print:bg-white print:border print:border-slate-300 print:p-4 print:mb-4 print:shadow-none">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none no-print print:hidden" />
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+            <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0 print:hidden">
               <HeartHandshake className="w-7 h-7" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight">Profesní etika & Deontologie</h1>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <h1 className="text-xl md:text-2xl font-bold text-white print:text-black tracking-tight">Profesní etika & Deontologie</h1>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 print:bg-slate-100 print:text-slate-900 print:border-slate-300">
                   ZOP A • NGŘ 28/2018
                 </span>
               </div>
-              <p className="text-sm text-slate-300 mt-1 max-w-2xl">
+              <p className="text-sm text-slate-300 print:text-[#111827] mt-1 max-w-2xl">
                 Komplexní modul profesní etiky, teorie normativních systémů, mezinárodních vězeňských pravidel (EVP / Mandelova pravidla), protikorupčního programu a etického kodexu VS ČR.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 no-print print:hidden">
+            <button
+              onClick={() => window.print()}
+              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm flex items-center gap-2 transition-all border border-slate-700 cursor-pointer shadow-md no-print"
+              title="Vytisknout studijní materiály nebo uložit do PDF"
+            >
+              <Printer className="w-4 h-4 text-emerald-400" />
+              <span>Tisk / PDF</span>
+            </button>
             <button
               onClick={() => { setActiveSubTab('test'); startPracticeTest(20); }}
-              className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-emerald-500/20 cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-emerald-500/20 cursor-pointer no-print"
             >
               <Award className="w-4 h-4" />
               <span>Spustit e-Test (20 ot.)</span>
@@ -580,7 +613,7 @@ export const ProfessionalEthics: React.FC = () => {
         </div>
 
         {/* Sub-navigation tabs */}
-        <div className="flex items-center gap-2 mt-6 overflow-x-auto pb-1 border-t border-slate-800 pt-4 scrollbar-none">
+        <div className="flex items-center gap-2 mt-6 overflow-x-auto pb-1 border-t border-slate-800 pt-4 scrollbar-none no-print print:hidden">
           <button
             onClick={() => setActiveSubTab('concepts')}
             className={`px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold flex items-center gap-2 transition-all shrink-0 cursor-pointer ${
@@ -658,7 +691,7 @@ export const ProfessionalEthics: React.FC = () => {
       {/* TAB 1: 36 ESSENTIAL CONCEPTS */}
       {activeSubTab === 'concepts' && (
         <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800 no-print print:hidden">
             <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
               <button
                 onClick={() => setConceptFilter('all')}
@@ -715,45 +748,44 @@ export const ProfessionalEthics: React.FC = () => {
           </div>
 
           {/* Concepts Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 print:grid-cols-2">
             {filteredConcepts.map((item) => (
               <div
                 key={item.id}
                 onClick={() => setSelectedConceptIndex(selectedConceptIndex === item.id ? null : item.id)}
-                className={`p-5 rounded-2xl border transition-all cursor-pointer relative group ${
+                className={`p-5 rounded-2xl border transition-all cursor-pointer relative group print-card break-inside-avoid print:bg-white print:text-[#111827] print:border-slate-300 print:p-4 print:mb-3 print:shadow-none ${
                   selectedConceptIndex === item.id
                     ? 'bg-slate-800/95 border-emerald-500 shadow-lg shadow-emerald-500/10'
                     : 'bg-slate-900/80 hover:bg-slate-800/60 border-slate-800 hover:border-slate-700'
                 }`}
+                style={{ breakInside: 'avoid' }}
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
+                    <span className="w-6 h-6 rounded-lg bg-emerald-500/20 print:bg-slate-100 text-emerald-400 print:text-slate-900 flex items-center justify-center text-xs font-bold font-mono border border-emerald-500/30 print:border-slate-300">
                       {item.id}
                     </span>
-                    <h3 className="font-bold text-base text-white group-hover:text-emerald-300 transition-colors">
+                    <h3 className="font-bold text-base text-white print:text-[#111827] group-hover:text-emerald-300 transition-colors">
                       {item.term}
                     </h3>
                   </div>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-800 print:bg-slate-100 text-slate-300 print:text-slate-800 border border-slate-700 print:border-slate-300">
                     {item.badge}
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-300 leading-relaxed line-clamp-3">
+                <p className="text-xs text-slate-300 print:text-[#111827] leading-relaxed line-clamp-3 print:line-clamp-none">
                   {item.shortDef}
                 </p>
 
-                {selectedConceptIndex === item.id && (
-                  <div className="mt-4 pt-3 border-t border-slate-700/60 text-xs text-emerald-200/90 space-y-2 animate-fadeIn">
-                    <p className="leading-relaxed bg-emerald-950/40 p-3 rounded-xl border border-emerald-500/30">
-                      <strong className="text-emerald-300 block mb-1">Podrobný rozbor a penitenciární aplikace:</strong>
-                      {item.detail}
-                    </p>
-                  </div>
-                )}
+                <div className={`${selectedConceptIndex === item.id ? 'block' : 'hidden print:block'} mt-3 pt-2.5 border-t border-slate-700/60 print:border-slate-200 text-xs text-emerald-200/90 print:text-[#111827] space-y-2 animate-fadeIn`}>
+                  <p className="leading-relaxed bg-emerald-950/40 print:bg-slate-50 p-2.5 rounded-xl border border-emerald-500/30 print:border-slate-200 print:text-[#111827]">
+                    <strong className="text-emerald-300 print:text-slate-900 block mb-0.5">Podrobný rozbor a penitenciární aplikace:</strong>
+                    {item.detail}
+                  </p>
+                </div>
 
-                <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400">
+                <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400 no-print print:hidden">
                   <span className="text-emerald-400 font-medium">
                     {selectedConceptIndex === item.id ? 'Kliknutím sbalit' : 'Klikněte pro podrobnosti'}
                   </span>
@@ -769,12 +801,12 @@ export const ProfessionalEthics: React.FC = () => {
       {activeSubTab === 'code' && (
         <div className="space-y-6">
           {/* Desatero Zásad Banner */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-4">
-              <Award className="w-5 h-5 text-emerald-400" />
+          <div className="bg-slate-900 border border-slate-800 print:border-slate-300 rounded-2xl p-6 print:p-4 print-card break-inside-avoid print:bg-white print:text-[#111827] print:shadow-none" style={{ breakInside: 'avoid' }}>
+            <h2 className="text-lg font-bold text-white print:text-[#111827] flex items-center gap-2 mb-4">
+              <Award className="w-5 h-5 text-emerald-400 print:text-slate-900" />
               <span>Desatero etických zásad příslušníka a zaměstnance VS ČR</span>
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 print:grid-cols-2 gap-3 text-xs">
               {[
                 { num: 'I.', title: 'Etické zvažování', desc: 'Každou situaci zvažujeme podle etických zásad a při pochybnostech žádáme o radu nadřízené.' },
                 { num: 'II.', title: 'Profesionalita', desc: 'Chováme se profesionálně vůči všem osobám (vězňům, kolegům, nadřízeným, soudcům).' },
@@ -787,13 +819,13 @@ export const ProfessionalEthics: React.FC = () => {
                 { num: 'IX.', title: 'Integrita a čest', desc: 'Jsme čestní, objektivní, nestranní a za všech okolností nekompromitovaní.' },
                 { num: 'X.', title: 'Důvěra veřejnosti', desc: 'Usilujeme o transparentnost a budujeme důvěru veřejnosti k VS ČR jako pilíři spravedlnosti.' }
               ].map((item) => (
-                <div key={item.num} className="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 flex flex-col justify-between">
+                <div key={item.num} className="bg-slate-800/80 print:bg-slate-50 p-3.5 rounded-xl border border-slate-700 print:border-slate-300 print-card break-inside-avoid print:text-[#111827] flex flex-col justify-between" style={{ breakInside: 'avoid' }}>
                   <div>
                     <div className="flex items-center gap-1.5 mb-1.5">
-                      <span className="font-bold text-emerald-400 font-mono">{item.num}</span>
-                      <h4 className="font-bold text-white">{item.title}</h4>
+                      <span className="font-bold text-emerald-400 print:text-slate-900 font-mono">{item.num}</span>
+                      <h4 className="font-bold text-white print:text-[#111827]">{item.title}</h4>
                     </div>
-                    <p className="text-slate-300 leading-snug">{item.desc}</p>
+                    <p className="text-slate-300 print:text-[#111827] leading-snug">{item.desc}</p>
                   </div>
                 </div>
               ))}
@@ -802,8 +834,8 @@ export const ProfessionalEthics: React.FC = () => {
 
           {/* 8 Articles of Code of Ethics */}
           <div className="space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <FileText className="w-5 h-5 text-emerald-400" />
+            <h3 className="text-base font-bold text-white print:text-[#111827] flex items-center gap-2">
+              <FileText className="w-5 h-5 text-emerald-400 print:text-slate-900" />
               <span>Znění Kodexu profesní etiky (Příloha č. 6 k NGŘ č. 28/2018 Sb.)</span>
             </h3>
 
@@ -857,20 +889,20 @@ export const ProfessionalEthics: React.FC = () => {
                 note: 'Kodex není pouhým doporučením, ale přímou součástí hodnocení kázně.'
               }
             ].map((art) => (
-              <div key={art.art} className="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl flex flex-col md:flex-row md:items-start justify-between gap-4">
+              <div key={art.art} className="bg-slate-900/90 border border-slate-800 print:border-slate-300 p-5 rounded-2xl flex flex-col md:flex-row md:items-start justify-between gap-4 print-card break-inside-avoid print:bg-white print:text-[#111827] print:shadow-none" style={{ breakInside: 'avoid' }}>
                 <div className="space-y-1.5 flex-1">
                   <div className="flex items-center gap-2.5">
-                    <span className="px-2.5 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300 font-mono text-xs font-bold">
+                    <span className="px-2.5 py-0.5 rounded-lg bg-emerald-500/20 print:bg-slate-100 text-emerald-300 print:text-slate-900 font-mono text-xs font-bold border border-emerald-500/30 print:border-slate-300">
                       {art.art}
                     </span>
-                    <h4 className="font-bold text-white text-sm md:text-base">{art.title}</h4>
+                    <h4 className="font-bold text-white print:text-[#111827] text-sm md:text-base">{art.title}</h4>
                   </div>
-                  <p className="text-xs md:text-sm text-slate-300 leading-relaxed pt-1">
+                  <p className="text-xs md:text-sm text-slate-300 print:text-[#111827] leading-relaxed pt-1">
                     {art.text}
                   </p>
                 </div>
-                <div className="md:w-64 bg-slate-800/80 p-3 rounded-xl border border-slate-700/60 text-xs text-slate-300 shrink-0">
-                  <span className="text-emerald-400 font-semibold block mb-1">Aplikační význam:</span>
+                <div className="md:w-64 bg-slate-800/80 print:bg-slate-50 p-3 rounded-xl border border-slate-700/60 print:border-slate-300 text-xs text-slate-300 print:text-[#111827] shrink-0">
+                  <span className="text-emerald-400 print:text-slate-900 font-semibold block mb-1">Aplikační význam:</span>
                   {art.note}
                 </div>
               </div>
@@ -883,19 +915,19 @@ export const ProfessionalEthics: React.FC = () => {
       {activeSubTab === 'anticorruption' && (
         <div className="space-y-6">
           {/* Risk Calculator & Matrix */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-6 bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-5">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 print:block print:space-y-4">
+            <div className="lg:col-span-6 bg-slate-900 print:bg-white p-6 print:p-4 rounded-2xl border border-slate-800 print:border-slate-300 print-card break-inside-avoid print:text-[#111827] space-y-5 print:shadow-none" style={{ breakInside: 'avoid' }}>
               <div className="flex items-center gap-2">
-                <Calculator className="w-5 h-5 text-emerald-400" />
-                <h3 className="font-bold text-white text-base">Kalkulátor míry korupčního rizika (NGŘ 28/2018)</h3>
+                <Calculator className="w-5 h-5 text-emerald-400 print:text-slate-900" />
+                <h3 className="font-bold text-white print:text-[#111827] text-base">Kalkulátor míry korupčního rizika (NGŘ 28/2018)</h3>
               </div>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-300 print:text-[#111827]">
                 Dle metodiky VS ČR se míra korupčního rizika vypočítává jako prostý součin: <br />
-                <strong className="text-emerald-300 font-mono">Míra rizika = Pravděpodobnost výskytu (1–5) × Dopad jevu na chod OSS (1–5)</strong>
+                <strong className="text-emerald-300 print:text-slate-900 font-mono">Míra rizika = Pravděpodobnost výskytu (1–5) × Dopad jevu na chod OSS (1–5)</strong>
               </p>
 
-              {/* Sliders */}
-              <div className="space-y-4 pt-2">
+              {/* Sliders - Interaktivní prvek: skrýt při tisku */}
+              <div className="space-y-4 pt-2 no-print print:hidden">
                 <div>
                   <div className="flex justify-between text-xs font-semibold mb-1.5">
                     <span className="text-slate-300">1. Pravděpodobnost výskytu jevu (1–5):</span>
@@ -942,15 +974,15 @@ export const ProfessionalEthics: React.FC = () => {
               </div>
 
               {/* Calculated Result Box */}
-              <div className="p-4 rounded-xl bg-slate-800/90 border border-slate-700 flex items-center justify-between">
+              <div className="p-4 rounded-xl bg-slate-800/90 print:bg-slate-50 border border-slate-700 print:border-slate-300 flex items-center justify-between print:text-[#111827]">
                 <div>
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">Vypočtená míra rizika:</span>
-                  <span className={`text-2xl font-bold font-mono ${currentRiskColor.text}`}>
+                  <span className="text-[11px] font-semibold text-slate-400 print:text-slate-600 uppercase tracking-wider block">Vypočtená míra rizika:</span>
+                  <span className={`text-2xl font-bold font-mono ${currentRiskColor.text} print:text-slate-900`}>
                     {calculatedRiskLevel} / 25
                   </span>
                 </div>
                 <div className="text-right">
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold border ${currentRiskColor.bg}/20 ${currentRiskColor.text} ${currentRiskColor.border}`}>
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold border ${currentRiskColor.bg}/20 ${currentRiskColor.text} ${currentRiskColor.border} print:bg-slate-200 print:text-slate-900 print:border-slate-400`}>
                     {currentRiskColor.label}
                   </span>
                 </div>
@@ -958,67 +990,67 @@ export const ProfessionalEthics: React.FC = () => {
             </div>
 
             {/* Whistleblowing and Reporting Contacts */}
-            <div className="lg:col-span-6 bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4">
+            <div className="lg:col-span-6 bg-slate-900 print:bg-white p-6 print:p-4 rounded-2xl border border-slate-800 print:border-slate-300 print-card break-inside-avoid print:text-[#111827] space-y-4 print:shadow-none" style={{ breakInside: 'avoid' }}>
               <div className="flex items-center gap-2">
-                <ShieldAlert className="w-5 h-5 text-amber-400" />
-                <h3 className="font-bold text-white text-base">Protikorupční linky & Ochrana oznamovatelů</h3>
+                <ShieldAlert className="w-5 h-5 text-amber-400 print:text-slate-900" />
+                <h3 className="font-bold text-white print:text-[#111827] text-base">Protikorupční linky & Ochrana oznamovatelů</h3>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-300 print:text-[#111827] leading-relaxed">
                 VS ČR deklaruje ochranu oznamovatelů (whistleblowerů) jednající v dobré víře. Zaměstnanec <strong>nesmí být vystaven žádné přímé ani nepřímé diskriminaci či represi</strong>.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                <div className="p-3.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-2 text-xs">
-                  <h4 className="font-bold text-white flex items-center gap-1.5">
-                    <Building className="w-4 h-4 text-emerald-400" />
+                <div className="p-3.5 bg-slate-800/80 print:bg-slate-50 rounded-xl border border-slate-700 print:border-slate-300 space-y-2 text-xs print:text-[#111827]">
+                  <h4 className="font-bold text-white print:text-[#111827] flex items-center gap-1.5">
+                    <Building className="w-4 h-4 text-emerald-400 print:text-slate-900" />
                     <span>Protikorupční linka VS ČR</span>
                   </h4>
-                  <div className="space-y-1 text-slate-300">
+                  <div className="space-y-1 text-slate-300 print:text-[#111827]">
                     <div className="flex items-center gap-1.5">
-                      <Mail className="w-3.5 h-3.5 text-slate-400" />
+                      <Mail className="w-3.5 h-3.5 text-slate-400 print:text-slate-600" />
                       <span className="font-mono text-[11px]">korupce@grvs.justice.cz</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Phone className="w-3.5 h-3.5 text-slate-400" />
+                      <Phone className="w-3.5 h-3.5 text-slate-400 print:text-slate-600" />
                       <span className="font-mono text-[11px]">244 024 666</span>
                     </div>
-                    <p className="text-[10px] text-slate-400">Soudní 1672/1a, 140 67 Praha 4</p>
+                    <p className="text-[10px] text-slate-400 print:text-slate-600">Soudní 1672/1a, 140 67 Praha 4</p>
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-2 text-xs">
-                  <h4 className="font-bold text-white flex items-center gap-1.5">
-                    <Building className="w-4 h-4 text-blue-400" />
+                <div className="p-3.5 bg-slate-800/80 print:bg-slate-50 rounded-xl border border-slate-700 print:border-slate-300 space-y-2 text-xs print:text-[#111827]">
+                  <h4 className="font-bold text-white print:text-[#111827] flex items-center gap-1.5">
+                    <Building className="w-4 h-4 text-blue-400 print:text-slate-900" />
                     <span>Protikorupční linka MSp ČR</span>
                   </h4>
-                  <div className="space-y-1 text-slate-300">
+                  <div className="space-y-1 text-slate-300 print:text-[#111827]">
                     <div className="flex items-center gap-1.5">
-                      <Mail className="w-3.5 h-3.5 text-slate-400" />
+                      <Mail className="w-3.5 h-3.5 text-slate-400 print:text-slate-600" />
                       <span className="font-mono text-[11px]">korupce@msp.justice.cz</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Phone className="w-3.5 h-3.5 text-slate-400" />
+                      <Phone className="w-3.5 h-3.5 text-slate-400 print:text-slate-600" />
                       <span className="font-mono text-[11px]">221 997 595</span>
                     </div>
-                    <p className="text-[10px] text-slate-400">Vyšehradská 16, Praha 2</p>
+                    <p className="text-[10px] text-slate-400 print:text-slate-600">Vyšehradská 16, Praha 2</p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-3 bg-amber-950/30 border border-amber-500/30 rounded-xl text-xs text-amber-200 leading-relaxed">
+              <div className="p-3 bg-amber-950/30 print:bg-amber-50 border border-amber-500/30 print:border-amber-300 rounded-xl text-xs text-amber-200 print:text-amber-950 leading-relaxed">
                 <strong>Povinný obsah oznámení:</strong> Identifikace podezřelých osob, podrobný popis skutku, konkrétní důkazy a případný požadavek na zachování anonymity oznamovatele.
               </div>
             </div>
           </div>
 
           {/* Catalog of Risks Table */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div className="bg-slate-900 print:bg-white border border-slate-800 print:border-slate-300 rounded-2xl p-6 print:p-4 space-y-4 print-card break-inside-avoid print:text-[#111827] print:shadow-none" style={{ breakInside: 'avoid' }}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <h3 className="font-bold text-white text-base flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-amber-400" />
+              <h3 className="font-bold text-white print:text-[#111827] text-base flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-400 print:text-slate-900" />
                 <span>Příklady z oficiálních Katalogů korupčních rizik VS ČR (NGŘ 28/2018)</span>
               </h3>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 no-print print:hidden">
                 <select
                   value={catalogFilter}
                   onChange={(e) => setCatalogFilter(e.target.value)}
@@ -1036,9 +1068,9 @@ export const ProfessionalEthics: React.FC = () => {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
+              <table className="w-full text-left text-xs border-collapse print:text-[#111827]">
                 <thead>
-                  <tr className="border-b border-slate-800 text-slate-400 bg-slate-950/40">
+                  <tr className="border-b border-slate-800 print:border-slate-300 text-slate-400 print:text-[#111827] bg-slate-950/40 print:bg-slate-100">
                     <th className="p-3 font-semibold">Oddělení / Činnost</th>
                     <th className="p-3 font-semibold">Identifikované korupční riziko</th>
                     <th className="p-3 font-semibold text-center font-mono">P × D</th>
@@ -1046,25 +1078,25 @@ export const ProfessionalEthics: React.FC = () => {
                     <th className="p-3 font-semibold">Stanovená protikorupční opatření</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                <tbody className="divide-y divide-slate-800/60 print:divide-slate-200 text-slate-300 print:text-[#111827]">
                   {filteredRiskItems.map((item, idx) => (
-                    <tr key={idx} className="hover:bg-slate-800/40 transition-colors">
-                      <td className="p-3 font-medium text-white whitespace-nowrap">
-                        <span className="text-emerald-400 font-bold block">{item.dept}</span>
-                        <span className="text-[11px] text-slate-400">{item.action}</span>
+                    <tr key={idx} className="hover:bg-slate-800/40 print:bg-white transition-colors break-inside-avoid print:text-[#111827]" style={{ breakInside: 'avoid' }}>
+                      <td className="p-3 font-medium text-white print:text-[#111827] whitespace-nowrap">
+                        <span className="text-emerald-400 print:text-slate-900 font-bold block">{item.dept}</span>
+                        <span className="text-[11px] text-slate-400 print:text-slate-600">{item.action}</span>
                       </td>
-                      <td className="p-3 text-slate-300 max-w-xs">{item.risk}</td>
-                      <td className="p-3 text-center font-mono text-slate-400 whitespace-nowrap">
+                      <td className="p-3 text-slate-300 print:text-[#111827] max-w-xs">{item.risk}</td>
+                      <td className="p-3 text-center font-mono text-slate-400 print:text-[#111827] whitespace-nowrap">
                         {item.prob} × {item.impact}
                       </td>
                       <td className="p-3 text-center whitespace-nowrap">
                         <span className={`px-2 py-0.5 rounded-full font-bold font-mono text-xs ${
-                          item.score >= 10 ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                          item.score >= 10 ? 'bg-red-500/20 text-red-400 border border-red-500/30 print:bg-red-100 print:text-red-900 print:border-red-300' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30 print:bg-amber-100 print:text-amber-900 print:border-amber-300'
                         }`}>
                           {item.score}
                         </span>
                       </td>
-                      <td className="p-3 text-slate-300 max-w-sm">{item.measures}</td>
+                      <td className="p-3 text-slate-300 print:text-[#111827] max-w-sm">{item.measures}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1077,58 +1109,58 @@ export const ProfessionalEthics: React.FC = () => {
       {/* TAB 4: EUROPEAN PRISON RULES & HUMAN RIGHTS */}
       {activeSubTab === 'conventions' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 print:grid-cols-2">
             {/* EPR Card */}
-            <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-3">
-              <div className="flex items-center gap-2 text-emerald-400 font-bold">
+            <div className="bg-slate-900 print:bg-white p-5 rounded-2xl border border-slate-800 print:border-slate-300 space-y-3 print-card break-inside-avoid print:text-[#111827] print:shadow-none" style={{ breakInside: 'avoid' }}>
+              <div className="flex items-center gap-2 text-emerald-400 print:text-slate-900 font-bold">
                 <Globe2 className="w-5 h-5" />
                 <span>Evropská vězeňská pravidla (EVP)</span>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-300 print:text-[#111827] leading-relaxed">
                 Doporučení Rec(2006)2-rev Výboru ministrů Rady Evropy (aktualizováno 1. 7. 2020). Základní principy: výkon trestu se musí co nejvíce přibližovat životu na svobodě (normalizace), zákaz zhoršování utrpení nad rámec odnětí svobody a důraz na dynamickou bezpečnost.
               </p>
-              <div className="p-2.5 bg-slate-800/80 rounded-xl text-[11px] text-slate-300 space-y-1">
+              <div className="p-2.5 bg-slate-800/80 print:bg-slate-50 rounded-xl border border-slate-700/60 print:border-slate-200 text-[11px] text-slate-300 print:text-[#111827] space-y-1">
                 <div>• <strong>Samovazba (bod 60.6):</strong> Max. limity, zákaz pro děti a těhotné ženy, denní vizita ředitelem.</div>
                 <div>• <strong>Prohlídky (bod 54):</strong> Pouze osobou stejného pohlaví, intimní prohlídky smí provádět <em>pouze lékař</em>.</div>
               </div>
             </div>
 
             {/* Mandela Rules Card */}
-            <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-3">
-              <div className="flex items-center gap-2 text-blue-400 font-bold">
+            <div className="bg-slate-900 print:bg-white p-5 rounded-2xl border border-slate-800 print:border-slate-300 space-y-3 print-card break-inside-avoid print:text-[#111827] print:shadow-none" style={{ breakInside: 'avoid' }}>
+              <div className="flex items-center gap-2 text-blue-400 print:text-slate-900 font-bold">
                 <Scale className="w-5 h-5" />
                 <span>Mandelova pravidla OSN</span>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-300 print:text-[#111827] leading-relaxed">
                 Standardní minimální pravidla OSN pro zacházení s vězni (1955/1957, revidována 2015 v Ženevě). Pojmenována po Nelsonu Mandelovi. Stanovují univerzální minimální standardy lidské důstojnosti po celém světě.
               </p>
-              <div className="p-2.5 bg-slate-800/80 rounded-xl text-[11px] text-slate-300 space-y-1">
+              <div className="p-2.5 bg-slate-800/80 print:bg-slate-50 rounded-xl border border-slate-700/60 print:border-slate-200 text-[11px] text-slate-300 print:text-[#111827] space-y-1">
                 <div>• <strong>Bangkokská pravidla (2010):</strong> Specifické záruky pro vězněné ženy, matky a děti.</div>
                 <div>• <strong>Výbor proti mučení OSN:</strong> Sídlo evropské pobočky v Ženevě.</div>
               </div>
             </div>
 
             {/* Institutions Card */}
-            <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-3">
-              <div className="flex items-center gap-2 text-amber-400 font-bold">
+            <div className="bg-slate-900 print:bg-white p-5 rounded-2xl border border-slate-800 print:border-slate-300 space-y-3 print-card break-inside-avoid print:text-[#111827] print:shadow-none" style={{ breakInside: 'avoid' }}>
+              <div className="flex items-center gap-2 text-amber-400 print:text-slate-900 font-bold">
                 <Building className="w-5 h-5" />
                 <span>Kontrolní instituce ochrany LP</span>
               </div>
-              <div className="space-y-2 text-xs text-slate-300">
+              <div className="space-y-2 text-xs text-slate-300 print:text-[#111827]">
                 <div>
-                  <strong className="text-white block">ESLP (Štrasburk):</strong>
+                  <strong className="text-white print:text-slate-900 block">ESLP (Štrasburk):</strong>
                   Evropský soud pro lidská práva (zřízen 1959).
                 </div>
                 <div>
-                  <strong className="text-white block">CPT (Štrasburk):</strong>
+                  <strong className="text-white print:text-slate-900 block">CPT (Štrasburk):</strong>
                   Evropský výbor pro prevenci mučení (inspekce 1x za 5 let nebo ad hoc).
                 </div>
                 <div>
-                  <strong className="text-white block">Veřejný ochránce práv (Brno):</strong>
+                  <strong className="text-white print:text-slate-900 block">Veřejný ochránce práv (Brno):</strong>
                   Nezávislý ombudsman v ČR (Stanislav Křeček).
                 </div>
                 <div>
-                  <strong className="text-white block">Dozorový státní zástupce:</strong>
+                  <strong className="text-white print:text-slate-900 block">Dozorový státní zástupce:</strong>
                   Pravidelné prověrky zákonnosti přímo ve věznicích.
                 </div>
               </div>
@@ -1136,14 +1168,14 @@ export const ProfessionalEthics: React.FC = () => {
           </div>
 
           {/* Spiritual Care in Prison Section */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-            <h3 className="font-bold text-white text-base flex items-center gap-2">
-              <HeartHandshake className="w-5 h-5 text-emerald-400" />
+          <div className="bg-slate-900 print:bg-white border border-slate-800 print:border-slate-300 rounded-2xl p-6 print:p-4 space-y-4 print-card break-inside-avoid print:text-[#111827] print:shadow-none" style={{ breakInside: 'avoid' }}>
+            <h3 className="font-bold text-white print:text-[#111827] text-base flex items-center gap-2">
+              <HeartHandshake className="w-5 h-5 text-emerald-400 print:text-slate-900" />
               <span>Duchovní péče ve vězeňství (VDP & VDS)</span>
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-300">
-              <div className="p-4 bg-slate-800/70 rounded-xl border border-slate-700 space-y-2">
-                <h4 className="font-bold text-emerald-300 text-sm">Smluvní základ a formy</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-300 print:text-[#111827]">
+              <div className="p-4 bg-slate-800/70 print:bg-slate-50 rounded-xl border border-slate-700 print:border-slate-300 space-y-2 text-slate-300 print:text-[#111827]">
+                <h4 className="font-bold text-emerald-300 print:text-slate-900 text-sm">Smluvní základ a formy</h4>
                 <p>
                   Duchovní péče je poskytována na základě <strong>trojstranné dohody</strong> (VS ČR + ČBK + ERC) a <strong>dvoustranné dohody</strong> (VS ČR + NSSJ). Účast odsouzených je <strong>zcela dobrovolná</strong>.
                 </p>
@@ -1152,8 +1184,8 @@ export const ProfessionalEthics: React.FC = () => {
                 </p>
               </div>
 
-              <div className="p-4 bg-slate-800/70 rounded-xl border border-slate-700 space-y-2">
-                <h4 className="font-bold text-emerald-300 text-sm">Zákonné mantinely & Svoboda vyznání</h4>
+              <div className="p-4 bg-slate-800/70 print:bg-slate-50 rounded-xl border border-slate-700 print:border-slate-300 space-y-2 text-slate-300 print:text-[#111827]">
+                <h4 className="font-bold text-emerald-300 print:text-slate-900 text-sm">Zákonné mantinely & Svoboda vyznání</h4>
                 <p>
                   Dle Čl. 15–16 Listiny základních práv a svobod má každý zaručenu svobodu myšlení, svědomí a vyznání. Nikdo nesmí být nucen k účasti na bohoslužbách ani k přijímání návštěv církevních představitelů.
                 </p>
@@ -1169,24 +1201,24 @@ export const ProfessionalEthics: React.FC = () => {
       {/* TAB 5: DEONTOLOGICAL DILEMMA SIMULATOR */}
       {activeSubTab === 'simulator' && (
         <div className="space-y-6">
-          <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+          <div className="bg-slate-900 print:bg-white p-6 print:p-4 rounded-2xl border border-slate-800 print:border-slate-300 space-y-5 print-card break-inside-avoid print:text-[#111827] print:shadow-none" style={{ breakInside: 'avoid' }}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 print:border-slate-300 pb-4">
               <div>
-                <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider block">Modelová situace #{activeScenarioIdx + 1} ze {dilemmaScenarios.length}</span>
-                <h3 className="font-bold text-white text-lg mt-0.5">{dilemmaScenarios[activeScenarioIdx].title}</h3>
+                <span className="text-xs font-semibold text-emerald-400 print:text-slate-900 uppercase tracking-wider block">Modelová situace #{activeScenarioIdx + 1} ze {dilemmaScenarios.length}</span>
+                <h3 className="font-bold text-white print:text-[#111827] text-lg mt-0.5">{dilemmaScenarios[activeScenarioIdx].title}</h3>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400 font-mono">Skóre: {simScore} bodů</span>
+                <span className="text-xs text-slate-400 print:text-slate-700 font-mono">Skóre: {simScore} bodů</span>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700 text-xs md:text-sm text-slate-200 leading-relaxed">
-              <strong className="text-white block mb-1.5 font-semibold">Popis služební situace:</strong>
+            <div className="p-4 rounded-xl bg-slate-800/80 print:bg-slate-50 border border-slate-700 print:border-slate-300 text-xs md:text-sm text-slate-200 print:text-[#111827] leading-relaxed">
+              <strong className="text-white print:text-slate-900 block mb-1.5 font-semibold">Popis služební situace:</strong>
               {dilemmaScenarios[activeScenarioIdx].description}
             </div>
 
             <div className="space-y-3">
-              <span className="text-xs font-semibold text-slate-400 block">Zvolte správný profesně-etický a zákonný postup:</span>
+              <span className="text-xs font-semibold text-slate-400 print:text-slate-700 block">Zvolte správný profesně-etický a zákonný postup:</span>
               {dilemmaScenarios[activeScenarioIdx].options.map((opt, idx) => (
                 <button
                   key={idx}
@@ -1199,15 +1231,15 @@ export const ProfessionalEthics: React.FC = () => {
                     selectedSimOption === idx
                       ? simSubmitted
                         ? opt.correct
-                          ? 'bg-emerald-950/60 border-emerald-500 text-emerald-200'
-                          : 'bg-red-950/60 border-red-500 text-red-200'
-                        : 'bg-emerald-500/10 border-emerald-500 text-white'
-                      : 'bg-slate-800/50 hover:bg-slate-800 border-slate-700/80 text-slate-300'
+                          ? 'bg-emerald-950/60 border-emerald-500 text-emerald-200 print:bg-emerald-50 print:border-emerald-600 print:text-emerald-950'
+                          : 'bg-red-950/60 border-red-500 text-red-200 print:bg-red-50 print:border-red-600 print:text-red-950'
+                        : 'bg-emerald-500/10 border-emerald-500 text-white print:bg-emerald-50 print:border-emerald-600 print:text-emerald-950'
+                      : 'bg-slate-800/50 hover:bg-slate-800 border-slate-700/80 text-slate-300 print:bg-white print:border-slate-300 print:text-[#111827]'
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 ${
-                      selectedSimOption === idx ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 text-slate-300'
+                      selectedSimOption === idx ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 print:bg-slate-100 text-slate-300 print:text-slate-900'
                     }`}>
                       {String.fromCharCode(65 + idx)}
                     </span>
@@ -1221,18 +1253,18 @@ export const ProfessionalEthics: React.FC = () => {
             {simSubmitted && selectedSimOption !== null && (
               <div className={`p-4 rounded-xl border text-xs md:text-sm leading-relaxed ${
                 dilemmaScenarios[activeScenarioIdx].options[selectedSimOption].correct
-                  ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-200'
-                  : 'bg-red-950/40 border-red-500/50 text-red-200'
+                  ? 'bg-emerald-950/40 print:bg-emerald-50 border-emerald-500/50 print:border-emerald-600 text-emerald-200 print:text-emerald-950'
+                  : 'bg-red-950/40 print:bg-red-50 border-red-500/50 print:border-red-600 text-red-200 print:text-red-950'
               }`}>
                 <div className="flex items-center gap-2 font-bold mb-1.5">
                   {dilemmaScenarios[activeScenarioIdx].options[selectedSimOption].correct ? (
                     <>
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                      <CheckCircle2 className="w-5 h-5 text-emerald-400 print:text-emerald-800" />
                       <span>Správné řešení! (+15 XP)</span>
                     </>
                   ) : (
                     <>
-                      <AlertTriangle className="w-5 h-5 text-red-400" />
+                      <AlertTriangle className="w-5 h-5 text-red-400 print:text-red-800" />
                       <span>Nesprávný postup</span>
                     </>
                   )}
@@ -1242,7 +1274,7 @@ export const ProfessionalEthics: React.FC = () => {
             )}
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+            <div className="flex items-center justify-between pt-2 border-t border-slate-800 print:border-slate-300 no-print print:hidden">
               <button
                 disabled={activeScenarioIdx === 0}
                 onClick={() => {
@@ -1295,18 +1327,18 @@ export const ProfessionalEthics: React.FC = () => {
       {activeSubTab === 'test' && (
         <div className="space-y-6">
           {!testActive ? (
-            <div className="bg-slate-900 p-8 rounded-2xl border border-slate-800 text-center max-w-2xl mx-auto space-y-6">
-              <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/40">
+            <div className="bg-slate-900 print:bg-white p-8 print:p-4 rounded-2xl border border-slate-800 print:border-slate-300 text-center max-w-2xl mx-auto space-y-6 print-card break-inside-avoid print:text-[#111827] print:shadow-none" style={{ breakInside: 'avoid' }}>
+              <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 print:bg-slate-100 text-emerald-400 print:text-slate-900 flex items-center justify-center mx-auto border border-emerald-500/40 print:border-slate-300">
                 <Award className="w-8 h-8" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-bold text-white">Oficiální test předmětu Profesní etika (ZOP A)</h3>
-                <p className="text-xs md:text-sm text-slate-300 max-w-md mx-auto">
+                <h3 className="text-xl font-bold text-white print:text-[#111827]">Oficiální test předmětu Profesní etika (ZOP A)</h3>
+                <p className="text-xs md:text-sm text-slate-300 print:text-[#111827] max-w-md mx-auto">
                   Test obsahuje 20 náhodně vybraných otázek ze souboru 50 akreditovaných kontrolních otázek. Časový limit pro e-learningový test je stanoven na 30 minut.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 no-print print:hidden">
                 <button
                   onClick={() => startPracticeTest(20)}
                   className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition-all shadow-lg shadow-emerald-500/20 cursor-pointer"
@@ -1321,19 +1353,19 @@ export const ProfessionalEthics: React.FC = () => {
                 </button>
               </div>
             </div>
-          ) : (
-            <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-6">
+          ) : currentQuestion ? (
+            <div className="bg-slate-900 print:bg-white p-6 print:p-4 rounded-2xl border border-slate-800 print:border-slate-300 space-y-6 print-card break-inside-avoid print:text-[#111827] print:shadow-none" style={{ breakInside: 'avoid' }}>
               {/* Test Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 print:border-slate-300 pb-4">
                 <div>
-                  <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-emerald-400 print:text-slate-900 uppercase tracking-wider">
                     Otázka {currentTestIdx + 1} z {testQuestions.length}
                   </span>
-                  <h3 className="font-bold text-white text-base md:text-lg mt-1">
-                    {testQuestions[currentTestIdx].question}
+                  <h3 className="font-bold text-white print:text-[#111827] text-base md:text-lg mt-1">
+                    {currentQuestion.question}
                   </h3>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 no-print print:hidden">
                   <button
                     onClick={() => {
                       if (window.confirm('Opravdu chcete ukončit probíhající test?')) {
@@ -1349,19 +1381,19 @@ export const ProfessionalEthics: React.FC = () => {
 
               {/* Options */}
               <div className="space-y-3">
-                {testQuestions[currentTestIdx].options.map((option, optIdx) => {
+                {(currentQuestion.options || []).map((option, optIdx) => {
                   const isSelected = userAnswers[currentTestIdx] === optIdx;
-                  const isCorrect = testQuestions[currentTestIdx].correctOption === optIdx;
+                  const isCorrect = currentQuestion.correctOption === optIdx;
 
-                  let optClass = 'bg-slate-800/60 hover:bg-slate-800 border-slate-700/80 text-slate-300';
+                  let optClass = 'bg-slate-800/60 hover:bg-slate-800 border-slate-700/80 text-slate-300 print:bg-white print:border-slate-300 print:text-[#111827]';
                   if (testFinished) {
                     if (isCorrect) {
-                      optClass = 'bg-emerald-950/60 border-emerald-500 text-emerald-200 font-medium';
+                      optClass = 'bg-emerald-950/60 border-emerald-500 text-emerald-200 font-medium print:bg-emerald-50 print:border-emerald-600 print:text-emerald-950';
                     } else if (isSelected && !isCorrect) {
-                      optClass = 'bg-red-950/60 border-red-500 text-red-200';
+                      optClass = 'bg-red-950/60 border-red-500 text-red-200 print:bg-red-50 print:border-red-600 print:text-red-950';
                     }
                   } else if (isSelected) {
-                    optClass = 'bg-emerald-500/10 border-emerald-500 text-white font-medium';
+                    optClass = 'bg-emerald-500/10 border-emerald-500 text-white font-medium print:bg-emerald-50 print:border-emerald-600 print:text-emerald-950';
                   }
 
                   return (
@@ -1372,7 +1404,7 @@ export const ProfessionalEthics: React.FC = () => {
                     >
                       <div className="flex items-start gap-3">
                         <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 ${
-                          isSelected ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 text-slate-300'
+                          isSelected ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 print:bg-slate-100 text-slate-300 print:text-slate-900'
                         }`}>
                           {String.fromCharCode(65 + optIdx)}
                         </span>
@@ -1385,15 +1417,15 @@ export const ProfessionalEthics: React.FC = () => {
 
               {/* Finished Explanation */}
               {testFinished && (
-                <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700 text-xs space-y-1.5">
-                  <span className="font-bold text-emerald-300 block">Zdůvodnění a právní základ:</span>
-                  <p className="text-slate-300">{testQuestions[currentTestIdx].rationale}</p>
-                  <span className="text-slate-400 text-[11px] block">Pramen: {testQuestions[currentTestIdx].source}</span>
+                <div className="p-4 rounded-xl bg-slate-800/80 print:bg-slate-50 border border-slate-700 print:border-slate-300 text-xs space-y-1.5 print:text-[#111827]">
+                  <span className="font-bold text-emerald-300 print:text-slate-900 block">Zdůvodnění a právní základ:</span>
+                  <p className="text-slate-300 print:text-[#111827]">{currentQuestion.rationale}</p>
+                  <span className="text-slate-400 print:text-slate-600 text-[11px] block">Pramen: {currentQuestion.source}</span>
                 </div>
               )}
 
               {/* Navigation Footer */}
-              <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-between pt-3 border-t border-slate-800 print:border-slate-300 no-print print:hidden">
                 <button
                   disabled={currentTestIdx === 0}
                   onClick={() => setCurrentTestIdx(prev => prev - 1)}
@@ -1446,10 +1478,10 @@ export const ProfessionalEthics: React.FC = () => {
 
               {/* Results Modal Box */}
               {testFinished && (
-                <div className="p-5 rounded-2xl bg-emerald-950/40 border border-emerald-500/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="p-5 rounded-2xl bg-emerald-950/40 print:bg-slate-50 border border-emerald-500/50 print:border-slate-300 flex flex-col sm:flex-row items-center justify-between gap-4 print:text-[#111827]">
                   <div>
-                    <h4 className="font-bold text-white text-base">Výsledek testu: {calculateTestScore()} z {testQuestions.length} bodů ({Math.round((calculateTestScore() / testQuestions.length) * 100)} %)</h4>
-                    <p className="text-xs text-emerald-200 mt-0.5">
+                    <h4 className="font-bold text-white print:text-[#111827] text-base">Výsledek testu: {calculateTestScore()} z {testQuestions.length} bodů ({Math.round((calculateTestScore() / testQuestions.length) * 100)} %)</h4>
+                    <p className="text-xs text-emerald-200 print:text-[#111827] mt-0.5">
                       {calculateTestScore() / testQuestions.length >= 0.75 
                         ? 'Gratulujeme! Test z Profesní etiky jste úspěšně zvládli.' 
                         : 'Doporučujeme zopakovat 36 pojmů a Kodex etiky a test zopakovat.'}
@@ -1457,14 +1489,14 @@ export const ProfessionalEthics: React.FC = () => {
                   </div>
                   <button
                     onClick={() => startPracticeTest(20)}
-                    className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs whitespace-nowrap cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs whitespace-nowrap cursor-pointer no-print print:hidden"
                   >
                     Nový test (20 ot.)
                   </button>
                 </div>
               )}
             </div>
-          )}
+          ) : null}
         </div>
       )}
     </div>

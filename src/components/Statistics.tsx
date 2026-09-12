@@ -627,7 +627,7 @@ export default function Statistics({
                       fontSize: '12px',
                       boxShadow: '0 10px 15px -3px rgba(0,0,0,0.3)'
                     }}
-                    formatter={(val: number, name: string) => [`${val}%`, 'Úspěšnost testu']}
+                    formatter={(val) => [`${val ?? 0}%`, 'Úspěšnost testu']}
                     labelFormatter={(_, payload) => {
                       if (payload && payload[0]) {
                         const item = payload[0].payload;
@@ -720,8 +720,8 @@ export default function Statistics({
                       color: '#f8fafc',
                       fontSize: '12px'
                     }}
-                    formatter={(val: number, _, item) => [
-                      `${val}% (${item.payload.correctAttempts}/${item.payload.totalAttempts} správně)`,
+                    formatter={(val, _name, item) => [
+                      `${val ?? 0}% (${(item as { payload?: { correctAttempts?: number; totalAttempts?: number } })?.payload?.correctAttempts ?? 0}/${(item as { payload?: { correctAttempts?: number; totalAttempts?: number } })?.payload?.totalAttempts ?? 0} správně)`,
                       'Úspěšnost'
                     ]}
                     labelFormatter={(topic) => `Okruh: ${topic}`}
@@ -900,7 +900,7 @@ export default function Statistics({
                       color: '#f8fafc',
                       fontSize: '12px'
                     }}
-                    formatter={(value: number, name: string) => [`${value} odpovědí`, name]}
+                    formatter={(value, name) => [`${value ?? 0} odpovědí`, name ?? '']}
                   />
                   <Legend 
                     verticalAlign="bottom" 
