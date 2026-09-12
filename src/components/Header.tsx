@@ -26,14 +26,17 @@ import {
   LogIn,
   ChevronLeft,
   ChevronRight,
-  MessageSquare
+  MessageSquare,
+  UserCog
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord } from '../types';
 import { tacticalScenarios } from '../data/scenariosData';
 import { calculateBaseXp, evaluateBadges, getUserRank, loadStreakInfo } from '../utils/gamification';
 import { AuthModal } from './AuthUI';
 import FeedbackModal from './FeedbackModal';
+import UserProfileModal from './UserProfileModal';
 import { useAuth } from '../context/AuthContext';
+import { resolveAvatarDisplay } from '../utils/avatar';
 
 export type NavTab = 
   | 'subjects' 
@@ -66,6 +69,47 @@ interface HeaderProps {
 
 type DropdownType = 'practice' | 'drill' | 'more' | 'profile';
 
+interface AvatarCircleProps {
+  hasUser: boolean;
+  display: ReturnType<typeof resolveAvatarDisplay>;
+  initials: string;
+  sizeClass: string;
+  iconSizeClass: string;
+}
+
+function AvatarCircle({ hasUser, display, initials, sizeClass, iconSizeClass }: AvatarCircleProps) {
+  if (!hasUser) {
+    return (
+      <div className={`${sizeClass} rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 flex items-center justify-center shadow-md border border-white/10`}>
+        <User className={`${iconSizeClass} text-blue-200`} />
+      </div>
+    );
+  }
+
+  if (display.type === 'image') {
+    return (
+      <div className={`${sizeClass} rounded-full overflow-hidden shadow-md border border-white/10`}>
+        <img src={display.url} alt="Avatar" className="w-full h-full object-cover" />
+      </div>
+    );
+  }
+
+  if (display.type === 'preset') {
+    const Icon = display.preset.icon;
+    return (
+      <div className={`${sizeClass} rounded-full bg-gradient-to-tr ${display.preset.gradient} flex items-center justify-center shadow-md border border-white/10`}>
+        <Icon className={`${iconSizeClass} text-white`} />
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${sizeClass} rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 flex items-center justify-center text-white font-black text-xs shadow-md border border-white/10`}>
+      {initials}
+    </div>
+  );
+}
+
 export default function Header({ 
   activeTab, 
   setActiveTab, 
@@ -85,6 +129,7 @@ export default function Header({
   const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number } | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState<boolean>(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const streakInfo = useMemo(() => loadStreakInfo(), []);
@@ -115,6 +160,7 @@ export default function Header({
 
   const role = profile?.role ?? 'student';
   const roleLabel = role === 'admin' ? 'Správce' : role === 'lektor' ? 'Lektor' : 'Student';
+  const avatarDisplay = useMemo(() => resolveAvatarDisplay(profile?.avatar_url), [profile?.avatar_url]);
 
   // Toggle Dropdowns
   const toggleDropdown = (type: DropdownType, e: React.MouseEvent<HTMLElement>) => {
@@ -405,9 +451,13 @@ export default function Header({
             >
               {/* Circular avatar with rank level badge in corner */}
               <div className="relative shrink-0">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 flex items-center justify-center text-white font-black text-xs shadow-md border border-white/10">
-                  {user ? userInitials : <User className="w-4 h-4 text-blue-200" />}
-                </div>
+                <AvatarCircle
+                  hasUser={!!user}
+                  display={avatarDisplay}
+                  initials={userInitials}
+                  sizeClass="w-8 h-8 sm:w-9 sm:h-9"
+                  iconSizeClass="w-4 h-4"
+                />
                 {/* Rank level badge in corner */}
                 <div 
                   className="absolute -bottom-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 font-black text-[9px] flex items-center justify-center border border-slate-900 shadow-sm leading-none"
@@ -788,8 +838,14 @@ export default function Header({
           >
             {/* User Header */}
             <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 flex items-center justify-center text-white font-black text-sm shadow-md border border-white/10 shrink-0">
-                {user ? userInitials : <User className="w-5 h-5 text-blue-200" />}
+              <div className="shrink-0">
+                <AvatarCircle
+                  hasUser={!!user}
+                  display={avatarDisplay}
+                  initials={userInitials}
+                  sizeClass="w-10 h-10"
+                  iconSizeClass="w-5 h-5"
+                />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-white text-sm truncate" title={user ? displayName : 'Host'}>
@@ -859,9 +915,16 @@ export default function Header({
               )}
             </div>
 
-            {/* Actions: Sign in or Sign out */}
+            {/* Actions: Edit profile / Sign in or Sign out */}
             {user ? (
-              <div className="pt-1">
+              <div className="pt-1 space-y-1">
+                <button
+                  onClick={() => { setIsProfileModalOpen(true); setOpenDropdown(null); setDropdownPos(null); }}
+                  className="w-full py-2 px-3 rounded-xl text-left text-xs font-semibold text-slate-200 hover:bg-slate-800 border border-transparent hover:border-slate-700 flex items-center gap-2 transition-colors cursor-pointer"
+                >
+                  <UserCog className="w-4 h-4 text-blue-400" />
+                  <span>Upravit profil</span>
+                </button>
                 <button
                   onClick={() => { signOut(); setOpenDropdown(null); setDropdownPos(null); }}
                   className="w-full py-2 px-3 rounded-xl text-left text-xs font-semibold text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 border border-transparent hover:border-rose-900/50 flex items-center gap-2 transition-colors cursor-pointer"
@@ -905,6 +968,15 @@ export default function Header({
         <FeedbackModal
           onClose={() => setIsFeedbackOpen(false)}
           screenContext={activeTab}
+        />
+      )}
+
+      {/* User Profile Modal */}
+      {isProfileModalOpen && user && (
+        <UserProfileModal
+          onClose={() => setIsProfileModalOpen(false)}
+          totalXp={totalXpWithBadges}
+          currentRank={currentRank}
         />
       )}
     </div>

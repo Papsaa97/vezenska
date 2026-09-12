@@ -19,6 +19,16 @@ export interface UserProfile {
   full_name: string | null;
   role: UserRole;
   created_at: string;
+  avatar_url?: string | null;
+}
+
+export interface UpdateProfileInput {
+  fullName?: string;
+  avatarUrl?: string;
+}
+
+export interface ProfileUpdateResult {
+  error: string | null;
 }
 
 interface AuthContextValue {
@@ -29,6 +39,8 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
+  updateProfile: (data: UpdateProfileInput) => Promise<ProfileUpdateResult>;
+  updatePassword: (newPassword: string) => Promise<ProfileUpdateResult>;
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -47,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, email, full_name, role, created_at')
+      .select('id, email, full_name, role, created_at, avatar_url')
       .eq('id', userId)
       .single();
 
@@ -132,8 +144,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  /** Aktualizuje jméno a/nebo avatar v public.profiles a okamžitě promítne změnu do lokálního stavu. */
+  const updateProfile = useCallback(
+    async (data: UpdateProfileInput): Promise<ProfileUpdateResult> => {
+      if (!user) {
+        return { error: 'Nejste přihlášeni.' };
+      }
+
+      const updates: { full_name?: string; avatar_url?: string } = {};
+      if (data.fullName !== undefined) updates.full_name = data.fullName;
+      if (data.avatarUrl !== undefined) updates.avatar_url = data.avatarUrl;
+
+      if (Object.keys(updates).length === 0) {
+        return { error: null };
+      }
+
+      const { data: updated, error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id)
+        .select('id, email, full_name, role, created_at, avatar_url')
+        .single();
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      setProfile(updated as UserProfile);
+      return { error: null };
+    },
+    [user]
+  );
+
+  /** Bezpečně změní heslo přihlášeného uživatele přes Supabase Auth. */
+  const updatePassword = useCallback(async (newPassword: string): Promise<ProfileUpdateResult> => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    return { error: error?.message ?? null };
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ session, user, profile, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider
+      value={{ session, user, profile, loading, signIn, signUp, signOut, updateProfile, updatePassword }}
+    >
       {children}
     </AuthContext.Provider>
   );
