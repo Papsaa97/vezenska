@@ -288,7 +288,7 @@ export default function App() {
         )}
 
         {activeTab === 'admin' && (
-          <div className="w-full h-full overflow-y-auto pr-1">
+          <div className="w-full h-full overflow-y-auto pr-1 print:h-auto print:overflow-visible print:p-0 print:m-0">
             <PrisonAdministration />
           </div>
         )}

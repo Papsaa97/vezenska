@@ -149,11 +149,20 @@
   }
 
   /* Page break avoidance */
-  .print-card,
+  .break-inside-avoid,
   .print-avoid-break,
+  .print-card,
   .print-question-card {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
+  }
+
+  .print\:block {
+    display: block !important;
+  }
+
+  .print\:hidden {
+    display: none !important;
   }
 
   .print-card {
