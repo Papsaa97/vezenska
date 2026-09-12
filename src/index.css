@@ -121,13 +121,22 @@
     color: #111827 !important;
   }
 
-  /* Dark mode background classes reset */
+  /* Dark mode and tint background classes reset */
   .bg-slate-900,
   .bg-slate-950,
   .bg-slate-800,
   .bg-slate-50,
   .bg-indigo-950,
-  .bg-blue-950 {
+  .bg-indigo-900,
+  .bg-blue-950,
+  .bg-blue-900,
+  [class*="bg-emerald-"],
+  [class*="bg-amber-"],
+  [class*="bg-rose-"],
+  [class*="bg-red-"],
+  [class*="bg-blue-"],
+  [class*="bg-indigo-"],
+  [class*="bg-slate-"] {
     background: #ffffff !important;
     color: #111827 !important;
   }

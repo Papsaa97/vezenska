@@ -25,7 +25,7 @@ export function getSavedApiKey(): string {
     const saved = localStorage.getItem(STORAGE_KEY_API_KEY);
     if (saved) return saved.trim();
   }
-  return (import.meta as unknown as { env?: Record<string, string | undefined> }).env?.VITE_GEMINI_API_KEY || '';
+  return import.meta.env?.VITE_GEMINI_API_KEY || '';
 }
 
 export function setSavedApiKey(key: string): void {

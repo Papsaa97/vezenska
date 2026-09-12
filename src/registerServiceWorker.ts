@@ -9,7 +9,9 @@ export function registerServiceWorker(): void {
       navigator.serviceWorker
         .register('/sw.js')
         .then((registration) => {
-          console.log('[PWA] Service Worker úspěšně zaregistrován:', registration.scope);
+          if (import.meta.env.DEV) {
+            console.debug('[PWA] Service Worker úspěšně zaregistrován:', registration.scope);
+          }
 
           registration.onupdatefound = () => {
             const installingWorker = registration.installing;
@@ -17,9 +19,9 @@ export function registerServiceWorker(): void {
               installingWorker.onstatechange = () => {
                 if (installingWorker.state === 'installed') {
                   if (navigator.serviceWorker.controller) {
-                    console.log('[PWA] K dispozici je nový obsah aplikace.');
+                    console.info('[PWA] K dispozici je nový obsah aplikace.');
                   } else {
-                    console.log('[PWA] Aplikace byla uložena do mezipaměti pro offline použití.');
+                    console.info('[PWA] Aplikace byla uložena do mezipaměti pro offline použití.');
                   }
                 }
               };

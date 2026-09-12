@@ -27,6 +27,8 @@ export default function OfflineBanner() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25 }}
+            role="alert"
+            aria-live="assertive"
             className="bg-amber-600 dark:bg-amber-700 text-white px-3 py-1.5 text-xs font-semibold flex items-center justify-between shadow-md z-50 border-b border-amber-500/50"
           >
             <div className="flex items-center gap-2 mx-auto max-w-7xl">
@@ -46,6 +48,8 @@ export default function OfflineBanner() {
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -50, opacity: 0 }}
+            role="status"
+            aria-live="polite"
             className="fixed top-20 right-4 z-50 bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 text-xs font-bold border border-emerald-500"
           >
             <Wifi className="w-4 h-4 text-emerald-200" />

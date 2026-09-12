@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { AlertTriangle, RefreshCw, RotateCcw } from 'lucide-react';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -42,14 +42,24 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
               Aplikaci se nepodařilo načíst nebo došlo k výpadku spojení se serverem (Supabase). Zkontrolujte prosím připojení k internetu a zkuste to znovu.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={this.handleRetry}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all cursor-pointer shadow-lg shadow-blue-600/20"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Zkusit znovu
-          </button>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={this.handleRetry}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all cursor-pointer shadow-lg shadow-blue-600/20"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Zkusit znovu
+            </button>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold text-sm transition-all cursor-pointer border border-slate-700/60 shadow-lg shadow-slate-900/40"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Obnovit celou stránku
+            </button>
+          </div>
         </div>
       );
     }

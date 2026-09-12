@@ -28,29 +28,61 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_quiz_questions_question_unique ON public.q
 -- Zapnutí Row Level Security (RLS)
 ALTER TABLE public.quiz_questions ENABLE ROW LEVEL SECURITY;
 
--- Politika pro čtení otázek (dostupná pro všechny uživatele / lektory)
+-- 1. Politika pro čtení otázek (veřejné pro všechny studenty i nepřihlášené návštěvníky)
+DROP POLICY IF EXISTS "Povolit čtení otázek pro všechny" ON public.quiz_questions;
 CREATE POLICY "Povolit čtení otázek pro všechny"
   ON public.quiz_questions
   FOR SELECT
   USING (true);
 
--- Politika pro vkládání nových otázek (pro přihlášené lektory a administrátory)
-CREATE POLICY "Povolit vkládání pro přihlášené uživatele"
+-- 2. Politika pro vkládání nových otázek (pouze pro přihlášené lektory a administrátory)
+DROP POLICY IF EXISTS "Povolit vkládání pro přihlášené uživatele" ON public.quiz_questions;
+DROP POLICY IF EXISTS "Povolit vkládání pro lektory a administrátory" ON public.quiz_questions;
+CREATE POLICY "Povolit vkládání pro lektory a administrátory"
   ON public.quiz_questions
   FOR INSERT
   TO authenticated
-  WITH CHECK (true);
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.profiles p
+      WHERE p.id = auth.uid()
+        AND p.role IN ('lektor', 'admin')
+    )
+  );
 
--- Politika pro úpravu otázek (pro přihlášené lektory a administrátory)
-CREATE POLICY "Povolit úpravy pro přihlášené uživatele"
+-- 3. Politika pro úpravu otázek (pouze pro přihlášené lektory a administrátory)
+DROP POLICY IF EXISTS "Povolit úpravy pro přihlášené uživatele" ON public.quiz_questions;
+DROP POLICY IF EXISTS "Povolit úpravy pro lektory a administrátory" ON public.quiz_questions;
+CREATE POLICY "Povolit úpravy pro lektory a administrátory"
   ON public.quiz_questions
   FOR UPDATE
   TO authenticated
-  USING (true);
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles p
+      WHERE p.id = auth.uid()
+        AND p.role IN ('lektor', 'admin')
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.profiles p
+      WHERE p.id = auth.uid()
+        AND p.role IN ('lektor', 'admin')
+    )
+  );
 
--- Politika pro mazání otázek (pro přihlášené lektory a administrátory)
-CREATE POLICY "Povolit mazání pro přihlášené uživatele"
+-- 4. Politika pro mazání otázek (pouze pro přihlášené lektory a administrátory)
+DROP POLICY IF EXISTS "Povolit mazání pro přihlášené uživatele" ON public.quiz_questions;
+DROP POLICY IF EXISTS "Povolit mazání pro lektory a administrátory" ON public.quiz_questions;
+CREATE POLICY "Povolit mazání pro lektory a administrátory"
   ON public.quiz_questions
   FOR DELETE
   TO authenticated
-  USING (true);
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles p
+      WHERE p.id = auth.uid()
+        AND p.role IN ('lektor', 'admin')
+    )
+  );
