@@ -321,15 +321,51 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
   const handleDelete = async (id: string) => {
     setDeletingId(id);
     try {
-      const { data, error } = await supabase
-        .from('quiz_questions')
-        .delete()
-        .eq('id', id)
-        .select();
+      let attempts = 0;
+      let lastError: { message?: string } | null = null;
+      let deleteResult: unknown[] | null = null;
 
-      if (error) {
-        alert('Smazání selhalo: ' + error.message);
-      } else if (!data || data.length === 0) {
+      while (attempts < 2) {
+        attempts++;
+        const { data, error } = await supabase
+          .from('quiz_questions')
+          .delete()
+          .eq('id', id)
+          .select();
+
+        if (!error) {
+          deleteResult = data;
+          lastError = null;
+          break;
+        }
+
+        lastError = error;
+        const msg = error.message || '';
+        const isNetworkErr =
+          msg.includes('Load failed') ||
+          msg.includes('Failed to fetch') ||
+          msg.includes('NetworkError');
+
+        if (isNetworkErr && attempts < 2) {
+          await new Promise((resolve) => setTimeout(resolve, 400));
+          continue;
+        }
+        break;
+      }
+
+      if (lastError) {
+        const msg = lastError.message || '';
+        const isNetworkErr =
+          msg.includes('Load failed') ||
+          msg.includes('Failed to fetch') ||
+          msg.includes('NetworkError');
+
+        if (isNetworkErr) {
+          alert('Chyba síťového připojení: Mazání otázky ze serveru se nezdařilo kvůli výpadku spojení. Zkontrolujte prosím připojení k internetu a zkuste to znovu.');
+        } else {
+          alert('Smazání selhalo: ' + msg);
+        }
+      } else if (!deleteResult || deleteResult.length === 0) {
         alert('Otázku se nepodařilo smazat z databáze (žádný řádek nebyl odstraněn). Zkontrolujte oprávnění RLS pro DELETE v Supabase.');
       } else {
         setQuestions((prev) => prev.filter((q) => q.id !== id));
@@ -343,8 +379,14 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
           window.dispatchEvent(new CustomEvent('vscr:questions_updated'));
         }
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('[QuizQuestions] Chyba při mazání:', err);
+      const errMsg = err instanceof Error ? err.message : String(err);
+      if (errMsg.includes('Load failed') || errMsg.includes('Failed to fetch')) {
+        alert('Chyba síťového připojení se serverem Supabase. Zkontrolujte internet a zkuste smazání znovu.');
+      } else {
+        alert('Došlo k chybě při mazání: ' + errMsg);
+      }
     } finally {
       setDeletingId(null);
       setConfirmDeleteId(null);
@@ -581,7 +623,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
                 return (
                   <div
                     key={label}
-                    className={`flex items-center gap-3 p-2.5 rounded-xl border transition-all ${
+                    className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-xl border transition-all min-w-0 w-full ${
                       isSelected
                         ? 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-700 shadow-xs'
                         : 'bg-slate-50/50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
@@ -590,7 +632,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
                     {/* Radio Button */}
                     <label
                       htmlFor={`option-radio-${idx}`}
-                      className="flex items-center gap-2 cursor-pointer select-none shrink-0"
+                      className="flex items-center gap-1.5 sm:gap-2 cursor-pointer select-none shrink-0"
                     >
                       <input
                         id={`option-radio-${idx}`}
@@ -601,7 +643,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
                         className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-slate-300 dark:border-slate-600 cursor-pointer accent-emerald-600"
                       />
                       <span
-                        className={`w-6 h-6 rounded-lg text-xs font-bold flex items-center justify-center transition-colors ${
+                        className={`w-6 h-6 rounded-lg text-xs font-bold flex items-center justify-center transition-colors shrink-0 ${
                           isSelected
                             ? 'bg-emerald-600 text-white shadow-xs'
                             : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
@@ -618,7 +660,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
                       onChange={(e) => handleOptionTextChange(idx, e.target.value)}
                       placeholder={`Text možnosti ${label}`}
                       required
-                      className={`flex-1 px-3 py-1.5 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 ${
+                      className={`min-w-0 flex-1 w-full px-2.5 sm:px-3 py-1.5 rounded-lg border text-xs sm:text-sm transition-all focus:outline-none focus:ring-2 ${
                         isSelected
                           ? 'border-emerald-300 dark:border-emerald-700/80 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500/40'
                           : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-blue-500/40'

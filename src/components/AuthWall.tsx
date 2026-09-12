@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { 
   ShieldCheck, 
@@ -16,9 +16,17 @@ import {
   BookOpen, 
   Sparkles, 
   Scale, 
-  GraduationCap 
+  GraduationCap,
+  HelpCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import {
+  isBiometricsSupported,
+  authenticateWithBiometrics,
+  storeBrowserCredential,
+  getStoredBrowserCredential,
+  FingerprintIcon,
+} from '../utils/biometrics';
 
 interface AuthWallProps {
   isDarkMode: boolean;
@@ -30,23 +38,64 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordHint, setShowPasswordHint] = useState(false);
+  const [isBiometricAvailable, setIsBiometricAvailable] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  useEffect(() => {
+    isBiometricsSupported().then((supported) => {
+      setIsBiometricAvailable(supported);
+    });
+  }, []);
+
   const resetForm = () => {
     setEmail('');
     setPassword('');
+    setConfirmPassword('');
     setFullName('');
     setErrorMsg(null);
     setSuccessMsg(null);
+    setShowPasswordHint(false);
   };
 
   const switchMode = (newMode: 'signin' | 'signup') => {
     resetForm();
     setMode(newMode);
+  };
+
+  const handleBiometricSignIn = async () => {
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      const cred = await getStoredBrowserCredential();
+      if (cred?.email && cred?.password) {
+        setEmail(cred.email);
+        setPassword(cred.password);
+        const { error } = await signIn(cred.email, cred.password);
+        if (error) {
+          setErrorMsg(translateError(error.message));
+        }
+        return;
+      }
+
+      const success = await authenticateWithBiometrics(email || 'Uživatel VS ČR');
+      if (success) {
+        if (email && password) {
+          const { error } = await signIn(email, password);
+          if (!error) return;
+        }
+        setErrorMsg('Biometrické ověření proběhlo úspěšně. Pro uložení do klíčenky se přihlaste e-mailem a heslem.');
+      }
+    } catch (err) {
+      console.debug('[AuthWall] Biometric sign in failed:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,6 +108,8 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
       const { error } = await signIn(email, password);
       if (error) {
         setErrorMsg(translateError(error.message));
+      } else {
+        await storeBrowserCredential(email, password);
       }
     } else {
       if (!fullName.trim()) {
@@ -66,10 +117,16 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
         setLoading(false);
         return;
       }
+      if (password !== confirmPassword) {
+        setErrorMsg('Zadaná hesla se neshodují. Zkontrolujte prosím obě pole.');
+        setLoading(false);
+        return;
+      }
       const { error } = await signUp(email, password, fullName);
       if (error) {
         setErrorMsg(translateError(error.message));
       } else {
+        await storeBrowserCredential(email, password);
         setSuccessMsg('Registrace proběhla úspěšně! Zkontrolujte svůj e-mail pro potvrzení účtu, nebo se přihlaste.');
       }
     }
@@ -272,19 +329,22 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} method="post" autoComplete="on" className="space-y-4">
                 {mode === 'signup' && (
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Jméno a příjmení
+                      Jméno a příjmení *
                     </label>
                     <div className="relative">
                       <input
                         type="text"
+                        name="name"
+                        id="wall-name"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         placeholder="nstržm. Jan Novák"
                         required
+                        autoComplete="name"
                         className="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
                       />
                       <UserIcon className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -294,15 +354,19 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    E-mailová adresa
+                    E-mailová adresa *
                   </label>
                   <div className="relative">
                     <input
                       type="email"
+                      name="email"
+                      id="wall-email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="jmeno@vscr.cz nebo osobní e-mail"
+                      placeholder="Váš e-mail"
                       required
+                      inputMode="email"
+                      autoComplete="username webauthn"
                       className="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
                     />
                     <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -310,17 +374,44 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Heslo
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-semibold text-slate-300">
+                      Heslo *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowPasswordHint((prev) => !prev)}
+                      className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer transition-colors"
+                      title="Nápověda k heslu"
+                    >
+                      <HelpCircle className="w-3.5 h-3.5" />
+                      <span className="text-[11px]">Nápověda</span>
+                    </button>
+                  </div>
+
+                  {showPasswordHint && (
+                    <div className="mb-2 p-3 bg-slate-800/90 border border-slate-700/80 rounded-xl text-xs text-slate-300 space-y-1 animate-in fade-in duration-200">
+                      <div className="font-semibold text-white text-[11px] flex items-center gap-1">
+                        <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+                        Požadavky na heslo:
+                      </div>
+                      <p className="text-[11px] text-slate-400">• Minimální délka je 6 znaků</p>
+                      <p className="text-[11px] text-slate-400">• Doporučujeme kombinaci velkých a malých písmen a číslic</p>
+                      <p className="text-[11px] text-slate-400">• Heslo je bezpečně šifrováno v Supabase Auth</p>
+                    </div>
+                  )}
+
                   <div className="relative">
                     <input
                       type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      id="wall-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Minimálně 6 znaků"
+                      placeholder="••••••••"
                       required
                       minLength={6}
+                      autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
                       className="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-10 pr-11 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
                     />
                     <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -334,6 +425,29 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                     </button>
                   </div>
                 </div>
+
+                {mode === 'signup' && (
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                      Potvrzení hesla *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        name="confirm-password"
+                        id="wall-confirm-password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Zadejte heslo znovu pro ověření"
+                        required
+                        minLength={6}
+                        autoComplete="new-password"
+                        className="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-10 pr-11 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
+                      />
+                      <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    </div>
+                  </div>
+                )}
 
                 {/* Alerts */}
                 {errorMsg && (
@@ -378,6 +492,19 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                     </>
                   )}
                 </button>
+
+                {/* Biometric Quick Sign-in Button */}
+                {mode === 'signin' && isBiometricAvailable && (
+                  <button
+                    type="button"
+                    onClick={handleBiometricSignIn}
+                    disabled={loading}
+                    className="w-full py-2.5 bg-slate-800/90 hover:bg-slate-750 border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                  >
+                    <FingerprintIcon className="w-4 h-4 text-emerald-400" />
+                    <span>Přihlásit se biometrikou (Face ID / Otisk)</span>
+                  </button>
+                )}
               </form>
 
               {/* Bottom switcher helper */}

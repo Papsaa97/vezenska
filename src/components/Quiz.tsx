@@ -439,7 +439,7 @@ export default function Quiz({
     }
 
     return (
-      <aside className={`w-full md:w-72 flex-col gap-5 shrink-0 ${gameState === 'playing' ? 'hidden md:flex' : 'flex'}`}>
+      <aside className={`w-full md:w-72 flex-col gap-5 shrink-0 pb-8 md:pb-0 ${gameState === 'playing' ? 'hidden md:flex' : 'flex'}`}>
         {/* Exam Mode Banner CTA */}
         <div className="bg-gradient-to-br from-indigo-900 via-blue-900 to-slate-900 text-white rounded-xl shadow-md p-4 border border-blue-400/30">
           <div className="flex items-center gap-2 text-xs font-bold text-amber-300 uppercase tracking-wider mb-1">
@@ -564,7 +564,7 @@ export default function Quiz({
         <motion.section 
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex-1 flex flex-col gap-6 h-full"
+          className="hidden md:flex flex-1 flex-col gap-6 h-full"
         >
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col h-full items-center justify-center p-8 sm:p-12 text-center">
             <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-4 shadow-xs">

@@ -24,12 +24,15 @@ import {
   User,
   LogOut,
   LogIn,
-  ChevronRight
+  ChevronLeft,
+  ChevronRight,
+  MessageSquare
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord } from '../types';
 import { tacticalScenarios } from '../data/scenariosData';
 import { calculateBaseXp, evaluateBadges, getUserRank, loadStreakInfo } from '../utils/gamification';
 import { AuthModal } from './AuthUI';
+import FeedbackModal from './FeedbackModal';
 import { useAuth } from '../context/AuthContext';
 
 export type NavTab = 
@@ -55,6 +58,10 @@ interface HeaderProps {
   toggleDarkMode: () => void;
   quizHistory?: QuizSessionRecord[];
   matchingHistory?: MatchingRecord[];
+  canGoBack?: boolean;
+  canGoForward?: boolean;
+  onGoBack?: () => void;
+  onGoForward?: () => void;
 }
 
 type DropdownType = 'practice' | 'drill' | 'more' | 'profile';
@@ -65,7 +72,11 @@ export default function Header({
   isDarkMode, 
   toggleDarkMode,
   quizHistory = [],
-  matchingHistory = []
+  matchingHistory = [],
+  canGoBack = false,
+  canGoForward = false,
+  onGoBack,
+  onGoForward
 }: HeaderProps) {
   const { user, profile, signOut } = useAuth();
   const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
@@ -73,6 +84,7 @@ export default function Header({
   const [openDropdown, setOpenDropdown] = useState<DropdownType | null>(null);
   const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number } | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const streakInfo = useMemo(() => loadStreakInfo(), []);
@@ -168,26 +180,52 @@ export default function Header({
     <div className="shrink-0 relative z-50" ref={dropdownRef}>
       <div className="h-16 bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md flex items-center justify-between px-3 sm:px-5 lg:px-6 border-b border-slate-800 transition-colors">
         
-        {/* Brand Logo & Title - Levý kontejner */}
-        <div 
-          className="flex-shrink-0 flex items-center gap-2.5 sm:gap-3 cursor-pointer group" 
-          onClick={() => {
-            setActiveTab('subjects');
-            setOpenDropdown(null);
-            setDropdownPos(null);
-          }}
-        >
-          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-500 rounded-xl flex items-center justify-center text-white font-black text-base sm:text-lg shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform border border-blue-400/30 shrink-0">
-            V
+        {/* Brand Logo & Title + Desktop History Controls */}
+        <div className="flex-shrink-0 flex items-center gap-2 sm:gap-3">
+          <div 
+            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group" 
+            onClick={() => {
+              setActiveTab('subjects');
+              setOpenDropdown(null);
+              setDropdownPos(null);
+            }}
+          >
+            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-500 rounded-xl flex items-center justify-center text-white font-black text-base sm:text-lg shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform border border-blue-400/30 shrink-0">
+              V
+            </div>
+            <div className="flex flex-col">
+              <h1 className="text-white font-bold text-xs sm:text-sm lg:text-base tracking-tight flex items-center gap-1.5 sm:gap-2">
+                AKADEMIE VS ČR
+                <span className="text-amber-400 font-bold text-[9px] sm:text-[10px] lg:text-xs px-1.5 sm:px-2 py-0.5 bg-amber-400/10 rounded-full border border-amber-400/30 tracking-wider">
+                  ZOP A
+                </span>
+              </h1>
+              <span className="text-[10px] text-slate-400 hidden xl:block tracking-wide">Výukový & zkušební systém</span>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <h1 className="text-white font-bold text-xs sm:text-sm lg:text-base tracking-tight flex items-center gap-1.5 sm:gap-2">
-              AKADEMIE VS ČR
-              <span className="text-amber-400 font-bold text-[9px] sm:text-[10px] lg:text-xs px-1.5 sm:px-2 py-0.5 bg-amber-400/10 rounded-full border border-amber-400/30 tracking-wider">
-                ZOP A
-              </span>
-            </h1>
-            <span className="text-[10px] text-slate-400 hidden xl:block tracking-wide">Výukový & zkušební systém</span>
+
+          {/* Desktop Back / Forward History Controls */}
+          <div className="hidden lg:flex items-center gap-1 ml-1 pl-2 border-l border-slate-800 text-slate-400">
+            <button
+              type="button"
+              onClick={onGoBack}
+              disabled={!canGoBack}
+              title="Zpět v historii"
+              className="p-1.5 rounded-lg hover:text-white hover:bg-slate-800/80 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer"
+              aria-label="Přejít zpět"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={onGoForward}
+              disabled={!canGoForward}
+              title="Vpřed v historii"
+              className="p-1.5 rounded-lg hover:text-white hover:bg-slate-800/80 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer"
+              aria-label="Přejít vpřed"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
         
@@ -406,6 +444,19 @@ export default function Header({
               <ChevronDown className={`w-3.5 h-3.5 text-slate-400 hidden sm:block transition-transform ${openDropdown === 'profile' ? 'rotate-180 text-amber-400' : ''}`} />
             </button>
           </div>
+
+          {/* Feedback Button (accessible from header on mobile and desktop) */}
+          {user && (
+            <button 
+              type="button"
+              onClick={() => setIsFeedbackOpen(true)}
+              className="p-2 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-slate-700"
+              title="Odeslat zpětnou vazbu k aplikaci"
+              aria-label="Zpětná vazba"
+            >
+              <MessageSquare className="w-4 h-4 text-indigo-400" />
+            </button>
+          )}
 
           {/* Theme Toggle */}
           <button 
@@ -847,6 +898,14 @@ export default function Header({
       {/* Auth Modal */}
       {isAuthModalOpen && (
         <AuthModal onClose={() => setIsAuthModalOpen(false)} />
+      )}
+
+      {/* Feedback Modal */}
+      {isFeedbackOpen && (
+        <FeedbackModal
+          onClose={() => setIsFeedbackOpen(false)}
+          screenContext={activeTab}
+        />
       )}
     </div>
   );

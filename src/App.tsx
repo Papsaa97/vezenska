@@ -202,6 +202,53 @@ export default function App() {
     document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
 
+  // History tracking for Back / Forward navigation (both desktop arrows & touch swipe)
+  const [navHistory, setNavHistory] = useState<NavTab[]>(() => [getInitialTab()]);
+  const [historyIndex, setHistoryIndex] = useState<number>(0);
+
+  const canGoBack = historyIndex > 0;
+  const canGoForward = historyIndex < navHistory.length - 1;
+
+  const navigateToTab = useCallback((tab: NavTab, push = true) => {
+    if (tab === 'quiz' || tab === 'flashcards') {
+      setCustomQuestions(null);
+    }
+    setActiveTab(tab);
+    if (push) {
+      setNavHistory(prev => {
+        const next = prev.slice(0, historyIndex + 1);
+        if (next[next.length - 1] === tab) return next;
+        return [...next, tab];
+      });
+      setHistoryIndex(prev => prev + 1);
+      window.history.pushState({ tab }, '', `#${tab}`);
+    }
+  }, [historyIndex]);
+
+  const handleGoBack = useCallback(() => {
+    if (historyIndex > 0) {
+      const prevIndex = historyIndex - 1;
+      const prevTab = navHistory[prevIndex];
+      setHistoryIndex(prevIndex);
+      setActiveTab(prevTab);
+      window.history.replaceState({ tab: prevTab }, '', `#${prevTab}`);
+    } else if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    }
+  }, [historyIndex, navHistory]);
+
+  const handleGoForward = useCallback(() => {
+    if (historyIndex < navHistory.length - 1) {
+      const nextIndex = historyIndex + 1;
+      const nextTab = navHistory[nextIndex];
+      setHistoryIndex(nextIndex);
+      setActiveTab(nextTab);
+      window.history.replaceState({ tab: nextTab }, '', `#${nextTab}`);
+    } else if (typeof window !== 'undefined') {
+      window.history.forward();
+    }
+  }, [historyIndex, navHistory]);
+
   // Synchronizace aktivní záložky do URL hash a localStorage pro zachování pozice při refresh
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -225,14 +272,72 @@ export default function App() {
     };
 
     window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handleHashChange);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('popstate', handleHashChange);
+    };
   }, []);
 
+  // Swipe gestem doleva / doprava na mobilech a tabletech pro přechod Zpět / Vpřed
+  useEffect(() => {
+    let startX = 0;
+    let startY = 0;
+    let startTime = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      startTime = Date.now();
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (e.changedTouches.length !== 1) return;
+      const deltaX = e.changedTouches[0].clientX - startX;
+      const deltaY = e.changedTouches[0].clientY - startY;
+      const elapsed = Date.now() - startTime;
+
+      // Rychlý vodorovný tah (< 500 ms)
+      if (elapsed > 500) return;
+      if (Math.abs(deltaX) < 70 || Math.abs(deltaY) > 45) return;
+
+      // Nekolidovat s interaktivními prvky a formuláři
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('input, textarea, select, button, [role="slider"], canvas, .no-swipe, [data-no-swipe]')) {
+        return;
+      }
+
+      // Nekolidovat s vnitřním vodorovným posunem kontejnerů
+      let cur = target;
+      while (cur && cur !== document.body) {
+        if (cur.scrollWidth > cur.clientWidth + 15) {
+          const overflowX = window.getComputedStyle(cur).overflowX;
+          if (overflowX === 'auto' || overflowX === 'scroll') return;
+        }
+        cur = cur.parentElement;
+      }
+
+      if (deltaX > 70) {
+        // Swipe doprava -> Zpět
+        handleGoBack();
+      } else if (deltaX < -70) {
+        // Swipe doleva -> Vpřed
+        handleGoForward();
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [handleGoBack, handleGoForward]);
+
   const handleTabChange = (tab: NavTab) => {
-    if (tab === 'quiz' || tab === 'flashcards') {
-      setCustomQuestions(null);
-    }
-    setActiveTab(tab);
+    navigateToTab(tab);
   };
 
   const toggleFavorite = (id: string) => {
@@ -253,25 +358,25 @@ export default function App() {
   const handleStartSubjectQuiz = (subject: string) => {
     setCustomQuestions(null);
     setQuizPreset({ subject });
-    setActiveTab('quiz');
+    navigateToTab('quiz');
   };
 
   const handleStartSubjectFlashcards = (subject: string) => {
     setCustomQuestions(null);
     setFlashcardPresetSubject(subject);
-    setActiveTab('flashcards');
+    navigateToTab('flashcards');
   };
 
   const handleStartCustomQuiz = (questions: Question[]) => {
     setCustomQuestions(questions);
     setQuizPreset({});
-    setActiveTab('quiz');
+    navigateToTab('quiz');
   };
 
   const handleStartCustomFlashcards = (questions: Question[]) => {
     setCustomQuestions(questions);
     setFlashcardPresetSubject(undefined);
-    setActiveTab('flashcards');
+    navigateToTab('flashcards');
   };
 
   const handleClearHistory = () => {
@@ -300,13 +405,17 @@ export default function App() {
           toggleDarkMode={toggleDarkMode}
           quizHistory={quizHistory}
           matchingHistory={matchingHistory}
+          canGoBack={canGoBack}
+          canGoForward={canGoForward}
+          onGoBack={handleGoBack}
+          onGoForward={handleGoForward}
         />
         <OfflineBanner />
       </div>
       <PWAInstallPrompt />
       <FeedbackButton screenLabel={NAV_TAB_LABELS[activeTab] ?? activeTab} />
       
-      <main className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 sm:p-4 pb-24 md:pb-6 lg:pb-4 md:p-6 gap-4 md:gap-6 w-full print:p-0 print:m-0 print:overflow-visible print:h-auto">
+      <main className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 sm:p-4 pb-28 sm:pb-32 md:pb-6 lg:pb-4 md:p-6 gap-4 md:gap-6 w-full print:p-0 print:m-0 print:overflow-visible print:h-auto">
         {activeTab === 'subjects' && (
           <div className="w-full h-full overflow-y-auto pr-1">
             <SubjectsHub

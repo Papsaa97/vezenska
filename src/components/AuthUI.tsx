@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, LogIn, UserPlus, Eye, EyeOff, Loader2, ShieldCheck, AlertCircle } from 'lucide-react';
+import { X, LogIn, UserPlus, Eye, EyeOff, Loader2, ShieldCheck, AlertCircle, HelpCircle } from 'lucide-react';
 import { useAuth, UserRole } from '../context/AuthContext';
+import {
+  isBiometricsSupported,
+  authenticateWithBiometrics,
+  storeBrowserCredential,
+  getStoredBrowserCredential,
+  FingerprintIcon,
+} from '../utils/biometrics';
 
 // ─── Role badge helpers ───────────────────────────────────────────────────────
 
@@ -28,23 +35,71 @@ export function AuthModal({ onClose }: AuthModalProps) {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordHint, setShowPasswordHint] = useState(false);
+  const [isBiometricAvailable, setIsBiometricAvailable] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  useEffect(() => {
+    isBiometricsSupported().then((supported) => {
+      setIsBiometricAvailable(supported);
+    });
+  }, []);
+
   const resetForm = () => {
     setEmail('');
     setPassword('');
+    setConfirmPassword('');
     setFullName('');
     setErrorMsg(null);
     setSuccessMsg(null);
+    setShowPasswordHint(false);
   };
 
   const switchMode = (newMode: 'signin' | 'signup') => {
     resetForm();
     setMode(newMode);
+  };
+
+  const handleBiometricSignIn = async () => {
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      // 1. Zkusíme načíst uložené přihlašovací údaje z nativního správce hesel
+      const cred = await getStoredBrowserCredential();
+      if (cred?.email && cred?.password) {
+        setEmail(cred.email);
+        setPassword(cred.password);
+        const { error } = await signIn(cred.email, cred.password);
+        if (error) {
+          setErrorMsg(translateError(error.message));
+        } else {
+          onClose();
+          return;
+        }
+      }
+
+      // 2. Provedeme nativní biometrické ověření (Face ID / Touch ID)
+      const success = await authenticateWithBiometrics(email || 'Uživatel VS ČR');
+      if (success) {
+        if (email && password) {
+          const { error } = await signIn(email, password);
+          if (!error) {
+            onClose();
+            return;
+          }
+        }
+        setErrorMsg('Biometrické ověření proběhlo úspěšně. Zadejte své přihlašovací údaje k uložení do klíčenky.');
+      }
+    } catch (err) {
+      console.debug('[AuthModal] Biometric login failed:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,6 +113,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
       if (error) {
         setErrorMsg(translateError(error.message));
       } else {
+        await storeBrowserCredential(email, password);
         onClose();
       }
     } else {
@@ -66,10 +122,16 @@ export function AuthModal({ onClose }: AuthModalProps) {
         setLoading(false);
         return;
       }
+      if (password !== confirmPassword) {
+        setErrorMsg('Zadaná hesla se neshodují. Zkontrolujte prosím obě pole.');
+        setLoading(false);
+        return;
+      }
       const { error } = await signUp(email, password, fullName);
       if (error) {
         setErrorMsg(translateError(error.message));
       } else {
+        await storeBrowserCredential(email, password);
         setSuccessMsg('Registrace proběhla. Zkontroluj e-mail pro potvrzení účtu.');
       }
     }
@@ -125,6 +187,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
           {/* Tab switcher */}
           <div className="flex gap-1 bg-slate-800/60 p-1 rounded-xl mb-6">
             <button
+              type="button"
               onClick={() => switchMode('signin')}
               className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                 mode === 'signin'
@@ -136,6 +199,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
               Přihlášení
             </button>
             <button
+              type="button"
               onClick={() => switchMode('signup')}
               className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                 mode === 'signup'
@@ -149,18 +213,21 @@ export function AuthModal({ onClose }: AuthModalProps) {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} method="post" autoComplete="on" className="space-y-4">
             {mode === 'signup' && (
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Celé jméno
+                  Celé jméno *
                 </label>
                 <input
                   type="text"
+                  name="name"
+                  id="name"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Jan Novák"
                   required
+                  autoComplete="name"
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
                 />
               </div>
@@ -168,30 +235,61 @@ export function AuthModal({ onClose }: AuthModalProps) {
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                E-mail
+                E-mail *
               </label>
               <input
                 type="email"
+                name="email"
+                id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="jan.novak@vezenstvi.cz"
+                placeholder="Váš e-mail"
                 required
+                inputMode="email"
+                autoComplete="username webauthn"
                 className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Heslo
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-slate-300">
+                  Heslo *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordHint((prev) => !prev)}
+                  className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer transition-colors"
+                  title="Nápověda k heslu"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                  <span className="text-[11px]">Nápověda</span>
+                </button>
+              </div>
+
+              {showPasswordHint && (
+                <div className="mb-2 p-3 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-slate-300 space-y-1 animate-in fade-in duration-200">
+                  <div className="font-semibold text-white text-[11px] flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+                    Požadavky na heslo:
+                  </div>
+                  <p className="text-[11px] text-slate-400">• Minimální délka je 6 znaků</p>
+                  <p className="text-[11px] text-slate-400">• Doporučujeme kombinaci velkých a malých písmen a číslic</p>
+                  <p className="text-[11px] text-slate-400">• Heslo je bezpečně šifrováno v Supabase Auth</p>
+                </div>
+              )}
+
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
                   minLength={6}
+                  autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 pr-11 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
                 />
                 <button
@@ -203,6 +301,28 @@ export function AuthModal({ onClose }: AuthModalProps) {
                 </button>
               </div>
             </div>
+
+            {mode === 'signup' && (
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Potvrzení hesla *
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="confirm-password"
+                    id="confirm-password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Zadejte heslo znovu pro ověření"
+                    required
+                    minLength={6}
+                    autoComplete="new-password"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 pr-11 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Error / Success messages */}
             {errorMsg && (
@@ -237,6 +357,19 @@ export function AuthModal({ onClose }: AuthModalProps) {
                 </>
               )}
             </button>
+
+            {/* Biometric Quick Sign-in Button */}
+            {mode === 'signin' && isBiometricAvailable && (
+              <button
+                type="button"
+                onClick={handleBiometricSignIn}
+                disabled={loading}
+                className="w-full py-2.5 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 rounded-xl text-xs font-semibold text-slate-200 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+              >
+                <FingerprintIcon className="w-4 h-4 text-emerald-400" />
+                <span>Přihlásit se biometrikou (Face ID / Otisk)</span>
+              </button>
+            )}
           </form>
         </div>
       </motion.div>

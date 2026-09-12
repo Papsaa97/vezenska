@@ -24,7 +24,7 @@ export default function FeedbackButton({ screenLabel }: FeedbackButtonProps) {
         type="button"
         onClick={() => setIsOpen(true)}
         title="Odeslat zpětnou vazbu"
-        className="fixed bottom-20 left-4 md:bottom-6 md:left-6 z-30 w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 flex items-center justify-center transition-all cursor-pointer hover:scale-105 no-print"
+        className="hidden md:flex fixed md:bottom-6 md:left-6 z-30 w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 items-center justify-center transition-all cursor-pointer hover:scale-105 no-print"
       >
         <MessageCircle className="w-5 h-5" />
       </button>
