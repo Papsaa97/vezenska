@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vscr-akademie-v2';
+const CACHE_NAME = 'vscr-akademie-v3';
 const CORE_ASSETS = [
   '/',
   '/index.html',
@@ -37,12 +37,23 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. Fetch event: Stale-While-Revalidate & Cache-First for assets, Network-First with Cache fallback for navigation
+// 3. Fetch event: Stale-While-Revalidate for local static assets, Network-Only for APIs
 self.addEventListener('fetch', (event) => {
   const request = event.request;
 
   // Only handle GET requests and http/https schemes
   if (request.method !== 'GET' || !request.url.startsWith('http')) {
+    return;
+  }
+
+  const url = new URL(request.url);
+
+  // NEVER intercept or cache external requests, API calls or Supabase endpoints
+  if (
+    url.origin !== self.location.origin ||
+    url.pathname.startsWith('/api/') ||
+    url.hostname.includes('supabase.co')
+  ) {
     return;
   }
 

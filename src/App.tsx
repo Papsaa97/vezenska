@@ -28,6 +28,7 @@ import {
   LayoutGrid, 
   BarChart3, 
   ShieldAlert, 
+  Loader2,
   Crosshair, 
   Scale, 
   Award, 
@@ -69,11 +70,43 @@ const NAV_TAB_LABELS: Record<NavTab, string> = {
   'content-manager': 'Správa obsahu',
 };
 
+const VALID_TABS: NavTab[] = [
+  'subjects',
+  'quiz',
+  'assistant',
+  'compass',
+  'admin',
+  'ethics',
+  'scenarios',
+  'weapons',
+  'flashcards',
+  'matching',
+  'badges',
+  'statistics',
+  'library',
+  'content-manager',
+];
+
+function getInitialTab(): NavTab {
+  if (typeof window !== 'undefined') {
+    const rawHash = window.location.hash.replace(/^#/, '');
+    const tabFromHash = rawHash.split('/')[0] as NavTab;
+    if (VALID_TABS.includes(tabFromHash)) {
+      return tabFromHash;
+    }
+    const saved = localStorage.getItem('vscr_active_tab') as NavTab | null;
+    if (saved && VALID_TABS.includes(saved)) {
+      return saved;
+    }
+  }
+  return 'subjects';
+}
+
 export default function App() {
-  const { profile } = useAuth();
+  const { profile, loading: authLoading } = useAuth();
   const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
 
-  const [activeTab, setActiveTab] = useState<NavTab>('subjects');
+  const [activeTab, setActiveTab] = useState<NavTab>(getInitialTab);
   const [favorites, setFavorites] = useState<string[]>(() => {
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem('vscr_favorites');
@@ -168,6 +201,32 @@ export default function App() {
     localStorage.setItem('vscr_theme', isDarkMode ? 'dark' : 'light');
     document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
+
+  // Synchronizace aktivní záložky do URL hash a localStorage pro zachování pozice při refresh
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('vscr_active_tab', activeTab);
+      const rawHash = window.location.hash.replace(/^#/, '');
+      const currentHashTab = rawHash.split('/')[0];
+      if (currentHashTab !== activeTab) {
+        window.history.replaceState(null, '', `#${activeTab}`);
+      }
+    }
+  }, [activeTab]);
+
+  // Reakce na historii a změny hashe v prohlížeči
+  useEffect(() => {
+    const handleHashChange = () => {
+      const rawHash = window.location.hash.replace(/^#/, '');
+      const tabFromHash = rawHash.split('/')[0] as NavTab;
+      if (VALID_TABS.includes(tabFromHash)) {
+        setActiveTab((prev) => (prev !== tabFromHash ? tabFromHash : prev));
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   const handleTabChange = (tab: NavTab) => {
     if (tab === 'quiz' || tab === 'flashcards') {
@@ -357,10 +416,25 @@ export default function App() {
           </div>
         )}
 
-        {activeTab === 'content-manager' && isPrivileged && (
-          <div className="w-full h-full overflow-y-auto pr-1">
-            <ContentManager onQuestionsUpdated={loadQuestions} />
-          </div>
+        {activeTab === 'content-manager' && (
+          authLoading ? (
+            <div className="flex flex-col items-center justify-center py-32 gap-3 text-slate-400">
+              <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+              <span className="text-sm font-medium">Ověřuji oprávnění…</span>
+            </div>
+          ) : isPrivileged ? (
+            <div className="w-full h-full overflow-y-auto pr-1">
+              <ContentManager onQuestionsUpdated={loadQuestions} />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-24 gap-4 text-slate-500">
+              <ShieldAlert className="w-12 h-12 text-amber-500 opacity-60" />
+              <div className="text-center">
+                <div className="font-bold text-slate-700 dark:text-slate-300">Přístup odepřen</div>
+                <div className="text-sm mt-1">Tato sekce je dostupná pouze pro lektory a správce.</div>
+              </div>
+            </div>
+          )
         )}
       </main>
 

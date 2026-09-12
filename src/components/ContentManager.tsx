@@ -140,10 +140,56 @@ export default function ContentManager({ onQuestionsUpdated }: ContentManagerPro
   return <ContentManagerInner onQuestionsUpdated={onQuestionsUpdated} />;
 }
 
+const VALID_CM_TABS = ['materials', 'questions', 'feedback'] as const;
+type ContentManagerTab = (typeof VALID_CM_TABS)[number];
+
+function getInitialCmTab(): ContentManagerTab {
+  if (typeof window !== 'undefined') {
+    const rawHash = window.location.hash.replace(/^#/, '');
+    const hashParts = rawHash.split('/');
+    if (hashParts[0] === 'content-manager' && hashParts[1]) {
+      if (VALID_CM_TABS.includes(hashParts[1] as ContentManagerTab)) {
+        return hashParts[1] as ContentManagerTab;
+      }
+    }
+    const saved = localStorage.getItem('vscr_content_manager_tab') as ContentManagerTab | null;
+    if (saved && VALID_CM_TABS.includes(saved)) {
+      return saved;
+    }
+  }
+  return 'materials';
+}
+
 function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
   // ── Tab state ──
-  const [activeTab, setActiveTab] = useState<'materials' | 'questions' | 'feedback'>('materials');
+  const [activeTab, setActiveTab] = useState<ContentManagerTab>(getInitialCmTab);
   const [newFeedbackCount, setNewFeedbackCount] = useState(0);
+
+  // Synchronizace pod-záložky do URL hash a localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('vscr_content_manager_tab', activeTab);
+      const rawHash = window.location.hash.replace(/^#/, '');
+      const hashParts = rawHash.split('/');
+      if (hashParts[0] === 'content-manager') {
+        window.history.replaceState(null, '', `#content-manager/${activeTab}`);
+      }
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const rawHash = window.location.hash.replace(/^#/, '');
+      const hashParts = rawHash.split('/');
+      if (hashParts[0] === 'content-manager' && hashParts[1]) {
+        if (VALID_CM_TABS.includes(hashParts[1] as ContentManagerTab)) {
+          setActiveTab(hashParts[1] as ContentManagerTab);
+        }
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   // ── Upload form state ──
   const [selectedSubject, setSelectedSubject] = useState<MaterialSubject>('ZOP');
