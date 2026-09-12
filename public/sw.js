@@ -1,4 +1,7 @@
-const CACHE_NAME = 'vscr-akademie-v3';
+// Vite injektuje __APP_VERSION__ při buildu (viz vite.config.ts → define).
+// V dev módu fallback na 'dev'.
+const _version = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'dev';
+const CACHE_NAME = `vscr-akademie-${_version}`;
 const CORE_ASSETS = [
   '/',
   '/index.html',

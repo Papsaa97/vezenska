@@ -12,12 +12,13 @@ export interface SupabaseQuizQuestionRow {
   correct_index?: number | null;
   correct_option?: number | null;
   correctOption?: number | null;
-  correctAnswer?: number | null;
   rationale?: string | null;
   explanation?: string | null;
   source?: string | null;
   created_at?: string | null;
   is_hidden?: boolean | null;
+  // Index signature je nutná pro kompatibilitu s `Record<string, unknown>` ve funkci
+  // extractCorrectIndex() — TypeScript vyžaduje, aby byl interface přiřaditelný.
   [key: string]: unknown;
 }
 
@@ -139,7 +140,7 @@ export async function fetchQuizQuestionsFromSupabase(): Promise<Question[] | nul
   try {
     const { data, error } = await supabase
       .from('quiz_questions')
-      .select('*')
+      .select('id, subject, topic, question, answer, options, correct_index, correct_option, correctOption, explanation, rationale, source, is_hidden')
       .order('created_at', { ascending: false })
       .limit(5000);
 

@@ -1,25 +1,27 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Header, { NavTab } from './components/Header';
-import SubjectsHub from './components/SubjectsHub';
-import Quiz from './components/Quiz';
-import { fetchQuizQuestionsFromSupabase } from './utils/quizQuestionsLoader';
-import Flashcards from './components/Flashcards';
-import Scenarios from './components/Scenarios';
-import WeaponSimulator from './components/WeaponSimulator';
-import LegalCompass from './components/LegalCompass';
-import PrisonAdministration from './components/PrisonAdministration';
-import ProfessionalEthics from './components/ProfessionalEthics';
-import MatchingGame from './components/MatchingGame';
-import BadgesView from './components/BadgesView';
-import Statistics from './components/Statistics';
-import CaptainExamAssistant from './components/CaptainExamAssistant';
 import OfflineBanner from './components/OfflineBanner';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
-import MaterialLibrary from './components/MaterialLibrary';
-import ContentManager from './components/ContentManager';
 import FeedbackButton from './components/FeedbackButton';
-import ClassBulletinBoard from './components/ClassBulletinBoard';
+import { fetchQuizQuestionsFromSupabase } from './utils/quizQuestionsLoader';
+
+// Lazy-loaded view components — načteny až při první návštěvě daného tabu
+const ClassBulletinBoard   = lazy(() => import('./components/ClassBulletinBoard'));
+const SubjectsHub          = lazy(() => import('./components/SubjectsHub'));
+const Quiz                 = lazy(() => import('./components/Quiz'));
+const CaptainExamAssistant = lazy(() => import('./components/CaptainExamAssistant'));
+const LegalCompass         = lazy(() => import('./components/LegalCompass'));
+const PrisonAdministration = lazy(() => import('./components/PrisonAdministration'));
+const ProfessionalEthics   = lazy(() => import('./components/ProfessionalEthics'));
+const Scenarios            = lazy(() => import('./components/Scenarios'));
+const WeaponSimulator      = lazy(() => import('./components/WeaponSimulator'));
+const Flashcards           = lazy(() => import('./components/Flashcards'));
+const MatchingGame         = lazy(() => import('./components/MatchingGame'));
+const BadgesView           = lazy(() => import('./components/BadgesView'));
+const Statistics           = lazy(() => import('./components/Statistics'));
+const MaterialLibrary      = lazy(() => import('./components/MaterialLibrary'));
+const ContentManager       = lazy(() => import('./components/ContentManager'));
 import { matchingCategories } from './data/initialData';
 import { academyQuestions } from './data/questionsData';
 import { tacticalScenarios } from './data/scenariosData';
@@ -55,6 +57,15 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import { getHiddenQuestionIds, isQuestionHidden } from './utils/questionActions';
 
+/** Spinner zobrazený při lazy-loadingu view komponent. */
+function TabLoader({ isDark }: { isDark?: boolean }) {
+  return (
+    <div className={`flex flex-col items-center justify-center flex-1 gap-3 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+      <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      <span className="text-xs font-medium">Načítám…</span>
+    </div>
+  );
+}
 
 
 const NAV_TAB_LABELS: Record<NavTab, string> = {
@@ -443,6 +454,7 @@ export default function App() {
       <FeedbackButton screenLabel={NAV_TAB_LABELS[activeTab] ?? activeTab} />
       
       <main className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 sm:p-4 pb-28 sm:pb-32 md:pb-6 lg:pb-4 md:p-6 gap-4 md:gap-6 w-full print:p-0 print:m-0 print:overflow-visible print:h-auto">
+        <Suspense fallback={<TabLoader isDark={isDarkMode} />}>
         {activeTab === 'dashboard' && (
           <div className="w-full h-full overflow-y-auto pr-1">
             <ClassBulletinBoard />
@@ -582,6 +594,7 @@ export default function App() {
             </div>
           )
         )}
+        </Suspense>
       </main>
 
       {/* Mobile Bottom Navigation (5 Ergonomic Core Pillars) */}

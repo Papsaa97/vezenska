@@ -17,7 +17,7 @@ import {
   User as UserIcon,
   Sparkles,
 } from 'lucide-react';
-import { useAuth, UserRole, UserProfile, isKnownAdmin } from '../context/AuthContext';
+import { useAuth, useIsAdmin, UserRole, UserProfile } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { UserRank } from '../types';
 import { AVATAR_PRESETS, resolveAvatarDisplay, toPresetAvatarUrl } from '../utils/avatar';
@@ -88,9 +88,8 @@ function AvatarPreview({ avatarUrl, initials }: { avatarUrl: string | null | und
 
 export default function UserProfileModal({ onClose, totalXp, currentRank }: UserProfileModalProps) {
   const { user, profile, updateProfile, updatePassword } = useAuth();
+  const isSystemAdmin = useIsAdmin();
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const isSystemAdmin = !!user?.email && isKnownAdmin(user.email);
 
   const effectiveProfile: UserProfile = {
     id: profile?.id || user?.id || '',

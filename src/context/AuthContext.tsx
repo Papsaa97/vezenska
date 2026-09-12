@@ -14,18 +14,27 @@ import { supabase } from '../lib/supabase';
 export type { UserRole, UserProfile, UpdateProfileInput, ProfileUpdateResult } from '../types/auth';
 import type { UserRole, UserProfile, UpdateProfileInput, ProfileUpdateResult } from '../types/auth';
 
-export const ADMIN_EMAILS = [
-  'miichalpapi@gmail.com',
-  'papsaa97@gmail.com',
-];
+/**
+ * Seznam e-mailových adres garantovaných správců systému.
+ * Primárně načítán z VITE_ADMIN_EMAILS (čárkami oddělený seznam).
+ * Hardcoded fallback zajišťuje funkčnost i bez nastavené env proměnné.
+ */
+function resolveAdminEmails(): string[] {
+  const envEmails = import.meta.env?.VITE_ADMIN_EMAILS as string | undefined;
+  if (envEmails && envEmails.trim()) {
+    return envEmails.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+  }
+  // Fallback — použit pouze pokud VITE_ADMIN_EMAILS není nastavena
+  return ['miichalpapi@gmail.com', 'papsaa97@gmail.com'];
+}
 
-/** Rozpozná správce systému podle e-mailu (vlastník projektu miichalpapi). */
+export const ADMIN_EMAILS: string[] = resolveAdminEmails();
+
+/** Rozpozná správce systému podle e-mailu. */
 export function isKnownAdmin(email?: string | null): boolean {
   if (!email) return false;
   const normalized = email.trim().toLowerCase();
-  if (ADMIN_EMAILS.includes(normalized)) return true;
-  if (normalized.startsWith('miichalpapi')) return true;
-  return false;
+  return ADMIN_EMAILS.includes(normalized);
 }
 
 /** Tvar řádku vráceného z tabulky public.profiles v Supabase. */
@@ -402,4 +411,14 @@ export function useAuth(): AuthContextValue {
     throw new Error('useAuth musí být použit uvnitř <AuthProvider>');
   }
   return ctx;
+}
+
+/**
+ * Vrátí true pokud je aktuálně přihlášený uživatel správce systému.
+ * Autoritativní zdroj je vždy `profile.role` (nastaveno z Supabase DB).
+ * Používejte tento hook místo přímého volání isKnownAdmin() v komponentách.
+ */
+export function useIsAdmin(): boolean {
+  const { profile } = useAuth();
+  return profile?.role === 'admin';
 }

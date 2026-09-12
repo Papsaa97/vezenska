@@ -19,7 +19,7 @@ import {
   Save,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { useAuth, UserRole, isKnownAdmin } from '../context/AuthContext';
+import { useAuth, useIsAdmin, UserRole } from '../context/AuthContext';
 import { getUserRank } from '../utils/gamification';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -101,8 +101,8 @@ function calculateQuizXpForResult(row: QuizResultXpRow): number {
 // ─── Access guard ─────────────────────────────────────────────────────────────
 
 export default function UserManager() {
-  const { user, profile } = useAuth();
-  const isAdmin = profile?.role === 'admin' || isKnownAdmin(user?.email);
+  const { user } = useAuth();
+  const isAdmin = useIsAdmin();
 
   // Přísný guard: pouze role 'admin' – studenti ani lektoři sem nesmí, bez ohledu na to, odkud je komponenta vykreslena.
   if (!isAdmin) {

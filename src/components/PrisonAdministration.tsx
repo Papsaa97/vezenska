@@ -2,23 +2,15 @@ import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import {
   FileText,
   ShieldAlert,
-  Layers,
   CheckCircle2,
   AlertTriangle,
-  Search,
   Copy,
   Check,
   Printer,
   HelpCircle,
   BookOpen,
-  Clock,
-  UserCheck,
   Lock,
   Unlock,
-  Shield,
-  ArrowRight,
-  Phone,
-  Eye,
   Sparkles,
   Scale,
   Download,
@@ -26,10 +18,14 @@ import {
   FolderOpen,
   Info,
   Zap,
-  Eraser
+  Eraser,
+  Search,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { updateDailyStreak } from '../utils/gamification';
+import PrisonAdminETR from './prison-admin/PrisonAdminETR';
+import PrisonAdminVIS from './prison-admin/PrisonAdminVIS';
+import PrisonAdminStyleRules from './prison-admin/PrisonAdminStyleRules';
 
 export type AdminSection = 'generator' | 'etr' | 'vis' | 'style-rules';
 
@@ -213,53 +209,12 @@ const RECORD_TEMPLATES: RecordTemplate[] = [
   }
 ];
 
-interface StyleExerciseSegment {
-  id: number;
-  text: string;
-  isError: boolean;
-  correction: string;
-}
-
-interface StyleExercise {
-  title: string;
-  badge: string;
-  instruction: string;
-  originalTextSegments: StyleExerciseSegment[];
-}
-
-// Static training content — hoisted to module scope so it is not recreated on every render.
-const STYLE_EXERCISES: StyleExercise[] = [
-  {
-    title: 'Hledání chyb ve Služebním záznamu',
-    badge: 'Cvičení 1: Služební záznam',
-    instruction: 'V níže uvedeném textu označte všechny závažné chyby proti metodice VS ČR (kliknutím na problematická místa):',
-    originalTextSegments: [
-      { id: 1, text: 'Včera odpoledne kolem třetí hodiny ', isError: true, correction: 'Chyba: Vágní časové určení. Správně: „Dne 14.03.2024 v čase 15:10 hod.“' },
-      { id: 2, text: 'jsme byli s kolegou na oddíle ', isError: true, correction: 'Chyba: 1. osoba množného čísla bez uvedení rozkazu. Správně: „Dne ... jsem byl velen rozkazem... byl jsem přítomen s prap. Novákem...“' },
-      { id: 3, text: 'a viděli jsme tam tohoto vězně, jak dělal bordel na cele. ', isError: true, correction: 'Chyba: Nespisovný a obecný výraz („bordel“, „tento vězeň“). Správně: „ods. Petr Král, nar. ..., kopal do dveří cely č. 12.“' },
-      { id: 4, text: 'Řekl jsem mu, ať se uklidní, jinak dostane. ', isError: true, correction: 'Chyba: Chybí přesná zákonná výzva a citace. Správně: „Použil jsem zákonnou výzvu dle § 6 odst. 3 písm. b) z. č. 555/1992 Sb. slovy: ...“' },
-      { id: 5, text: 'Potom jsme ho odvedli k doktorovi a bylo to nahlášeno.', isError: true, correction: 'Chyba: Neurčitý časový sled a anonymní trpný rod. Správně: Uvést přesný čas předvedení k MUDr. a konkrétní orgány, kterým byla událost ohlášena (ISS-O, VISS).' }
-    ]
-  },
-  {
-    title: 'Hledání chyb v Záznamu o kázeňském přestupku',
-    badge: 'Cvičení 2: Kázeňský přestupek',
-    instruction: 'Najděte nedostatky v popisu skutku a právní kvalifikaci:',
-    originalTextSegments: [
-      { id: 1, text: 'Dne 10.02.2024 v čase 09:15 jsem zjistil odsouzeného Jana Malého na ložnici č. 201, ', isError: false, correction: 'V pořádku (přesný datum, čas, jméno i místo).' },
-      { id: 2, text: 'který porušil vnitřní řád věznice tím, že neměl uklizeno. ', isError: true, correction: 'Chyba: Nelze uvést POUZE porušení Vnitřního řádu! Vždy musí být uvedeno porušení zákonné povinnosti dle § 28 zákona č. 169/1999 Sb.' },
-      { id: 3, text: 'Odsouzený mi řekl, že na to kašle a uklízet nebude. ', isError: true, correction: 'Chyba: Chybí doslovná přímá řeč v uvozovkách. Správně: užil slov, cituji: „...“' },
-      { id: 4, text: 'Odsouzený odmítl se k věci vyjádřit, tak jsem to nechal být a podepsal sám bez svědků.', isError: true, correction: 'Chyba: Do protokolu se musí výslovně zapsat, že odsouzený odmítl vyjádření/podpis, a uvést svědky přítomné incidentu.' }
-    ]
-  }
-];
-
+// Selectable body-part zones for the DP body-scheme widget — hoisted to module scope.
 interface BodyPart {
   id: string;
   label: string;
 }
 
-// Selectable body-part zones for the DP body-scheme widget — hoisted to module scope.
 const BODY_PARTS: BodyPart[] = [
   { id: 'hlava-oblicej', label: 'Hlava & Obličej' },
   { id: 'krk', label: 'Krk' },
@@ -328,17 +283,6 @@ export default function PrisonAdministration() {
   const [draftNotice, setDraftNotice] = useState(false);
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // ETŘ Simulator State
-  const [cjOrg, setCjOrg] = useState('VS');
-  const [cjSpisNumber, setCjSpisNumber] = useState('123');
-  const [cjDocNumber, setCjDocNumber] = useState('1');
-  const [cjSpisType, setCjSpisType] = useState<'ČJ' | 'PŘ' | 'TČ'>('TČ');
-  const [cjYear, setCjYear] = useState('2024');
-  const [cjOrgCode, setCjOrgCode] = useState('801345');
-  const [cjCustomExt, setCjCustomExt] = useState('LOG/02');
-  const [etrStep, setEtrStep] = useState(1);
-  const [cjCopied, setCjCopied] = useState(false);
-
   const currentTemplate = useMemo(() => {
     return RECORD_TEMPLATES.find(t => t.id === selectedTemplateId) || RECORD_TEMPLATES[0];
   }, [selectedTemplateId]);
@@ -359,18 +303,13 @@ export default function PrisonAdministration() {
   const copyCJ = useCallback(() => {
     if (formData.refNumber) {
       navigator.clipboard.writeText(formData.refNumber).then(() => {
-        setCjCopied(true);
-        setTimeout(() => setCjCopied(false), 2000);
+        setCopiedSuccess(true);
+        setTimeout(() => setCopiedSuccess(false), 2000);
       }).catch(() => {
-        // Clipboard API unavailable (insecure context, permissions) — silently ignore, button state simply won't flip.
+        // Clipboard API unavailable — silently ignore
       });
     }
   }, [formData.refNumber]);
-
-  // Style Checker Exercise State
-  const [selectedExercise, setSelectedExercise] = useState<number>(0);
-  const [userErrorsFound, setUserErrorsFound] = useState<number[]>([]);
-  const [exerciseChecked, setExerciseChecked] = useState(false);
 
   // Load a previously auto-saved draft for the initial template on first mount.
   useEffect(() => {
@@ -553,27 +492,6 @@ export default function PrisonAdministration() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTemplateId, formData, selectedBodyParts]);
 
-  const fullGeneratedCj = `${cjOrg}-${cjSpisNumber}-${cjDocNumber}/${cjSpisType}-${cjYear}-${cjOrgCode}${cjCustomExt ? '-' + cjCustomExt : ''}`;
-
-  const currentExerciseData = STYLE_EXERCISES[selectedExercise];
-
-  const handleToggleErrorSegment = useCallback((segmentId: number) => {
-    setUserErrorsFound(prev => {
-      if (exerciseChecked) return prev;
-      return prev.includes(segmentId) ? prev.filter(id => id !== segmentId) : [...prev, segmentId];
-    });
-  }, [exerciseChecked]);
-
-  const handleCheckExercise = useCallback(() => {
-    setExerciseChecked(true);
-    updateDailyStreak();
-  }, []);
-
-  const handleResetExercise = useCallback(() => {
-    setUserErrorsFound([]);
-    setExerciseChecked(false);
-  }, []);
-
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6 pb-12 print:max-w-none print:w-full print:p-0 print:m-0 print:space-y-0 print:pb-0">
       
@@ -741,7 +659,7 @@ export default function PrisonAdministration() {
                             className="p-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] transition-colors cursor-pointer"
                             title="Zkopírovat Č.j. do schránky"
                           >
-                            {cjCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                            {copiedSuccess ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
                           </button>
                         </div>
                       </div>
@@ -1836,517 +1754,14 @@ export default function PrisonAdministration() {
         </div>
       )}
 
-      {/* SECTION 2: ETŘ SIMULATOR & SPISOVÁ SLUŽBA */}
-      {activeSection === 'etr' && (
-        <div className="space-y-6 no-print print:hidden">
-          
-          {/* Interactive Číslo Jednací Decoder */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
-            
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-4">
-              <div>
-                <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
-                  Interaktivní analyzátor & generátor
-                </span>
-                <h2 className="text-xl font-extrabold text-slate-900 dark:text-slate-100">
-                  Struktura čísla jednacího (ČJ) v systému ETŘ
-                </h2>
-              </div>
-              <div className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-mono font-bold text-slate-700 dark:text-slate-300">
-                Pokyn GŘ VS ČR č. 4/2016
-              </div>
-            </div>
+      {/* SECTION 2: ETŘ SIMULATOR */}
+      {activeSection === 'etr' && <PrisonAdminETR />}
 
-            {/* Generated Code Display Box */}
-            <div className="bg-slate-950 rounded-2xl p-5 text-center space-y-3 shadow-inner">
-              <div className="text-xs font-semibold text-slate-400">
-                Výsledný vygenerovaný tvar ČJ v IS ETŘ:
-              </div>
-              <div className="text-xl sm:text-3xl font-black text-amber-400 font-mono tracking-wider break-all">
-                {fullGeneratedCj}
-              </div>
-              <div className="text-[11px] text-slate-400">
-                V systému ETŘ vidí všichni oprávnění uživatelé vždy ČJ a název věci!
-              </div>
-            </div>
+      {/* SECTION 3: VIS */}
+      {activeSection === 'vis' && <PrisonAdminVIS />}
 
-            {/* Interactive Inputs for Segments */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
-              
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-                <label className="font-bold text-slate-700 dark:text-slate-300">1. Organizace</label>
-                <input
-                  type="text"
-                  value={cjOrg}
-                  onChange={(e) => setCjOrg(e.target.value)}
-                  className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
-                />
-                <span className="text-[10px] text-slate-400 block">VS = Vězeňská služba</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-                <label className="font-bold text-slate-700 dark:text-slate-300">2. Číslo spisu</label>
-                <input
-                  type="text"
-                  value={cjSpisNumber}
-                  onChange={(e) => setCjSpisNumber(e.target.value)}
-                  className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
-                />
-                <span className="text-[10px] text-slate-400 block">Pořadové číslo spisu</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-                <label className="font-bold text-slate-700 dark:text-slate-300">3. Číslo dok.</label>
-                <input
-                  type="text"
-                  value={cjDocNumber}
-                  onChange={(e) => setCjDocNumber(e.target.value)}
-                  className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
-                />
-                <span className="text-[10px] text-slate-400 block">Pořadí v rámci spisu</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-                <label className="font-bold text-slate-700 dark:text-slate-300">4. Typ spisu</label>
-                <select
-                  value={cjSpisType}
-                  onChange={(e) => setCjSpisType(e.target.value as 'ČJ' | 'PŘ' | 'TČ')}
-                  className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono cursor-pointer"
-                >
-                  <option value="ČJ">ČJ (Běžné / Svodkové)</option>
-                  <option value="PŘ">PŘ (Přestupky)</option>
-                  <option value="TČ">TČ (Trestní řízení)</option>
-                </select>
-                <span className="text-[10px] text-slate-400 block">ČJ / PŘ / TČ</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-                <label className="font-bold text-slate-700 dark:text-slate-300">5. Rok</label>
-                <input
-                  type="text"
-                  value={cjYear}
-                  onChange={(e) => setCjYear(e.target.value)}
-                  className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
-                />
-                <span className="text-[10px] text-slate-400 block">Kalendářní rok</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-                <label className="font-bold text-slate-700 dark:text-slate-300">6. Kód OJ (80XXXX)</label>
-                <input
-                  type="text"
-                  value={cjOrgCode}
-                  onChange={(e) => setCjOrgCode(e.target.value)}
-                  className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
-                />
-                <span className="text-[10px] text-slate-400 block">80 = VS ČR + kód OJ</span>
-              </div>
-
-            </div>
-
-            {/* Educational Breakdown Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-              <div className="p-4 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 space-y-2 text-xs">
-                <div className="font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
-                  <Shield className="w-4 h-4" />
-                  <span>1. krok: Určení zpracovatele</span>
-                </div>
-                <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
-                  Při založení spisu je <strong>nejdůležitější krok</strong> přidat zpracovatele přes záložku <em>„Přiděleno“</em>. Pokud není zpracovatel určen, vidí spis <strong>všichni z celé OJ</strong>. Po přidělení jej vidí zpracovatel a jeho vedoucí.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/40 space-y-2 text-xs">
-                <div className="font-bold text-blue-800 dark:text-blue-300 flex items-center gap-1.5">
-                  <ArrowRight className="w-4 h-4" />
-                  <span>Hierarchie změny typu spisu</span>
-                </div>
-                <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
-                  Ke změně typu spisu může dojít pouze v jednosměrné hierarchii: <strong>ČJ → Přestupek (PŘ) → Trestný čin (TČ)</strong>. Nikdy v opačném pořadí (zpětnou výjimku může provést pouze administrátor).
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 space-y-2 text-xs">
-                <div className="font-bold text-red-800 dark:text-red-300 flex items-center gap-1.5">
-                  <AlertTriangle className="w-4 h-4" />
-                  <span>Pravidlo políčka „ZAMKNOUT“</span>
-                </div>
-                <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
-                  Při běžné úpravě popisu ČJ (např. doplnění oddělení LOG/02) se <strong>NIKDY nekliká na „ZAMKNOUT“</strong>! Zamčení omezí viditelnost na deliktní režim a komplikuje běžný oběh dokumentu.
-                </p>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Step-by-Step Interactive Guide to ETŘ Operations */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <Layers className="w-5 h-5 text-amber-500" />
-              <span>Klíčové operace se spisem v ETŘ</span>
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              
-              <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 space-y-2 text-xs">
-                <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-sm">
-                  1
-                </div>
-                <h4 className="font-bold text-slate-900 dark:text-slate-100">Vkládání dokumentů</h4>
-                <p className="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
-                  Možnost vložení 2 formátů: <strong>Formuláře</strong> (přes ikonu tiskárny, vlastní typ souboru pro ETŘ, při odeslání ven konverze do PDF) a <strong>Soubory</strong> (přes ikonu adresáře).
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 space-y-2 text-xs">
-                <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-sm">
-                  2
-                </div>
-                <h4 className="font-bold text-slate-900 dark:text-slate-100">Podpisová kniha</h4>
-                <p className="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
-                  Interní podpisy v ETŘ jsou platné (logování akcí). Mimo ETŘ se používají <strong>kvalifikované certifikáty a časové razítko</strong>. Sekretariát může podepsat za ředitele s doložkou <em>v. r.</em> (při schválení adminem).
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 space-y-2 text-xs">
-                <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-sm">
-                  3
-                </div>
-                <h4 className="font-bold text-slate-900 dark:text-slate-100">Slučování spisů</h4>
-                <p className="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
-                  Slučuje se, pokud věc dorazí více cestami (pošta, datová zpráva). <strong>Spis TČ se nesmí sloučit do ČJ</strong>, naopak je to povoleno (vyšší typ je důležitější).
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 space-y-2 text-xs">
-                <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-sm">
-                  4
-                </div>
-                <h4 className="font-bold text-slate-900 dark:text-slate-100">Skartační řízení</h4>
-                <p className="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
-                  Skartační znaky: <strong>„S“</strong> (stoupa/skart), <strong>„V“</strong> (výběr – nutno nejprve přehodnotit na S nebo A) a <strong>„A“</strong> (archiválie). Skartační návrh schvaluje komise a archiv PČR.
-                </p>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-      )}
-
-      {/* SECTION 3: VIS (VĚZEŇSKÝ INFORMAČNÍ SYSTÉM) & DATA PROTECTION */}
-      {activeSection === 'vis' && (
-        <div className="space-y-6 no-print print:hidden">
-          
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
-            
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-4">
-              <div>
-                <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
-                  Vězeňský informační systém VIS
-                </span>
-                <h2 className="text-xl font-extrabold text-slate-900 dark:text-slate-100">
-                  Evidenční stavy osob a právní režim poskytování informací
-                </h2>
-              </div>
-              <div className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950 text-xs font-mono font-bold text-blue-700 dark:text-blue-300">
-                § 23a zákona č. 555/1992 Sb.
-              </div>
-            </div>
-
-            {/* 3 Evidential States of Prisoners */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              
-              <div className="p-5 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 space-y-2.5">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs">
-                  <UserCheck className="w-3.5 h-3.5" />
-                  <span>Stav kmenový</span>
-                </div>
-                <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                  Sledování podle umístění
-                </h4>
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Vězněná osoba je kmenově zařazena a vedena ve stavu té konkrétní věznice či vazební věznice, do které byla rozhodnutím generálního ředitelství umístěna.
-                </p>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 space-y-2.5">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold text-xs">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>Stav administrativní</span>
-                </div>
-                <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                  Sledování podle běhu lhůt
-                </h4>
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Sledování právního stavu a lhůt výkonu vazby, trestu odnětí svobody nebo zabezpečovací detence (počátek trestu, termíny přezkumů, konec trestu, podmíněné propuštění).
-                </p>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 space-y-2.5">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold text-xs">
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>Stav fyzický</span>
-                </div>
-                <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                  Sledování fyzické přítomnosti
-                </h4>
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Reálná fyzická přítomnost v objektu. Při eskortě k civilnímu soudu či do civilní nemocnice je vězeň kmenově v mateřské věznici, ale fyzicky se nachází mimo ni.
-                </p>
-              </div>
-
-            </div>
-
-            {/* Rules of Information Sharing Grid */}
-            <div className="space-y-4 pt-2">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
-                Pravidla poskytování informací z evidence VS ČR (§ 23a zákona č. 555/1992 Sb.)
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
-                  <h4 className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                    <span>Poskytování bez souhlasu vězněné osoby</span>
-                  </h4>
-                  <ul className="space-y-1.5 text-slate-600 dark:text-slate-300 text-[11px] list-disc list-inside">
-                    <li><strong>Orgánům činným v trestním řízení (OČTŘ)</strong>, soudům a státním zastupitelstvím.</li>
-                    <li><strong>Státním orgánům a institucím:</strong> ČSSZ, OSSZ, finanční úřady, exekutoři, probační služba (PMaS), sociální péče, ombudsman.</li>
-                    <li><strong>Třetím osobám (věřitelé, zaměstnavatelé, osoby blízké):</strong> POUZE údaj o umístění a délce trestu, pokud <em>osvědčí právní zájem</em>.</li>
-                  </ul>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
-                  <h4 className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-amber-500" />
-                    <span>Telefonické lustrace & Ochrana svědků</span>
-                  </h4>
-                  <ul className="space-y-1.5 text-slate-600 dark:text-slate-300 text-[11px] list-disc list-inside">
-                    <li><strong>Telefonická hesla:</strong> Stanovuje odbor správní GŘ VS ČR s platností na <strong>3 měsíce</strong>. Po telefonu <em>bez platného hesla</em> se nesmí podat žádná informace!</li>
-                    <li><strong>Zvláštní ochrana svědka (z. č. 137/2001 Sb.):</strong> Informace lze podat pouze na základě písemné žádosti schválené Útvarem speciálních činností Policie ČR.</li>
-                    <li><strong>Nahlížení do osobního spisu:</strong> Vězeň může žádat písemně; bezpečnostní údaje a totožnost zaměstnanců v komisích se neposkytují formou kopií, ale pouze výpisem.</li>
-                  </ul>
-                </div>
-
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      )}
-
-      {/* SECTION 4: 7 GOLDEN RULES OF STYLE & INTERACTIVE ERROR CHECKER */}
-      {activeSection === 'style-rules' && (
-        <div className="space-y-6 no-print print:hidden">
-          
-          {/* The 7 Golden Rules */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
-            <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
-              <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
-                Metodika tvorby úředních písemností VS ČR
-              </span>
-              <h2 className="text-xl font-extrabold text-slate-900 dark:text-slate-100">
-                7 základních požadavků kladených na úřední písemnost
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-              
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
-                <div className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                  <span>1. Spisovná čeština a odbornost</span>
-                </div>
-                <p className="text-slate-600 dark:text-slate-300 text-[11px]">
-                  Užití spisovného jazyka včetně přesné terminologie bezpečnostního sboru. Žádné hovorové výrazy ani slang.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
-                <div className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                  <span>2. 1. osoba jednotného čísla</span>
-                </div>
-                <p className="text-slate-600 dark:text-slate-300 text-[11px]">
-                  Vždy minulý čas: <em>„Já jsem viděl, zjistil, vyzval, zajistil...“</em> (nikoli neurčitý trpný rod nebo množné číslo).
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
-                <div className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                  <span>3. Max. 3 věty v souvětí</span>
-                </div>
-                <p className="text-slate-600 dark:text-slate-300 text-[11px]">
-                  Krátká, srozumitelná souvětí zabraňující zkreslení výpovědi a zmatení chronologického děje.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
-                <div className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                  <span>4. Konkrétní čas a místo</span>
-                </div>
-                <p className="text-slate-600 dark:text-slate-300 text-[11px]">
-                  Zákaz vágních příslovcí (<em>tam, zde, v odpoledních hodinách, asi, hned, potom</em>). Vždy uvést přesný čas a číslo ložnice/cely.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
-                <div className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                  <span>5. Zákaz vycpávkových slov</span>
-                </div>
-                <p className="text-slate-600 dark:text-slate-300 text-[11px]">
-                  Nepoužívat bezobsahová ukazovací zájmena (<em>ten, tento, onen, jakoby</em>).
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
-                <div className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                  <span>6. Přesný pravopis přímé řeči</span>
-                </div>
-                <p className="text-slate-600 dark:text-slate-300 text-[11px]">
-                  Doslovná citace verbálních projevů a vulgarismů v uvozovkách: <em>„Sledujte dobře, jak se píší mezery v přímé řeči.“</em>
-                </p>
-              </div>
-
-            </div>
-
-            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs space-y-1.5">
-              <div className="font-bold text-amber-700 dark:text-amber-300">
-                7. Kompletní podpisová doložka příslušníka:
-              </div>
-              <p className="text-slate-700 dark:text-slate-200 font-mono text-[11px]">
-                vlastnoruční podpis<br />
-                <strong>v. ref. strm. Bc. Jan Novák, DiS., sl. č. 12345, strážný</strong><br />
-                <span className="text-[10px] text-slate-500">(služ. hodnost, hodn. označení, titul, jméno, příjmení, služební číslo, služební zařazení / funkce)</span>
-              </p>
-            </div>
-
-          </div>
-
-          {/* Interactive Error Detection Training Exercise */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
-              <div>
-                <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
-                  Tréninkový modul
-                </span>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-                  {currentExerciseData.title}
-                </h3>
-              </div>
-              <div className="flex items-center gap-2">
-                {STYLE_EXERCISES.map((ex, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      setSelectedExercise(idx);
-                      handleResetExercise();
-                    }}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                      selectedExercise === idx
-                        ? 'bg-amber-500 text-slate-950 font-bold'
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
-                    }`}
-                  >
-                    {ex.badge}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <p className="text-xs text-slate-600 dark:text-slate-400">
-              {currentExerciseData.instruction}
-            </p>
-
-            {/* Clickable text segments */}
-            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 leading-loose text-sm font-serif">
-              {currentExerciseData.originalTextSegments.map(seg => {
-                const isSelected = userErrorsFound.includes(seg.id);
-                let badgeClass = 'hover:bg-amber-200/50 dark:hover:bg-amber-900/40 rounded px-1 cursor-pointer transition-colors';
-                
-                if (exerciseChecked) {
-                  if (seg.isError && isSelected) {
-                    badgeClass = 'bg-emerald-200 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200 font-bold px-1 rounded ring-1 ring-emerald-500';
-                  } else if (seg.isError && !isSelected) {
-                    badgeClass = 'bg-red-200 dark:bg-red-950 text-red-900 dark:text-red-200 font-bold px-1 rounded ring-1 ring-red-500 underline';
-                  } else if (!seg.isError && isSelected) {
-                    badgeClass = 'bg-amber-200 dark:bg-amber-950 text-amber-900 dark:text-amber-200 px-1 rounded line-through';
-                  }
-                } else if (isSelected) {
-                  badgeClass = 'bg-amber-300 dark:bg-amber-700 text-slate-950 dark:text-white font-bold px-1 rounded';
-                }
-
-                return (
-                  <span
-                    key={seg.id}
-                    onClick={() => handleToggleErrorSegment(seg.id)}
-                    className={badgeClass}
-                  >
-                    {seg.text}
-                  </span>
-                );
-              })}
-            </div>
-
-            {/* Exercise Check / Result Bar */}
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center gap-3">
-                {!exerciseChecked ? (
-                  <button
-                    onClick={handleCheckExercise}
-                    disabled={userErrorsFound.length === 0}
-                    className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-slate-950 font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer shadow-md"
-                  >
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Zkontrolovat označené chyby ({userErrorsFound.length})</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleResetExercise}
-                    className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer"
-                  >
-                    <RefreshCw className="w-3.5 h-3.5" />
-                    <span>Vyzkoušet znovu</span>
-                  </button>
-                )}
-              </div>
-
-              {exerciseChecked && (
-                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                  <Check className="w-4 h-4" />
-                  <span>Vyhodnoceno (+15 XP do celkového postupu)</span>
-                </span>
-              )}
-            </div>
-
-            {/* Explanations of corrections when checked */}
-            {exerciseChecked && (
-              <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-slate-800">
-                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                  Rozbor a správné znění oprav:
-                </h4>
-                <div className="space-y-2">
-                  {currentExerciseData.originalTextSegments.map(seg => (
-                    <div
-                      key={seg.id}
-                      className={`p-3 rounded-xl text-xs ${
-                        seg.isError
-                          ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 text-amber-900 dark:text-amber-200'
-                          : 'bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
-                      }`}
-                    >
-                      <div className="font-semibold">{seg.correction}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-          </div>
-
-        </div>
-      )}
+      {/* SECTION 4: 7 GOLDEN RULES OF STYLE */}
+      {activeSection === 'style-rules' && <PrisonAdminStyleRules />}
 
     </div>
   );

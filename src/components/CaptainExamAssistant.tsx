@@ -756,6 +756,10 @@ export default function CaptainExamAssistant({
               placeholder="AIzaSy..."
               className="w-full p-3 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-snug flex items-start gap-1.5 pt-0.5">
+              <span className="mt-px shrink-0">🔒</span>
+              <span>Klíč se ukládá <strong>pouze lokálně v tomto prohlížeči</strong> (localStorage). Nikam se neodesílá — volání Gemini API probíhají přímo z vašeho prohlížeče.</span>
+            </p>
 
             <div className="flex items-center justify-end gap-2.5 pt-2">
               <button
