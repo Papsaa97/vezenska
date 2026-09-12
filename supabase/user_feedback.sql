@@ -16,31 +16,36 @@ CREATE TABLE IF NOT EXISTS public.user_feedback (
 CREATE INDEX IF NOT EXISTS idx_user_feedback_created_at ON public.user_feedback(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_user_feedback_status ON public.user_feedback(status);
 
--- Zapnutí Row Level Security (RLS)
+-- 1. Zapnutí Row Level Security (RLS)
 ALTER TABLE public.user_feedback ENABLE ROW LEVEL SECURITY;
 
--- Politika pro vkládání zpětné vazby (kterýkoliv přihlášený uživatel)
-CREATE POLICY "Povolit vkládání zpětné vazby pro přihlášené uživatele"
+-- 2. Politika pro vkládání zpětné vazby (povoleno pro všechny studenty i nepřihlášené)
+DROP POLICY IF EXISTS "Povolit vkládání zpětné vazby pro přihlášené uživatele" ON public.user_feedback;
+DROP POLICY IF EXISTS "Povolit vkládání zpětné vazby pro všechny" ON public.user_feedback;
+CREATE POLICY "Povolit vkládání zpětné vazby pro všechny"
   ON public.user_feedback
   FOR INSERT
-  TO authenticated
   WITH CHECK (true);
 
--- Politika pro čtení zpětné vazby (pro přihlášené uživatele; UI omezuje zobrazení na lektory/správce)
+-- 3. Politika pro čtení zpětné vazby (pro přihlášené lektory a správce)
+DROP POLICY IF EXISTS "Povolit čtení zpětné vazby pro přihlášené uživatele" ON public.user_feedback;
 CREATE POLICY "Povolit čtení zpětné vazby pro přihlášené uživatele"
   ON public.user_feedback
   FOR SELECT
   TO authenticated
   USING (true);
 
--- Politika pro úpravu stavu zpětné vazby (pro přihlášené uživatele; UI omezuje akci na lektory/správce)
+-- 4. Politika pro úpravu stavu zpětné vazby (pro přihlášené lektory a správce)
+DROP POLICY IF EXISTS "Povolit úpravy zpětné vazby pro přihlášené uživatele" ON public.user_feedback;
 CREATE POLICY "Povolit úpravy zpětné vazby pro přihlášené uživatele"
   ON public.user_feedback
   FOR UPDATE
   TO authenticated
-  USING (true);
+  USING (true)
+  WITH CHECK (true);
 
--- Politika pro mazání zpětné vazby (pro přihlášené uživatele; UI omezuje akci na lektory/správce)
+-- 5. Politika pro mazání zpětné vazby (pro přihlášené lektory a správce)
+DROP POLICY IF EXISTS "Povolit mazání zpětné vazby pro přihlášené uživatele" ON public.user_feedback;
 CREATE POLICY "Povolit mazání zpětné vazby pro přihlášené uživatele"
   ON public.user_feedback
   FOR DELETE

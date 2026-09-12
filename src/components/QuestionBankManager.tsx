@@ -321,13 +321,16 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
   const handleDelete = async (id: string) => {
     setDeletingId(id);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('quiz_questions')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .select();
 
       if (error) {
         alert('Smazání selhalo: ' + error.message);
+      } else if (!data || data.length === 0) {
+        alert('Otázku se nepodařilo smazat z databáze (žádný řádek nebyl odstraněn). Zkontrolujte oprávnění RLS pro DELETE v Supabase.');
       } else {
         setQuestions((prev) => prev.filter((q) => q.id !== id));
         if (editingId === id) {

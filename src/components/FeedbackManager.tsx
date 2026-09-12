@@ -81,29 +81,55 @@ export default function FeedbackManager({ onNewCountChange }: FeedbackManagerPro
   const toggleStatus = async (item: FeedbackItem) => {
     const nextStatus: FeedbackStatus = item.status === 'new' ? 'resolved' : 'new';
     setUpdatingId(item.id);
-    const { error } = await supabase
-      .from('user_feedback')
-      .update({ status: nextStatus })
-      .eq('id', item.id);
+    try {
+      const { data, error } = await supabase
+        .from('user_feedback')
+        .update({ status: nextStatus })
+        .eq('id', item.id)
+        .select();
 
-    if (error) {
-      alert('Změna stavu selhala: ' + error.message);
-    } else {
-      setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, status: nextStatus } : i)));
+      if (error) {
+        alert('Změna stavu selhala: ' + error.message);
+      } else if (!data || data.length === 0) {
+        alert(
+          'Změnu stavu se nepodařilo uložit do databáze (žádný řádek nebyl aktualizován). Zkontrolujte oprávnění RLS pro UPDATE v Supabase.'
+        );
+      } else {
+        setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, status: nextStatus } : i)));
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Neznámá chyba';
+      alert('Chyba při změně stavu: ' + msg);
+    } finally {
+      setUpdatingId(null);
     }
-    setUpdatingId(null);
   };
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
-    const { error } = await supabase.from('user_feedback').delete().eq('id', id);
-    if (error) {
-      alert('Smazání selhalo: ' + error.message);
-    } else {
-      setItems((prev) => prev.filter((i) => i.id !== id));
+    try {
+      const { data, error } = await supabase
+        .from('user_feedback')
+        .delete()
+        .eq('id', id)
+        .select();
+
+      if (error) {
+        alert('Smazání selhalo: ' + error.message);
+      } else if (!data || data.length === 0) {
+        alert(
+          'Položku se nepodařilo smazat z databáze (žádný řádek nebyl odstraněn). V Supabase chybí RLS oprávnění pro DELETE na tabulce user_feedback.'
+        );
+      } else {
+        setItems((prev) => prev.filter((i) => i.id !== id));
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Neznámá chyba';
+      alert('Chyba při mazání: ' + msg);
+    } finally {
+      setDeletingId(null);
+      setConfirmDeleteId(null);
     }
-    setDeletingId(null);
-    setConfirmDeleteId(null);
   };
 
   const formatDateTime = (iso: string) => {
