@@ -102,7 +102,46 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
   const [passwordSaving, setPasswordSaving] = useState<boolean>(false);
   const [passwordMessage, setPasswordMessage] = useState<FormMessage | null>(null);
 
-  if (!user || !profile) return null;
+  if (!user || !profile) {
+    return (
+      <AnimatePresence>
+        <motion.div
+          key="profile-error-backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
+        />
+        <motion.div
+          key="profile-error-modal"
+          initial={{ opacity: 0, scale: 0.96, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.96, y: 20 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
+        >
+          <div
+            className="pointer-events-auto w-full max-w-sm bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl p-6 relative text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              aria-label="Zavřít"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <AlertCircle className="w-8 h-8 text-red-400 mx-auto mb-3" />
+            <h3 className="text-white font-bold text-sm mb-1.5">Profil se nepodařilo načíst</h3>
+            <p className="text-xs text-slate-400 leading-snug">
+              Zkuste prosím obnovit stránku. Pokud problém přetrvává, kontaktujte správce systému.
+            </p>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
 
   const role: UserRole = profile.role;
   const initials = (() => {
