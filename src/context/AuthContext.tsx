@@ -11,7 +11,8 @@ import { supabase } from '../lib/supabase';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type UserRole = 'student' | 'velitel_tridy' | 'lektor' | 'admin';
+export type { UserRole, UserProfile, UpdateProfileInput, ProfileUpdateResult } from '../types/auth';
+import type { UserRole, UserProfile, UpdateProfileInput, ProfileUpdateResult } from '../types/auth';
 
 export const ADMIN_EMAILS = [
   'miichalpapi@gmail.com',
@@ -27,25 +28,15 @@ export function isKnownAdmin(email?: string | null): boolean {
   return false;
 }
 
-export interface UserProfile {
+/** Tvar řádku vráceného z tabulky public.profiles v Supabase. */
+interface ProfileDatabaseRow {
   id: string;
-  email: string;
+  email: string | null;
   full_name: string | null;
   role: UserRole;
   created_at: string;
-  avatar_url?: string | null;
-  user_class?: string | null;
-}
-
-export interface UpdateProfileInput {
-  fullName?: string;
-  avatarUrl?: string;
-  role?: UserRole;
-  userClass?: string;
-}
-
-export interface ProfileUpdateResult {
-  error: string | null;
+  avatar_url: string | null;
+  user_class: string | null;
 }
 
 interface AuthContextValue {
@@ -90,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const effectiveUser = overrideUser || user;
     const userEmail = effectiveUser?.email || '';
 
-    let profileData: Partial<UserProfile> | null = null;
+    let profileData: ProfileDatabaseRow | null = null;
 
     // 1. Zkusíme načíst kompletní profil z tabulky profiles
     const { data, error } = await supabase
@@ -100,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .single();
 
     if (!error && data) {
-      profileData = data as UserProfile;
+      profileData = data as ProfileDatabaseRow;
     } else {
       // 2. Záložní dotaz bez avatar_url (pokud chybí sloupec na Supabase)
       const { data: fallbackData, error: fallbackError } = await supabase
@@ -110,31 +101,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (!fallbackError && fallbackData) {
-        profileData = { ...fallbackData, avatar_url: null };
+        profileData = { ...(fallbackData as Omit<ProfileDatabaseRow, 'avatar_url'>), avatar_url: null };
       }
     }
 
-    // Určení efektivní role a údajů - hodnota role z databáze má absolutní prioritu.
+    // Určení efektivní role a údajů - hodnota role z databáze má absolutní prioritu před localStorage.
     // localStorage slouží výhradně jako okamžitý fallback před dokončením síťového dotazu,
     // nikdy nesmí přepsat autoritativní roli z databáze na vyšší úroveň.
     const isSystemAdmin = isKnownAdmin(userEmail);
     const dbRole = profileData?.role;
     const effectiveRole: UserRole = isSystemAdmin
       ? 'admin'
-      : dbRole
-      ? dbRole
-      : (localRole || 'student');
+      : (dbRole || localRole || 'student');
+
+    // Pokud user_class z databáze nepřijde, nastaví se výchozí hodnota 'ZOP A11'
+    const effectiveClass = profileData?.user_class?.trim() || localClass?.trim() || 'ZOP A11';
 
     if (typeof window !== 'undefined') {
       localStorage.setItem('vscr_user_role', effectiveRole);
-      if (profileData?.user_class) {
-        localStorage.setItem('vscr_my_class', profileData.user_class);
-      }
+      localStorage.setItem('vscr_my_class', effectiveClass);
     }
 
     const effectiveFullName =
-      profileData?.full_name ||
-      localName ||
+      profileData?.full_name?.trim() ||
+      localName?.trim() ||
       effectiveUser?.user_metadata?.full_name ||
       (userEmail ? userEmail.split('@')[0] : 'Uživatel');
 
@@ -145,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role: effectiveRole,
       created_at: profileData?.created_at || effectiveUser?.created_at || new Date().toISOString(),
       avatar_url: profileData?.avatar_url || localAvatar || null,
-      user_class: profileData?.user_class || localClass || 'ZOP A11',
+      user_class: effectiveClass,
     };
 
     setProfile(resolvedProfile);
@@ -159,7 +149,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             email: userEmail,
             full_name: effectiveFullName,
             role: effectiveRole,
-            user_class: resolvedProfile.user_class,
+            user_class: resolvedProfile.user_class || 'ZOP A11',
+            ...(resolvedProfile.avatar_url ? { avatar_url: resolvedProfile.avatar_url } : {}),
           },
           { onConflict: 'id' }
         );
@@ -185,16 +176,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const localClass = typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') : null;
         const localName = typeof window !== 'undefined' ? localStorage.getItem('vscr_user_full_name') : null;
         const localAvatar = typeof window !== 'undefined' ? localStorage.getItem('vscr_user_avatar') : null;
-        const isAdmin = isKnownAdmin(currentUser.email) || localRole === 'admin';
+        const isAdmin = isKnownAdmin(currentUser.email);
+        const initialRole: UserRole = isAdmin
+          ? 'admin'
+          : (localRole === 'admin' ? 'student' : (localRole || 'student'));
+        const initialClass = localClass?.trim() || 'ZOP A11';
 
         setProfile({
           id: currentUser.id,
           email: currentUser.email || '',
           full_name: localName || currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Uživatel',
-          role: isAdmin ? 'admin' : (localRole || 'student'),
+          role: initialRole,
           created_at: currentUser.created_at,
           avatar_url: localAvatar || null,
-          user_class: localClass || 'ZOP A11',
+          user_class: initialClass,
         });
 
         fetchProfile(currentUser.id, currentUser).finally(() => {
@@ -257,6 +252,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             email,
             full_name: fullName,
             role: 'student',
+            user_class: 'ZOP A11',
           },
           { onConflict: 'id' }
         );

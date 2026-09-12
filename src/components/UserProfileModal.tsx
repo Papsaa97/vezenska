@@ -17,7 +17,7 @@ import {
   User as UserIcon,
   Sparkles,
 } from 'lucide-react';
-import { useAuth, UserRole, isKnownAdmin } from '../context/AuthContext';
+import { useAuth, UserRole, UserProfile, isKnownAdmin } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { UserRank } from '../types';
 import { AVATAR_PRESETS, resolveAvatarDisplay, toPresetAvatarUrl } from '../utils/avatar';
@@ -92,21 +92,26 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
 
   const isSystemAdmin = !!user?.email && isKnownAdmin(user.email);
 
-  const effectiveProfile = profile || {
-    id: user?.id || '',
-    email: user?.email || '',
+  const effectiveProfile: UserProfile = {
+    id: profile?.id || user?.id || '',
+    email: profile?.email || user?.email || '',
     full_name:
+      profile?.full_name ||
       (typeof window !== 'undefined' ? localStorage.getItem('vscr_user_full_name') : null) ||
       user?.user_metadata?.full_name ||
       user?.email?.split('@')[0] ||
       'Uživatel',
     role: (isSystemAdmin
       ? 'admin'
-      : (typeof window !== 'undefined' ? (localStorage.getItem('vscr_user_role') as UserRole) : null) ||
+      : profile?.role ||
+        (typeof window !== 'undefined' ? (localStorage.getItem('vscr_user_role') as UserRole) : null) ||
         'student') as UserRole,
-    created_at: user?.created_at || new Date().toISOString(),
-    avatar_url: typeof window !== 'undefined' ? localStorage.getItem('vscr_user_avatar') : null,
-    user_class: (typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') : null) || 'ZOP A11',
+    created_at: profile?.created_at || user?.created_at || new Date().toISOString(),
+    avatar_url: profile?.avatar_url ?? (typeof window !== 'undefined' ? localStorage.getItem('vscr_user_avatar') : null),
+    user_class:
+      profile?.user_class ||
+      (typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') : null) ||
+      'ZOP A11',
   };
 
   const [fullName, setFullName] = useState<string>(
@@ -316,7 +321,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               />
             </div>
 
-            <h2 className="text-white font-bold text-lg leading-tight">{effectiveProfile.full_name || 'Uživatel'}</h2>
+            <h2 className="text-white font-bold text-lg leading-tight">{effectiveProfile?.full_name || 'Uživatel'}</h2>
             <span className={`mt-1.5 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border ${ROLE_COLORS[role]}`}>
               {ROLE_LABELS[role]}
             </span>
@@ -395,8 +400,8 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               />
             </div>
 
-            {(isSystemAdmin || effectiveProfile.role === 'admin') ? (
-              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+            {(isSystemAdmin || effectiveProfile?.role === 'admin') ? (
+                <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2">
                 <label className="block text-xs font-bold text-amber-400 flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
                     <Shield className="w-3.5 h-3.5 text-amber-400" />
@@ -420,7 +425,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                   Jako vlastník aplikace máte právo správce kdykoliv aktivovat a otestovat chování aplikace pod libovolnou rolí.
                 </p>
               </div>
-            ) : effectiveProfile.role !== 'lektor' && (
+            ) : effectiveProfile?.role !== 'lektor' && (
               <label className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-800/60 border border-slate-700/80 cursor-pointer hover:bg-slate-800 transition-colors">
                 <input
                   type="checkbox"
@@ -553,7 +558,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               <span className="flex items-center gap-2 text-xs text-slate-400">
                 <CalendarDays className="w-3.5 h-3.5" /> Registrace
               </span>
-              <span className="text-xs font-semibold text-slate-200">{formatRegistrationDate(effectiveProfile.created_at)}</span>
+              <span className="text-xs font-semibold text-slate-200">{formatRegistrationDate(effectiveProfile?.created_at)}</span>
             </div>
 
             <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-800/60 border border-slate-700/60 rounded-xl">

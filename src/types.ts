@@ -153,3 +153,5 @@ export interface GamificationState {
   streakDays: number;
 }
 
+export type { UserProfile, UserRole, UpdateProfileInput, ProfileUpdateResult } from './types/auth';
+
