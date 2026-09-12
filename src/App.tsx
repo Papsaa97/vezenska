@@ -19,7 +19,7 @@ import PWAInstallPrompt from './components/PWAInstallPrompt';
 import MaterialLibrary from './components/MaterialLibrary';
 import ContentManager from './components/ContentManager';
 import FeedbackButton from './components/FeedbackButton';
-import { matchingCategories, defaultQuizHistory } from './data/initialData';
+import { matchingCategories } from './data/initialData';
 import { academyQuestions } from './data/questionsData';
 import { tacticalScenarios } from './data/scenariosData';
 import { 
@@ -45,6 +45,7 @@ import {
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord, Question } from './types';
 import { loadMatchingHistory, updateDailyStreak } from './utils/gamification';
+import { fetchQuizHistory, saveQuizResult, clearQuizHistory } from './utils/quizResults';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Analytics } from '@vercel/analytics/react';
 import { useAuth } from './context/AuthContext';
@@ -103,7 +104,7 @@ function getInitialTab(): NavTab {
 }
 
 export default function App() {
-  const { profile, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
 
   const [activeTab, setActiveTab] = useState<NavTab>(getInitialTab);
@@ -153,20 +154,34 @@ export default function App() {
     };
   }, [loadQuestions]);
 
-  // Load quiz history from localStorage (or fallback to default)
-  const [quizHistory, setQuizHistory] = useState<QuizSessionRecord[]>(() => {
-    if (typeof window !== 'undefined') {
-      const savedHistory = localStorage.getItem('vscr_quiz_history');
-      if (savedHistory) {
-        try {
-          return JSON.parse(savedHistory);
-        } catch (e) {
-          console.error('Failed to parse quiz history', e);
-        }
-      }
+  // Historie testů se váže výhradně na reálný účet přihlášeného uživatele (tabulka
+  // public.quiz_results) - nový uživatel vždy startuje na prázdné historii / 0 XP.
+  const [quizHistory, setQuizHistory] = useState<QuizSessionRecord[]>([]);
+  const [quizHistoryLoading, setQuizHistoryLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!user) {
+      setQuizHistory([]);
+      setQuizHistoryLoading(false);
+      return;
     }
-    return defaultQuizHistory;
-  });
+
+    setQuizHistoryLoading(true);
+    fetchQuizHistory(user.id).then(({ history, error }) => {
+      if (cancelled) return;
+      if (error) {
+        console.error('[App] Nepodařilo se načíst historii testů:', error);
+      }
+      setQuizHistory(history);
+      setQuizHistoryLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   // Load matching history from localStorage
   const [matchingHistory, setMatchingHistory] = useState<MatchingRecord[]>(() => {
@@ -191,11 +206,6 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('vscr_favorites', JSON.stringify(favorites));
   }, [favorites]);
-
-  // Save quiz history to localStorage
-  useEffect(() => {
-    localStorage.setItem('vscr_quiz_history', JSON.stringify(quizHistory));
-  }, [quizHistory]);
 
   useEffect(() => {
     localStorage.setItem('vscr_theme', isDarkMode ? 'dark' : 'light');
@@ -349,6 +359,11 @@ export default function App() {
   const handleSaveQuizResult = (result: QuizSessionRecord) => {
     setQuizHistory(prev => [...prev, result]);
     updateDailyStreak();
+    if (user) {
+      saveQuizResult(user.id, result).then(({ error }) => {
+        if (error) console.error('[App] Nepodařilo se uložit výsledek testu:', error);
+      });
+    }
   };
 
   const handleMatchingGameComplete = (record: MatchingRecord) => {
@@ -381,14 +396,13 @@ export default function App() {
 
   const handleClearHistory = () => {
     setQuizHistory([]);
-    localStorage.removeItem('vscr_quiz_history');
     setMatchingHistory([]);
     localStorage.removeItem('vscr_matching_history');
-  };
-
-  const handleLoadSampleData = () => {
-    setQuizHistory(defaultQuizHistory);
-    localStorage.setItem('vscr_quiz_history', JSON.stringify(defaultQuizHistory));
+    if (user) {
+      clearQuizHistory(user.id).then(({ error }) => {
+        if (error) console.error('[App] Nepodařilo se smazat historii testů:', error);
+      });
+    }
   };
 
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
@@ -510,12 +524,14 @@ export default function App() {
         )}
 
         {activeTab === 'statistics' && (
-          <Statistics 
+          <Statistics
             questions={allQuestions}
             history={quizHistory}
+            isLoading={quizHistoryLoading}
             onStartTopicQuiz={handleStartSubjectQuiz}
             onClearHistory={handleClearHistory}
-            onLoadSampleData={handleLoadSampleData}
+            onStartQuiz={() => navigateToTab('quiz')}
+            onStartScenario={() => navigateToTab('scenarios')}
           />
         )}
 
