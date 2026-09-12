@@ -1,6 +1,7 @@
 {
   "name": "Akademie VS ČR – ZOP A",
   "short_name": "Akademie VS ČR",
+  "id": "/",
   "description": "Studijní portál a offline příprava na zkoušky ZOP A Vězeňské služby ČR.",
   "start_url": "/",
   "display": "standalone",

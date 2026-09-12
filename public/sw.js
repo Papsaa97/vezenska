@@ -100,8 +100,8 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(() => {
-          // If network fails, cachedResponse will be returned
-          return cachedResponse;
+          // If network fails, cachedResponse will be returned, or fallback 503 response
+          return cachedResponse || new Response('', { status: 503, statusText: 'Service Unavailable' });
         });
 
       return cachedResponse || fetchPromise;

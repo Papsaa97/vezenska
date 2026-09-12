@@ -296,7 +296,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
           <div className="flex flex-col items-center text-center mb-6">
             <div className="relative w-20 h-20 sm:w-24 sm:h-24 mb-3">
               <div className="w-full h-full rounded-full overflow-hidden border-2 border-slate-700 shadow-lg">
-                <AvatarPreview avatarUrl={profile.avatar_url} initials={initials} />
+                <AvatarPreview avatarUrl={effectiveProfile?.avatar_url} initials={initials} />
               </div>
               <button
                 type="button"

@@ -95,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // 1. Zkusíme načíst kompletní profil z tabulky profiles
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, email, full_name, role, created_at, avatar_url')
+      .select('id, email, full_name, role, created_at, avatar_url, user_class')
       .eq('id', userId)
       .single();
 
@@ -105,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // 2. Záložní dotaz bez avatar_url (pokud chybí sloupec na Supabase)
       const { data: fallbackData, error: fallbackError } = await supabase
         .from('profiles')
-        .select('id, email, full_name, role, created_at')
+        .select('id, email, full_name, role, created_at, user_class')
         .eq('id', userId)
         .single();
 
@@ -114,16 +114,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    // Určení efektivní role a údajů
-    const isAdmin = isKnownAdmin(userEmail) || localRole === 'admin' || profileData?.role === 'admin';
-    const effectiveRole: UserRole = isAdmin
+    // Určení efektivní role a údajů - hodnota role z databáze má absolutní prioritu.
+    // localStorage slouží výhradně jako okamžitý fallback před dokončením síťového dotazu,
+    // nikdy nesmí přepsat autoritativní roli z databáze na vyšší úroveň.
+    const isSystemAdmin = isKnownAdmin(userEmail);
+    const dbRole = profileData?.role;
+    const effectiveRole: UserRole = isSystemAdmin
       ? 'admin'
-      : (localRole && (profileData?.role === 'student' || profileData?.role === 'velitel_tridy'))
-      ? localRole
-      : (profileData?.role || 'student');
+      : dbRole
+      ? dbRole
+      : (localRole || 'student');
 
-    if (effectiveRole === 'admin' && typeof window !== 'undefined') {
-      localStorage.setItem('vscr_user_role', 'admin');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('vscr_user_role', effectiveRole);
+      if (profileData?.user_class) {
+        localStorage.setItem('vscr_my_class', profileData.user_class);
+      }
     }
 
     const effectiveFullName =
@@ -139,13 +145,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role: effectiveRole,
       created_at: profileData?.created_at || effectiveUser?.created_at || new Date().toISOString(),
       avatar_url: profileData?.avatar_url || localAvatar || null,
-      user_class: localClass || profileData?.user_class || 'ZOP A11',
+      user_class: profileData?.user_class || localClass || 'ZOP A11',
     };
 
     setProfile(resolvedProfile);
 
     // Pokud v databázi řádek chyběl nebo role byla student pro admina, pokusíme se tiše synchronizovat
-    if (!profileData || (isAdmin && profileData.role !== 'admin')) {
+    if (!profileData || (isSystemAdmin && profileData.role !== 'admin')) {
       try {
         await supabase.from('profiles').upsert(
           {
@@ -153,6 +159,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             email: userEmail,
             full_name: effectiveFullName,
             role: effectiveRole,
+            user_class: resolvedProfile.user_class,
           },
           { onConflict: 'id' }
         );
@@ -325,6 +332,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const updates: Record<string, string> = {
         full_name: effectiveFullName,
         role: effectiveRole,
+        user_class: effectiveClass,
       };
       if (effectiveAvatar) {
         updates.avatar_url = effectiveAvatar;
@@ -346,6 +354,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email: user.email,
                 full_name: effectiveFullName,
                 role: effectiveRole,
+                user_class: effectiveClass,
                 ...(effectiveAvatar ? { avatar_url: effectiveAvatar } : {}),
               },
               { onConflict: 'id' }
@@ -359,6 +368,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email: user.email,
                 full_name: effectiveFullName,
                 role: effectiveRole,
+                user_class: effectiveClass,
               },
               { onConflict: 'id' }
             );

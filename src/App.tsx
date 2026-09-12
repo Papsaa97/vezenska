@@ -128,10 +128,8 @@ export default function App() {
   // Otázky: primárně načtené ze Supabase tabulky quiz_questions, s fallbackem na lokální sadu
   const [allQuestions, setAllQuestions] = useState<Question[]>(academyQuestions);
   const [questionsSource, setQuestionsSource] = useState<'supabase' | 'local'>('local');
-  const [, setIsLoadingQuestions] = useState<boolean>(false);
 
   const loadQuestions = useCallback(async () => {
-    setIsLoadingQuestions(true);
     const dbQuestions = await fetchQuizQuestionsFromSupabase();
     const hiddenSet = getHiddenQuestionIds();
     const sourceQuestions = (dbQuestions && dbQuestions.length > 0) ? dbQuestions : academyQuestions;
@@ -142,7 +140,6 @@ export default function App() {
 
     setAllQuestions(syncedQuestions);
     setQuestionsSource(dbQuestions && dbQuestions.length > 0 ? 'supabase' : 'local');
-    setIsLoadingQuestions(false);
   }, []);
 
   const handleQuestionUpdate = useCallback((updatedQuestion: Question) => {
