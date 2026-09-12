@@ -22,7 +22,6 @@ import {
 import { useAuth } from '../context/AuthContext';
 import {
   isBiometricsSupported,
-  authenticateWithBiometrics,
   storeBrowserCredential,
   getStoredBrowserCredential,
   FingerprintIcon,
@@ -43,6 +42,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordHint, setShowPasswordHint] = useState(false);
   const [isBiometricAvailable, setIsBiometricAvailable] = useState(false);
+  const [hasSavedCredentials, setHasSavedCredentials] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -50,6 +50,11 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
   useEffect(() => {
     isBiometricsSupported().then((supported) => {
       setIsBiometricAvailable(supported);
+    });
+    getStoredBrowserCredential().then((cred) => {
+      setHasSavedCredentials(!!cred?.email && !!cred?.password);
+    }).catch(() => {
+      setHasSavedCredentials(false);
     });
   }, []);
 
@@ -80,19 +85,13 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
         if (error) {
           setErrorMsg(translateError(error.message));
         }
-        return;
-      }
-
-      const success = await authenticateWithBiometrics(email || 'Uživatel VS ČR');
-      if (success) {
-        if (email && password) {
-          const { error } = await signIn(email, password);
-          if (!error) return;
-        }
-        setErrorMsg('Biometrické ověření proběhlo úspěšně. Pro uložení do klíčenky se přihlaste e-mailem a heslem.');
+      } else {
+        setErrorMsg('Nejprve se přihlaste e-mailem a heslem. Údaje budou uloženy do klíčenky pro příští přihlášení.');
+        setHasSavedCredentials(false);
       }
     } catch (err) {
       console.debug('[AuthWall] Biometric sign in failed:', err);
+      setErrorMsg('Přihlášení biometrikou se nezdařilo. Přihlaste se e-mailem a heslem.');
     } finally {
       setLoading(false);
     }
@@ -397,6 +396,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                       </div>
                       <p className="text-[11px] text-slate-400">• Minimální délka je 6 znaků</p>
                       <p className="text-[11px] text-slate-400">• Doporučujeme kombinaci velkých a malých písmen a číslic</p>
+                      <p className="text-[11px] text-slate-300 font-medium">• Musí obsahovat alespoň jeden speciální znak (např. <span className="font-mono">!@#$%^&*</span>)</p>
                       <p className="text-[11px] text-slate-400">• Heslo je bezpečně šifrováno v Supabase Auth</p>
                     </div>
                   )}
@@ -494,7 +494,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                 </button>
 
                 {/* Biometric Quick Sign-in Button */}
-                {mode === 'signin' && isBiometricAvailable && (
+                {mode === 'signin' && isBiometricAvailable && hasSavedCredentials && (
                   <button
                     type="button"
                     onClick={handleBiometricSignIn}

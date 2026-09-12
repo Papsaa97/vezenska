@@ -4,7 +4,6 @@ import { X, LogIn, UserPlus, Eye, EyeOff, Loader2, ShieldCheck, AlertCircle, Hel
 import { useAuth, UserRole } from '../context/AuthContext';
 import {
   isBiometricsSupported,
-  authenticateWithBiometrics,
   storeBrowserCredential,
   getStoredBrowserCredential,
   FingerprintIcon,
@@ -40,6 +39,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordHint, setShowPasswordHint] = useState(false);
   const [isBiometricAvailable, setIsBiometricAvailable] = useState(false);
+  const [hasSavedCredentials, setHasSavedCredentials] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -47,6 +47,12 @@ export function AuthModal({ onClose }: AuthModalProps) {
   useEffect(() => {
     isBiometricsSupported().then((supported) => {
       setIsBiometricAvailable(supported);
+    });
+    // Zjistíme, zda jsou uloženy přihlašovací údaje v správci hesel
+    getStoredBrowserCredential().then((cred) => {
+      setHasSavedCredentials(!!cred?.email && !!cred?.password);
+    }).catch(() => {
+      setHasSavedCredentials(false);
     });
   }, []);
 
@@ -69,7 +75,9 @@ export function AuthModal({ onClose }: AuthModalProps) {
     setLoading(true);
     setErrorMsg(null);
     try {
-      // 1. Zkusíme načíst uložené přihlašovací údaje z nativního správce hesel
+      // Načteme uložené přihlašovací údaje z nativního správce hesel / klíčenky.
+      // Prohlížeč (Safari / Chrome) zobrazí biometrické ověření automaticky jako součást
+      // Credential Management API — není potřeba WebAuthn.
       const cred = await getStoredBrowserCredential();
       if (cred?.email && cred?.password) {
         setEmail(cred.email);
@@ -79,24 +87,15 @@ export function AuthModal({ onClose }: AuthModalProps) {
           setErrorMsg(translateError(error.message));
         } else {
           onClose();
-          return;
         }
-      }
-
-      // 2. Provedeme nativní biometrické ověření (Face ID / Touch ID)
-      const success = await authenticateWithBiometrics(email || 'Uživatel VS ČR');
-      if (success) {
-        if (email && password) {
-          const { error } = await signIn(email, password);
-          if (!error) {
-            onClose();
-            return;
-          }
-        }
-        setErrorMsg('Biometrické ověření proběhlo úspěšně. Zadejte své přihlašovací údaje k uložení do klíčenky.');
+      } else {
+        // Žádné uložené credentials — vyzveme k přihlášení heslem
+        setErrorMsg('Nejprve se přihlaste e-mailem a heslem. Údaje budou uloženy do klíčenky pro příští přihlášení.');
+        setHasSavedCredentials(false);
       }
     } catch (err) {
       console.debug('[AuthModal] Biometric login failed:', err);
+      setErrorMsg('Přihlášení biometrikou se nezdařilo. Přihlaste se e-mailem a heslem.');
     } finally {
       setLoading(false);
     }
@@ -275,6 +274,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
                   </div>
                   <p className="text-[11px] text-slate-400">• Minimální délka je 6 znaků</p>
                   <p className="text-[11px] text-slate-400">• Doporučujeme kombinaci velkých a malých písmen a číslic</p>
+                  <p className="text-[11px] text-slate-300 font-medium">• Musí obsahovat alespoň jeden speciální znak (např. <span className="font-mono">!@#$%^&*</span>)</p>
                   <p className="text-[11px] text-slate-400">• Heslo je bezpečně šifrováno v Supabase Auth</p>
                 </div>
               )}
@@ -359,7 +359,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
             </button>
 
             {/* Biometric Quick Sign-in Button */}
-            {mode === 'signin' && isBiometricAvailable && (
+            {mode === 'signin' && isBiometricAvailable && hasSavedCredentials && (
               <button
                 type="button"
                 onClick={handleBiometricSignIn}
