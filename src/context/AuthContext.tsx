@@ -55,7 +55,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  /** Načte profil uživatele z tabulky public.profiles */
+  /**
+   * Načte profil uživatele z tabulky public.profiles.
+   *
+   * Odolné vůči tomu, že migrace `supabase/profiles_avatar.sql` (sloupec avatar_url)
+   * ještě nebyla na databázi spuštěna - v takovém případě by dotaz na neexistující
+   * sloupec selhal jako celek a smazal by i roli a jméno uživatele z UI. Proto se
+   * při chybě zkusí záložní dotaz bez avatar_url, aby role a jméno vždy zůstaly funkční.
+   */
   const fetchProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from('profiles')
@@ -63,12 +70,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .eq('id', userId)
       .single();
 
-    if (error) {
-      console.error('[Auth] Nepodařilo se načíst profil:', error.message);
+    if (!error) {
+      setProfile(data as UserProfile);
+      return;
+    }
+
+    const { data: fallbackData, error: fallbackError } = await supabase
+      .from('profiles')
+      .select('id, email, full_name, role, created_at')
+      .eq('id', userId)
+      .single();
+
+    if (fallbackError) {
+      console.error('[Auth] Nepodařilo se načíst profil:', fallbackError.message);
       setProfile(null);
       return;
     }
-    setProfile(data as UserProfile);
+
+    console.warn(
+      '[Auth] Sloupec avatar_url se nepodařilo načíst (spusťte prosím supabase/profiles_avatar.sql):',
+      error.message
+    );
+    setProfile({ ...fallbackData, avatar_url: null } as UserProfile);
   }, []);
 
   // Inicializace session + listener na změny
@@ -159,21 +182,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: null };
       }
 
-      const { data: updated, error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', user.id)
-        .select('id, email, full_name, role, created_at, avatar_url')
-        .single();
+      const { error } = await supabase.from('profiles').update(updates).eq('id', user.id);
 
       if (error) {
         return { error: error.message };
       }
 
-      setProfile(updated as UserProfile);
+      await fetchProfile(user.id);
       return { error: null };
     },
-    [user]
+    [user, fetchProfile]
   );
 
   /** Bezpečně změní heslo přihlášeného uživatele přes Supabase Auth. */
