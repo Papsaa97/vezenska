@@ -226,3 +226,9 @@ export default async function handler(
     res.end(JSON.stringify({ error: message }));
   }
 }
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
