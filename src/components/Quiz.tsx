@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { BookOpen, Clock, Play, CheckCircle2, XCircle, Star, RotateCcw, Volume2, Award, Flag, Printer, ArrowRight, ArrowLeft, ShieldAlert, Sparkles, Cloud, Database } from 'lucide-react';
+import { BookOpen, Clock, Play, CheckCircle2, XCircle, Star, RotateCcw, Volume2, Award, Flag, Printer, ArrowRight, ArrowLeft, ShieldAlert, Sparkles, Cloud, Database, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Question, QuizSessionRecord, QuestionAttempt } from '../types';
 import { normalizeSubject } from './SubjectsHub';
@@ -64,6 +64,9 @@ export default function Quiz({
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [quizStartTime, setQuizStartTime] = useState<number>(Date.now());
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isOptionsRevealed, setIsOptionsRevealed] = useState(false);
+  const [isTimedOut, setIsTimedOut] = useState(false);
+  const [timedOutMap, setTimedOutMap] = useState<Record<string, boolean>>({});
 
   const timerRef = useRef<number | null>(null);
   const examTimerRef = useRef<number | null>(null);
@@ -152,6 +155,9 @@ export default function Quiz({
     setConfidences({});
     setFlaggedQuestions(new Set());
     setIsAnswered(false);
+    setIsOptionsRevealed(true);
+    setIsTimedOut(false);
+    setTimedOutMap({});
     setGameState('playing');
     setQuizStartTime(Date.now());
     setExamGlobalTimeLeft(45 * 60);
@@ -196,10 +202,15 @@ export default function Quiz({
     setConfidences({});
     setCurrentConfidence('know');
     setIsAnswered(false);
+    setIsOptionsRevealed(false);
+    setIsTimedOut(false);
+    setTimedOutMap({});
     setGameState('playing');
     setQuizStartTime(Date.now());
     if (timeLimit) {
       setTimeLeft(timeLimit);
+    } else {
+      setTimeLeft(null);
     }
   };
 
@@ -224,18 +235,24 @@ export default function Quiz({
 
   // Question timer logic (in practice mode)
   useEffect(() => {
-    if (!isExamMode && gameState === 'playing' && !isAnswered && timeLimit !== null && timeLeft !== null && timeLeft > 0) {
+    if (!isExamMode && gameState === 'playing' && !isAnswered && isOptionsRevealed && timeLimit !== null && timeLeft !== null && timeLeft > 0) {
       timerRef.current = window.setInterval(() => {
         setTimeLeft(prev => (prev !== null && prev > 0 ? prev - 1 : 0));
       }, 1000);
-    } else if (!isExamMode && timeLeft === 0 && !isAnswered) {
-      handleAnswer(-1);
+    } else if (!isExamMode && gameState === 'playing' && isOptionsRevealed && timeLimit !== null && timeLeft === 0 && !isAnswered && !isTimedOut) {
+      // Time limit expired: do NOT auto-answer.
+      // Flag current question as timed out; options remain active for user to choose.
+      setIsTimedOut(true);
+      const currentQ = quizQuestions[currentIndex];
+      if (currentQ?.id) {
+        setTimedOutMap(prev => ({ ...prev, [currentQ.id]: true }));
+      }
     }
     
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [gameState, isAnswered, timeLeft, timeLimit, isExamMode]);
+  }, [gameState, isAnswered, isOptionsRevealed, timeLeft, timeLimit, isExamMode, isTimedOut, currentIndex, quizQuestions]);
 
   const handleAnswer = (optionIndex: number) => {
     if (isExamMode) {
@@ -249,23 +266,28 @@ export default function Quiz({
     if (optionIndex !== -1 && typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
       window.navigator.vibrate(50);
     }
+
+    const currentQ = quizQuestions[currentIndex];
+    const currentQId = currentQ.id;
+    const answeredAfterTimeout = Boolean(isTimedOut || (timeLimit !== null && timeLeft === 0) || timedOutMap[currentQId]);
     
     setIsAnswered(true);
-    setAnswers(prev => ({ ...prev, [quizQuestions[currentIndex].id]: optionIndex }));
-    setConfidences(prev => ({ ...prev, [quizQuestions[currentIndex].id]: currentConfidence }));
+    setAnswers(prev => ({ ...prev, [currentQId]: optionIndex }));
+    setConfidences(prev => ({ ...prev, [currentQId]: currentConfidence }));
+    setTimedOutMap(prev => ({ ...prev, [currentQId]: answeredAfterTimeout }));
     
-    const isCorrect = optionIndex === quizQuestions[currentIndex].correctOption;
+    const isCorrect = optionIndex === currentQ.correctOption;
     
     if (!isCorrect) {
       setMistakeHistory(prev => {
         const next = new Set(prev);
-        next.add(quizQuestions[currentIndex].id);
+        next.add(currentQId);
         return next;
       });
     } else {
       setMistakeHistory(prev => {
         const next = new Set(prev);
-        next.delete(quizQuestions[currentIndex].id);
+        next.delete(currentQId);
         return next;
       });
     }
@@ -299,10 +321,12 @@ export default function Quiz({
 
   const finishExam = () => {
     if (examTimerRef.current) clearInterval(examTimerRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
     
     const finishedAttempts: QuestionAttempt[] = quizQuestions.map(q => {
       const selected = answers[q.id] !== undefined ? answers[q.id] : -1;
       const isCorrect = selected === q.correctOption;
+      const wasTimedOut = Boolean(timedOutMap[q.id]);
       return {
         questionId: q.id,
         questionText: q.question,
@@ -311,7 +335,8 @@ export default function Quiz({
         isCorrect,
         selectedOption: selected,
         correctOption: q.correctOption ?? 0,
-        confidence: confidences[q.id] || 'know'
+        confidence: confidences[q.id] || 'know',
+        timedOut: wasTimedOut
       };
     });
 
@@ -319,13 +344,15 @@ export default function Quiz({
     const totalCount = finishedAttempts.length;
     const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
     const timeSpent = Math.max(1, Math.round((Date.now() - quizStartTime) / 1000));
+    const correctInLimit = finishedAttempts.filter(a => a.isCorrect && !a.timedOut).length;
+    const correctAfterLimit = finishedAttempts.filter(a => a.isCorrect && a.timedOut).length;
 
     const recordedSubject = isExamMode 
       ? 'Závěrečná zkouška ZOP A' 
       : (selectedSubjects.length === 1 ? selectedSubjects[0] : (selectedSubjects.length > 1 ? 'Kombinace předmětů' : 'all'));
 
     const sessionRecord: QuizSessionRecord = {
-      id: `exam-${Date.now()}`,
+      id: `${isExamMode ? 'exam' : 'quiz'}-${Date.now()}`,
       timestamp: Date.now(),
       dateFormatted: 'Dnes ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       subject: recordedSubject,
@@ -333,7 +360,9 @@ export default function Quiz({
       correctAnswers: correctCount,
       accuracy,
       timeSpentSeconds: timeSpent,
-      attempts: finishedAttempts
+      attempts: finishedAttempts,
+      correctInLimit,
+      correctAfterLimit
     };
 
     if (onSaveQuizResult) {
@@ -348,6 +377,8 @@ export default function Quiz({
       setCurrentIndex(prev => prev + 1);
       setIsAnswered(false);
       setCurrentConfidence('know');
+      setIsOptionsRevealed(isExamMode ? true : false);
+      setIsTimedOut(false);
       if (timeLimit) setTimeLeft(timeLimit);
     } else {
       finishExam();
@@ -614,6 +645,9 @@ export default function Quiz({
       const correctCount = quizQuestions.filter(q => answers[q.id] === q.correctOption).length;
       const totalCount = quizQuestions.length;
       const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+      const correctInLimit = quizQuestions.filter(q => answers[q.id] === q.correctOption && !timedOutMap[q.id]).length;
+      const correctAfterLimit = quizQuestions.filter(q => answers[q.id] === q.correctOption && Boolean(timedOutMap[q.id])).length;
+      const totalTimedOut = quizQuestions.filter(q => Boolean(timedOutMap[q.id])).length;
       
       let gradeLabel = 'Neprospěl';
       let gradeColor = 'text-rose-600 dark:text-rose-400';
@@ -666,6 +700,23 @@ export default function Quiz({
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
                 Správně zodpovězeno {correctCount} z {totalCount} otázek
               </p>
+
+              {/* In-limit vs after-limit statistics */}
+              <div className="flex flex-wrap items-center justify-center gap-2.5 mt-3.5 no-print">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold text-emerald-800 dark:text-emerald-300">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span>Správně v limitu: <strong className="font-bold">{correctInLimit}</strong></span>
+                </div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs font-semibold text-amber-800 dark:text-amber-300">
+                  <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                  <span>Správně po limitu: <strong className="font-bold">{correctAfterLimit}</strong></span>
+                </div>
+                {totalTimedOut > 0 && (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                    <span>Celkem po limitu: <strong className="font-bold">{totalTimedOut}</strong> z {totalCount}</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* XP Award & Progress Banner (Screen only) */}
@@ -889,17 +940,30 @@ export default function Quiz({
                               : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 print:border-slate-300'
                           }`}
                         >
-                          <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex items-start justify-between gap-2 mb-2 flex-wrap">
                             <span className="text-xs font-bold text-blue-600 dark:text-blue-400 print:text-slate-700">
                               {q.subject}{q.topic ? ` • ${q.topic}` : ''}
                             </span>
-                            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
-                              isWrong 
-                                ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 print:bg-rose-50 print:text-rose-900 print:border print:border-rose-300' 
-                                : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 print:bg-emerald-50 print:text-emerald-900 print:border print:border-emerald-400'
-                            }`}>
-                              {isWrong ? 'Chybná odpověď' : 'Správně zodpovězeno'}
-                            </span>
+                            <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                              <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                                isWrong 
+                                  ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 print:bg-rose-50 print:text-rose-900 print:border print:border-rose-300' 
+                                  : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 print:bg-emerald-50 print:text-emerald-900 print:border print:border-emerald-400'
+                              }`}>
+                                {isWrong ? 'Chybná odpověď' : 'Správně zodpovězeno'}
+                              </span>
+                              {timedOutMap[q.id] ? (
+                                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 flex items-center gap-1 print:bg-amber-50 print:text-amber-900 print:border-amber-300">
+                                  <Clock className="w-3 h-3" />
+                                  Po limitu (nestihnuto)
+                                </span>
+                              ) : (
+                                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 flex items-center gap-1 print:bg-slate-50 print:text-slate-700 print:border-slate-300">
+                                  <CheckCircle2 className="w-3 h-3" />
+                                  V limitu
+                                </span>
+                              )}
+                            </div>
                           </div>
 
                           <p className="font-bold text-sm sm:text-base text-slate-900 dark:text-white mb-3">
@@ -1020,9 +1084,28 @@ export default function Quiz({
                   </span>
                 </div>
               ) : timeLimit !== null ? (
-                <span className={`font-mono font-bold text-base ${timeLeft !== null && timeLeft <= 5 ? 'text-red-500 animate-pulse' : 'text-slate-600 dark:text-slate-300'}`}>
-                  00:{String(timeLeft).padStart(2, '0')}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  {isTimedOut || timeLeft === 0 ? (
+                    <span className="inline-flex items-center gap-1 font-mono font-bold text-xs sm:text-sm px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                      <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 animate-pulse" />
+                      00:00 (Vypršel)
+                    </span>
+                  ) : !isOptionsRevealed ? (
+                    <span className="inline-flex items-center gap-1 font-mono font-semibold text-xs sm:text-sm px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700" title="Odpočet se spustí po zobrazení možností">
+                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      00:{String(timeLimit).padStart(2, '0')}
+                    </span>
+                  ) : (
+                    <span className={`inline-flex items-center gap-1 font-mono font-bold text-xs sm:text-sm px-2.5 py-1 rounded-lg ${
+                      timeLeft !== null && timeLeft <= 5
+                        ? 'bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-700 animate-pulse'
+                        : 'bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
+                    }`}>
+                      <Clock className="w-3.5 h-3.5" />
+                      00:{String(timeLeft).padStart(2, '0')}
+                    </span>
+                  )}
+                </div>
               ) : null}
 
               {/* Audio Speech */}
@@ -1071,107 +1154,153 @@ export default function Quiz({
                 transition={{ duration: 0.2 }}
                 className="max-w-3xl"
               >
+                {/* Timed-out alert badge when time expires */}
+                {!isExamMode && (isTimedOut || (timeLimit !== null && timeLeft === 0)) && !isAnswered && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-5 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 text-xs sm:text-sm font-bold shadow-xs"
+                  >
+                    <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 animate-pulse" />
+                    <span>Časový limit vypršel – odpověz dodatečně</span>
+                  </motion.div>
+                )}
+
                 <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-relaxed mb-6">
                   {currentQ.question}
                 </h2>
                 
-                {/* Confidence selector (in training mode only) */}
-                {!isExamMode && !isAnswered && (
-                  <div className="mb-6 flex flex-col gap-1.5">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase">Jistota odpovědi:</span>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setCurrentConfidence('know')}
-                        className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold border ${
-                          currentConfidence === 'know' ? 'bg-emerald-100 border-emerald-500 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-slate-50 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700'
-                        }`}
-                      >
-                        Vím jistě
-                      </button>
-                      <button
-                        onClick={() => setCurrentConfidence('guess')}
-                        className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold border ${
-                          currentConfidence === 'guess' ? 'bg-amber-100 border-amber-500 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-slate-50 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700'
-                        }`}
-                      >
-                        Tipuji
-                      </button>
-                      <button
-                        onClick={() => setCurrentConfidence('dont_know')}
-                        className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold border ${
-                          currentConfidence === 'dont_know' ? 'bg-rose-100 border-rose-500 text-rose-800 dark:bg-rose-950 dark:text-rose-300' : 'bg-slate-50 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700'
-                        }`}
-                      >
-                        Nevím
-                      </button>
-                    </div>
+                {/* Two-phase button when options are hidden */}
+                {!isExamMode && !isOptionsRevealed && !isAnswered ? (
+                  <div className="my-6">
+                    <button
+                      type="button"
+                      onClick={() => setIsOptionsRevealed(true)}
+                      className="w-full sm:w-auto min-h-[44px] px-6 py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm sm:text-base rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2.5 cursor-pointer touch-manipulation active:scale-[0.98]"
+                    >
+                      <Eye className="w-5 h-5" />
+                      <span>Zobrazit možnosti</span>
+                      {timeLimit !== null && (
+                        <span className="ml-1.5 px-2 py-0.5 text-xs bg-white/20 rounded-md font-mono font-bold">
+                          {timeLimit} s
+                        </span>
+                      )}
+                    </button>
+                    {timeLimit !== null ? (
+                      <p className="mt-2.5 text-xs text-slate-400 dark:text-slate-500">
+                        Časový limit ({timeLimit} s) se spustí až v okamžiku kliknutí a odkrytí odpovědí.
+                      </p>
+                    ) : (
+                      <p className="mt-2.5 text-xs text-slate-400 dark:text-slate-500">
+                        Promyslete si otázku a poté stiskněte tlačítko pro výběr z variant.
+                      </p>
+                    )}
                   </div>
-                )}
-
-                {/* Options List */}
-                <div className="grid grid-cols-1 gap-3">
-                  {currentQ.options?.map((option, idx) => {
-                    const isSelected = answers[currentQ.id] === idx;
-                    const isCorrect = idx === currentQ.correctOption;
-                    
-                    let btnClass = "border-slate-200 dark:border-slate-700/80 hover:border-blue-400 dark:hover:border-blue-500 bg-slate-50/50 dark:bg-slate-800/40 text-slate-800 dark:text-slate-200";
-                    let letterClass = "bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-300";
-                    let icon = null;
-
-                    if (isExamMode) {
-                      // In exam mode, only highlight selection
-                      if (isSelected) {
-                        btnClass = "border-2 border-blue-600 bg-blue-50 dark:bg-blue-950/50 text-blue-950 dark:text-blue-200 font-bold shadow-xs";
-                        letterClass = "bg-blue-600 text-white";
-                      }
-                    } else if (isAnswered) {
-                      if (isCorrect) {
-                        btnClass = "border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 font-bold text-emerald-900 dark:text-emerald-300 shadow-xs";
-                        letterClass = "bg-emerald-500 text-white";
-                        icon = <CheckCircle2 className="ml-auto text-emerald-600 w-5 h-5 shrink-0" />;
-                      } else if (isSelected) {
-                        btnClass = "border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/40 font-bold text-rose-900 dark:text-rose-300 shadow-xs";
-                        letterClass = "bg-rose-500 text-white";
-                        icon = <XCircle className="ml-auto text-rose-600 w-5 h-5 shrink-0" />;
-                      } else {
-                        btnClass = "opacity-40 border-slate-200 dark:border-slate-800 text-slate-400";
-                      }
-                    }
-
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => handleAnswer(idx)}
-                        disabled={!isExamMode && isAnswered}
-                        className={`flex items-start p-3.5 sm:p-4 border rounded-xl transition-all text-left group cursor-pointer ${btnClass}`}
-                      >
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold mr-3.5 shrink-0 text-xs transition-colors ${letterClass}`}>
-                          {getOptionLetter(idx)}
-                        </div>
-                        <span className="font-medium text-xs sm:text-sm leading-relaxed mt-0.5">{option}</span>
-                        {icon}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Instant Rationale (only in practice mode) */}
-                {!isExamMode && isAnswered && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 12 }}
+                ) : (
+                  <motion.div
+                    initial={!isExamMode ? { opacity: 0, y: 10 } : false}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-6 p-4 sm:p-5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl"
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
                   >
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1.5">
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>Odůvodnění & Zákonná norma:</span>
+                    {/* Confidence selector (in training mode only) */}
+                    {!isExamMode && !isAnswered && (
+                      <div className="mb-6 flex flex-col gap-1.5">
+                        <span className="text-[11px] font-bold text-slate-400 uppercase">Jistota odpovědi:</span>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setCurrentConfidence('know')}
+                            className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold border ${
+                              currentConfidence === 'know' ? 'bg-emerald-100 border-emerald-500 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-slate-50 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700'
+                            }`}
+                          >
+                            Vím jistě
+                          </button>
+                          <button
+                            onClick={() => setCurrentConfidence('guess')}
+                            className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold border ${
+                              currentConfidence === 'guess' ? 'bg-amber-100 border-amber-500 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-slate-50 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700'
+                            }`}
+                          >
+                            Tipuji
+                          </button>
+                          <button
+                            onClick={() => setCurrentConfidence('dont_know')}
+                            className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold border ${
+                              currentConfidence === 'dont_know' ? 'bg-rose-100 border-rose-500 text-rose-800 dark:bg-rose-950 dark:text-rose-300' : 'bg-slate-50 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700'
+                            }`}
+                          >
+                            Nevím
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Options List */}
+                    <div className="grid grid-cols-1 gap-3">
+                      {currentQ.options?.map((option, idx) => {
+                        const isSelected = answers[currentQ.id] === idx;
+                        const isCorrect = idx === currentQ.correctOption;
+                        
+                        let btnClass = "border-slate-200 dark:border-slate-700/80 hover:border-blue-400 dark:hover:border-blue-500 bg-slate-50/50 dark:bg-slate-800/40 text-slate-800 dark:text-slate-200";
+                        let letterClass = "bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-300";
+                        let icon = null;
+
+                        if (isExamMode) {
+                          // In exam mode, only highlight selection
+                          if (isSelected) {
+                            btnClass = "border-2 border-blue-600 bg-blue-50 dark:bg-blue-950/50 text-blue-950 dark:text-blue-200 font-bold shadow-xs";
+                            letterClass = "bg-blue-600 text-white";
+                          }
+                        } else if (isAnswered) {
+                          if (isCorrect) {
+                            btnClass = "border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 font-bold text-emerald-900 dark:text-emerald-300 shadow-xs";
+                            letterClass = "bg-emerald-500 text-white";
+                            icon = <CheckCircle2 className="ml-auto text-emerald-600 w-5 h-5 shrink-0" />;
+                          } else if (isSelected) {
+                            btnClass = "border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/40 font-bold text-rose-900 dark:text-rose-300 shadow-xs";
+                            letterClass = "bg-rose-500 text-white";
+                            icon = <XCircle className="ml-auto text-rose-600 w-5 h-5 shrink-0" />;
+                          } else {
+                            btnClass = "opacity-40 border-slate-200 dark:border-slate-800 text-slate-400";
+                          }
+                        }
+
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => handleAnswer(idx)}
+                            disabled={!isExamMode && isAnswered}
+                            className={`min-h-[44px] flex items-start p-3.5 sm:p-4 border rounded-xl transition-all text-left group cursor-pointer touch-manipulation ${btnClass}`}
+                          >
+                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold mr-3.5 shrink-0 text-xs transition-colors ${letterClass}`}>
+                              {getOptionLetter(idx)}
+                            </div>
+                            <span className="font-medium text-xs sm:text-sm leading-relaxed mt-0.5">{option}</span>
+                            {icon}
+                          </button>
+                        );
+                      })}
                     </div>
-                    <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-2.5">
-                      {currentQ.rationale}
-                    </p>
-                    <div className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">
-                      {currentQ.source}
-                    </div>
+
+                    {/* Instant Rationale (only in practice mode) */}
+                    {!isExamMode && isAnswered && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-6 p-4 sm:p-5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl"
+                      >
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1.5">
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span>Odůvodnění & Zákonná norma:</span>
+                        </div>
+                        <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-2.5">
+                          {currentQ.rationale}
+                        </p>
+                        <div className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">
+                          {currentQ.source}
+                        </div>
+                      </motion.div>
+                    )}
                   </motion.div>
                 )}
               </motion.div>

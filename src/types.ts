@@ -45,6 +45,7 @@ export interface QuestionAttempt {
   selectedOption: number;
   correctOption: number;
   confidence?: 'know' | 'guess' | 'dont_know';
+  timedOut?: boolean;
 }
 
 export interface QuizSessionRecord {
@@ -57,6 +58,8 @@ export interface QuizSessionRecord {
   accuracy: number; // 0 - 100 %
   timeSpentSeconds?: number;
   attempts: QuestionAttempt[];
+  correctInLimit?: number;
+  correctAfterLimit?: number;
 }
 
 export interface TopicPerformance {
