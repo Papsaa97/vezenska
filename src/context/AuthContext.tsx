@@ -167,7 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.warn('[Auth] Automatická synchronizace profilu do Supabase selhala:', upsertErr);
       }
     }
-  }, [user]);
+  }, []);
 
   // Inicializace session + listener na změny
   useEffect(() => {
