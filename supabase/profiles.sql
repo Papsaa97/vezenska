@@ -18,6 +18,41 @@ CREATE INDEX IF NOT EXISTS idx_profiles_created_at ON public.profiles(created_at
 -- 2. Zapnutí Row Level Security (RLS)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
+-- 2b. Pomocné funkce pro RLS politiky.
+--     KRITICKÉ: nikdy nezjišťuj roli uživatele přímo v USING/WITH CHECK politiky
+--     nad public.profiles pomocí "EXISTS (SELECT ... FROM public.profiles ...)".
+--     Taková politika se odkazuje sama na sebe (na tabulku, na které je definována)
+--     a Postgres při jejím vyhodnocování skončí chybou
+--     "infinite recursion detected in policy for relation profiles".
+--     Místo toho čti roli přes SECURITY DEFINER funkci níže – ta běží s právy
+--     vlastníka (v Supabase typicky role s BYPASSRLS), takže RLS na profiles
+--     vůbec neaplikuje a k rekurzi nemůže dojít.
+CREATE OR REPLACE FUNCTION public.get_role(uid UUID)
+RETURNS TEXT
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+SET search_path = public
+AS $$
+  SELECT role FROM public.profiles WHERE id = uid;
+$$;
+
+REVOKE ALL ON FUNCTION public.get_role(UUID) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.get_role(UUID) TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+SET search_path = public
+AS $$
+  SELECT public.get_role(auth.uid()) = 'admin';
+$$;
+
+REVOKE ALL ON FUNCTION public.is_admin() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
+
 -- 3. RLS Politiky pro public.profiles
 
 -- Čtení: Všichni přihlášení uživatelé mohou číst profily
@@ -47,7 +82,7 @@ CREATE POLICY "Povolit úpravu vlastního jména bez změny role"
   USING (auth.uid() = id)
   WITH CHECK (
     auth.uid() = id AND
-    role = (SELECT p.role FROM public.profiles p WHERE p.id = auth.uid())
+    role = public.get_role(id)
   );
 
 -- Změna rolí: Pouze administrátor může měnit libovolné profily včetně rolí
@@ -56,20 +91,8 @@ CREATE POLICY "Pouze administrátor může měnit role"
   ON public.profiles
   FOR UPDATE
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles admin_profile
-      WHERE admin_profile.id = auth.uid()
-        AND admin_profile.role = 'admin'
-    )
-  )
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.profiles admin_profile
-      WHERE admin_profile.id = auth.uid()
-        AND admin_profile.role = 'admin'
-    )
-  );
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 -- 4. Trigger pro automatické vytvoření profilu při registraci nového uživatele
 CREATE OR REPLACE FUNCTION public.handle_new_user()

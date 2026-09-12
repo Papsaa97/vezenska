@@ -13,12 +13,8 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-DECLARE
-  caller_role TEXT;
 BEGIN
-  SELECT role INTO caller_role FROM public.profiles WHERE id = auth.uid();
-
-  IF caller_role IS DISTINCT FROM 'admin' THEN
+  IF NOT public.is_admin() THEN
     RAISE EXCEPTION 'Pouze správce může mazat uživatelské účty.' USING ERRCODE = '42501';
   END IF;
 
@@ -36,16 +32,12 @@ GRANT EXECUTE ON FUNCTION public.admin_delete_user(UUID) TO authenticated;
 -- 2. Doplňková politika: správce smí číst výsledky testů všech uživatelů.
 --    Potřeba pro zobrazení agregovaného sloupce "Hodnost / XP" v konzoli správy
 --    uživatelů. Nenahrazuje původní politiku (uživatel čte své vlastní výsledky),
---    pouze ji rozšiřuje o čtení pro roli 'admin'.
+--    pouze ji rozšiřuje o čtení pro roli 'admin'. Používá public.is_admin()
+--    (SECURITY DEFINER, definováno v profiles.sql) místo inline EXISTS subquery
+--    nad profiles – jinak hrozí "infinite recursion detected in policy".
 DROP POLICY IF EXISTS "Správce může číst všechny výsledky testů" ON public.quiz_results;
 CREATE POLICY "Správce může číst všechny výsledky testů"
   ON public.quiz_results
   FOR SELECT
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles admin_profile
-      WHERE admin_profile.id = auth.uid()
-        AND admin_profile.role = 'admin'
-    )
-  );
+  USING (public.is_admin());
