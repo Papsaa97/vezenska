@@ -17,7 +17,7 @@ import {
   User as UserIcon,
   Sparkles,
 } from 'lucide-react';
-import { useAuth, UserRole } from '../context/AuthContext';
+import { useAuth, UserRole, isKnownAdmin } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { UserRank } from '../types';
 import { AVATAR_PRESETS, resolveAvatarDisplay, toPresetAvatarUrl } from '../utils/avatar';
@@ -90,7 +90,31 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
   const { user, profile, updateProfile, updatePassword } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [fullName, setFullName] = useState<string>(profile?.full_name ?? '');
+  const isSystemAdmin = !!user?.email && isKnownAdmin(user.email);
+
+  const effectiveProfile = profile || {
+    id: user?.id || '',
+    email: user?.email || '',
+    full_name:
+      (typeof window !== 'undefined' ? localStorage.getItem('vscr_user_full_name') : null) ||
+      user?.user_metadata?.full_name ||
+      user?.email?.split('@')[0] ||
+      'Uživatel',
+    role: (isSystemAdmin
+      ? 'admin'
+      : (typeof window !== 'undefined' ? (localStorage.getItem('vscr_user_role') as UserRole) : null) ||
+        'student') as UserRole,
+    created_at: user?.created_at || new Date().toISOString(),
+    avatar_url: typeof window !== 'undefined' ? localStorage.getItem('vscr_user_avatar') : null,
+    user_class: (typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') : null) || 'ZOP A11',
+  };
+
+  const [fullName, setFullName] = useState<string>(
+    effectiveProfile.full_name ||
+      (typeof window !== 'undefined' ? localStorage.getItem('vscr_user_full_name') || '' : '') ||
+      user?.email?.split('@')[0] ||
+      ''
+  );
   const [nameSaving, setNameSaving] = useState<boolean>(false);
   const [nameMessage, setNameMessage] = useState<FormMessage | null>(null);
 
@@ -105,54 +129,19 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
   const [passwordMessage, setPasswordMessage] = useState<FormMessage | null>(null);
 
   const [userClass, setUserClass] = useState<string>(
-    profile?.user_class || (typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') || 'ZOP A11' : 'ZOP A11')
+    effectiveProfile.user_class ||
+      (typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') || 'ZOP A11' : 'ZOP A11')
   );
-  const [isCommander, setIsCommander] = useState<boolean>(profile?.role === 'velitel_tridy');
+  const [isCommander, setIsCommander] = useState<boolean>(effectiveProfile.role === 'velitel_tridy');
+  const [selectedRole, setSelectedRole] = useState<UserRole>(
+    effectiveProfile.role === 'student' && isSystemAdmin ? 'admin' : effectiveProfile.role
+  );
 
-  if (!user || !profile) {
-    return (
-      <AnimatePresence>
-        <motion.div
-          key="profile-error-backdrop"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
-        />
-        <motion.div
-          key="profile-error-modal"
-          initial={{ opacity: 0, scale: 0.96, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.96, y: 20 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
-        >
-          <div
-            className="pointer-events-auto w-full max-w-sm bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl p-6 relative text-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-              aria-label="Zavřít"
-            >
-              <X className="w-4 h-4" />
-            </button>
-            <AlertCircle className="w-8 h-8 text-red-400 mx-auto mb-3" />
-            <h3 className="text-white font-bold text-sm mb-1.5">Profil se nepodařilo načíst</h3>
-            <p className="text-xs text-slate-400 leading-snug">
-              Zkuste prosím obnovit stránku. Pokud problém přetrvává, kontaktujte správce systému.
-            </p>
-          </div>
-        </motion.div>
-      </AnimatePresence>
-    );
-  }
+  if (!user) return null;
 
-  const role: UserRole = profile.role;
+  const role: UserRole = isSystemAdmin && selectedRole === 'admin' ? 'admin' : effectiveProfile.role;
   const initials = (() => {
-    const name = (profile.full_name || user.email || '').trim();
+    const name = (effectiveProfile.full_name || user.email || '').trim();
     if (!name) return 'VS';
     const parts = name.split(/\s+/);
     if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
@@ -169,12 +158,13 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     setNameSaving(true);
     setNameMessage(null);
 
-    const newRole: UserRole =
-      profile.role === 'admin' || profile.role === 'lektor'
-        ? profile.role
-        : isCommander
-        ? 'velitel_tridy'
-        : 'student';
+    const newRole: UserRole = (isSystemAdmin || effectiveProfile.role === 'admin')
+      ? selectedRole
+      : effectiveProfile.role === 'lektor'
+      ? 'lektor'
+      : isCommander
+      ? 'velitel_tridy'
+      : 'student';
 
     const { error } = await updateProfile({
       fullName: trimmed,
@@ -326,7 +316,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               />
             </div>
 
-            <h2 className="text-white font-bold text-lg leading-tight">{profile.full_name || 'Uživatel'}</h2>
+            <h2 className="text-white font-bold text-lg leading-tight">{effectiveProfile.full_name || 'Uživatel'}</h2>
             <span className={`mt-1.5 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border ${ROLE_COLORS[role]}`}>
               {ROLE_LABELS[role]}
             </span>
@@ -405,7 +395,32 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               />
             </div>
 
-            {profile.role !== 'admin' && profile.role !== 'lektor' && (
+            {(isSystemAdmin || effectiveProfile.role === 'admin') ? (
+              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+                <label className="block text-xs font-bold text-amber-400 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <Shield className="w-3.5 h-3.5 text-amber-400" />
+                    Role účtu (Správce systému)
+                  </span>
+                  <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-extrabold border border-amber-500/40">
+                    Správce
+                  </span>
+                </label>
+                <select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value as UserRole)}
+                  className="w-full bg-slate-800 border border-amber-500/50 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-amber-400 cursor-pointer"
+                >
+                  <option value="admin">Správce (Plná administrace, CMS a správa uživatelů)</option>
+                  <option value="lektor">Lektor (Správa otázek a materiálů)</option>
+                  <option value="velitel_tridy">Velitel třídy (Ústrojová kázeň & hlášení)</option>
+                  <option value="student">Kadet / Student</option>
+                </select>
+                <p className="text-[10px] text-slate-400 leading-tight">
+                  Jako vlastník aplikace máte právo správce kdykoliv aktivovat a otestovat chování aplikace pod libovolnou rolí.
+                </p>
+              </div>
+            ) : effectiveProfile.role !== 'lektor' && (
               <label className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-800/60 border border-slate-700/80 cursor-pointer hover:bg-slate-800 transition-colors">
                 <input
                   type="checkbox"
@@ -538,7 +553,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               <span className="flex items-center gap-2 text-xs text-slate-400">
                 <CalendarDays className="w-3.5 h-3.5" /> Registrace
               </span>
-              <span className="text-xs font-semibold text-slate-200">{formatRegistrationDate(profile.created_at)}</span>
+              <span className="text-xs font-semibold text-slate-200">{formatRegistrationDate(effectiveProfile.created_at)}</span>
             </div>
 
             <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-800/60 border border-slate-700/60 rounded-xl">
