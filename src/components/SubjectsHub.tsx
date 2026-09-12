@@ -21,12 +21,18 @@ import {
   HeartHandshake,
   HeartPulse,
   Printer,
-  Volume2
+  Volume2,
+  Edit3,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { Question } from '../types';
 import { subjectsMeta, SubjectInfo, getSubjectInfo } from '../data/questions/subjectsInfo';
 import { speakText, isSpeechSupported } from '../utils/speech';
 import PrintHeader from './common/PrintHeader';
+import { useAuth } from '../context/AuthContext';
+import QuestionEditModal from './common/QuestionEditModal';
+import { isQuestionHidden, toggleQuestionVisibilityInSupabase } from '../utils/questionActions';
 
 interface SubjectsHubProps {
   questions?: Question[];
@@ -34,6 +40,7 @@ interface SubjectsHubProps {
   toggleFavorite: (id: string) => void;
   onStartQuiz: (subject: string) => void;
   onStartFlashcards: (subject: string) => void;
+  onUpdateQuestion?: (updatedQuestion: Question) => void;
 }
 
 export const normalizeSubject = (str?: string | null): string => {
@@ -69,19 +76,31 @@ export default function SubjectsHub({
   favorites = [],
   toggleFavorite,
   onStartQuiz,
-  onStartFlashcards
+  onStartFlashcards,
+  onUpdateQuestion,
 }: SubjectsHubProps) {
+  const { profile } = useAuth();
+  const canEdit = profile?.role === 'lektor' || profile?.role === 'admin';
+
   const [selectedSubjectKey, setSelectedSubjectKey] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedQuestionIds, setExpandedQuestionIds] = useState<Set<string>>(new Set());
   const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+
+  // Filtrování podle role: Běžný student položky s is_hidden === true vůbec neuvidí (odfiltrují se ze statistik i přehledu)
+  const accessibleQuestions = useMemo(() => {
+    const raw = questions || [];
+    if (canEdit) return raw;
+    return raw.filter(q => !isQuestionHidden(q));
+  }, [questions, canEdit]);
 
   const subjectNames = useMemo(() => Object.keys(subjectsMeta), []);
 
   // Compute question counts per subject safely
   const subjectStats = useMemo(() => {
     const stats: Record<string, { totalQuestions: number }> = {};
-    const safeQuestions = questions || [];
+    const safeQuestions = accessibleQuestions || [];
     subjectNames.forEach(subj => {
       const info = getSubjectInfo(subj);
       const subjQuestions = safeQuestions.filter(
@@ -92,7 +111,7 @@ export default function SubjectsHub({
       };
     });
     return stats;
-  }, [questions, subjectNames]);
+  }, [accessibleQuestions, subjectNames]);
 
   // Pouze předměty s alespoň jednou otázkou (skrytí prázdných okruhů např. Ostatní)
   const visibleSubjectNames = useMemo(() => {
@@ -106,11 +125,25 @@ export default function SubjectsHub({
   const activeSubjectInfo: SubjectInfo | null = selectedSubjectKey ? getSubjectInfo(selectedSubjectKey) : null;
   const activeSubjectQuestions = useMemo(() => {
     if (!selectedSubjectKey || !activeSubjectInfo) return [];
-    const safeQuestions = questions || [];
+    const safeQuestions = accessibleQuestions || [];
     return safeQuestions.filter(
       q => q?.subject && matchesSubject(q.subject, activeSubjectInfo)
     );
-  }, [questions, selectedSubjectKey, activeSubjectInfo]);
+  }, [accessibleQuestions, selectedSubjectKey, activeSubjectInfo]);
+
+  const handleToggleVisibility = async (q: Question) => {
+    if (!canEdit || !q) return;
+    const res = await toggleQuestionVisibilityInSupabase(q);
+    const updated: Question = {
+      ...q,
+      is_hidden: res.isHidden,
+    };
+    onUpdateQuestion?.(updated);
+  };
+
+  const handleQuestionSave = (updated: Question) => {
+    onUpdateQuestion?.(updated);
+  };
 
   // Filtered questions within selected subject (by search query across questions, answers, rationale and citations)
   const filteredQuestions = useMemo(() => {
@@ -218,15 +251,24 @@ export default function SubjectsHub({
     const styles = getSubjectColorStyles(activeSubjectInfo.accentColor);
 
     return (
-      <AnimatePresence mode="wait">
-      <motion.div
-        key={selectedSubjectKey}
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.2 }}
-        className="max-w-6xl mx-auto px-4 py-6 space-y-6"
-      >
+      <>
+        {canEdit && (
+          <QuestionEditModal
+            question={editingQuestion}
+            isOpen={Boolean(editingQuestion)}
+            onClose={() => setEditingQuestion(null)}
+            onQuestionUpdated={handleQuestionSave}
+          />
+        )}
+        <AnimatePresence mode="wait">
+        <motion.div
+          key={selectedSubjectKey}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.2 }}
+          className="max-w-6xl mx-auto px-4 py-6 space-y-6"
+        >
         {/* Tisková hlavička – viditelná výhradně při tisku */}
         {activeSubjectInfo && (
           <PrintHeader 
@@ -435,10 +477,16 @@ export default function SubjectsHub({
                   }
                 };
 
+                const isHidden = isQuestionHidden(q);
+
                 return (
                   <div
                     key={q.id}
-                    className="print-card border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-slate-50/50 dark:bg-slate-800/30 transition-all hover:border-slate-300 dark:hover:border-slate-700"
+                    className={`print-card border rounded-xl overflow-hidden transition-all ${
+                      canEdit && isHidden
+                        ? 'border-dashed border-amber-300 dark:border-amber-700/80 bg-amber-50/20 dark:bg-amber-950/20 print:hidden'
+                        : 'border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 hover:border-slate-300 dark:hover:border-slate-700'
+                    }`}
                   >
                     <div 
                       onClick={toggleExpand}
@@ -450,6 +498,12 @@ export default function SubjectsHub({
                         </span>
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 flex-wrap">
+                            {canEdit && isHidden && (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-800 px-2 py-0.5 rounded">
+                                <EyeOff className="w-3 h-3" />
+                                Skryto pro studenty
+                              </span>
+                            )}
                             {q.topic && (
                               <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded print:bg-white print:border print:border-slate-300">
                                 {q.topic}
@@ -466,6 +520,39 @@ export default function SubjectsHub({
                       </div>
 
                       <div className="flex items-center gap-1.5 shrink-0 no-print">
+                        {/* Lektor / Admin akce (Pencil & Eye) */}
+                        {canEdit && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleVisibility(q);
+                              }}
+                              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                                isHidden
+                                  ? 'text-amber-600 bg-amber-100 dark:bg-amber-950 hover:bg-amber-200'
+                                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'
+                              }`}
+                              title={isHidden ? "Publikovat pro studenty" : "Skrýt pro studenty"}
+                            >
+                              {isHidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingQuestion(q);
+                              }}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg transition-colors cursor-pointer"
+                              title="Upravit otázku (in-place)"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                              <span className="hidden sm:inline">Upravit</span>
+                            </button>
+                          </>
+                        )}
+
                         {isSpeechSupported() && (
                           <button
                             type="button"
@@ -534,6 +621,28 @@ export default function SubjectsHub({
                           )}
                         </div>
                       )}
+
+                      {/* In-place edit bar v rozbaleném detailu (pouze lektor/admin) */}
+                      {canEdit && (
+                        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 no-print">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleVisibility(q)}
+                            className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                          >
+                            {isHidden ? <Eye className="w-3.5 h-3.5 text-emerald-500" /> : <EyeOff className="w-3.5 h-3.5 text-amber-500" />}
+                            <span>{isHidden ? "Znovu publikovat pro studenty" : "Skrýt pro studenty"}</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingQuestion(q)}
+                            className="text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1 px-3 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors cursor-pointer"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                            <span>Upravit otázku</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -543,6 +652,7 @@ export default function SubjectsHub({
         </div>
       </motion.div>
       </AnimatePresence>
+      </>
     );
   }
 

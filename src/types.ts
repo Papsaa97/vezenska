@@ -10,6 +10,19 @@ export interface Question {
   explanation?: string;
   rationale: string;
   source: string;
+  is_hidden?: boolean;
+}
+
+export interface Flashcard {
+  id: string;
+  front: string;
+  back: string;
+  rationale?: string;
+  source?: string;
+  subject?: string;
+  topic?: string;
+  box?: number;
+  is_hidden?: boolean;
 }
 
 export interface MatchingPair {

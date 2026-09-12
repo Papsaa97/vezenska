@@ -17,6 +17,7 @@ export interface SupabaseQuizQuestionRow {
   explanation?: string | null;
   source?: string | null;
   created_at?: string | null;
+  is_hidden?: boolean | null;
   [key: string]: unknown;
 }
 
@@ -121,6 +122,7 @@ export function mapRowToQuestion(row: SupabaseQuizQuestionRow): Question {
     rationale: explanation,
     explanation,
     source,
+    is_hidden: row.is_hidden === true,
   };
 }
 

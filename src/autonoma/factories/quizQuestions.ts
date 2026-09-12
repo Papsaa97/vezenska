@@ -9,6 +9,7 @@ export const QuizQuestionsFactory = defineFactory({
     options: z.array(z.string()),
     correct_index: z.number(),
     explanation: z.string().optional().default(''),
+    is_hidden: z.boolean().optional().default(false),
   }),
   refSchema: z.object({
     id: z.string(),
@@ -17,6 +18,7 @@ export const QuizQuestionsFactory = defineFactory({
     options: z.array(z.string()),
     correct_index: z.number(),
     explanation: z.string(),
+    is_hidden: z.boolean().optional().default(false),
   }),
   create: async (data, ctx) => {
     const sb = await getAdminSupabaseClient();
@@ -32,6 +34,7 @@ export const QuizQuestionsFactory = defineFactory({
       options: data.options,
       correct_index: data.correct_index,
       explanation: data.explanation || '',
+      is_hidden: data.is_hidden ?? false,
     };
 
     const res = await sb.from('quiz_questions').insert([payload]).select().single();
@@ -46,6 +49,7 @@ export const QuizQuestionsFactory = defineFactory({
       options: string[];
       correct_index: number;
       explanation: string;
+      is_hidden?: boolean;
     };
 
     return {
@@ -55,6 +59,7 @@ export const QuizQuestionsFactory = defineFactory({
       options: Array.isArray(row.options) ? row.options : data.options,
       correct_index: Number(row.correct_index),
       explanation: String(row.explanation || ''),
+      is_hidden: Boolean(row.is_hidden),
     };
   },
   teardown: async (record, _ctx) => {

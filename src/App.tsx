@@ -51,6 +51,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
+import { getHiddenQuestionIds, isQuestionHidden } from './utils/questionActions';
 
 
 
@@ -128,21 +129,32 @@ export default function App() {
   const loadQuestions = useCallback(async () => {
     setIsLoadingQuestions(true);
     const dbQuestions = await fetchQuizQuestionsFromSupabase();
-    if (dbQuestions && dbQuestions.length > 0) {
-      setAllQuestions(dbQuestions);
-      setQuestionsSource('supabase');
-    } else {
-      setAllQuestions(academyQuestions);
-      setQuestionsSource('local');
-    }
+    const hiddenSet = getHiddenQuestionIds();
+    const sourceQuestions = (dbQuestions && dbQuestions.length > 0) ? dbQuestions : academyQuestions;
+    const syncedQuestions = sourceQuestions.map(q => ({
+      ...q,
+      is_hidden: q.is_hidden === true || hiddenSet.has(q.id),
+    }));
+
+    setAllQuestions(syncedQuestions);
+    setQuestionsSource(dbQuestions && dbQuestions.length > 0 ? 'supabase' : 'local');
     setIsLoadingQuestions(false);
+  }, []);
+
+  const handleQuestionUpdate = useCallback((updatedQuestion: Question) => {
+    setAllQuestions(prev => prev.map(q => q.id === updatedQuestion.id ? updatedQuestion : q));
   }, []);
 
   useEffect(() => {
     loadQuestions();
 
-    const handleUpdate = () => {
-      loadQuestions();
+    const handleUpdate = (e: Event) => {
+      const customEvt = e as CustomEvent<{ question?: Question }>;
+      if (customEvt.detail?.question) {
+        handleQuestionUpdate(customEvt.detail.question);
+      } else {
+        loadQuestions();
+      }
     };
 
     window.addEventListener('vscr:questions_updated', handleUpdate);
@@ -152,7 +164,7 @@ export default function App() {
       window.removeEventListener('vscr:questions_updated', handleUpdate);
       window.removeEventListener('online', handleUpdate);
     };
-  }, [loadQuestions]);
+  }, [loadQuestions, handleQuestionUpdate]);
 
   // Historie testů se váže výhradně na reálný účet přihlášeného uživatele (tabulka
   // public.quiz_results) - nový uživatel vždy startuje na prázdné historii / 0 XP.
@@ -438,13 +450,14 @@ export default function App() {
               toggleFavorite={toggleFavorite}
               onStartQuiz={handleStartSubjectQuiz}
               onStartFlashcards={handleStartSubjectFlashcards}
+              onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
             />
           </div>
         )}
 
         {activeTab === 'quiz' && (
           <Quiz 
-            questions={customQuestions || allQuestions || []} 
+            questions={(customQuestions || allQuestions || []).filter(q => isPrivileged || !isQuestionHidden(q))} 
             favorites={favorites} 
             toggleFavorite={toggleFavorite}
             onSaveQuizResult={handleSaveQuizResult}
@@ -501,6 +514,7 @@ export default function App() {
             favorites={favorites} 
             toggleFavorite={toggleFavorite}
             presetSubject={flashcardPresetSubject}
+            onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
           />
         )}
         
