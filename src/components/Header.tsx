@@ -36,6 +36,7 @@ import { calculateBaseXp, evaluateBadges, getUserRank, loadStreakInfo } from '..
 import { AuthModal } from './AuthUI';
 import FeedbackModal from './FeedbackModal';
 import UserProfileModal from './UserProfileModal';
+import NotificationBell from './NotificationBell';
 import { useAuth } from '../context/AuthContext';
 import { resolveAvatarDisplay } from '../utils/avatar';
 
@@ -516,6 +517,9 @@ export default function Header({
               <ChevronDown className={`w-3.5 h-3.5 text-slate-400 hidden sm:block transition-transform ${openDropdown === 'profile' ? 'rotate-180 text-amber-400' : ''}`} />
             </button>
           </div>
+
+          {/* Notification Bell (zprávy od správce) */}
+          <NotificationBell />
 
           {/* Feedback Button (accessible from header on mobile and desktop) */}
           {user && (

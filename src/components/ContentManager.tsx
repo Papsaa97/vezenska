@@ -15,12 +15,14 @@ import {
   ShieldAlert,
   HelpCircle,
   MessageSquareWarning,
+  Users,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { StudyMaterial, MaterialSubject } from './MaterialLibrary';
 import QuestionBankManager from './QuestionBankManager';
 import FeedbackManager from './FeedbackManager';
+import UserManager from './UserManager';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -140,7 +142,7 @@ export default function ContentManager({ onQuestionsUpdated }: ContentManagerPro
   return <ContentManagerInner onQuestionsUpdated={onQuestionsUpdated} />;
 }
 
-const VALID_CM_TABS = ['materials', 'questions', 'feedback'] as const;
+const VALID_CM_TABS = ['materials', 'questions', 'feedback', 'users'] as const;
 type ContentManagerTab = (typeof VALID_CM_TABS)[number];
 
 function getInitialCmTab(): ContentManagerTab {
@@ -161,9 +163,20 @@ function getInitialCmTab(): ContentManagerTab {
 }
 
 function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
+  const { profile } = useAuth();
+  const isAdmin = profile?.role === 'admin';
+
   // ── Tab state ──
   const [activeTab, setActiveTab] = useState<ContentManagerTab>(getInitialCmTab);
   const [newFeedbackCount, setNewFeedbackCount] = useState(0);
+
+  // Bezpečnostní pojistka: záložka "users" je viditelná a dostupná pouze pro roli 'admin'.
+  // Pokud byla obnovena z URL hash / localStorage (např. sdílený prohlížeč), pro lektora ji přesměruj pryč.
+  useEffect(() => {
+    if (activeTab === 'users' && !isAdmin) {
+      setActiveTab('materials');
+    }
+  }, [activeTab, isAdmin]);
 
   // Synchronizace pod-záložky do URL hash a localStorage
   useEffect(() => {
@@ -384,11 +397,28 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
             </span>
           )}
         </button>
+
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('users')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+              activeTab === 'users'
+                ? 'bg-white dark:bg-slate-700 text-amber-700 dark:text-amber-300 shadow-xs'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <Users className="w-4 h-4 text-amber-500" />
+            Správa uživatelů
+          </button>
+        )}
       </div>
 
       {activeTab === 'questions' && <QuestionBankManager onQuestionsUpdated={onQuestionsUpdated} />}
 
       {activeTab === 'feedback' && <FeedbackManager onNewCountChange={setNewFeedbackCount} />}
+
+      {activeTab === 'users' && isAdmin && <UserManager />}
 
       {activeTab === 'materials' && (
         <>
