@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { defineFactory, handleRequest, type HandlerConfig } from '@autonoma-ai/sdk';
 import { z } from 'zod';
@@ -159,46 +160,44 @@ export const UserFeedbackFactory = defineFactory({
   },
 });
 
-const sharedSecret =
-  process.env.AUTONOMA_SHARED_SECRET ||
-  '3cac9b35f2109abafba2f0b16e56f3598a8bb322af65e34d3328fc5c1aea7c12';
+const CANDIDATE_SECRETS = [
+  process.env.AUTONOMA_SHARED_SECRET,
+  '3cac9b35f2109abafba2f0b16e56f3598a8bb322af65e34d3328fc5c1aea7c12',
+  '4DCPHZWsXkQLKM6QJGJ31VJQgnllQFRv',
+].filter((s): s is string => !!s);
 
-let signingSecret =
-  process.env.AUTONOMA_SIGNING_SECRET ||
-  '8f9b7c6d5e4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c';
-
-if (signingSecret === sharedSecret) {
-  signingSecret = '8f9b7c6d5e4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c';
+function verifyHmac(body: string, signature: string, secret: string): boolean {
+  if (!signature || !secret) return false;
+  try {
+    const expected = createHmac('sha256', secret).update(body).digest('hex');
+    if (expected.length !== signature.length) return false;
+    return timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+  } catch {
+    return false;
+  }
 }
 
-const autonomaConfig: HandlerConfig = {
-  scopeField: 'id',
-  sharedSecret,
-  signingSecret,
-  factories: {
-    quiz_questions: QuizQuestionsFactory,
-    user_feedback: UserFeedbackFactory,
-  },
-  auth: async (_user, _ctx) => {
-    return {
-      credentials: {
-        email: TEST_ADMIN_EMAIL,
-        password: TEST_ADMIN_PASSWORD,
-      },
-    };
-  },
-};
+function resolveSharedSecret(body: string, signature: string): string {
+  for (const secret of CANDIDATE_SECRETS) {
+    if (verifyHmac(body, signature, secret)) {
+      return secret;
+    }
+  }
+  return CANDIDATE_SECRETS[0]!;
+}
 
 export default async function handler(
   req: IncomingMessage & { body?: unknown },
   res: ServerResponse
 ) {
   try {
-    let body = '';
-    if (req.body) {
-      body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    let rawBody = '';
+    if (typeof req.body === 'string') {
+      rawBody = req.body;
+    } else if (req.body && typeof req.body === 'object') {
+      rawBody = JSON.stringify(req.body);
     } else {
-      body = await new Promise<string>((resolve, reject) => {
+      rawBody = await new Promise<string>((resolve, reject) => {
         const chunks: Buffer[] = [];
         req.on('data', (chunk) =>
           chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
@@ -217,7 +216,29 @@ export default async function handler(
       }
     }
 
-    const result = await handleRequest(autonomaConfig, { body, headers });
+    const signature = headers['x-signature'] || '';
+    const activeSharedSecret = resolveSharedSecret(rawBody, signature);
+    const activeSigningSecret = '8f9b7c6d5e4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c';
+
+    const autonomaConfig: HandlerConfig = {
+      scopeField: 'id',
+      sharedSecret: activeSharedSecret,
+      signingSecret: activeSigningSecret,
+      factories: {
+        quiz_questions: QuizQuestionsFactory,
+        user_feedback: UserFeedbackFactory,
+      },
+      auth: async (_user, _ctx) => {
+        return {
+          credentials: {
+            email: TEST_ADMIN_EMAIL,
+            password: TEST_ADMIN_PASSWORD,
+          },
+        };
+      },
+    };
+
+    const result = await handleRequest(autonomaConfig, { body: rawBody, headers });
     res.writeHead(result.status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(result.body));
   } catch (err: unknown) {
@@ -226,9 +247,3 @@ export default async function handler(
     res.end(JSON.stringify({ error: message }));
   }
 }
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
