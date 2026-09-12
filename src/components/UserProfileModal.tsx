@@ -24,12 +24,14 @@ import { AVATAR_PRESETS, resolveAvatarDisplay, toPresetAvatarUrl } from '../util
 
 const ROLE_LABELS: Record<UserRole, string> = {
   student: 'Kadet / Student',
+  velitel_tridy: 'Velitel třídy',
   lektor: 'Lektor',
   admin: 'Správce',
 };
 
 const ROLE_COLORS: Record<UserRole, string> = {
   student: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
+  velitel_tridy: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
   lektor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
   admin: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
 };
@@ -102,6 +104,11 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
   const [passwordSaving, setPasswordSaving] = useState<boolean>(false);
   const [passwordMessage, setPasswordMessage] = useState<FormMessage | null>(null);
 
+  const [userClass, setUserClass] = useState<string>(
+    profile?.user_class || (typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') || 'ZOP A11' : 'ZOP A11')
+  );
+  const [isCommander, setIsCommander] = useState<boolean>(profile?.role === 'velitel_tridy');
+
   if (!user || !profile) {
     return (
       <AnimatePresence>
@@ -161,10 +168,22 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     }
     setNameSaving(true);
     setNameMessage(null);
-    const { error } = await updateProfile({ fullName: trimmed });
+
+    const newRole: UserRole =
+      profile.role === 'admin' || profile.role === 'lektor'
+        ? profile.role
+        : isCommander
+        ? 'velitel_tridy'
+        : 'student';
+
+    const { error } = await updateProfile({
+      fullName: trimmed,
+      userClass: userClass.trim(),
+      role: newRole,
+    });
     setNameSaving(false);
     setNameMessage(
-      error ? { type: 'error', text: `Uložení selhalo: ${error}` } : { type: 'success', text: 'Jméno bylo úspěšně uloženo.' }
+      error ? { type: 'error', text: `Uložení selhalo: ${error}` } : { type: 'success', text: 'Profil a zařazení ke třídě byly úspěšně uloženy.' }
     );
   };
 
@@ -359,11 +378,11 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
             )}
           </div>
 
-          {/* Osobní údaje */}
+          {/* Osobní údaje & Zařazení ke třídě */}
           <form onSubmit={handleSaveName} className="space-y-3 pb-6 mb-6 border-b border-slate-800">
             <div className="flex items-center gap-2 text-slate-300">
               <UserIcon className="w-4 h-4 text-blue-400" />
-              <h3 className="text-sm font-bold">Osobní údaje</h3>
+              <h3 className="text-sm font-bold">Osobní údaje & zařazení</h3>
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-400 mb-1.5">Jméno a příjmení</label>
@@ -375,6 +394,39 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                 className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
               />
             </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Moje třída ZOP</label>
+              <input
+                type="text"
+                value={userClass}
+                onChange={(e) => setUserClass(e.target.value)}
+                placeholder="např. ZOP A11, ZOP B04..."
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all font-semibold"
+              />
+            </div>
+
+            {profile.role !== 'admin' && profile.role !== 'lektor' && (
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-800/60 border border-slate-700/80 cursor-pointer hover:bg-slate-800 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={isCommander}
+                  onChange={(e) => setIsCommander(e.target.checked)}
+                  className="rounded text-purple-600 focus:ring-purple-500 w-4 h-4 cursor-pointer"
+                />
+                <div>
+                  <div className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                    <span>Jsem velitel třídy</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-normal">
+                      {userClass || 'ZOP'}
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-slate-400 leading-tight mt-0.5">
+                    Umožňuje určovat ústrojovou kázeň a psát hlášení pro třídu
+                  </div>
+                </div>
+              </label>
+            )}
+
             {nameMessage && (
               <div
                 className={`flex items-start gap-2 rounded-xl px-3 py-2 text-[11px] leading-snug ${
@@ -393,11 +445,11 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
             )}
             <button
               type="submit"
-              disabled={nameSaving || fullName.trim() === (profile.full_name ?? '')}
+              disabled={nameSaving}
               className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               {nameSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-              Uložit jméno
+              Uložit osobní údaje & zařazení
             </button>
           </form>
 

@@ -11,7 +11,7 @@ import { supabase } from '../lib/supabase';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type UserRole = 'student' | 'lektor' | 'admin';
+export type UserRole = 'student' | 'velitel_tridy' | 'lektor' | 'admin';
 
 export interface UserProfile {
   id: string;
@@ -20,11 +20,14 @@ export interface UserProfile {
   role: UserRole;
   created_at: string;
   avatar_url?: string | null;
+  user_class?: string | null;
 }
 
 export interface UpdateProfileInput {
   fullName?: string;
   avatarUrl?: string;
+  role?: UserRole;
+  userClass?: string;
 }
 
 export interface ProfileUpdateResult {
@@ -64,6 +67,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * při chybě zkusí záložní dotaz bez avatar_url, aby role a jméno vždy zůstaly funkční.
    */
   const fetchProfile = useCallback(async (userId: string) => {
+    const localRole = typeof window !== 'undefined' ? (localStorage.getItem('vscr_user_role') as UserRole | null) : null;
+    const localClass = typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') : null;
+
     const { data, error } = await supabase
       .from('profiles')
       .select('id, email, full_name, role, created_at, avatar_url')
@@ -71,7 +77,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .single();
 
     if (!error) {
-      setProfile(data as UserProfile);
+      const p = data as UserProfile;
+      setProfile({
+        ...p,
+        role: (localRole && (p.role === 'student' || p.role === 'velitel_tridy')) ? localRole : p.role,
+        user_class: localClass || p.user_class || null,
+      });
       return;
     }
 
@@ -91,7 +102,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       '[Auth] Sloupec avatar_url se nepodařilo načíst (spusťte prosím supabase/profiles_avatar.sql):',
       error.message
     );
-    setProfile({ ...fallbackData, avatar_url: null } as UserProfile);
+    const p = fallbackData as UserProfile;
+    setProfile({
+      ...p,
+      role: (localRole && (p.role === 'student' || p.role === 'velitel_tridy')) ? localRole : p.role,
+      user_class: localClass || null,
+      avatar_url: null,
+    });
   }, []);
 
   // Inicializace session + listener na změny
@@ -104,30 +121,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       if (currentSession?.user) {
-        fetchProfile(currentSession.user.id).finally(() => {
-          if (mounted) setLoading(false);
-        });
+        fetchProfile(currentSession.user.id);
       } else {
-        setLoading(false);
+        setProfile(null);
       }
-    }).catch((err) => {
-      console.error('[Auth] Chyba při načítání relace:', err);
-      if (mounted) setLoading(false);
+      setLoading(false);
     });
 
-    // Reagujeme na přihlášení / odhlášení
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, newSession) => {
-        if (!mounted) return;
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
-        if (newSession?.user) {
-          fetchProfile(newSession.user.id);
-        } else {
-          setProfile(null);
-        }
+    // Odběr změn stavu autentizace
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
+      setUser(newSession?.user ?? null);
+      if (newSession?.user) {
+        fetchProfile(newSession.user.id);
+      } else {
+        setProfile(null);
       }
-    );
+      setLoading(false);
+    });
 
     return () => {
       mounted = false;
@@ -147,11 +160,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = useCallback(
     async (email: string, password: string, fullName: string) => {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: fullName } },
+        options: {
+          data: { full_name: fullName },
+        },
       });
+
+      if (!error && data.user) {
+        await supabase.from('profiles').upsert(
+          {
+            id: data.user.id,
+            email,
+            full_name: fullName,
+            role: 'student',
+          },
+          { onConflict: 'id' }
+        );
+      }
+
       return { error };
     },
     []
@@ -167,25 +195,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  /** Aktualizuje jméno a/nebo avatar v public.profiles a okamžitě promítne změnu do lokálního stavu. */
+  /** Aktualizuje jméno, avatar, roli a/nebo třídu v profilu uživatele. */
   const updateProfile = useCallback(
     async (data: UpdateProfileInput): Promise<ProfileUpdateResult> => {
       if (!user) {
         return { error: 'Nejste přihlášeni.' };
       }
 
-      const updates: { full_name?: string; avatar_url?: string } = {};
+      if (data.userClass !== undefined && typeof window !== 'undefined') {
+        localStorage.setItem('vscr_my_class', data.userClass);
+      }
+      if (data.role !== undefined && typeof window !== 'undefined') {
+        localStorage.setItem('vscr_user_role', data.role);
+      }
+
+      const updates: Record<string, string> = {};
       if (data.fullName !== undefined) updates.full_name = data.fullName;
       if (data.avatarUrl !== undefined) updates.avatar_url = data.avatarUrl;
 
-      if (Object.keys(updates).length === 0) {
-        return { error: null };
-      }
-
-      const { error } = await supabase.from('profiles').update(updates).eq('id', user.id);
-
-      if (error) {
-        return { error: error.message };
+      if (Object.keys(updates).length > 0) {
+        const { error } = await supabase.from('profiles').update(updates).eq('id', user.id);
+        if (error) {
+          return { error: error.message };
+        }
       }
 
       await fetchProfile(user.id);

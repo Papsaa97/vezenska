@@ -13,12 +13,14 @@ import {
 
 const ROLE_LABELS: Record<UserRole, string> = {
   student: 'Student',
+  velitel_tridy: 'Velitel třídy',
   lektor: 'Lektor',
   admin: 'Správce',
 };
 
 const ROLE_COLORS: Record<UserRole, string> = {
   student: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
+  velitel_tridy: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
   lektor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
   admin: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
 };

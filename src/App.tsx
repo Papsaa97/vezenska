@@ -19,6 +19,7 @@ import PWAInstallPrompt from './components/PWAInstallPrompt';
 import MaterialLibrary from './components/MaterialLibrary';
 import ContentManager from './components/ContentManager';
 import FeedbackButton from './components/FeedbackButton';
+import ClassBulletinBoard from './components/ClassBulletinBoard';
 import { matchingCategories } from './data/initialData';
 import { academyQuestions } from './data/questionsData';
 import { tacticalScenarios } from './data/scenariosData';
@@ -42,6 +43,7 @@ import {
   Shield,
   BookOpen,
   Settings2,
+  LayoutDashboard,
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord, Question } from './types';
 import { loadMatchingHistory, updateDailyStreak } from './utils/gamification';
@@ -56,6 +58,7 @@ import { getHiddenQuestionIds, isQuestionHidden } from './utils/questionActions'
 
 
 const NAV_TAB_LABELS: Record<NavTab, string> = {
+  dashboard: 'Nástěnka',
   subjects: 'Předměty',
   quiz: 'Zkouška',
   assistant: 'AI Asistent',
@@ -73,6 +76,7 @@ const NAV_TAB_LABELS: Record<NavTab, string> = {
 };
 
 const VALID_TABS: NavTab[] = [
+  'dashboard',
   'subjects',
   'quiz',
   'assistant',
@@ -101,7 +105,7 @@ function getInitialTab(): NavTab {
       return saved;
     }
   }
-  return 'subjects';
+  return 'dashboard';
 }
 
 export default function App() {
@@ -442,6 +446,12 @@ export default function App() {
       <FeedbackButton screenLabel={NAV_TAB_LABELS[activeTab] ?? activeTab} />
       
       <main className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 sm:p-4 pb-28 sm:pb-32 md:pb-6 lg:pb-4 md:p-6 gap-4 md:gap-6 w-full print:p-0 print:m-0 print:overflow-visible print:h-auto">
+        {activeTab === 'dashboard' && (
+          <div className="w-full h-full overflow-y-auto pr-1">
+            <ClassBulletinBoard />
+          </div>
+        )}
+
         {activeTab === 'subjects' && (
           <div className="w-full h-full overflow-y-auto pr-1">
             <SubjectsHub
@@ -685,6 +695,31 @@ export default function App() {
                   <X className="w-4 h-4" />
                 </button>
               </div>
+
+              {/* Informační tabule tříd ZOP - Hlavní uvítací nástěnka */}
+              <button
+                onClick={() => { setActiveTab('dashboard'); setIsMobileMenuOpen(false); }}
+                className={`w-full p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                  activeTab === 'dashboard'
+                    ? 'bg-blue-600/15 border-blue-500 text-blue-900 dark:text-blue-200 font-bold shadow-sm'
+                    : 'bg-gradient-to-r from-blue-900/20 via-slate-900/30 to-indigo-900/20 border-blue-500/30 text-slate-800 dark:text-slate-200 hover:border-blue-400/50'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/30 shrink-0">
+                    <LayoutDashboard className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold leading-snug">Informační tabule tříd ZOP</div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      Rozvrhy hodin, změny v učebnách a termíny výcviku
+                    </div>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-400/30 shrink-0">
+                  Nástěnka
+                </span>
+              </button>
 
               {/* Section 1: Výcvik & Trenažéry */}
               <div className="space-y-2">
