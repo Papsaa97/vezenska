@@ -895,8 +895,8 @@ export default function Quiz({
                             </span>
                             <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
                               isWrong 
-                                ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300' 
-                                : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300'
+                                ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 print:bg-rose-50 print:text-rose-900 print:border print:border-rose-300' 
+                                : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 print:bg-emerald-50 print:text-emerald-900 print:border print:border-emerald-400'
                             }`}>
                               {isWrong ? 'Chybná odpověď' : 'Správně zodpovězeno'}
                             </span>
@@ -915,9 +915,9 @@ export default function Quiz({
 
                                 let optClass = 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300';
                                 if (isCorrect) {
-                                  optClass = 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 font-bold print:bg-slate-100 print:border-slate-700 print:text-slate-950';
+                                  optClass = 'print-correct-answer bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 font-bold print:border-emerald-600';
                                 } else if (isUserPick && !isCorrect) {
-                                  optClass = 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-300 print:text-slate-700 line-through';
+                                  optClass = 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-300 print:text-rose-900 line-through print:bg-rose-50/50 print:border-rose-300';
                                 }
 
                                 return (
@@ -925,7 +925,7 @@ export default function Quiz({
                                     <span className="font-bold min-w-[20px]">{String.fromCharCode(65 + optIdx)})</span>
                                     <span className="flex-1">{opt}</span>
                                     {isCorrect && (
-                                      <span className="font-extrabold text-emerald-700 dark:text-emerald-400 print:text-slate-950" title="Správná varianta">
+                                      <span className="font-extrabold text-emerald-700 dark:text-emerald-400 print:text-emerald-800" title="Správná varianta">
                                         ✓
                                       </span>
                                     )}
@@ -940,15 +940,15 @@ export default function Quiz({
                             </div>
                           ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3 text-xs">
-                              <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 p-2.5 rounded-lg">
-                                <span className="font-bold text-rose-700 dark:text-rose-400 block mb-0.5">Vaše odpověď:</span>
+                              <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 p-2.5 rounded-lg print:bg-rose-50/50 print:border-rose-300">
+                                <span className="font-bold text-rose-700 dark:text-rose-400 block mb-0.5 print:text-rose-900">Vaše odpověď:</span>
                                 <span className="text-slate-800 dark:text-slate-200">
                                   {studentAnswerIdx === undefined || studentAnswerIdx === -1 ? 'Nezodpovězeno' : String(studentAnswerIdx)}
                                 </span>
                               </div>
-                              <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 p-2.5 rounded-lg">
-                                <span className="font-bold text-emerald-700 dark:text-emerald-400 block mb-0.5">Správná odpověď:</span>
-                                <span className="text-slate-800 dark:text-slate-200 font-bold">
+                              <div className="print-correct-answer bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 p-2.5 rounded-lg print:border-emerald-600">
+                                <span className="font-bold text-emerald-700 dark:text-emerald-400 block mb-0.5 print:text-emerald-900">Správná odpověď:</span>
+                                <span className="text-slate-800 dark:text-slate-200 font-bold print:text-emerald-950">
                                   {q.answer || 'Správná varianta'}
                                 </span>
                               </div>

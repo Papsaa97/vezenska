@@ -986,10 +986,10 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
                       return (
                         <div
                           key={oIdx}
-                          className={`flex items-start gap-2 p-2 rounded-xl text-xs transition-colors print:p-1.5 print:bg-white print:border-slate-200 ${
+                          className={`flex items-start gap-2 p-2 rounded-xl text-xs transition-colors print:p-1.5 ${
                             isCorrect
-                              ? 'bg-emerald-50/80 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-200 font-medium border border-emerald-200 dark:border-emerald-800/60 print:font-bold print:text-slate-950 print:border-emerald-500'
-                              : 'bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 border border-slate-100 dark:border-slate-700/40 print:text-slate-700'
+                              ? 'print-correct-answer bg-emerald-50/80 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-200 font-medium border border-emerald-200 dark:border-emerald-800/60 print:font-bold print:border-emerald-600'
+                              : 'bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 border border-slate-100 dark:border-slate-700/40 print:bg-white print:border-slate-200 print:text-slate-700'
                           }`}
                         >
                           <span

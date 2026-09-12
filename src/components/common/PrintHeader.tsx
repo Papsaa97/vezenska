@@ -33,7 +33,7 @@ export default function PrintHeader({
   });
 
   return (
-    <header className="hidden print:flex flex-col w-full mb-6 pb-2.5 border-b-2 border-slate-900 print-avoid-break text-slate-900">
+    <header className="print-header hidden print:flex flex-col w-full mb-6 pb-2.5 border-b-2 border-slate-900 print-avoid-break text-slate-900">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-0.5 flex-1">
           <div className="text-[11pt] font-black uppercase tracking-wider text-slate-900">

@@ -697,8 +697,8 @@ export default function CaptainExamAssistant({
                       <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1 text-xs uppercase tracking-wider no-print">
                         Správná odpověď ke zkoušce:
                       </span>
-                      <div className="p-3.5 print:p-1 bg-emerald-500/10 print:bg-transparent border border-emerald-500/20 print:border-none text-emerald-950 dark:text-emerald-300 print:text-slate-950 rounded-xl print:rounded-none font-semibold print:font-bold leading-relaxed print:leading-tight print:text-[8pt]">
-                        <span className="hidden print:inline text-emerald-800 font-bold mr-1">✓</span>
+                      <div className="print-correct-answer p-3.5 print:p-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-950 dark:text-emerald-300 rounded-xl print:rounded-md font-semibold print:font-bold leading-relaxed print:leading-tight print:text-[8pt] print:border-emerald-600">
+                        <span className="text-emerald-800 font-bold mr-1">✓</span>
                         {q.answer}
                       </div>
                     </div>

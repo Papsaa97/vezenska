@@ -417,6 +417,13 @@ export default function SubjectsHub({
                   });
                 };
 
+                const targetIdx = typeof q.correctOption === 'number'
+                  ? q.correctOption
+                  : (typeof q.correct_index === 'number' ? q.correct_index : undefined);
+                const correctAnswerText = (targetIdx !== undefined && q.options && q.options[targetIdx])
+                  ? q.options[targetIdx]
+                  : (q.answer || '');
+
                 const handlePlayAudio = (e: React.MouseEvent) => {
                   e.stopPropagation();
                   if (speakingId === q.id) {
@@ -424,7 +431,7 @@ export default function SubjectsHub({
                     window.speechSynthesis?.cancel();
                   } else {
                     setSpeakingId(q.id);
-                    speakText(`${q.question}. Správná odpověď: ${q.answer}`, () => setSpeakingId(null));
+                    speakText(`${q.question}. Správná odpověď: ${correctAnswerText}`, () => setSpeakingId(null));
                   }
                 };
 
@@ -492,60 +499,41 @@ export default function SubjectsHub({
                       </div>
                     </div>
 
-                    <div className={`px-4 pb-4 pt-1 border-t border-slate-200/60 dark:border-slate-700/60 bg-white dark:bg-slate-900/80 space-y-3.5 text-xs sm:text-sm ${isExpanded ? 'block' : 'hidden print:block'}`}>
-                      {q.options && q.options.length > 0 ? (
-                        <div className="space-y-1.5">
-                          <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1 text-xs uppercase tracking-wider print:text-slate-900">
-                            Možnosti odpovědí:
+                    <div className={`px-4 pb-4 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 bg-white dark:bg-slate-900/80 space-y-3 text-xs sm:text-sm ${isExpanded ? 'block' : 'hidden print:block'}`}>
+                      {/* Správná odpověď ke zkoušce (čistý studijní režim bez klamavých distraktorů) */}
+                      <div>
+                        <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1 text-xs uppercase tracking-wider print:text-slate-900">
+                          Správná odpověď:
+                        </span>
+                        <div className="print-correct-answer p-3 bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 rounded-xl font-bold leading-relaxed flex items-start gap-2.5 print:border-emerald-600 print:p-2">
+                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-emerald-600 text-white text-xs font-black shrink-0 mt-0.5 print:bg-emerald-700 print:text-white">
+                            ✓
                           </span>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 print:grid-cols-1 print:gap-1">
-                            {q.options.map((opt, oIdx) => {
-                              const targetIdx = typeof q.correctOption === 'number' ? q.correctOption : q.correct_index;
-                              const isCorrect = (targetIdx !== undefined && targetIdx === oIdx) || opt.trim().toLowerCase() === (q.answer || '').trim().toLowerCase();
-                              const labels = ['A', 'B', 'C', 'D'];
-                              return (
-                                <div
-                                  key={oIdx}
-                                  className={`flex items-start gap-2 p-2 rounded-xl text-xs transition-colors print:p-1 ${
-                                    isCorrect
-                                      ? 'bg-emerald-50/90 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 font-bold border border-emerald-300 dark:border-emerald-800 print:text-slate-950 print:border-emerald-600 print:bg-white'
-                                      : 'bg-slate-100/60 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 border border-slate-200/50 dark:border-slate-700/50 print:bg-transparent print:border-none print:text-slate-700'
-                                  }`}
-                                >
-                                  <span className={`w-5 h-5 rounded-md font-bold flex items-center justify-center shrink-0 text-xs ${isCorrect ? 'bg-emerald-600 text-white print:bg-emerald-700 print:text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}`}>
-                                    {labels[oIdx] || String(oIdx + 1)}
-                                  </span>
-                                  <span className="flex-1 leading-normal">{opt}</span>
-                                  {isCorrect && (
-                                    <span className="text-emerald-700 font-black shrink-0 ml-1 text-xs">✓ Správně</span>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      ) : (
-                        <div>
-                          <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1 text-xs uppercase tracking-wider">
-                            Správná odpověď ke zkoušce:
+                          <span className="flex-1 text-xs sm:text-sm print:text-[10pt] text-emerald-950 dark:text-emerald-100 font-semibold print:font-bold leading-snug">
+                            {correctAnswerText}
                           </span>
-                          <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-900 dark:text-emerald-300 rounded-xl font-bold leading-relaxed print:bg-white print:text-slate-950 print:border-emerald-500">
-                            ✓ {q.answer}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Rationale and Source */}
-                      <div className="bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl p-3 text-xs space-y-1 text-slate-800 dark:text-slate-200 print:bg-white print:border-slate-200 print:text-slate-800">
-                        <div className="flex items-center gap-1.5 font-bold text-blue-900 dark:text-blue-300 print:text-slate-900">
-                          <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 print:hidden" />
-                          <span>Zákonné odůvodnění:</span>
-                        </div>
-                        <p className="leading-relaxed">{q.rationale}</p>
-                        <div className="pt-1 text-[11px] text-blue-800 dark:text-blue-400 font-medium print:text-slate-700">
-                          <strong>Citace / pramen práva:</strong> {q.source}
                         </div>
                       </div>
+
+                      {/* Zákonné odůvodnění & citace pramene */}
+                      {(q.rationale || q.source) && (
+                        <div className="bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl p-3 text-xs space-y-1.5 text-slate-800 dark:text-slate-200 print:bg-white print:border-slate-200 print:text-slate-800">
+                          {q.rationale && (
+                            <>
+                              <div className="flex items-center gap-1.5 font-bold text-blue-900 dark:text-blue-300 print:text-slate-900">
+                                <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 print:hidden" />
+                                <span>Zákonné odůvodnění:</span>
+                              </div>
+                              <p className="leading-relaxed">{q.rationale}</p>
+                            </>
+                          )}
+                          {q.source && (
+                            <div className="pt-1 text-[11px] text-blue-800 dark:text-blue-400 font-medium print:text-slate-700">
+                              <strong>Pramen / citace:</strong> {q.source}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 );

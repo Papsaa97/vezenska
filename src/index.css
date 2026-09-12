@@ -56,7 +56,12 @@
     print-color-adjust: exact !important;
   }
 
-  body {
+  /* 1. Isolation & absolute light mode enforcement */
+  html,
+  body,
+  .dark,
+  [data-theme="dark"] {
+    color-scheme: light !important;
     background: #ffffff !important;
     color: #111827 !important;
   }
@@ -72,6 +77,16 @@
     font-size: 10pt !important;
     line-height: 1.35 !important;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+  }
+
+  /* Reset dark mode variables, background colors and text for all descendants inside .dark */
+  .dark *,
+  [data-theme="dark"] * {
+    background-color: transparent !important;
+    color: #111827 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    border-color: #e5e7eb !important;
   }
 
   /* Hide app frame, navigation bars, floating buttons, modals, audio buttons, filters */
@@ -96,13 +111,17 @@
     box-shadow: none !important;
   }
 
-  /* Force light colors and sharp borders */
-  .dark {
+  /* Explicitly handle cards and background containers */
+  .print-card,
+  .print-avoid-break,
+  article,
+  section,
+  div[class*="bg-"] {
     background: #ffffff !important;
     color: #111827 !important;
   }
 
-  /* Clean up cards and boxes */
+  /* Dark mode background classes reset */
   .bg-slate-900,
   .bg-slate-950,
   .bg-slate-800,
@@ -113,7 +132,23 @@
     color: #111827 !important;
   }
 
-  /* Prevent page-break within cards and sections */
+  /* Enforce black color for headings, bold text, and questions */
+  h1, h2, h3, h4, h5, h6, b, strong, th {
+    color: #000000 !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* Clear readable borders (no white or invisible borders) */
+  hr,
+  [class*="border-"],
+  table,
+  td,
+  th {
+    border-color: #d1d5db !important;
+  }
+
+  /* Page break avoidance */
   .print-card,
   .print-avoid-break,
   .print-question-card {
@@ -144,13 +179,88 @@
     box-shadow: none !important;
   }
 
-  /* Official Typography enhancements */
-  h1, h2, h3, h4, h5, h6 {
-    color: #0f172a !important;
-    break-after: avoid !important;
-    page-break-after: avoid !important;
+  /* 2. Highlighted answers, option badges and indicator styling */
+  .print-correct-answer,
+  div[class*="bg-emerald-"],
+  div[class*="border-emerald-"],
+  li[class*="bg-emerald-"],
+  label[class*="bg-emerald-"] {
+    background-color: #f0fdf4 !important;
+    color: #064e3b !important;
+    border-color: #059669 !important;
   }
 
+  [class*="text-emerald-"],
+  .dark [class*="text-emerald-"] {
+    color: #064e3b !important;
+    font-weight: 700 !important;
+  }
+
+  span[class*="bg-emerald-"],
+  .dark span[class*="bg-emerald-"] {
+    background-color: #059669 !important;
+    color: #ffffff !important;
+    border-color: #047857 !important;
+  }
+
+  /* Wrong student answers / error highlights */
+  [class*="bg-rose-"],
+  [class*="border-rose-"] {
+    background-color: #fff1f2 !important;
+    color: #9f1239 !important;
+    border-color: #f43f5e !important;
+  }
+
+  [class*="text-rose-"],
+  .dark [class*="text-rose-"] {
+    color: #9f1239 !important;
+  }
+
+  span[class*="bg-rose-"],
+  .dark span[class*="bg-rose-"] {
+    background-color: #e11d48 !important;
+    color: #ffffff !important;
+  }
+
+  /* Subject badges and subtle info blocks */
+  [class*="bg-blue-50"],
+  [class*="bg-blue-100"],
+  [class*="bg-blue-900"],
+  [class*="bg-blue-950"],
+  [class*="bg-indigo-50"],
+  [class*="bg-indigo-950"] {
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  [class*="text-blue-"],
+  [class*="text-indigo-"],
+  .dark [class*="text-blue-"],
+  .dark [class*="text-indigo-"] {
+    color: #1e3a8a !important;
+  }
+
+  /* Official Print Header borders and dark accents */
+  header.print-header,
+  .print-header,
+  header.border-slate-900,
+  header[class*="border-slate-900"],
+  div[class*="border-slate-900"] {
+    border-color: #0f172a !important;
+  }
+
+  .print-header * {
+    color: #0f172a !important;
+  }
+
+  [class*="text-slate-900"],
+  [class*="text-slate-950"],
+  .dark [class*="text-slate-900"],
+  .dark [class*="text-slate-950"] {
+    color: #0f172a !important;
+  }
+
+  /* Official Typography enhancements */
   h1 {
     font-size: 14pt !important;
     font-weight: 800 !important;
