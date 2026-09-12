@@ -24,6 +24,10 @@ CREATE INDEX IF NOT EXISTS idx_user_notifications_unread ON public.user_notifica
 ALTER TABLE public.user_notifications ENABLE ROW LEVEL SECURITY;
 
 -- 2. Čtení: uživatel vidí pouze své vlastní zprávy, správce vidí všechny (audit odeslaných zpráv)
+--    Poznámka: admin check jde přes public.is_admin() (SECURITY DEFINER), NIKDY přes
+--    inline "EXISTS (SELECT ... FROM public.profiles ...)" – to by na profiles
+--    způsobilo "infinite recursion detected in policy for relation profiles",
+--    viz komentář v profiles.sql u definice is_admin().
 DROP POLICY IF EXISTS "Uživatel čte vlastní zprávy, správce všechny" ON public.user_notifications;
 CREATE POLICY "Uživatel čte vlastní zprávy, správce všechny"
   ON public.user_notifications
@@ -31,11 +35,7 @@ CREATE POLICY "Uživatel čte vlastní zprávy, správce všechny"
   TO authenticated
   USING (
     auth.uid() = user_id
-    OR EXISTS (
-      SELECT 1 FROM public.profiles admin_profile
-      WHERE admin_profile.id = auth.uid()
-        AND admin_profile.role = 'admin'
-    )
+    OR public.is_admin()
   );
 
 -- 3. Vkládání: pouze správce smí zakládat nové zprávy (jednotlivé i hromadné)
@@ -44,13 +44,7 @@ CREATE POLICY "Pouze správce může odesílat zprávy"
   ON public.user_notifications
   FOR INSERT
   TO authenticated
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.profiles admin_profile
-      WHERE admin_profile.id = auth.uid()
-        AND admin_profile.role = 'admin'
-    )
-  );
+  WITH CHECK (public.is_admin());
 
 -- 4. Úprava: uživatel smí označit pouze svou vlastní zprávu jako přečtenou
 DROP POLICY IF EXISTS "Uživatel označuje vlastní zprávy jako přečtené" ON public.user_notifications;
@@ -88,10 +82,4 @@ CREATE POLICY "Pouze správce může mazat zprávy"
   ON public.user_notifications
   FOR DELETE
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles admin_profile
-      WHERE admin_profile.id = auth.uid()
-        AND admin_profile.role = 'admin'
-    )
-  );
+  USING (public.is_admin());
