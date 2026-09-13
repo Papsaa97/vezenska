@@ -10,10 +10,15 @@ export interface UserProfile {
   user_class?: string;
 }
 
+/**
+ * Vstup pro updateProfile(). Pole `role` zde ZÁMĚRNĚ není: roli smí měnit jen
+ * správce, a to přes updateRole(), které zapisuje pouze do databáze a nechává
+ * oprávnění vynutit RLS politiku nad public.profiles. Dokud tu `role` bylo, mohl
+ * si ji do svého profilu poslat kdokoli a po selhání zápisu mu zůstala v prohlížeči.
+ */
 export interface UpdateProfileInput {
   fullName?: string;
   avatarUrl?: string;
-  role?: UserRole;
   userClass?: string;
 }
 

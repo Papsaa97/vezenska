@@ -87,7 +87,7 @@ function AvatarPreview({ avatarUrl, initials }: { avatarUrl: string | null | und
 }
 
 export default function UserProfileModal({ onClose, totalXp, currentRank }: UserProfileModalProps) {
-  const { user, profile, updateProfile, updatePassword } = useAuth();
+  const { user, profile, updateProfile, updateRole, updatePassword } = useAuth();
   const isSystemAdmin = useIsAdmin();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -100,11 +100,9 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
       user?.user_metadata?.full_name ||
       user?.email?.split('@')[0] ||
       'Uživatel',
-    role: (isSystemAdmin
-      ? 'admin'
-      : profile?.role ||
-        (typeof window !== 'undefined' ? (localStorage.getItem('vscr_user_role') as UserRole) : null) ||
-        'student') as UserRole,
+    // Role výhradně z načteného profilu (tj. z databáze). Dřív se sem jako fallback
+    // brala hodnota z localStorage, kterou si uživatel mohl sám přepsat.
+    role: (isSystemAdmin ? 'admin' : profile?.role || 'student') as UserRole,
     created_at: profile?.created_at || user?.created_at || new Date().toISOString(),
     avatar_url: profile?.avatar_url ?? (typeof window !== 'undefined' ? localStorage.getItem('vscr_user_avatar') : null),
     user_class:
@@ -136,14 +134,14 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     effectiveProfile.user_class ||
       (typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') || 'ZOP A11' : 'ZOP A11')
   );
-  const [isCommander, setIsCommander] = useState<boolean>(effectiveProfile.role === 'velitel_tridy');
   const [selectedRole, setSelectedRole] = useState<UserRole>(
     effectiveProfile.role === 'student' && isSystemAdmin ? 'admin' : effectiveProfile.role
   );
 
   if (!user) return null;
 
-  const role: UserRole = isSystemAdmin && selectedRole === 'admin' ? 'admin' : effectiveProfile.role;
+  // Odznak ukazuje roli z profilu, ne rozepsaný výběr v seznamu — ten platí teprve po uložení.
+  const role: UserRole = effectiveProfile.role;
   const initials = (() => {
     const name = (effectiveProfile.full_name || user.email || '').trim();
     if (!name) return 'VS';
@@ -162,23 +160,32 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     setNameSaving(true);
     setNameMessage(null);
 
-    const newRole: UserRole = (isSystemAdmin || effectiveProfile.role === 'admin')
-      ? selectedRole
-      : effectiveProfile.role === 'lektor'
-      ? 'lektor'
-      : isCommander
-      ? 'velitel_tridy'
-      : 'student';
-
     const { error } = await updateProfile({
       fullName: trimmed,
       userClass: userClass.trim(),
-      role: newRole,
     });
+
+    if (error) {
+      setNameSaving(false);
+      setNameMessage({ type: 'error', text: `Uložení selhalo: ${error}` });
+      return;
+    }
+
+    // Roli smí změnit jen správce a jde vždy samostatným zápisem do databáze,
+    // kde o oprávnění rozhoduje RLS politika nad public.profiles — nikoli stav
+    // v prohlížeči. Selže-li zápis, uživatel se to dozví.
+    const canAssignRoles = isSystemAdmin || effectiveProfile.role === 'admin';
+    if (canAssignRoles && selectedRole !== effectiveProfile.role) {
+      const { error: roleError } = await updateRole(effectiveProfile.id, selectedRole);
+      if (roleError) {
+        setNameSaving(false);
+        setNameMessage({ type: 'error', text: roleError });
+        return;
+      }
+    }
+
     setNameSaving(false);
-    setNameMessage(
-      error ? { type: 'error', text: `Uložení selhalo: ${error}` } : { type: 'success', text: 'Profil a zařazení ke třídě byly úspěšně uloženy.' }
-    );
+    setNameMessage({ type: 'success', text: 'Profil a zařazení ke třídě byly úspěšně uloženy.' });
   };
 
   const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -424,26 +431,26 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                   Jako vlastník aplikace máte právo správce kdykoliv aktivovat a otestovat chování aplikace pod libovolnou rolí.
                 </p>
               </div>
-            ) : effectiveProfile?.role !== 'lektor' && (
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-800/60 border border-slate-700/80 cursor-pointer hover:bg-slate-800 transition-colors">
-                <input
-                  type="checkbox"
-                  checked={isCommander}
-                  onChange={(e) => setIsCommander(e.target.checked)}
-                  className="rounded text-purple-600 focus:ring-purple-500 w-4 h-4 cursor-pointer"
-                />
-                <div>
-                  <div className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                    <span>Jsem velitel třídy</span>
-                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-normal">
-                      {userClass || 'ZOP'}
-                    </span>
-                  </div>
-                  <div className="text-[10px] text-slate-400 leading-tight mt-0.5">
-                    Umožňuje určovat ústrojovou kázeň a psát hlášení pro třídu
-                  </div>
+            ) : (
+              /*
+               * Tady bývalo zaškrtávátko "Jsem velitel třídy", kterým si kdokoli mohl
+               * sám přidělit vyšší roli. Roli přiděluje výhradně správce ve správě
+               * uživatelů; tady je jen k vidění, jaká platí.
+               */
+              <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-700/80">
+                <div className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Role účtu</span>
+                  <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${ROLE_COLORS[effectiveProfile.role]}`}>
+                    {ROLE_LABELS[effectiveProfile.role]}
+                  </span>
                 </div>
-              </label>
+                <div className="text-[10px] text-slate-400 leading-tight mt-1">
+                  Roli velitele třídy, lektora nebo správce přiděluje správce systému ve
+                  správě uživatelů. Pokud máš velet třídě {userClass || 'ZOP'}, požádej o to
+                  svého lektora.
+                </div>
+              </div>
             )}
 
             {nameMessage && (

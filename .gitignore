@@ -6,6 +6,11 @@ dist-ssr
 .env.*
 .env.local
 .env.*.local
+# Šablona bez skutečných hodnot se commituje
+!.env.example
 .vercel
 .render
 .DS_Store
+
+# Výpisy z dev serveru a build logy do repozitáře nepatří
+*.log

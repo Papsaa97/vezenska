@@ -1,9 +1,17 @@
 import http from 'node:http';
-import { autonomaNodeHandler } from './handler';
+import { getAutonomaNodeHandler } from './handler';
+import { isAutonomaEnabled, missingAutonomaEnv } from './env';
 
 const PORT = parseInt(process.env.AUTONOMA_PORT || '3000', 10);
 
 export function startAutonomaServer(port = PORT): http.Server {
+  if (!isAutonomaEnabled()) {
+    throw new Error(
+      '[Autonoma] Server se nespustil. Nastav AUTONOMA_ENABLED=true a chybějící proměnné: ' +
+        (missingAutonomaEnv().join(', ') || '(žádné)')
+    );
+  }
+
   const server = http.createServer(async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');
@@ -16,7 +24,7 @@ export function startAutonomaServer(port = PORT): http.Server {
     }
 
     if (req.url === '/api/autonoma' || req.url === '/api/autonoma/') {
-      await autonomaNodeHandler(req, res);
+      await getAutonomaNodeHandler()(req, res);
       return;
     }
 

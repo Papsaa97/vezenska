@@ -123,7 +123,7 @@ export default function UserManager() {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 function UserManagerInner() {
-  const { user } = useAuth();
+  const { user, updateRole } = useAuth();
   const currentUserId = user?.id ?? null;
 
   const [users, setUsers] = useState<UserProfileItem[]>([]);
@@ -191,17 +191,20 @@ function UserManagerInner() {
     );
   }, [users, searchQuery]);
 
+  // Role se mění jedinou cestou v celé aplikaci — přes updateRole() z AuthContextu.
+  // Ten zapisuje výhradně do databáze (oprávnění vynucuje RLS) a hlásí i zamítnutí,
+  // které se u UPDATE projeví jako nula zasažených řádků, nikoli jako chyba.
   const handleRoleChange = useCallback(async (target: UserProfileItem, newRole: UserRole) => {
     if (newRole === target.role) return;
     setUpdatingRoleId(target.id);
-    const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', target.id);
+    const { error } = await updateRole(target.id, newRole);
     if (error) {
-      alert('Změna role selhala: ' + error.message);
+      alert(error);
     } else {
       setUsers((prev) => prev.map((u) => (u.id === target.id ? { ...u, role: newRole } : u)));
     }
     setUpdatingRoleId(null);
-  }, []);
+  }, [updateRole]);
 
   const handleDeleteUser = useCallback(async (target: UserProfileItem) => {
     setDeletingId(target.id);
