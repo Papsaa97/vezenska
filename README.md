@@ -52,11 +52,17 @@ platný `correctOption`, soulad `answer` s `options`, vyplněné `rationale`
 a `source`) jsou **tvrdé** — banka je dnes plní na 100 %, takže každá regrese
 shodí build.
 
-Druhá část hlídá **délkový tell**: u 343 ze 377 otázek (91 %) je správná odpověď
-zároveň nejdelší ze čtyř, takže se test dá projít bez znalosti předmětu. Opravit
-to znamená přepsat distraktory u stovek otázek, proto se nekontroluje absolutní
-cíl, ale to, že se stav nezhoršuje — počet takových otázek nesmí vzrůst ani
-celkově, ani v jednom předmětu. Po zlepšení obsahu přepiš referenční stav:
+Druhá část hlídá **délkový tell**: nese délka možnosti informaci o tom, která
+odpověď je správná? Při zavedení kontroly byla správná odpověď nejdelší ze čtyř
+u 343 ze 377 otázek (91 %), takže se test dal projít bez znalosti předmětu.
+
+Hlídají se **oba extrémy**. Dorovnat distraktory tak, aby byly všechny delší než
+správná odpověď, tell neodstraní — jen ho překlopí na „vyber nejkratší“. Ráčna
+proto sleduje zvlášť „správná je nejdelší“ i „správná je nejkratší“ a ani jeden
+počet nesmí vzrůst — celkově ani v jednom předmětu. Ideál je u obou poblíž 25 %,
+což je náhodná hladina u čtyř možností (Penologie je na 25 % / 26,9 %).
+
+Po zlepšení obsahu přepiš referenční stav:
 
 ```bash
 npm run check:questions -- --update-baseline   # a commitni baseline

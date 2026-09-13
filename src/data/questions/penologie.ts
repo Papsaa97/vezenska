@@ -8,10 +8,10 @@ export const penologieQuestions: Question[] = [
     question: 'Jaké jsou důvody vazby a která právní norma je stanovuje?',
     answer: 'Stanovuje je § 67 trestního řádu (zák. č. 141/1961 Sb.): a) útěková vazba, b) koluzní vazba (ovlivňování svědků / maření objasňování skutečností), c) předstižná / preventivní vazba (pokračování v trestné činnosti či její dokonání).',
     options: [
-              `Stanovuje je § 67 trestního řádu (zák. č. 141/1961 Sb.): a) kárná vazba, b) vyšetřovací vazba k zajištění výslechu, c) zabezpečovací vazba k ochraně poškozených osob.`,
+              `Stanovuje je § 67 trestního řádu (zák. č. 141/1961 Sb.): a) kárná vazba, b) vyšetřovací vazba k zajištění výslechu, c) zabezpečovací vazba k ochraně poškozených osob. Lhůta koluzní vazby není zákonem omezena a o jejím trvání rozhoduje státní zástupce.`,
               `Stanovuje je § 67 trestního řádu (zák. č. 141/1961 Sb.): a) útěková vazba, b) koluzní vazba (ovlivňování svědků / maření objasňování skutečností), c) předstižná / preventivní vazba (pokračování v trestné činnosti či její dokonání).`,
-              `Stanovuje je § 5 zákona o výkonu vazby (zák. č. 293/1993 Sb.): a) pořádková vazba, b) mediační vazba pro dohodu o vině a trestu, c) ochranná vazba pro osoby s duševní poruchou.`,
-              `Stanovuje je § 38 trestního zákoníku (zák. č. 40/2009 Sb.): a) útěková vazba, b) kárná vazba pro porušení zákazu styku, c) sankční vazba za neplacení peněžitého trestu.`
+              `Stanovuje je § 5 zákona o výkonu vazby (zák. č. 293/1993 Sb.): a) pořádková vazba, b) mediační vazba pro dohodu o vině a trestu, c) ochranná vazba pro osoby s duševní poruchou. Útěkovou ani předstižnou vazbu tento zákon vůbec nezná a důvody se nerozlišují.`,
+              `Stanovuje je § 38 trestního zákoníku (zák. č. 40/2009 Sb.): a) útěková vazba, b) kárná vazba pro porušení zákazu styku, c) sankční vazba za neplacení peněžitého trestu. Koluzní vazbu trestní zákoník neupravuje a konkrétní skutečnosti se nevyžadují.`
             ],
     correctOption: 1,
     rationale: 'Dle § 67 zákona č. 141/1961 Sb. (trestní řád) smí být obviněný vzat do vazby jen tehdy, jsou-li dány konkrétní skutečnosti odůvodňující obavu z útěku či skrývání [písm. a)], působení na svědky a maření objasňování skutečností [písm. b) - koluzní vazba trvající max. 3 měsíce], nebo pokračování v trestné činnosti či jejího dokonání [písm. c)].',
@@ -25,10 +25,10 @@ export const penologieQuestions: Question[] = [
     question: 'Jaké jsou hlavní zásady výkonu vazby dle zákona č. 293/1993 Sb.?',
     answer: 'Presumpce neviny (hledí se na něj, jako by byl nevinen), respektování lidské důstojnosti, zákaz fyzického i psychického nátlaku, a uplatnění pouze nezbytných omezení nutných k naplnění účelu vazby a pořádku.',
     options: [
-              `Povinná resocializace a převýchova obviněného, povinné zařazení do práce bez nároku na odměnu a uplatnění všech režimových omezení jako u odsouzených ve věznici se zvýšenou ostrahou.`,
-              `Zásada individuálního zacházení prostřednictvím komplexního programu zacházení (SARPO), povinnost podrobit se terapeutickému programu a zákaz nošení vlastního civilního oděvu.`,
+              `Povinná resocializace a převýchova obviněného, povinné zařazení do práce bez nároku na odměnu a uplatnění všech režimových omezení jako u odsouzených ve věznici se zvýšenou ostrahou. Presumpce neviny se ve vazbě neuplatňuje.`,
+              `Zásada individuálního zacházení prostřednictvím komplexního programu zacházení (SARPO), povinnost podrobit se terapeutickému programu a zákaz nošení vlastního civilního oděvu. Presumpce neviny ani zákaz psychického nátlaku se ve vazbě neuplatňují.`,
               `Presumpce neviny (hledí se na něj, jako by byl nevinen), respektování lidské důstojnosti, zákaz fyzického i psychického nátlaku, a uplatnění pouze nezbytných omezení nutných k naplnění účelu vazby a pořádku.`,
-              `Zásada retribuce a odčinění škody poškozeným, absolutní zákaz kontaktu s vnějším světem a uplatňování kázeňských trestů včetně celodenního umístění do uzavřeného oddílu až na 28 dnů.`
+              `Zásada retribuce a odčinění škody poškozeným, absolutní zákaz kontaktu s vnějším světem a uplatňování kázeňských trestů včetně celodenního umístění do uzavřeného oddílu až na 28 dnů. Zásada presumpce neviny se na obviněného nevztahuje.`
             ],
     correctOption: 2,
     rationale: 'Dle § 2 zákona č. 293/1993 Sb. platí zásada presumpce neviny. Vazba je zajišťovacím procesním institutem, nikoli trestem. Obviněný smí být podroben pouze omezením nutným ke splnění účelu vazby a zachování bezpečnosti.',
@@ -42,9 +42,9 @@ export const penologieQuestions: Question[] = [
     question: 'Jaké jsou hlavní zásady výkonu trestu odnětí svobody (VTOS) dle zákona č. 169/1999 Sb.?',
     answer: 'Respektovat důstojnost osobnosti odsouzeného, omezovat škodlivé účinky zbavení svobody (prizonizaci), zachovávat zdraví a podporovat postoje a dovednosti pro soběstačný život v souladu se zákonem po propuštění.',
     options: [
-              `Uplatňovat presumpci neviny, zachovávat odsouzenému veškerá občanská a politická práva bez omezení a uplatňovat výhradně ta omezení, která schválí dozorový státní zástupce.`,
-              `Uplatňovat výhradně odstrašující a retributivní složku trestu, izolovat odsouzeného od jakéhokoliv kontaktu s rodinou a zaměřit se výhradně na výkon manuální práce ve prospěch věznice.`,
-              `Soustředit se na generální prevenci prostřednictvím zpřísněného režimu bez možnosti individuálního hodnocení rizik a potřeb a vyloučit jakékoliv vzdělávací či terapeutické aktivity.`,
+              `Uplatňovat presumpci neviny, zachovávat odsouzenému veškerá občanská a politická práva bez omezení a uplatňovat výhradně ta omezení, která schválí dozorový státní zástupce. Omezování prizonizace ani podpora soběstačnosti po propuštění mezi zásady nepatří.`,
+              `Uplatňovat výhradně odstrašující a retributivní složku trestu, izolovat odsouzeného od jakéhokoliv kontaktu s rodinou a zaměřit se výhradně na výkon manuální práce ve prospěch věznice. Respektování důstojnosti osobnosti zákon mezi zásady nezařazuje.`,
+              `Soustředit se na generální prevenci prostřednictvím zpřísněného režimu bez možnosti individuálního hodnocení rizik a potřeb a vyloučit jakékoliv vzdělávací či terapeutické aktivity. Zachování zdraví odsouzeného není zákonnou zásadou.`,
               `Respektovat důstojnost osobnosti odsouzeného, omezovat škodlivé účinky zbavení svobody (prizonizaci), zachovávat zdraví a podporovat postoje a dovednosti pro soběstačný život v souladu se zákonem po propuštění.`
             ],
     correctOption: 3,
@@ -59,9 +59,9 @@ export const penologieQuestions: Question[] = [
     question: 'Které orgány a na čí návrh rozhodují o uvalení vazby a o propuštění z vazby?',
     answer: 'O vzetí do vazby rozhoduje vždy soud (v přípravném řízení na návrh státního zástupce); o propuštění rozhoduje soud, v přípravném řízení též státní zástupce, nebo státní zástupce při výkonu dozoru a prezident/ministr při milosti.',
     options: [
-              `O vzetí do vazby rozhoduje státní zástupce na návrh policejního orgánu; o propuštění z vazby rozhoduje výhradně ředitel vazební věznice po projednání s dozorčím orgánem Vězeňské služby ČR.`,
-              `O vzetí do vazby rozhoduje soud na návrh policejního orgánu; o propuštění rozhoduje generální ředitel Vězeňské služby ČR nebo vedoucí oddělení výkonu vazby po uplynutí zákonné lhůty.`,
-              `O vzetí do vazby rozhoduje policejní orgán se souhlasem ředitele krajského ředitelství Policie ČR; o propuštění rozhoduje předseda senátu okresního soudu na návrh obhájce obviněného.`,
+              `O vzetí do vazby rozhoduje státní zástupce na návrh policejního orgánu; o propuštění z vazby rozhoduje výhradně ředitel vazební věznice po projednání s dozorčím orgánem Vězeňské služby ČR. Prezident ani ministr spravedlnosti do rozhodování o vazbě nezasahují.`,
+              `O vzetí do vazby rozhoduje soud na návrh policejního orgánu; o propuštění rozhoduje generální ředitel Vězeňské služby ČR nebo vedoucí oddělení výkonu vazby po uplynutí zákonné lhůty. Státní zástupce o propuštění z vazby rozhodovat nemůže ani v přípravném řízení.`,
+              `O vzetí do vazby rozhoduje policejní orgán se souhlasem ředitele krajského ředitelství Policie ČR; o propuštění rozhoduje předseda senátu okresního soudu na návrh obhájce obviněného. Soud o vzetí do vazby nerozhoduje a milost prezidenta se na vazbu nevztahuje.`,
               `O vzetí do vazby rozhoduje vždy soud (v přípravném řízení na návrh státního zástupce); o propuštění rozhoduje soud, v přípravném řízení též státní zástupce, nebo státní zástupce při výkonu dozoru a prezident/ministr při milosti.`
             ],
     correctOption: 3,
@@ -77,9 +77,9 @@ export const penologieQuestions: Question[] = [
     answer: 'Kontrola písemných rozhodnutí (příkaz soudu/rozsudek), ověření totožnosti, osobní prohlídka a prohlídka věcí za přítomnosti policie (záznam zranění), hygienická opatření, poučení o právech a povinnostech, vstupní lékařská prohlídka, uložení věcí a ubytování v přijímacím/nástupním oddílu.',
     options: [
               `Kontrola písemných rozhodnutí (příkaz soudu/rozsudek), ověření totožnosti, osobní prohlídka a prohlídka věcí za přítomnosti policie (záznam zranění), hygienická opatření, poučení o právech a povinnostech, vstupní lékařská prohlídka, uložení věcí a ubytování v přijímacím/nástupním oddílu.`,
-              `Kontrola totožnosti obviněného dle občanského průkazu, orientační dechová zkouška na alkohol, odebrání civilního oděvu bez možnosti jeho ponechání a okamžité zařazení na kmenovou ubytovnu k výkonu práce.`,
-              `Ověření pravomocného rozhodnutí soudu, provedení důkladné osobní prohlídky, uložení všech věcí do skladu bez soupisu a umístění přijímané osoby do cely uzavřeného oddílu na dobu 14 dnů z karanténních důvodů.`,
-              `Kontrola eskortních dokladů, provedení odběru biologického materiálu k analýze DNA, stanovení programu zacházení speciálním pedagogem a přidělení lůžka na specializovaném oddělení dle volné kapacity.`
+              `Kontrola totožnosti obviněného dle občanského průkazu, orientační dechová zkouška na alkohol, odebrání civilního oděvu bez možnosti jeho ponechání a okamžité zařazení na kmenovou ubytovnu k výkonu práce. Poučení o právech a povinnostech ani vstupní lékařská prohlídka se neprovádějí.`,
+              `Ověření pravomocného rozhodnutí soudu, provedení důkladné osobní prohlídky, uložení všech věcí do skladu bez soupisu a umístění přijímané osoby do cely uzavřeného oddílu na dobu 14 dnů z karanténních důvodů. Lékařská prohlídka se provádí po karanténě a poučení podepisuje vychovatel.`,
+              `Kontrola eskortních dokladů, provedení odběru biologického materiálu k analýze DNA, stanovení programu zacházení speciálním pedagogem a přidělení lůžka na specializovaném oddělení dle volné kapacity. Kontrola totožnosti ani osobní prohlídka se neprovádějí, odpovědnost nese policie.`
             ],
     correctOption: 0,
     rationale: 'Dle § 5-8 zákona č. 293/1993 Sb. (příjem do VV nepřetržitě), § 6 zákona č. 169/1999 Sb. a vyhlášek 109/1994 a 345/1999 Sb. musí být ověřena totožnost, provedena osobní prohlídka, sepsán protokol o stopách násilí za přítomnosti eskorty PČR, poskytnuto poučení v mateřském jazyce a provedena vstupní lékařská prohlídka.',
@@ -94,9 +94,9 @@ export const penologieQuestions: Question[] = [
     answer: 'Převzít službu (PPZZ), fyzicky převzít a znát stavy obviněných, prověřit uzamčení cel a signalizace, provádět nepravidelné kontroly cel, zrakové prohlídky vytypovaných osob, zajišťovat výdej stravy, vřelé vody a léků, hygienu a úklid, a plnit časový rozvrh dne bez maření účelu vazby.',
     options: [
               `Převzít službu (PPZZ), fyzicky převzít a znát stavy obviněných, prověřit uzamčení cel a signalizace, provádět nepravidelné kontroly cel, zrakové prohlídky vytypovaných osob, zajišťovat výdej stravy, vřelé vody a léků, hygienu a úklid, a plnit časový rozvrh dne bez maření účelu vazby.`,
-              `Zajišťovat předvádění obviněných k výslechům vyšetřovatelů PČR, vyhodnocovat bezpečnostní rizika v systému SARPO, stanovovat individuální programy zacházení a povolovat návštěvy rodinných příslušníků.`,
-              `Provádět nepřetržitý dohled nad střeženým obvodem věznice, obsluhovat zabezpečovací a kamerové systémy na operačním středisku, kontrolovat oprávněnost vstupu osob do věznice a evidovat vjezd vozidel.`,
-              `Vést osobní spisy obviněných, provádět kázeňská řízení ve funkci orgánu s kázeňskou pravomocí, rozhodovat o přemístění obviněných mezi vazebními věznicemi a cenzurovat korespondenci s obhájci.`
+              `Zajišťovat předvádění obviněných k výslechům vyšetřovatelů PČR, vyhodnocovat bezpečnostní rizika v systému SARPO, stanovovat individuální programy zacházení a povolovat návštěvy rodinných příslušníků. Kontroly cel, prověrky uzamčení ani výdej stravy do náplně této funkce nepatří.`,
+              `Provádět nepřetržitý dohled nad střeženým obvodem věznice, obsluhovat zabezpečovací a kamerové systémy na operačním středisku, kontrolovat oprávněnost vstupu osob do věznice a evidovat vjezd vozidel. Do oddělení výkonu vazby dozorce nevstupuje, stavy nepřebírá a cely nekontroluje.`,
+              `Vést osobní spisy obviněných, provádět kázeňská řízení ve funkci orgánu s kázeňskou pravomocí, rozhodovat o přemístění obviněných mezi vazebními věznicemi a cenzurovat korespondenci s obhájci. Časový rozvrh dne, výdej stravy ani hygienu dozorce nezajišťuje, to přísluší vychovateli.`
             ],
     correctOption: 0,
     rationale: 'Dle § 3.6 a § 32 NGŘ č. 2/2022 dozorce OVV odpovídá za pořádek a bezpečnost na oddíle vazby, provádí nepravidelné kontroly cel (aby obvinění nezjistili systém), zrakové prohlídky vytypovaných osob a dbá na to, aby nebyl mařen účel vazby (např. u koluzních obviněných).',
@@ -111,9 +111,9 @@ export const penologieQuestions: Question[] = [
     answer: 'Fyzicky převzít odsouzené, mít trvalý přehled o stavech, provádět nepravidelné kontroly ložnic/cel, zajišťovat plnění časového rozvrhu dne, organizovat vycházky a fyzické početní prověrky, dohlížet na ústroj, hygienu a úklid rajónů, kontrolovat uzamčení vstupů a bránit vnášení nepovolených věcí.',
     options: [
               `Fyzicky převzít odsouzené, mít trvalý přehled o stavech, provádět nepravidelné kontroly ložnic/cel, zajišťovat plnění časového rozvrhu dne, organizovat vycházky a fyzické početní prověrky, dohlížet na ústroj, hygienu a úklid rajónů, kontrolovat uzamčení vstupů a bránit vnášení nepovolených věcí.`,
-              `Zajišťovat technickou údržbu ubytoven, uzavírat pracovní smlouvy s externími subjekty zaměstnávajícími odsouzené, schvalovat výši odměn za práci a vést mzdové účetnictví věznice.`,
-              `Provádět výhradně venkovní hlídkovou činnost podél signálně-bezpečnostní technologie, střežit odsouzené na venkovních strážních stanovištích a obsluhovat zbraňové systémy věznice.`,
-              `Zpracovávat komplexní pedagogicko-psychologické zprávy odsouzených, vést specializované terapeutické skupiny, rozhodovat o přeřazení do jiného typu věznice a podávat soudu návrhy na podmíněné propuštění.`
+              `Zajišťovat technickou údržbu ubytoven, uzavírat pracovní smlouvy s externími subjekty zaměstnávajícími odsouzené, schvalovat výši odměn za práci a vést mzdové účetnictví věznice. Dále spravovat skladové zásoby ubytovny a odpovídat za inventarizaci drobného majetku na oddělení.`,
+              `Provádět výhradně venkovní hlídkovou činnost podél signálně-bezpečnostní technologie, střežit odsouzené na venkovních strážních stanovištích a obsluhovat zbraňové systémy věznice. Do vnitřních prostor ubytovny nevstupovat a kontrolu ložnic ponechat výhradně vychovateli oddělení.`,
+              `Zpracovávat komplexní pedagogicko-psychologické zprávy odsouzených, vést specializované terapeutické skupiny, rozhodovat o přeřazení do jiného typu věznice a podávat soudu návrhy na podmíněné propuštění. Dále samostatně rozhodovat o uložení kázeňských trestů a o zařazení odsouzeného do prostupného režimu.`
             ],
     correctOption: 0,
     rationale: 'Dle § 3.8 a § 68 NGŘ č. 2/2022 dozorce OVT na ubytovně odsouzených zajišťuje vnitřní bezpečnost, provádí kontroly cel a ubytovacích prostor, početní prověrky stavu, dohlíží na dodržování ČRD a spolupracuje s vychovatelem při naplňování programu zacházení.',
@@ -128,9 +128,9 @@ export const penologieQuestions: Question[] = [
     answer: 'Člení se na: a) vnější a vnitřní, b) pevná a pohyblivá, c) stálá a dočasná. (Příklad: stálé pevné vnitřní stanoviště na ubytovně OVT / dočasné pohyblivé vnější stanoviště při dozoru na nestřeženém pracovišti).',
     options: [
               `Člení se na: a) vnější a vnitřní, b) pevná a pohyblivá, c) stálá a dočasná. (Příklad: stálé pevné vnitřní stanoviště na ubytovně OVT / dočasné pohyblivé vnější stanoviště při dozoru na nestřeženém pracovišti).`,
-              `Člení se na: a) ozbrojená a neozbrojená, b) denní a noční, c) pěší a motorizovaná. (Příklad: ozbrojené denní motorizované stanoviště eskorty / neozbrojené noční stanoviště na bráně věznice).`,
-              `Člení se na: a) základní a specializovaná, b) režimová a bezpečnostní, c) kmenová a záložní. (Příklad: základní kmenové stanoviště na chodbě OVV / specializované režimové stanoviště v kuchyni).`,
-              `Člení se na: a) střežená a nestřežená, b) uzavřená a polootevřená, c) technická a manuální. (Příklad: střežené uzavřené technické stanoviště na operačním středisku / nestřežené manuální stanoviště ve skladu).`
+              `Člení se na: a) ozbrojená a neozbrojená, b) denní a noční, c) pěší a motorizovaná. (Příklad: ozbrojené denní motorizované stanoviště eskorty / neozbrojené noční stanoviště na bráně věznice). Vnější a vnitřní členění se neuplatňuje.`,
+              `Člení se na: a) základní a specializovaná, b) režimová a bezpečnostní, c) kmenová a záložní. (Příklad: základní kmenové stanoviště na chodbě OVV / specializované režimové stanoviště v kuchyni). Pevná a pohyblivá stanoviště se nerozlišují.`,
+              `Člení se na: a) střežená a nestřežená, b) uzavřená a polootevřená, c) technická a manuální. (Příklad: střežené uzavřené technické stanoviště na operačním středisku / nestřežené manuální stanoviště ve skladu). Stálá ani dočasná stanoviště se nerozlišují.`
             ],
     correctOption: 0,
     rationale: 'Dle § 103 odst. 2 NGŘ č. 2/2022 a Rozpisu dozorčích stanovišť se dozorčí stanoviště dělí na vnější/vnitřní, pevná/pohyblivá a stálá/dočasná. Jsou určena Plánem střežení věznice.',
@@ -144,10 +144,10 @@ export const penologieQuestions: Question[] = [
     question: 'Uveďte, jakými způsoby lze realizovat návštěvy odsouzených!',
     answer: '1. Standardní návštěva v návštěvní místnosti za přímého dohledu VS, 2. Návštěva bez zrakové a sluchové kontroly (v prostorách hotelového typu), 3. Návštěva za bezpečnostní dělicí přepážkou, 4. Návštěva spojená s povolením opustit věznici až na 24 hodin, 5. Návštěva v lůžkovém zdravotnickém zařízení se souhlasem lékaře.',
     options: [
-              `1. Standardní návštěva v návštěvní místnosti za přímého dohledu VS, 2. Návštěva na ložnici odsouzeného za přítomnosti spoluvězňů, 3. Návštěva formou neomezeného videohovoru, 4. Návštěva s opuštěním věznice až na 72 hodin bez souhlasu ředitele, 5. Návštěva na pracovišti odsouzeného.`,
+              `1. Standardní návštěva v návštěvní místnosti za přímého dohledu VS, 2. Návštěva na ložnici odsouzeného za přítomnosti spoluvězňů, 3. Návštěva formou neomezeného videohovoru, 4. Návštěva s opuštěním věznice až na 72 hodin bez souhlasu ředitele, 5. Návštěva na pracovišti odsouzeného. Návštěva za bezpečnostní dělicí přepážkou ani ve zdravotnickém zařízení možná není.`,
               `1. Standardní návštěva v návštěvní místnosti za přímého dohledu VS, 2. Návštěva bez zrakové a sluchové kontroly (v prostorách hotelového typu), 3. Návštěva za bezpečnostní dělicí přepážkou, 4. Návštěva spojená s povolením opustit věznici až na 24 hodin, 5. Návštěva v lůžkovém zdravotnickém zařízení se souhlasem lékaře.`,
-              `1. Výhradně návštěva za bezpečnostní dělicí přepážkou se sluchovou kontrolou, 2. Distanční návštěva prostřednictvím videokonference schválené soudem, 3. Návštěva v mimovězeňském restauračním zařízení se souhlasem vychovatele, 4. Celodenní návštěva na cele samovazby.`,
-              `1. Návštěva v jednací místnosti soudu za přítomnosti soudce, 2. Návštěva přes neprůstřelné sklo s telefonem, 3. Skupinová návštěva na sportovišti věznice, 4. Návštěva v ubytovacím oddílu bez dohledu dozorce, 5. Návštěva v kanceláři vedoucího oddělení výkonu trestu.`
+              `1. Výhradně návštěva za bezpečnostní dělicí přepážkou se sluchovou kontrolou, 2. Distanční návštěva prostřednictvím videokonference schválené soudem, 3. Návštěva v mimovězeňském restauračním zařízení se souhlasem vychovatele, 4. Celodenní návštěva na cele samovazby. Návštěva bez zrakové a sluchové kontroly ani s povolením opustit věznici se nepřipouští.`,
+              `1. Návštěva v jednací místnosti soudu za přítomnosti soudce, 2. Návštěva přes neprůstřelné sklo s telefonem, 3. Skupinová návštěva na sportovišti věznice, 4. Návštěva v ubytovacím oddílu bez dohledu dozorce, 5. Návštěva v kanceláři vedoucího oddělení výkonu trestu. Návštěva za dělicí přepážkou ani v lůžkovém zdravotnickém zařízení se neumožňuje.`
             ],
     correctOption: 1,
     rationale: 'Dle § 19 zákona č. 169/1999 Sb. a vyhlášky č. 345/1999 Sb. (§ 26-28) má odsouzený nárok na 3 hodiny návštěv měsíčně. Ředitel může povolit návštěvu bez kontroly, opuštění věznice na 24 hodin, nebo naopak z bezpečnostních důvodů nařídit přepážku.',
@@ -161,10 +161,10 @@ export const penologieQuestions: Question[] = [
     question: 'Uveďte základní povinnosti odsouzených dle § 28 zákona č. 169/1999 Sb.!',
     answer: 'Dodržovat pořádek a kázeň, plnit pokyny zaměstnanců VS, pracovat, plnit program zacházení, šetrně zacházet se svěřenými věcmi, chovat se slušně (vykat a oslovovat „pane/paní“), podrobit se osobním a lékařským prohlídkám, testování na OPL, dodržovat hygienu a noční klid.',
     options: [
-              `Zajišťovat výuku mladistvých spoluvězňů, účastnit se povinně náboženských obřadů, předkládat vychovateli denní písemné hlášení o chování a setrvávat na lůžku v době od 06:00 do 22:00 hodin.`,
+              `Zajišťovat výuku mladistvých spoluvězňů, účastnit se povinně náboženských obřadů, předkládat vychovateli denní písemné hlášení o chování a setrvávat na lůžku v době od 06:00 do 22:00 hodin. Dodržování pořádku a kázně ani program zacházení zákon mezi povinnosti neřadí.`,
               `Dodržovat pořádek a kázeň, plnit pokyny zaměstnanců VS, pracovat, plnit program zacházení, šetrně zacházet se svěřenými věcmi, chovat se slušně (vykat a oslovovat „pane/paní“), podrobit se osobním a lékařským prohlídkám, testování na OPL, dodržovat hygienu a noční klid.`,
-              `Podrobit se bezvýhradně výslechům Policie ČR bez přítomnosti obhájce, odevzdávat veškerou došlou korespondenci ke skartaci, vykonávat výhradně těžké fyzické práce a žádat o souhlas dozorce při každém opuštění lůžka.`,
-              `Hradit měsíčně paušální náklady na stravu a ostrahu ve výši 15 000 Kč, vykonávat samostatně ostrahu ubytovny odsouzených, hlásit přestupky spoluvězňů na operační středisko a nosit výhradně civilní oděv zajištěný rodinou.`
+              `Podrobit se bezvýhradně výslechům Policie ČR bez přítomnosti obhájce, odevzdávat veškerou došlou korespondenci ke skartaci, vykonávat výhradně těžké fyzické práce a žádat o souhlas dozorce při každém opuštění lůžka. Podrobit se osobní prohlídce ani testování na OPL odsouzený povinen není.`,
+              `Hradit měsíčně paušální náklady na stravu a ostrahu ve výši 15 000 Kč, vykonávat samostatně ostrahu ubytovny odsouzených, hlásit přestupky spoluvězňů na operační středisko a nosit výhradně civilní oděv zajištěný rodinou. Plnit pokyny zaměstnanců VS ani dodržovat noční klid mezi povinnosti nepatří.`
             ],
     correctOption: 1,
     rationale: 'Ustanovení § 28 odst. 1 a 2 zákona č. 169/1999 Sb. taxativně stanoví základní i další povinnosti odsouzeného ve VTOS, včetně pracovní povinnosti a podrobení se toxikologickým testům.',
@@ -179,9 +179,9 @@ export const penologieQuestions: Question[] = [
     answer: 'Navazovat nedovolené styky, vyrábět/přechovávat/pít alkohol (>0,5 %) a OPL (např. kvasit KVAK/KVÁSKU), přechovávat zbraně a věci k útěku, tiskoviny s rasovou nesnášenlivostí a návody na násilí/drogy, hrát hazardní hry, tetovat sebe či jiné, sebepoškozovat se, prodávat/směňovat věci a mít hotovost.',
     options: [
               `Navazovat nedovolené styky, vyrábět/přechovávat/pít alkohol (>0,5 %) a OPL (např. kvasit KVAK/KVÁSKU), přechovávat zbraně a věci k útěku, tiskoviny s rasovou nesnášenlivostí a návody na násilí/drogy, hrát hazardní hry, tetovat sebe či jiné, sebepoškozovat se, prodávat/směňovat věci a mít hotovost.`,
-              `Podávat opravné prostředky proti kázeňským trestům, žádat o přemístění do jiné věznice, vést korespondenci s rodinnými příslušníky, půjčovat si knihy z vězeňské knihovny a odmítnout výkon práce ze zdravotních důvodů.`,
-              `Hovořit s obhájcem o samotě bez přítomnosti příslušníka VS, sledovat televizní vysílání ve vymezeném osobním volnu, nakupovat hygienické potřeby ve vězeňské prodejně a účastnit se vzdělávacích aktivit programu zacházení.`,
-              `Podávat stížnosti dozorovému státnímu zástupci nebo Veřejnému ochránci práv, přijímat nárokové balíčky do 5 kg jednou za 6 měsíců, využívat telefonní automat ve stanovený čas a nosit předepsaný vězeňský oděv.`
+              `Podávat opravné prostředky proti kázeňským trestům, žádat o přemístění do jiné věznice, vést korespondenci s rodinnými příslušníky, půjčovat si knihy z vězeňské knihovny a odmítnout výkon práce ze zdravotních důvodů. Dále je zakázáno přechovávat vlastní hygienické potřeby a nosit předepsaný oděv.`,
+              `Hovořit s obhájcem o samotě bez přítomnosti příslušníka VS, sledovat televizní vysílání ve vymezeném osobním volnu, nakupovat hygienické potřeby ve vězeňské prodejně a účastnit se vzdělávacích aktivit programu zacházení. Dále je zakázáno přijímat nárokové balíčky a podávat stížnosti státnímu zástupci.`,
+              `Podávat stížnosti dozorovému státnímu zástupci nebo Veřejnému ochránci práv, přijímat nárokové balíčky do 5 kg jednou za 6 měsíců, využívat telefonní automat ve stanovený čas a nosit předepsaný vězeňský oděv. Dále je zakázáno hovořit s obhájcem a hrát povolené společenské hry v osobním volnu.`
             ],
     correctOption: 0,
     rationale: 'Zákon č. 169/1999 Sb. v § 28 odst. 3 stanoví katalog zákazů k ochraně bezpečnosti, zdraví a pořádku ve věznici. Zakazuje zejména návykové látky, zbraně, hazard, tetování a držení finanční hotovosti.',
@@ -195,10 +195,10 @@ export const penologieQuestions: Question[] = [
     question: 'Které kázeňské tresty se vykonávají v uzavřeném oddělení během VTOS?',
     answer: '1. Umístění do uzavřeného oddílu až na 28 dnů (UOMPZ) – odsouzený dochází do práce a na aktivity PZ; 2. Celodenní umístění do uzavřeného oddílu až na 20 dnů (CUO) – nepracuje, neúčastní se PZ, provádí jen úklid věznice, nutné lékařské posouzení; 3. Umístění do samovazby až na 20 dnů.',
     options: [
-              `1. Písemná důtka spojená s odebráním volnočasových aktivit až na 14 dnů; 2. Peněžitá pokuta do výše 10 000 Kč; 3. Propadnutí věci nepovolené k držení; 4. Přeložení do věznice se zvýšenou ostrahou na dobu až 6 měsíců.`,
+              `1. Písemná důtka spojená s odebráním volnočasových aktivit až na 14 dnů; 2. Peněžitá pokuta do výše 10 000 Kč; 3. Propadnutí věci nepovolené k držení; 4. Přeložení do věznice se zvýšenou ostrahou na dobu až 6 měsíců. Umístění do uzavřeného oddílu ani samovazbu zákon neuvádí.`,
               `1. Umístění do uzavřeného oddílu až na 28 dnů (UOMPZ) – odsouzený dochází do práce a na aktivity PZ; 2. Celodenní umístění do uzavřeného oddílu až na 20 dnů (CUO) – nepracuje, neúčastní se PZ, provádí jen úklid věznice, nutné lékařské posouzení; 3. Umístění do samovazby až na 20 dnů.`,
-              `1. Umístění do uzavřeného oddílu až na 60 dnů s úplným zákazem vycházek; 2. Celodenní umístění do samovazby až na 45 dnů bez souhlasu lékaře; 3. Zákaz přijímání návštěv na dobu 1 roku.`,
-              `1. Snížení kapesného na dobu 3 měsíců; 2. Zákaz nákupu potravin ve vězeňské prodejně až na 6 měsíců; 3. Zařazení do zvláštního zpřísněného oddílu pro odsouzené s poruchou chování až na 90 dnů.`
+              `1. Umístění do uzavřeného oddílu až na 60 dnů s úplným zákazem vycházek; 2. Celodenní umístění do samovazby až na 45 dnů bez souhlasu lékaře; 3. Zákaz přijímání návštěv na dobu 1 roku. Lékařské posouzení se před umístěním nevyžaduje a odsouzený se účastní programu zacházení.`,
+              `1. Snížení kapesného na dobu 3 měsíců; 2. Zákaz nákupu potravin ve vězeňské prodejně až na 6 měsíců; 3. Zařazení do zvláštního zpřísněného oddílu pro odsouzené s poruchou chování až na 90 dnů. Umístění do uzavřeného oddílu ani celodenní umístění zákon mezi tresty nezařazuje.`
             ],
     correctOption: 1,
     rationale: 'Dle § 46 odst. 3 písm. f), g), h) ZVTOS a § 49, 63, 64 vyhlášky č. 345/1999 Sb. se v uzavřeném oddílu vykonávají UOMPZ (do 28 dnů), CUO (do 20 dnů) a samovazba (do 20 dnů, u mladistvých do 10 dnů).',
@@ -212,9 +212,9 @@ export const penologieQuestions: Question[] = [
     question: 'Kteří zaměstnanci VS ČR mají kázeňskou pravomoc ve VV a kteří ve VTOS?',
     answer: 'Ve VV: vrchní dozorce, speciální pedagog, ZVOVV, VOVV, 1. zástupce ředitele a ředitel věznice. Ve VTOS: vychovatel, speciální pedagog, ZVOVT, VOVT, 1. zástupce ředitele a ředitel věznice. O stížnostech proti rozhodnutí ŘV rozhoduje generální ředitel VS ČR.',
     options: [
-              `Ve VV: výhradně dozorce na stanovišti a vedoucí eskortní směny; ve VTOS: mistr odborného výcviku, skladník věznice a psycholog oddělení; o odvoláních rozhoduje ministr spravedlnosti ČR.`,
-              `Ve VV má kázeňskou pravomoc výhradně policejní vyšetřovatel a státní zástupce; ve VTOS výhradně ředitel věznice a vedoucí oddělení prevence a stížností, přičemž proti jejich rozhodnutí není přípustný žádný opravný prostředek.`,
-              `Ve VV i VTOS mají kázeňskou pravomoc všichni řadoví dozorci a strážní bez omezení; o stížnostech proti jejich rozhodnutí rozhoduje přímo dozorový státní zástupce nebo předseda senátu okresního soudu.`,
+              `Ve VV: výhradně dozorce na stanovišti a vedoucí eskortní směny; ve VTOS: mistr odborného výcviku, skladník věznice a psycholog oddělení; o odvoláních rozhoduje ministr spravedlnosti ČR. Vychovatel, speciální pedagog ani ředitel kázeňskou pravomoc nemají.`,
+              `Ve VV má kázeňskou pravomoc výhradně policejní vyšetřovatel a státní zástupce; ve VTOS výhradně ředitel věznice a vedoucí oddělení prevence a stížností, přičemž proti jejich rozhodnutí není opravný prostředek. O stížnostech nerozhoduje generální ředitel.`,
+              `Ve VV i VTOS mají kázeňskou pravomoc všichni řadoví dozorci a strážní bez omezení; o stížnostech proti jejich rozhodnutí rozhoduje přímo dozorový státní zástupce nebo předseda senátu okresního soudu. Vrchní dozorce ani vychovatel kázeňskou pravomoc nemá.`,
               `Ve VV: vrchní dozorce, speciální pedagog, ZVOVV, VOVV, 1. zástupce ředitele a ředitel věznice. Ve VTOS: vychovatel, speciální pedagog, ZVOVT, VOVT, 1. zástupce ředitele a ředitel věznice. O stížnostech proti rozhodnutí ŘV rozhoduje generální ředitel VS ČR.`
             ],
     correctOption: 3,
@@ -229,9 +229,9 @@ export const penologieQuestions: Question[] = [
     question: 'Jaký je postup zaměstnanců VS ČR při kontrole balíku?',
     answer: 'Ověření nároku/potvrzení, váhový limit do 5 kg, RTG kontrola, fyzická kontrola obsahu. Zakázány jsou: zbraně, mobilní telefony, SIM karty, drogy, alkohol, léčiva, cennosti, hotovost, skleněné obaly, potraviny podléhající rychlé zkáze, mák setý, spreje a tetovací potřeby. Nepovolené věci se vrátí odesílateli na náklady vězně.',
     options: [
-              `Ověření totožnosti odesílatele v registru obyvatel, vážení do limitu 10 kg, otevření balíku za přítomnosti státního zástupce; povoleny jsou veškeré trvanlivé i čerstvé potraviny, alkoholické nápoje do 10 % a volně prodejná léčiva.`,
-              `Rentgenová kontrola zásilky, chemická analýza na přítomnost výbušnin, váhový limit do 15 kg; zakázána je výhradně střelná zbraň a střelivo, veškerá elektronika včetně chytrých telefonů a tabletů je po zapsání výrobního čísla vězni vydána.`,
-              `Vizuální kontrola neporušenosti obalu, zvážení do 3 kg a předání balíku přímo na celu bez otevření; pokud balík obsahuje nepovolené předměty, jsou tyto automaticky zlikvidovány ve spalovně bez záznamu a vyrozumění vězně.`,
+              `Ověření totožnosti odesílatele v registru obyvatel, vážení do limitu 10 kg, otevření balíku za přítomnosti státního zástupce; povoleny jsou veškeré trvanlivé i čerstvé potraviny, alkoholické nápoje do 10 % a volně prodejná léčiva. Vrácení odesílateli se neprovádí, zadržené věci se ukládají do úschovy věznice.`,
+              `Rentgenová kontrola zásilky, chemická analýza na přítomnost výbušnin, váhový limit do 15 kg; zakázána je výhradně střelná zbraň a střelivo, veškerá elektronika včetně chytrých telefonů a tabletů je po zapsání výrobního čísla vězni vydána. Potvrzení o nároku se nevyžaduje a o vydání zadržených věcí rozhoduje logistika.`,
+              `Vizuální kontrola neporušenosti obalu, zvážení do 3 kg a předání balíku přímo na celu bez otevření; pokud balík obsahuje nepovolené předměty, jsou tyto automaticky zlikvidovány ve spalovně bez záznamu a vyrozumění vězně. Váhový limit se nekontroluje u zásilek doručených osobně při návštěvě a RTG se provádí jen u cizinců.`,
               `Ověření nároku/potvrzení, váhový limit do 5 kg, RTG kontrola, fyzická kontrola obsahu. Zakázány jsou: zbraně, mobilní telefony, SIM karty, drogy, alkohol, léčiva, cennosti, hotovost, skleněné obaly, potraviny podléhající rychlé zkáze, mák setý, spreje a tetovací potřeby. Nepovolené věci se vrátí odesílateli na náklady vězně.`
             ],
     correctOption: 3,
@@ -246,10 +246,10 @@ export const penologieQuestions: Question[] = [
     question: 'Jaké rozlišujeme způsoby (systémy) ubytování vězňů, vysvětlete rozdíly mezi nimi!',
     answer: 'Celový systém (uzavřené cely s přísnějším režimem) a Ložnicový systém (ubytovny s volnějším pohybem v oddíle). Norma: min. 6 m² pro 1 vězně a min. 4 m² pro každého dalšího (jednolůžková cela min. 6 m²), min. 7 m³ vzduchu na osobu (výjimečně min. 3 m² při překročení kapacity v obvodu vrchního soudu).',
     options: [
-              `Skupinový systém a Individuální bezpečnostní systém. Norma: jednotně 3 m² ubytovací plochy na osobu a 5 m³ vzduchu bez ohledu na počet ubytovaných osob a typ věznice, s povinností nepřetržitého uzamčení všech ložnic i přes den.`,
-              `Diferencovaný systém a Integrovaný systém ubytování. Norma: min. 10 m² pro 1 vězně a min. 8 m² pro každého dalšího, min. 15 m³ vzduchu na osobu, přičemž na jednolůžkovou celu je striktně stanovena plocha min. 12 m² bez výjimky.`,
+              `Skupinový systém a Individuální bezpečnostní systém. Norma: jednotně 3 m² ubytovací plochy na osobu a 5 m³ vzduchu bez ohledu na počet ubytovaných osob a typ věznice, s povinností nepřetržitého uzamčení všech ložnic i přes den. Celový ani ložnicový systém se neuplatňuje a výjimky nelze povolit.`,
+              `Diferencovaný systém a Integrovaný systém ubytování. Norma: min. 10 m² pro 1 vězně a min. 8 m² pro každého dalšího, min. 15 m³ vzduchu na osobu, přičemž na jednolůžkovou celu je striktně stanovena plocha min. 12 m² bez výjimky. Snížení plochy při překročení kapacity nelze povolit.`,
               `Celový systém (uzavřené cely s přísnějším režimem) a Ložnicový systém (ubytovny s volnějším pohybem v oddíle). Norma: min. 6 m² pro 1 vězně a min. 4 m² pro každého dalšího (jednolůžková cela min. 6 m²), min. 7 m³ vzduchu na osobu (výjimečně min. 3 m² při překročení kapacity v obvodu vrchního soudu).`,
-              `Pavilonový systém a Koridorový systém ubytování. Norma: min. 8 m² na každého vězně bez rozdílu počtu lůžek, min. 12 m³ vzduchu na osobu, přičemž překročení ubytovací kapacity věznice může povolit výhradně dozorový státní zástupce.`
+              `Pavilonový systém a Koridorový systém ubytování. Norma: min. 8 m² na každého vězně bez rozdílu počtu lůžek, min. 12 m³ vzduchu na osobu, přičemž překročení ubytovací kapacity věznice může povolit výhradně dozorový státní zástupce. Celový ani ložnicový systém norma nezná a vzduch se nestanovuje.`
             ],
     correctOption: 2,
     rationale: 'Dle § 17 vyhlášky č. 345/1999 Sb. a § 15 vyhlášky č. 109/1994 Sb. je stanovena standardní plocha 6 m² pro prvního a 4 m² pro každého dalšího ubytovaného a minimálně 7 m³ objemu vzduchu.',
@@ -263,10 +263,10 @@ export const penologieQuestions: Question[] = [
     question: 'Vyjmenujte rizikové skupiny osob podle NGŘ č. 24/2022 včetně stanovených úředních zkratek!',
     answer: 'STH (Snížená tělesná hmotnost – lékař), NMU (Nízká mentální úroveň – VOVT na návrh psychologa), MON (Možný objekt násilí – VOVT), MPN (Možný pachatel násilí – VOVT), DVO (Další vytypovaná osoba – ředitel věznice), DVO-P (Vytypovaná osoba s výkonem profese – ředitel věznice).',
     options: [
-              `STH (Střední tělesný handicap – vrchní dozorce), NMU (Nezletilý mladistvý ubytovaný – vychovatel), MON (Možný organizátor narkotik – VOVT), MPN (Možný pachatel napadení – ZVOVT), DVO (Dočasně vyčleněná osoba), DVO-P (Dočasně vyčleněná osoba v podmínce).`,
+              `STH (Střední tělesný handicap – vrchní dozorce), NMU (Nezletilý mladistvý ubytovaný – vychovatel), MON (Možný organizátor narkotik – VOVT), MPN (Možný pachatel napadení – ZVOVT), DVO (Dočasně vyčleněná osoba), DVO-P (Dočasně vyčleněná osoba v podmínce). Rozhodnutí o vytypování vydává v každém případě vrchní dozorce.`,
               `STH (Snížená tělesná hmotnost – lékař), NMU (Nízká mentální úroveň – VOVT na návrh psychologa), MON (Možný objekt násilí – VOVT), MPN (Možný pachatel násilí – VOVT), DVO (Další vytypovaná osoba – ředitel věznice), DVO-P (Vytypovaná osoba s výkonem profese – ředitel věznice).`,
-              `STH (Stav trvalé hostility – psycholog), NMU (Neschopný manuálního umístění – lékař), MON (Mimořádně odsouzený narkoman – VOVT), MPN (Možný podněcovatel nepokojů – ředitel věznice), DVO (Dozorovaný vězeň ostrahy), DVO-P (Dozorovaný vězeň s postižením).`,
-              `STH (Snížená tolerance hospitalizace – lékař), NMU (Negativně motivovaný ubytovaný – speciální pedagog), MON (Mladistvý odsouzený nováček – psycholog), MPN (Manipulativní pachatel nátlaku – VOVT), DVO (Dlouhodobě vězněná osoba), DVO-P (Dlouhodobě pracující osoba).`
+              `STH (Stav trvalé hostility – psycholog), NMU (Neschopný manuálního umístění – lékař), MON (Mimořádně odsouzený narkoman – VOVT), MPN (Možný podněcovatel nepokojů – ředitel věznice), DVO (Dozorovaný vězeň ostrahy), DVO-P (Dozorovaný vězeň s postižením). O vytypování rozhoduje vždy psycholog věznice.`,
+              `STH (Snížená tolerance hospitalizace – lékař), NMU (Negativně motivovaný ubytovaný – speciální pedagog), MON (Mladistvý odsouzený nováček – psycholog), MPN (Manipulativní pachatel nátlaku – VOVT), DVO (Dlouhodobě vězněná osoba), DVO-P (Dlouhodobě pracující osoba). O vytypování rozhoduje speciální pedagog.`
             ],
     correctOption: 1,
     rationale: 'NGŘ č. 24/2022 v § 3–9 definuje 6 kategorií vytypovaných osob pro prevenci násilí a viktimizace. U STH, NMU, MON, DVO a DVO-P se provádí zraková prohlídka těla na stopy násilí 1x týdně.',
@@ -280,10 +280,10 @@ export const penologieQuestions: Question[] = [
     question: 'Jaké jsou základní povinnosti dozorce v uzavřeném oddělení?',
     answer: 'Převzít klíče a cely PPZZ, prověřit signalizaci, umísťovat odsouzené na základě vykonatelného rozhodnutí o KT a potvrzení lékaře, provést osobní prohlídku, převléknout do eráru, odebrat zakázané věci se soupisem, poučit o právech/povinnostech a provádět nepravidelné kontroly cel.',
     options: [
-              `Převzít odsouzené na základě ústního pokynu vychovatele bez lékařského posouzení, ponechat jim veškeré osobní věci a civilní oděv, umožnit volný pohyb po chodbě oddílu a provádět kontroly cel v pevných hodinových intervalech.`,
-              `Zpracovávat návrhy na zmírnění uloženého kázeňského trestu, vydávat odsouzeným radiopřijímače a tiskoviny, organizovat sportovní hry v prostoru uzavřeného oddílu a zamykat cely výhradně na noční dobu od 22:00 do 06:00 hodin.`,
+              `Převzít odsouzené na základě ústního pokynu vychovatele bez lékařského posouzení, ponechat jim veškeré osobní věci a civilní oděv, umožnit volný pohyb po chodbě oddílu a provádět kontroly cel v pevných hodinových intervalech. Potvrzení lékaře se nevyžaduje a zakázané věci se odebírají bez soupisu.`,
+              `Zpracovávat návrhy na zmírnění uloženého kázeňského trestu, vydávat odsouzeným radiopřijímače a tiskoviny, organizovat sportovní hry v prostoru uzavřeného oddílu a zamykat cely výhradně na noční dobu od 22:00 do 06:00 hodin. Osobní prohlídku ani převlečení do eráru dozorce neprovádí a klíče nepřebírá.`,
               `Převzít klíče a cely PPZZ, prověřit signalizaci, umísťovat odsouzené na základě vykonatelného rozhodnutí o KT a potvrzení lékaře, provést osobní prohlídku, převléknout do eráru, odebrat zakázané věci se soupisem, poučit o právech/povinnostech a provádět nepravidelné kontroly cel.`,
-              `Vydávat stravu a léky bez asistence zdravotnického personálu, provádět zrakové prohlídky těla výhradně při propuštění z oddílu, povolovat telefonní hovory s příbuznými 2× denně a vést osobní spis odsouzeného.`
+              `Vydávat stravu a léky bez asistence zdravotnického personálu, provádět zrakové prohlídky těla výhradně při propuštění z oddílu, povolovat telefonní hovory s příbuznými 2× denně a vést osobní spis odsouzeného. Signalizaci dozorce neprověřuje a o právech a povinnostech nepoučuje.`
             ],
     correctOption: 2,
     rationale: 'Dle § 3.12 a § 70 NGŘ č. 2/2022 vyžaduje výkon služby v uzavřeném oddílu zvýšenou bezpečnostní ostražitost, striktní evidenci věcí, lékařské posouzení způsobilosti a nepřipuštění nedovolených kontaktů.',
@@ -297,10 +297,10 @@ export const penologieQuestions: Question[] = [
     question: 'Které kázeňské tresty a v jakém rozsahu se vykonávají v uzavřeném oddělení?',
     answer: 'VTOS dospělí: UOMPZ až na 28 dnů, CUO až na 20 dnů, samovazba až na 20 dnů. VTOS mladiství a TPN: UOMPZ až 14 dnů, CUO až 10 dnů, samovazba až 10 dnů. Výkon vazby: samovazba až na 10 dnů (mladiství ve VV max. 5 dnů).',
     options: [
-              `VTOS dospělí: UOMPZ až na 45 dnů, CUO až na 30 dnů, samovazba až na 30 dnů. VTOS mladiství: UOMPZ až 28 dnů, CUO až 20 dnů, samovazba až 15 dnů. Výkon vazby: samovazba až na 20 dnů (mladiství ve VV max. 10 dnů).`,
-              `VTOS dospělí: UOMPZ až na 20 dnů, CUO až na 28 dnů, samovazba až na 28 dnů. VTOS mladiství: UOMPZ až 10 dnů, CUO až 14 dnů, samovazba se u mladistvých nesmí uložit vůbec. Výkon vazby: samovazba až na 14 dnů.`,
+              `VTOS dospělí: UOMPZ až na 45 dnů, CUO až na 30 dnů, samovazba až na 30 dnů. VTOS mladiství: UOMPZ až 28 dnů, CUO až 20 dnů, samovazba až 15 dnů. Výkon vazby: samovazba až na 20 dnů (mladiství ve VV max. 10 dnů). U TPN se tresty neukládají.`,
+              `VTOS dospělí: UOMPZ až na 20 dnů, CUO až na 28 dnů, samovazba až na 28 dnů. VTOS mladiství: UOMPZ až 10 dnů, CUO až 14 dnů, samovazba se u mladistvých nesmí uložit vůbec. Výkon vazby: samovazba až na 14 dnů. U TPN platí stejné limity jako u dospělých.`,
               `VTOS dospělí: UOMPZ až na 28 dnů, CUO až na 20 dnů, samovazba až na 20 dnů. VTOS mladiství a TPN: UOMPZ až 14 dnů, CUO až 10 dnů, samovazba až 10 dnů. Výkon vazby: samovazba až na 10 dnů (mladiství ve VV max. 5 dnů).`,
-              `VTOS dospělí: UOMPZ až na 14 dnů, CUO až na 10 dnů, samovazba až na 10 dnů. VTOS mladiství: UOMPZ až 7 dnů, CUO až 5 dnů, samovazba až 3 dny. Výkon vazby: samovazba až na 5 dnů (mladiství ve VV max. 2 dny).`
+              `VTOS dospělí: UOMPZ až na 14 dnů, CUO až na 10 dnů, samovazba až na 10 dnů. VTOS mladiství: UOMPZ až 7 dnů, CUO až 5 dnů, samovazba až 3 dny. Výkon vazby: samovazba až na 5 dnů (mladiství ve VV max. 2 dny). U TPN se rozsah trestů neodlišuje.`
             ],
     correctOption: 2,
     rationale: 'Dle § 46 ZVTOS, § 64 ZVTOS pro mladistvé, § 22 a § 26 ZVV jsou délky trestů v uzavřeném oddílu a samovazbě přesně zákonně limitovány.',
@@ -314,9 +314,9 @@ export const penologieQuestions: Question[] = [
     question: 'Uveďte nejdůležitější režimová omezení v uzavřeném oddělení!',
     answer: 'Zákaz kouření, zákaz nákupu potravin (mimo hygieny), zákaz knih/tisku (kromě právnické, vzdělávací a náboženské literatury), zákaz radiopřijímače/TV, zákaz odpočinku na lůžku mimo vymezený čas; u samovazby zákaz návštěv (mimo advokáta) a balíčků.',
     options: [
-              `Zákaz sprchování a osobní hygieny, zákaz podávání teplé stravy, zákaz korespondence s obhájcem a státními orgány, zákaz denních vycházek a povinné celodenní stání v pozoru u mříže cely.`,
-              `Povolení neomezeného nákupu potravin i tabákových výrobků, možnost sledování společné televize do 23:00 hodin, zachování nároku na standardní balíčky a účast na všech skupinových sportovních aktivitách.`,
-              `Zákaz užívání předepsaných léků, zákaz kontaktu se zdravotnickým personálem, omezení pitné vody na 1 litr denně a povinné vykonávání nočních úklidových prací po dobu trvání trestu.`,
+              `Zákaz sprchování a osobní hygieny, zákaz podávání teplé stravy, zákaz korespondence s obhájcem a státními orgány, zákaz denních vycházek a povinné celodenní stání v pozoru u mříže cely. Nákup hygienických potřeb zůstává povolen a vycházky se konají dvakrát denně.`,
+              `Povolení neomezeného nákupu potravin i tabákových výrobků, možnost sledování společné televize do 23:00 hodin, zachování nároku na standardní balíčky a účast na všech skupinových sportovních aktivitách. Zákaz kouření ani zákaz odpočinku na lůžku se v uzavřeném oddílu neuplatňuje.`,
+              `Zákaz užívání předepsaných léků, zákaz kontaktu se zdravotnickým personálem, omezení pitné vody na 1 litr denně a povinné vykonávání nočních úklidových prací po dobu trvání trestu. Zákaz kouření neplatí a návštěvy advokáta jsou vyloučeny.`,
               `Zákaz kouření, zákaz nákupu potravin (mimo hygieny), zákaz knih/tisku (kromě právnické, vzdělávací a náboženské literatury), zákaz radiopřijímače/TV, zákaz odpočinku na lůžku mimo vymezený čas; u samovazby zákaz návštěv (mimo advokáta) a balíčků.`
             ],
     correctOption: 3,
@@ -331,10 +331,10 @@ export const penologieQuestions: Question[] = [
     question: 'Jaké rozlišujeme druhy pracovišť odsouzených z hlediska jejich zabezpečení (střežení)?',
     answer: '1. Střežené pracoviště uvnitř věznice (SPUV), 2. Nestřežené pracoviště mimo věznici (NPMV – max. 40 vězňů na zaměstnance), 3. Pracoviště s volným pohybem mimo věznici (VPMV), 4. Pracoviště s volným pohybem v prostoru věznice.',
     options: [
-              `1. Primární průmyslové pracoviště s ozbrojeným dohledem, 2. Sekundární zemědělské pracoviště s volným režimem (max. 100 vězňů), 3. Terciární pracoviště služeb bez ostrahy, 4. Chráněná dílna pro mladistvé odsouzené.`,
+              `1. Primární průmyslové pracoviště s ozbrojeným dohledem, 2. Sekundární zemědělské pracoviště s volným režimem (max. 100 vězňů), 3. Terciární pracoviště služeb bez ostrahy, 4. Chráněná dílna pro mladistvé odsouzené. Pracoviště s volným pohybem se nezřizují.`,
               `1. Střežené pracoviště uvnitř věznice (SPUV), 2. Nestřežené pracoviště mimo věznici (NPMV – max. 40 vězňů na zaměstnance), 3. Pracoviště s volným pohybem mimo věznici (VPMV), 4. Pracoviště s volným pohybem v prostoru věznice.`,
-              `1. Vnitřní výrobní pracoviště se stálou stráží na věži, 2. Vnější uzavřené pracoviště s technickým zabezpečením (max. 15 vězňů), 3. Brigádní pracoviště veřejně prospěšných prací, 4. Noční úklidové pracoviště v ubytovnách.`,
-              `1. Střežené pracoviště v režimu zvýšené ostrahy (SPZO), 2. Dozorované pracoviště s elektronickým monitoringem (DPEM – max. 60 vězňů), 3. Polozavřené dílenské pracoviště, 4. Individuální pracoviště v cele odsouzeného.`
+              `1. Vnitřní výrobní pracoviště se stálou stráží na věži, 2. Vnější uzavřené pracoviště s technickým zabezpečením (max. 15 vězňů), 3. Brigádní pracoviště veřejně prospěšných prací, 4. Noční úklidové pracoviště v ubytovnách. Nestřežené pracoviště mimo věznici se nezřizuje.`,
+              `1. Střežené pracoviště v režimu zvýšené ostrahy (SPZO), 2. Dozorované pracoviště s elektronickým monitoringem (DPEM – max. 60 vězňů), 3. Polozavřené dílenské pracoviště, 4. Individuální pracoviště v cele odsouzeného. Pracoviště s volným pohybem v prostoru věznice se nezřizuje.`
             ],
     correctOption: 1,
     rationale: 'Dle § 30 ZVTOS a § 51–55 vyhlášky č. 345/1999 Sb. a NGŘ č. 45/2015 se pracoviště dělí podle rizikovosti a režimu střežení na SPUV, NPMV, VPMV a volný pohyb v objektu.',
@@ -348,9 +348,9 @@ export const penologieQuestions: Question[] = [
     question: 'Uveďte základní povinnosti dozorce na vnějším nestřeženém pracovišti!',
     answer: 'Převzít jmenovitě a početně odsouzené dle propustky, provést osobní prohlídku a prohlídku vozidla před odjezdem, vymezit prostor pohybu a zakázat nepovolené kontakty s civilisty, provádět nepravidelné početní prověrky a kontroly v předepsaných intervalech a hlásit na OS závažné události.',
     options: [
-              `Dohlížet výhradně na plnění výrobních norem a evidovat odpracované hodiny, umožnit odsouzeným volný nákup v přilehlých obchodech a provést kontrolu stavu pouze při návratu do věznice.`,
-              `Vykonávat manuální práci spolu s odsouzenými u výrobní linky, pověřit vybraného spolehlivého odsouzeného vedením početní evidence a hlásit situaci na operační středisko 1× týdně písemným záznamem.`,
-              `Střežit vnější perimetr pracoviště se střelnou zbraní v pohotovostní poloze, zamezit jakémukoliv přístupu civilních mistrů k odsouzeným a provádět kompletní osobní prohlídku každých 30 minut.`,
+              `Dohlížet výhradně na plnění výrobních norem a evidovat odpracované hodiny, umožnit odsouzeným volný nákup v přilehlých obchodech a provést kontrolu stavu pouze při návratu do věznice. Početní prověrky během pracovní doby neprovádět a o pohybu odsouzených vést jen souhrnný denní zápis.`,
+              `Vykonávat manuální práci spolu s odsouzenými u výrobní linky, pověřit vybraného spolehlivého odsouzeného vedením početní evidence a hlásit situaci na operační středisko 1× týdně písemným záznamem. Osobní prohlídku před odjezdem neprovádět, odpovědnost nese civilní mistr provozu.`,
+              `Střežit vnější perimetr pracoviště se střelnou zbraní v pohotovostní poloze, zamezit jakémukoliv přístupu civilních mistrů k odsouzeným a provádět kompletní osobní prohlídku každých 30 minut. Propustku ani jmenovitý seznam odsouzených nepřebírat a početní stav ověřit až po návratu eskorty do věznice.`,
               `Převzít jmenovitě a početně odsouzené dle propustky, provést osobní prohlídku a prohlídku vozidla před odjezdem, vymezit prostor pohybu a zakázat nepovolené kontakty s civilisty, provádět nepravidelné početní prověrky a kontroly v předepsaných intervalech a hlásit na OS závažné události.`
             ],
     correctOption: 3,
@@ -365,9 +365,9 @@ export const penologieQuestions: Question[] = [
     question: 'Jaké jsou zákonné důvody propuštění odsouzeného z VTOS?',
     answer: 'a) Uplynutí doby trestu stanovené v rozsudku, b) písemný příkaz soudu (např. rozhodnutí o podmíněném propuštění dle § 88 TZ), c) příkaz státního zástupce při výkonu dozoru, d) rozhodnutí prezidenta republiky o milosti nebo ministra spravedlnosti.',
     options: [
-              `a) Uplynutí 1/3 trestu při bezproblémovém chování, b) rozhodnutí probačního úředníka PMS ČR, c) nařízení vedoucího oddělení výkonu trestu z kapacitních důvodů, d) souhlasné stanovisko psychologa věznice.`,
-              `a) Rozhodnutí ředitele věznice na návrh komise pro zacházení, b) zaplacení peněžitého trestu nebo náhrady škody poškozenému, c) udělení kázeňské odměny za mimořádný pracovní výkon, d) písemný souhlas primátora města.`,
-              `a) Dosažení věku 65 let odsouzeného, b) složení kauce rodinnými příslušníky ve výši stanovené ředitelem věznice, c) splnění všech cílů programu zacházení, d) písemná žádost zaměstnavatele o návrat pracovníka.`,
+              `a) Uplynutí 1/3 trestu při bezproblémovém chování, b) rozhodnutí probačního úředníka PMS ČR, c) nařízení vedoucího oddělení výkonu trestu z kapacitních důvodů, d) souhlasné stanovisko psychologa věznice. Příkaz soudu ani milost prezidenta republiky nejsou důvodem propuštění.`,
+              `a) Rozhodnutí ředitele věznice na návrh komise pro zacházení, b) zaplacení peněžitého trestu nebo náhrady škody poškozenému, c) udělení kázeňské odměny za mimořádný pracovní výkon, d) písemný souhlas primátora města. Uplynutí doby trestu stanovené v rozsudku mezi důvody propuštění nepatří.`,
+              `a) Dosažení věku 65 let odsouzeného, b) složení kauce rodinnými příslušníky ve výši stanovené ředitelem věznice, c) splnění všech cílů programu zacházení, d) písemná žádost zaměstnavatele o návrat pracovníka. Příkaz státního zástupce při výkonu dozoru se v těchto případech nevydává.`,
               `a) Uplynutí doby trestu stanovené v rozsudku, b) písemný příkaz soudu (např. rozhodnutí o podmíněném propuštění dle § 88 TZ), c) příkaz státního zástupce při výkonu dozoru, d) rozhodnutí prezidenta republiky o milosti nebo ministra spravedlnosti.`
             ],
     correctOption: 3,
@@ -382,10 +382,10 @@ export const penologieQuestions: Question[] = [
     question: 'Uveďte nejdůležitější pravomoci dozorového státního zástupce při kontrole podmínek ve VV a VTOS!',
     answer: 'Navštěvovat věznici v kteroukoliv dobu, nahlížet do všech spisů a dokladů, hovořit s vězněnými osobami o samotě bez přítomnosti personálu, prověřovat zákonnost rozhodnutí VS, vydávat závazné příkazy k nápravě a nařídit okamžité propuštění nezákonně držené osoby.',
     options: [
-              `Rozhodovat o podmíněném propuštění na svobodu na místě bez účasti soudu, měnit zařazení věznic do typů ostrahy, řídit zásahovou jednotku VS ČR při mimořádných událostech a provádět tělesné prohlídky vězňů.`,
-              `Udělovat odsouzeným kázeňské odměny a tresty, schvalovat měsíční jídelníček věznice, stanovovat rozvrh směn příslušníků VS ČR a provádět výhradně plánované prověrky po předchozím ohlášení 14 dnů předem.`,
+              `Rozhodovat o podmíněném propuštění na svobodu na místě bez účasti soudu, měnit zařazení věznic do typů ostrahy, řídit zásahovou jednotku VS ČR při mimořádných událostech a provádět tělesné prohlídky vězňů. Nahlížet do spisů ani hovořit s vězni o samotě dozorový státní zástupce oprávněn není.`,
+              `Udělovat odsouzeným kázeňské odměny a tresty, schvalovat měsíční jídelníček věznice, stanovovat rozvrh směn příslušníků VS ČR a provádět výhradně plánované prověrky po předchozím ohlášení 14 dnů předem. Nařídit propuštění nezákonně držené osoby ani vydávat závazné příkazy k nápravě nemůže.`,
               `Navštěvovat věznici v kteroukoliv dobu, nahlížet do všech spisů a dokladů, hovořit s vězněnými osobami o samotě bez přítomnosti personálu, prověřovat zákonnost rozhodnutí VS, vydávat závazné příkazy k nápravě a nařídit okamžité propuštění nezákonně držené osoby.`,
-              `Vstupovat do věznice výhradně v pracovní dny v doprovodu ředitele věznice, hovořit s vězni výhradně za přítomnosti vychovatele a podávat pouze nezávazná doporučení generálnímu ředitelství VS ČR.`
+              `Vstupovat do věznice výhradně v pracovní dny v doprovodu ředitele věznice, hovořit s vězni výhradně za přítomnosti vychovatele a podávat pouze nezávazná doporučení generálnímu ředitelství VS ČR. Závazné příkazy vydávat nemůže a do spisů nahlížet není oprávněn.`
             ],
     correctOption: 2,
     rationale: 'Dle § 78 ZVTOS, § 29 ZVV a § 40 ZVD vykonává krajské státní zastupitelství nezávislý dozor nad dodržováním právních předpisů ve vězeňských zařízeních a jeho příkazy je VS ČR povinna bez odkladu splnit.',
@@ -400,9 +400,9 @@ export const penologieQuestions: Question[] = [
     answer: 'Právo na návštěvu v trvání 3 hodin za kalendářní měsíc pro nejvýše 4 osoby včetně dětí (děti <15 let pouze v doprovodu dospělého >18 let). Jako odměnu lze dobu zvýšit až na 5 hodin (u mladistvých až 8 hodin). Návštěvy probíhají zpravidla ve dnech pracovního klidu.',
     options: [
               `Právo na návštěvu v trvání 3 hodin za kalendářní měsíc pro nejvýše 4 osoby včetně dětí (děti <15 let pouze v doprovodu dospělého >18 let). Jako odměnu lze dobu zvýšit až na 5 hodin (u mladistvých až 8 hodin). Návštěvy probíhají zpravidla ve dnech pracovního klidu.`,
-              `Právo na návštěvu v trvání 1 hodiny týdně pro neomezený počet příbuzných v přímé linii; jako odměnu lze povolit návštěvu v domácím prostředí na dobu až 48 hodin bez souhlasu ředitele.`,
-              `Právo na návštěvu v trvání 90 minut jednou za 2 týdny pro nejvýše 2 zletilé osoby bez možnosti účasti dětí; jako odměnu lze dobu prodloužit na 3 hodiny jednou měsíčně výhradně v pracovní dny.`,
-              `Právo na návštěvu v trvání 5 hodin měsíčně pro max. 6 osob současně; návštěvy probíhají výhradně formou videokonference přes schválený zabezpečený terminál s dohledem psychologa.`
+              `Právo na návštěvu v trvání 1 hodiny týdně pro neomezený počet příbuzných v přímé linii; jako odměnu lze povolit návštěvu v domácím prostředí na dobu až 48 hodin bez souhlasu ředitele. Počet osob není omezen a o povolení rozhoduje vychovatel oddělení bez souhlasu ředitele věznice.`,
+              `Právo na návštěvu v trvání 90 minut jednou za 2 týdny pro nejvýše 2 zletilé osoby bez možnosti účasti dětí; jako odměnu lze dobu prodloužit na 3 hodiny jednou měsíčně výhradně v pracovní dny. Děti se nepřipouštějí ani v doprovodu dospělého a dobu nelze prodloužit jako odměnu.`,
+              `Právo na návštěvu v trvání 5 hodin měsíčně pro max. 6 osob současně; návštěvy probíhají výhradně formou videokonference přes schválený zabezpečený terminál s dohledem psychologa. Osobní kontakt není umožněn ani jako odměna a děti se k terminálu nepřipouštějí.`
             ],
     correctOption: 0,
     rationale: 'Dle § 19 zákona č. 169/1999 Sb. a § 26 vyhlášky č. 345/1999 Sb. je návštěva v rozsahu 3 hodin měsíčně pro max. 4 osoby základním zákonným právem odsouzeného.',
@@ -416,10 +416,10 @@ export const penologieQuestions: Question[] = [
     question: 'Uveďte několik příkladů tzv. nedovolených předmětů, které nebudou odsouzeným vydány z doručeného balíku, vysvětlete pojem potravina podléhající rychlé zkáze a doplňte ho příkladem.',
     answer: 'Nedovolené předměty: zbraně, SIM karty, mobily, drogy, alkohol, léky, peníze, sklo, spreje. Potravina podléhající rychlé zkáze: potravina vyžadující stálé chlazení či tepelné zpracování, u níž hrozí rychlé mikrobiální zkažení (příklad: měkké salámy, tlačenky, majonézové saláty, čerstvé maso, zákusky).',
     options: [
-              `Nedovolené předměty: knihy s pevnou vazbou, dopisní papíry, poštovní známky, mýdlo v tuhém stavu. Potravina podléhající rychlé zkáze: veškeré balené sterilované konzervy, instantní polévky a balený černý čaj po otevření.`,
+              `Nedovolené předměty: knihy s pevnou vazbou, dopisní papíry, poštovní známky, mýdlo v tuhém stavu. Potravina podléhající rychlé zkáze: veškeré balené sterilované konzervy, instantní polévky a balený černý čaj po otevření. Vrácení odesílateli se u těchto věcí neprovádí a balíček se bez záznamu likviduje ve spalovně.`,
               `Nedovolené předměty: zbraně, SIM karty, mobily, drogy, alkohol, léky, peníze, sklo, spreje. Potravina podléhající rychlé zkáze: potravina vyžadující stálé chlazení či tepelné zpracování, u níž hrozí rychlé mikrobiální zkažení (příklad: měkké salámy, tlačenky, majonézové saláty, čerstvé maso, zákusky).`,
-              `Nedovolené předměty: civilní spodní prádlo, fotografie rodinných příslušníků, plastové příbory. Potravina podléhající rychlé zkáze: balené suchary, čokoláda s obsahem kakaa pod 50 % a minerální vody v PET lahvích.`,
-              `Nedovolené předměty: výhradně střelné zbraně a trhaviny. Potravina podléhající rychlé zkáze: jakákoliv potravina s dobou minimální trvanlivosti kratší než 2 roky (příklad: tvrdé sýry, balené těstoviny a rýže).`
+              `Nedovolené předměty: civilní spodní prádlo, fotografie rodinných příslušníků, plastové příbory. Potravina podléhající rychlé zkáze: balené suchary, čokoláda s obsahem kakaa pod 50 % a minerální vody v PET lahvích. Tyto potraviny se zadržují a odsouzenému se vydávají až při propuštění z výkonu trestu.`,
+              `Nedovolené předměty: výhradně střelné zbraně a trhaviny. Potravina podléhající rychlé zkáze: jakákoliv potravina s dobou minimální trvanlivosti kratší než 2 roky (příklad: tvrdé sýry, balené těstoviny a rýže). Posouzení provádí vychovatel oddělení bez součinnosti lékaře a bez kontroly data trvanlivosti.`
             ],
     correctOption: 1,
     rationale: 'Dle § 33 vyhlášky č. 345/1999 Sb. je zakázáno v balíčcích zasílat potraviny podléhající rychlé zkáze z hygienických a zdravotních důvodů (riziko těžkých alimentárních infekcí a otrav na celách bez lednice).',
@@ -433,10 +433,10 @@ export const penologieQuestions: Question[] = [
     question: 'Jakými způsoby VS ČR zajišťuje zdravotní péči o vězněné osoby?',
     answer: '1. Vlastní zdravotnická střediska ve věznicích (praktický lékař, stomatolog, sestry), 2. Vězeňské nemocnice (Praha-Pankrác a Brno), 3. Mimovězeňští poskytovatelé zdravotních služeb (odborné ambulance a civilní nemocnice pod ostrahou VS), 4. Zdravotnická záchranná služba (RZS). Od roku 2024 spravuje zdravotnictví MS ČR.',
     options: [
-              `1. Zdravotní střediska v gesci Ministerstva práce a sociálních věcí, 2. Vězeňská nemocnice v Plzni a v Ostravě, 3. Ošetřovny charitativních organizací, 4. Lékařská péče poskytovaná výhradně po ukončení výkonu trestu.`,
-              `1. Výhradně polní nemocnice Armády ČR, 2. Zdravotnická zařízení Ministerstva vnitra ČR, 3. Krajské hygienické stanice, 4. Poskytovatelé lázeňské a rehabilitační péče schválení ředitelem věznice.`,
+              `1. Zdravotní střediska v gesci Ministerstva práce a sociálních věcí, 2. Vězeňská nemocnice v Plzni a v Ostravě, 3. Ošetřovny charitativních organizací, 4. Lékařská péče poskytovaná výhradně po ukončení výkonu trestu. O výběru poskytovatele rozhoduje vychovatel oddělení a náklady hradí odsouzený z kapesného.`,
+              `1. Výhradně polní nemocnice Armády ČR, 2. Zdravotnická zařízení Ministerstva vnitra ČR, 3. Krajské hygienické stanice, 4. Poskytovatelé lázeňské a rehabilitační péče schválení ředitelem věznice. Vlastní zdravotnická střediska se ve věznicích nezřizují a stomatologická péče se vězněným osobám neposkytuje.`,
               `1. Vlastní zdravotnická střediska ve věznicích (praktický lékař, stomatolog, sestry), 2. Vězeňské nemocnice (Praha-Pankrác a Brno), 3. Mimovězeňští poskytovatelé zdravotních služeb (odborné ambulance a civilní nemocnice pod ostrahou VS), 4. Zdravotnická záchranná služba (RZS). Od roku 2024 spravuje zdravotnictví MS ČR.`,
-              `1. Lékárničky první pomoci umístěné na každé ložnici ubytovny, 2. Služba Červeného kříže docházející 1× měsíčně, 3. Samoléčba volně prodejnými léky z vězeňské prodejny, 4. Telemedicína přes videohovory s lékaři ze soukromých klinik.`
+              `1. Lékárničky první pomoci umístěné na každé ložnici ubytovny, 2. Služba Červeného kříže docházející 1× měsíčně, 3. Samoléčba volně prodejnými léky z vězeňské prodejny, 4. Telemedicína přes videohovory s lékaři ze soukromých klinik. Vězeňské nemocnice ani vlastní zdravotnická střediska se nezřizují a výjezd záchranné služby do objektu věznice není přípustný.`
             ],
     correctOption: 2,
     rationale: 'Dle § 16 ZVTOS, § 18 ZVV, § 19 ZVD a § 23/32 vyhlášek je zdravotní péče garantována státem a organizována ve 4 stupních od vězeňského střediska až po specializovanou péči v civilních nemocnicích.',
@@ -450,9 +450,9 @@ export const penologieQuestions: Question[] = [
     question: 'Jaký bude postup zaměstnance VS ČR při zjištění stop násilí na těle odsouzeného (obviněného)?',
     answer: '1. Zamezit dalšímu násilí, 2. Poskytnout první pomoc a zajistit lékařské ošetření, 3. Ihned ohlásit nadřízenému (v mimopracovní době VISS), 4. Pořídit fotodokumentaci osobou stejného pohlaví, 5. Vyplnit Záznam o zjištění fyzického násilí, 6. Předvedení k lékaři a psychologovi, 7. Předat oddělení prevence a stížností.',
     options: [
-              `1. Předvést zraněného odsouzeného k výslechu na Policii ČR, 2. Provést kompletní technickou prohlídku všech ložnic na oddílu, 3. Zrušit všem odsouzeným na patře vycházky na dobu 14 dnů, 4. Zaslat hlášení dozorovému státnímu zástupci do 30 dnů.`,
-              `1. Vyzvat zraněného k podání písemné stížnosti řediteli věznice, 2. Vydat náplast z lékárničky stanoviště, 3. Vyfotografovat stopy násilí služebním mobilním telefonem bez ohledu na pohlaví, 4. Vyčkat do nástupu ranní směny vychovatele.`,
-              `1. Okamžitě oddělit účastníky a umístit je oba bezodkladně do samovazby na 20 dnů, 2. Vyčkat na vyjádření obou stran v kázeňském řízení, 3. Seznámit s incidentem zástupce samosprávy odsouzených, 4. Provést záznam do knihy předávání služby.`,
+              `1. Předvést zraněného odsouzeného k výslechu na Policii ČR, 2. Provést kompletní technickou prohlídku všech ložnic na oddílu, 3. Zrušit všem odsouzeným na patře vycházky na dobu 14 dnů, 4. Zaslat hlášení dozorovému státnímu zástupci do 30 dnů. Fotodokumentaci ani Záznam o zjištění fyzického násilí se nepořizují a lékař se nevyrozumívá.`,
+              `1. Vyzvat zraněného k podání písemné stížnosti řediteli věznice, 2. Vydat náplast z lékárničky stanoviště, 3. Vyfotografovat stopy násilí služebním mobilním telefonem bez ohledu na pohlaví, 4. Vyčkat do nástupu ranní směny vychovatele. Lékařské ošetření se nezajišťuje a oddělení prevence a stížností se nevyrozumívá.`,
+              `1. Okamžitě oddělit účastníky a umístit je oba bezodkladně do samovazby na 20 dnů, 2. Vyčkat na vyjádření obou stran v kázeňském řízení, 3. Seznámit s incidentem zástupce samosprávy odsouzených, 4. Provést záznam do knihy předávání služby. Fotodokumentace se nepořizuje a první pomoc poskytuje až ranní směna.`,
               `1. Zamezit dalšímu násilí, 2. Poskytnout první pomoc a zajistit lékařské ošetření, 3. Ihned ohlásit nadřízenému (v mimopracovní době VISS), 4. Pořídit fotodokumentaci osobou stejného pohlaví, 5. Vyplnit Záznam o zjištění fyzického násilí, 6. Předvedení k lékaři a psychologovi, 7. Předat oddělení prevence a stížností.`
             ],
     correctOption: 3,
@@ -467,10 +467,10 @@ export const penologieQuestions: Question[] = [
     question: 'Uveďte 4 příklady institucí (osob), na něž se může obrátit se stížností vězněná osoba v případě, že se domnívá, že byla porušena její zákonem garantovaná práva, či poškozena lidská důstojnost?',
     answer: '1. Dozorový státní zástupce krajského státního zastupitelství, 2. Veřejný ochránce práv (Ombudsman), 3. Evropský soud pro lidská práva (ESLP Štrasburk), 4. Výbor OSN proti mučení / Evropský výbor pro zabránění mučení (CPT).',
     options: [
-              `1. Ředitel Probační a mediační služby ČR, 2. Ústavní ústav Akademie věd ČR, 3. Generální inspekce bezpečnostních sborů (GIBS) pro veškeré civilní spory, 4. Rada pro rozhlasové a televizní vysílání.`,
-              `1. Místně příslušný živnostenský úřad, 2. Česká obchodní inspekce, 3. Úřad práce ČR, 4. Finanční arbitr České republiky.`,
+              `1. Ředitel Probační a mediační služby ČR, 2. Ústavní ústav Akademie věd ČR, 3. Generální inspekce bezpečnostních sborů (GIBS) pro veškeré civilní spory, 4. Rada pro rozhlasové a televizní vysílání. Dozorový státní zástupce ani Veřejný ochránce práv stížnosti vězněných osob neřeší.`,
+              `1. Místně příslušný živnostenský úřad, 2. Česká obchodní inspekce, 3. Úřad práce ČR, 4. Finanční arbitr České republiky. Veřejný ochránce práv, Evropský soud pro lidská práva ani výbor CPT se vězeňstvím nezabývají.`,
               `1. Dozorový státní zástupce krajského státního zastupitelství, 2. Veřejný ochránce práv (Ombudsman), 3. Evropský soud pro lidská práva (ESLP Štrasburk), 4. Výbor OSN proti mučení / Evropský výbor pro zabránění mučení (CPT).`,
-              `1. Kancelář prezidenta republiky, 2. Policejní prezidium ČR, 3. Česká advokátní komora, 4. Předseda Úřadu pro ochranu hospodářské soutěže.`
+              `1. Kancelář prezidenta republiky, 2. Policejní prezidium ČR, 3. Česká advokátní komora, 4. Předseda Úřadu pro ochranu hospodářské soutěže. Dozorový státní zástupce ani Výbor OSN proti mučení stížnosti vězněných osob nepřijímají a nešetří je.`
             ],
     correctOption: 2,
     rationale: 'Dle § 26 ZVTOS, § 13 ZVV a § 34 vyhlášky č. 345/1999 Sb. podávají vězněné osoby stížnosti v zalepených obálkách do uzamykatelných schránek vybíraných denně určeným pracovníkem.',
@@ -485,9 +485,9 @@ export const penologieQuestions: Question[] = [
     answer: 'Dokument: Evropská vězeňská pravidla (Standardní minimální pravidla pro zacházení s vězni); Mezinárodní instituce: Evropský výbor pro zabránění mučení a nelidskému či ponižujícímu zacházení nebo trestání (CPT).',
     options: [
               `Dokument: Evropská vězeňská pravidla (Standardní minimální pravidla pro zacházení s vězni); Mezinárodní instituce: Evropský výbor pro zabránění mučení a nelidskému či ponižujícímu zacházení nebo trestání (CPT).`,
-              `Dokument: Ženevská úmluva o ochraně civilních osob v době ozbrojeného konfliktu; Mezinárodní instituce: Agentura Evropské unie pro justiční spolupráci (EUROJUST).`,
-              `Dokument: Mezinárodní pakt o občanských právech INTERPOLu; Mezinárodní instituce: Stálý rozhodčí soud v Haagu (PCA).`,
-              `Dokument: Všeobecná deklarace Schengenského prostoru; Mezinárodní instituce: Evropská agentura pro pohraniční a pobřežní stráž (FRONTEX).`
+              `Dokument: Ženevská úmluva o ochraně civilních osob v době ozbrojeného konfliktu; Mezinárodní instituce: Agentura Evropské unie pro justiční spolupráci (EUROJUST). Evropská vězeňská pravidla ani výbor CPT se výkonu vazby a trestu nijak netýkají.`,
+              `Dokument: Mezinárodní pakt o občanských právech INTERPOLu; Mezinárodní instituce: Stálý rozhodčí soud v Haagu (PCA). Zacházení s vězni upravuje výhradně vnitrostátní právo, mezinárodní standardy ani kontrolní orgány neexistují.`,
+              `Dokument: Všeobecná deklarace Schengenského prostoru; Mezinárodní instituce: Evropská agentura pro pohraniční a pobřežní stráž (FRONTEX). Evropský výbor CPT do věznic nevstupuje a Evropská vězeňská pravidla nejsou pro ČR relevantní.`
             ],
     correctOption: 0,
     rationale: 'Evropská vězeňská pravidla (Rada Evropy) stanovují etický a právní rámec moderního vězeňství. Výbor CPT má právo neomezených inspekcí ve všech místech detence v členských státech.',
@@ -501,10 +501,10 @@ export const penologieQuestions: Question[] = [
     question: 'Jaká pravidla, či omezení platí při nakládání s korespondencí vězněných osob?',
     answer: 'Korespondence je přijímána a odesílána bez početního omezení na náklady vězně. Zaměstnanci VS ji mohou kontrolovat a číst (zamezení drogám, zbraním a maření účelu). KONTROLA JE VYLOUČENA u korespondence s obhájcem, advokátem, soudy, SZ, ombudsmanem a mezinárodními orgány lidských práv.',
     options: [
-              `Korespondence mezi vězni z různých věznic je bez omezení povolena; zaměstnanci VS nesmí otevírat žádné dopisy bez předchozího písemného souhlasu předsedy senátu okresního soudu.`,
-              `Korespondence je omezena na 2 dopisy měsíčně o maximálním rozsahu 1 strany A4 na náklady věznice; veškerá došlá i odesílaná korespondence včetně dopisů obhájci podléhá povinné kontrole a předčítání vychovatelem.`,
+              `Korespondence mezi vězni z různých věznic je bez omezení povolena; zaměstnanci VS nesmí otevírat žádné dopisy bez předchozího písemného souhlasu předsedy senátu okresního soudu. Kontrola korespondence s ombudsmanem i s mezinárodními orgány lidských práv je naopak povinná a provádí ji vychovatel.`,
+              `Korespondence je omezena na 2 dopisy měsíčně o maximálním rozsahu 1 strany A4 na náklady věznice; veškerá došlá i odesílaná korespondence včetně dopisů obhájci podléhá povinné kontrole a předčítání vychovatelem. Korespondence se soudy a se státními zástupci rovněž podléhá kontrole a předčítání.`,
               `Korespondence je přijímána a odesílána bez početního omezení na náklady vězně. Zaměstnanci VS ji mohou kontrolovat a číst (zamezení drogám, zbraním a maření účelu). KONTROLA JE VYLOUČENA u korespondence s obhájcem, advokátem, soudy, SZ, ombudsmanem a mezinárodními orgány lidských práv.`,
-              `Korespondence je povolena výhradně v elektronické podobě prostřednictvím zabezpečeného e-mailového účtu věznice; kontrolu provádí automatizovaný software s vyloučením lidského faktoru.`
+              `Korespondence je povolena výhradně v elektronické podobě prostřednictvím zabezpečeného e-mailového účtu věznice; kontrolu provádí automatizovaný software s vyloučením lidského faktoru. Písemná forma není připuštěna a vyloučení kontroly u dopisů obhájci ani ombudsmanovi se neuplatňuje.`
             ],
     correctOption: 2,
     rationale: 'Dle § 17 ZVTOS a § 13 ZVV je korespondence se zákonem chráněnými subjekty (advokát, soud, ombudsman, CPT) nedotknutelná a nesmí být personálem otevírána ani cenzurována.',
@@ -518,10 +518,10 @@ export const penologieQuestions: Question[] = [
     question: 'Která ústavní práva a svobody jsou omezeny ve VTOS?',
     answer: 'Svoboda pohybu a pobytu, nedotknutelnost osoby a soukromí, listovní tajemství a tajemství zpráv (kontrola dopisů/telefonů), svobodná volba lékaře, právo na stávku, právo zakládat politické strany a sdružovat se v nich, právo podnikat a vykonávat volené veřejné funkce.',
     options: [
-              `Právo na rodinný život a styk s dětmi, právo vlastnit majetek nabytý před nástupem do výkonu trestu, presumpce neviny v nových trestních řízeních a právo na spravedlivý proces.`,
+              `Právo na rodinný život a styk s dětmi, právo vlastnit majetek nabytý před nástupem do výkonu trestu, presumpce neviny v nových trestních řízeních a právo na spravedlivý proces. Dále právo na volbu lékaře, právo podnikat a právo na stávku, jež zákon neomezuje.`,
               `Svoboda pohybu a pobytu, nedotknutelnost osoby a soukromí, listovní tajemství a tajemství zpráv (kontrola dopisů/telefonů), svobodná volba lékaře, právo na stávku, právo zakládat politické strany a sdružovat se v nich, právo podnikat a vykonávat volené veřejné funkce.`,
-              `Pouze právo volit ve volbách do zákonodárných sborů a orgánů územní samosprávy a právo na bezplatnou základní zdravotní péči, ostatní práva zůstávají zcela nedotčena.`,
-              `Právo na život a osobní integritu, zákaz mučení a nelidského zacházení, právo na právní pomoc obhájce, svoboda myšlení, svědomí a náboženského vyznání a právo podat ústavní stížnost.`
+              `Pouze právo volit ve volbách do zákonodárných sborů a orgánů územní samosprávy a právo na bezplatnou základní zdravotní péči, ostatní práva zůstávají zcela nedotčena. Listovní tajemství, svoboda pohybu ani právo sdružovat se v politických stranách omezeny nejsou.`,
+              `Právo na život a osobní integritu, zákaz mučení a nelidského zacházení, právo na právní pomoc obhájce, svoboda myšlení, svědomí a náboženského vyznání a právo podat ústavní stížnost. Dále svoboda pohybu v objektu věznice a nedotknutelnost soukromí bez omezení.`
             ],
     correctOption: 1,
     rationale: 'Zákon č. 169/1999 Sb. v § 27 v souladu s Listinou (čl. 13, 14, 27) přesně vymezuje okruh práv, která odsouzeným po dobu výkonu trestu nepřísluší z důvodu ochrany společnosti a účelu trestu.',
@@ -535,10 +535,10 @@ export const penologieQuestions: Question[] = [
     question: 'Kolik osob se může zúčastnit návštěvy obviněného, jak často se návštěvy realizují?',
     answer: 'Nejvýše 4 osoby současně včetně nezletilých dětí (děti <15 let v doprovodu dospělého >18 let), v trvání 90 minut jednou za 2 týdny.',
     options: [
-              `Nejvýše 4 osoby včetně dětí, v trvání 3 hodin jednou za měsíc (s možností navýšení na 5 hodin jako kázeňská odměna).`,
+              `Nejvýše 4 osoby včetně dětí, v trvání 3 hodin jednou za měsíc (s možností navýšení na 5 hodin jako kázeňská odměna). Děti do 15 let se nepřipouštějí.`,
               `Nejvýše 4 osoby současně včetně nezletilých dětí (děti <15 let v doprovodu dospělého >18 let), v trvání 90 minut jednou za 2 týdny.`,
-              `Nejvýše 2 zletilé osoby současně bez možnosti přítomnosti dětí do 18 let, v trvání 60 minut jednou za kalendářní měsíc.`,
-              `Neomezený počet osob z okruhu osob blízkých, v trvání 45 minut každý týden ve dnech pracovního klidu.`
+              `Nejvýše 2 zletilé osoby současně bez možnosti přítomnosti dětí do 18 let, v trvání 60 minut jednou za kalendářní měsíc. Navýšení jako odměnu nelze povolit.`,
+              `Neomezený počet osob z okruhu osob blízkých, v trvání 45 minut každý týden ve dnech pracovního klidu. Doprovod se nevyžaduje.`
             ],
     correctOption: 1,
     rationale: 'Dle § 14 odst. 1 zákona č. 293/1993 Sb. má obviněný právo na přijetí návštěvy nejvýše 4 osob jednou za 2 týdny v trvání 90 minut. Ředitel může povolit výjimku.',
@@ -552,9 +552,9 @@ export const penologieQuestions: Question[] = [
     question: 'Uveďte povinnosti dozorce v oddělení VV!',
     answer: 'Prověřit spojení a signalizaci, převzít a zkontrolovat uzamčení cel, fyzicky převzít obviněné, provádět nepravidelné kontroly cel, mít přehled o vytypovaných a nebezpečných obviněných, kontrolovat dodržování vnitřního řádu a nepustit nedovolené kontakty mezi společníky.',
     options: [
-              `Zajišťovat komplexní psychologickou diagnostiku obviněných v systému SARPO, stanovovat individuální resocializační plány a schvalovat propuštění obviněných na kauci.`,
-              `Střežit obvodový plášť budovy vazební věznice ze strážní věže, obsluhovat vjezdová vrata pro eskortní vozidla a kontrolovat zavazadlový prostor zásobovacích automobilů.`,
-              `Provádět výslechy obviněných k okolnostem trestné činnosti, sepisovat protokoly o výpovědi pro státního zástupce a vyhodnocovat důkazní situaci v probíhajícím vyšetřování.`,
+              `Zajišťovat komplexní psychologickou diagnostiku obviněných v systému SARPO, stanovovat individuální resocializační plány a schvalovat propuštění obviněných na kauci. Dále rozhodovat o umístění obviněného do oddělení se zesíleným stavebně technickým zabezpečením a povolovat návštěvy bez dohledu.`,
+              `Střežit obvodový plášť budovy vazební věznice ze strážní věže, obsluhovat vjezdová vrata pro eskortní vozidla a kontrolovat zavazadlový prostor zásobovacích automobilů. Do oddělení výkonu vazby nevstupovat a kontrolu uzamčení cel přenechat směnovému technikovi ostrahy.`,
+              `Provádět výslechy obviněných k okolnostem trestné činnosti, sepisovat protokoly o výpovědi pro státního zástupce a vyhodnocovat důkazní situaci v probíhajícím vyšetřování. Dále rozhodovat o trvání koluzní vazby, povolovat korespondenci s obhájcem a vést evidenci procesních úkonů.`,
               `Prověřit spojení a signalizaci, převzít a zkontrolovat uzamčení cel, fyzicky převzít obviněné, provádět nepravidelné kontroly cel, mít přehled o vytypovaných a nebezpečných obviněných, kontrolovat dodržování vnitřního řádu a nepustit nedovolené kontakty mezi společníky.`
             ],
     correctOption: 3,
@@ -570,9 +570,9 @@ export const penologieQuestions: Question[] = [
     answer: 'Písemný příkaz soudu na základě rozhodnutí o propuštění, příkaz státního zástupce v přípravném řízení, příkaz státního zástupce při výkonu dozoru (§ 29 ZVV), rozhodnutí prezidenta o milosti nebo ministra, či převod do VTOS na základě nařízení soudu.',
     options: [
               `Písemný příkaz soudu na základě rozhodnutí o propuštění, příkaz státního zástupce v přípravném řízení, příkaz státního zástupce při výkonu dozoru (§ 29 ZVV), rozhodnutí prezidenta o milosti nebo ministra, či převod do VTOS na základě nařízení soudu.`,
-              `Písemný souhlas vyšetřovatele Policie ČR po ukončení výslechu, rozhodnutí velitele eskorty při předvedení k soudu, nebo uplynutí pořádkové lhůty 48 hodin od zadržení podezřelého.`,
-              `Písemný pokyn primátora statutárního města, rozhodnutí probačního úředníka PMS ČR po stanovení dohledu, nebo nařízení vedoucího oddělení výkonu vazby při nedostatku lůžek.`,
-              `Rozhodnutí ředitele vazební věznice po dohodě s obhájcem obviněného, složení finanční záruky přímo do pokladny věznice, nebo písemná žádost rodinných příslušníků obviněného.`
+              `Písemný souhlas vyšetřovatele Policie ČR po ukončení výslechu, rozhodnutí velitele eskorty při předvedení k soudu, nebo uplynutí pořádkové lhůty 48 hodin od zadržení podezřelého. Příkaz soudu ani příkaz státního zástupce se k propuštění nevyžaduje.`,
+              `Písemný pokyn primátora statutárního města, rozhodnutí probačního úředníka PMS ČR po stanovení dohledu, nebo nařízení vedoucího oddělení výkonu vazby při nedostatku lůžek. Rozhodnutí soudu o propuštění ani příkaz státního zástupce se nevydává.`,
+              `Rozhodnutí ředitele vazební věznice po dohodě s obhájcem obviněného, složení finanční záruky přímo do pokladny věznice, nebo písemná žádost rodinných příslušníků obviněného. Příkaz soudu se nevyžaduje a o propuštění rozhoduje ředitel věznice.`
             ],
     correctOption: 0,
     rationale: 'Dle § 10 zákona č. 293/1993 Sb. vazební věznice neprodleně propustí obviněného na svobodu po doručení originálu (či ověřeného faxu) písemného příkazu soudu, státního zástupce nebo v řízení o milosti.',
@@ -586,10 +586,10 @@ export const penologieQuestions: Question[] = [
     question: 'Co je program zacházení, kdo ho zpracovává a v čem spočívá jeho význam?',
     answer: 'Základní forma cílevědomého a komplexního působení na odsouzeného k přípravě na soběstačný život bez kriminality. Zpracovává ho speciální pedagog ve spolupráci s psychology a vychovateli na základě komplexní zprávy (SARPO). Skládá se z 5 oblastí: pracovní, vzdělávací, spec. výchovná, zájmová a utváření vnějších vztahů.',
     options: [
-              `Režimový plán střežení a eskortování nebezpečných odsouzených. Zpracovává ho vedoucí oddělení vězeňské stráže na základě bezpečnostní prověrky NBÚ. Skládá se ze 3 oblastí: fyzická ostraha, technické zabezpečení a režimová opatření.`,
+              `Režimový plán střežení a eskortování nebezpečných odsouzených. Zpracovává ho vedoucí oddělení vězeňské stráže na základě bezpečnostní prověrky NBÚ. Skládá se ze 3 oblastí: fyzická ostraha, technické zabezpečení a režimová opatření. Význam spočívá v minimalizaci rizika útěku; resocializační cíle do něj zákon nezařazuje.`,
               `Základní forma cílevědomého a komplexního působení na odsouzeného k přípravě na soběstačný život bez kriminality. Zpracovává ho speciální pedagog ve spolupráci s psychology a vychovateli na základě komplexní zprávy (SARPO). Skládá se z 5 oblastí: pracovní, vzdělávací, spec. výchovná, zájmová a utváření vnějších vztahů.`,
-              `Léčebný rehabilitační plán drogově závislých osob. Zpracovává ho výhradně praktický lékař věznice ve spolupráci s psychiatrickou klinikou. Skládá se ze 4 fází: detoxifikace, stabilizace, farmakoterapie a lázeňská doléčovací péče.`,
-              `Harmonogram denního výkonu strážní a dozorčí služby ve věznici. Zpracovává ho vrchní inspektor provozní směny (VISS) pro každou směnu zvlášť. Skládá se ze stanovišť: brána, koridor, ubytovna, pracoviště a eskorty.`
+              `Léčebný rehabilitační plán drogově závislých osob. Zpracovává ho výhradně praktický lékař věznice ve spolupráci s psychiatrickou klinikou. Skládá se ze 4 fází: detoxifikace, stabilizace, farmakoterapie a lázeňská doléčovací péče. Význam spočívá výhradně v léčbě závislosti a jeho zpracování schvaluje dozorový státní zástupce.`,
+              `Harmonogram denního výkonu strážní a dozorčí služby ve věznici. Zpracovává ho vrchní inspektor provozní směny (VISS) pro každou směnu zvlášť. Skládá se ze stanovišť: brána, koridor, ubytovna, pracoviště a eskorty. Význam spočívá v rovnoměrném rozvržení služeb a odsouzený se na jeho zpracování nijak nepodílí.`
             ],
     correctOption: 1,
     rationale: 'Dle § 40 a § 41 ZVTOS a § 36 vyhlášky č. 345/1999 Sb. je Program zacházení klíčovým individuálním resocializačním nástrojem (nezpracovává se pouze u trestů kratších než 3 měsíce).',
@@ -603,9 +603,9 @@ export const penologieQuestions: Question[] = [
     question: 'Uveďte několik příkladů činností stanovených v časovém rozvrhu dne, která vnitřní norma jej stanovuje?',
     answer: 'Činnosti: budíček, ranní toaleta a úklid, výdej stravy, odchod do zaměstnání, realizace PZ, hodinová vycházka, osobní volno, sčítací prověrka, večerka a 8hodinový nepřetržitý noční klid. Stanovuje jej Vnitřní řád věznice jako svou závaznou přílohu.',
     options: [
-              `Činnosti: individuální program dle volby vězně, neomezený výdej stravy z kantýny, volný pohyb po areálu věznice a dobrovolná účast na sčítání. Stanovuje jej Rozkaz vedoucího oddělení logistiky.`,
-              `Činnosti: ranní nástup k apelaci, vojenský pořadový výcvik, výslechová činnost OČTŘ, nucené práce v lomu a večerní samovazba. Stanovuje jej Trestní řád jako součást rozsudku okresního soudu.`,
-              `Činnosti: budíček v 04:00, nepřetržitá směna na pracovišti 12 hodin, večerní kontrola cel a 4hodinový noční klid. Stanovuje jej Kolektivní smlouva zaměstnanců Vězeňské služby ČR schválená odbory.`,
+              `Činnosti: individuální program dle volby vězně, neomezený výdej stravy z kantýny, volný pohyb po areálu věznice a dobrovolná účast na sčítání. Stanovuje jej Rozkaz vedoucího oddělení logistiky. Sčítací prověrka ani pevně stanovený noční klid se do rozvrhu nezařazují.`,
+              `Činnosti: ranní nástup k apelaci, vojenský pořadový výcvik, výslechová činnost OČTŘ, nucené práce v lomu a večerní samovazba. Stanovuje jej Trestní řád jako součást rozsudku okresního soudu. Hodinová vycházka ani osobní volno se do časového rozvrhu dne nezařazují.`,
+              `Činnosti: budíček v 04:00, nepřetržitá směna na pracovišti 12 hodin, večerní kontrola cel a 4hodinový noční klid. Stanovuje jej Kolektivní smlouva zaměstnanců Vězeňské služby ČR schválená odbory. Vnitřní řád věznice časový rozvrh dne neobsahuje a vycházky se nekonají.`,
               `Činnosti: budíček, ranní toaleta a úklid, výdej stravy, odchod do zaměstnání, realizace PZ, hodinová vycházka, osobní volno, sčítací prověrka, večerka a 8hodinový nepřetržitý noční klid. Stanovuje jej Vnitřní řád věznice jako svou závaznou přílohu.`
             ],
     correctOption: 3,
@@ -620,10 +620,10 @@ export const penologieQuestions: Question[] = [
     question: 'Jak často má obviněný nárok na balíček a kolik osob se může zúčastnit návštěvy?',
     answer: 'Balíček s potravinami a osobními věcmi do hmotnosti 5 kg: 1× za 3 měsíce (balíčky s prádlem k výměně, hygienou a tiskovinami bez omezení). Návštěvy: nejvýše 4 osoby včetně dětí jednou za 2 týdny na 90 minut.',
     options: [
-              `Balíček s potravinami do 5 kg: 1× za 6 měsíců (stejně jako odsouzený ve VTOS). Návštěvy: nejvýše 4 osoby jednou měsíčně na 3 hodiny ve dnech pracovního klidu.`,
-              `Balíček s potravinami do 3 kg: 1× za rok se souhlasem soudce. Návštěvy: neomezený počet osob jednou týdně na 45 minut za přítomnosti vyšetřovatele PČR.`,
+              `Balíček s potravinami do 5 kg: 1× za 6 měsíců (stejně jako odsouzený ve VTOS). Návštěvy: nejvýše 4 osoby jednou měsíčně na 3 hodiny ve dnech pracovního klidu. Balíčky s prádlem, hygienou a tiskovinami jsou nad tento limit vyloučeny.`,
+              `Balíček s potravinami do 3 kg: 1× za rok se souhlasem soudce. Návštěvy: neomezený počet osob jednou týdně na 45 minut za přítomnosti vyšetřovatele PČR. Účast dětí na návštěvě je vyloučena a balíčky s prádlem nelze zasílat vůbec.`,
               `Balíček s potravinami a osobními věcmi do hmotnosti 5 kg: 1× za 3 měsíce (balíčky s prádlem k výměně, hygienou a tiskovinami bez omezení). Návštěvy: nejvýše 4 osoby včetně dětí jednou za 2 týdny na 90 minut.`,
-              `Balíček s potravinami do 10 kg: 1× za kalendářní měsíc (včetně možnosti zasílání tabáku a alkoholu). Návštěvy: nejvýše 2 zletilé osoby jednou za měsíc na 60 minut.`
+              `Balíček s potravinami do 10 kg: 1× za kalendářní měsíc (včetně možnosti zasílání tabáku a alkoholu). Návštěvy: nejvýše 2 zletilé osoby jednou za měsíc na 60 minut. Děti se na návštěvu nepřipouštějí a balíčky s hygienou nad limit nelze zaslat.`
             ],
     correctOption: 2,
     rationale: 'Dle § 16 odst. 2 a § 14 odst. 1 zákona č. 293/1993 Sb. o výkonu vazby má obviněný nárok na potravinový balíček 1x za 3 měsíce do 5 kg a návštěvu 4 osob na 90 minut jednou za 14 dní.',
@@ -637,10 +637,10 @@ export const penologieQuestions: Question[] = [
     question: 'Za jakých okolností může být provedena návštěva u obviněného, který je ve VV z koluzních důvodů (§ 67 písm. b TrŘ)?',
     answer: 'Návštěva je možná pouze s předchozím písemným souhlasem příslušného orgánu činného v trestním řízení (v přípravném řízení státní zástupce, v řízení před soudem soudce) a za přítomnosti zástupce OČTŘ (či s jeho výslovným souhlasem bez jeho přítomnosti).',
     options: [
-              `Návštěva probíhá standardně bez jakýchkoliv omezení za přítomnosti výhradně službu konajícího dozorce OVV, přičemž souhlas orgánů činných v trestním řízení se nevyžaduje.`,
-              `Návštěva je možná výhradně se souhlasem ředitele vazební věznice a probíhá výhradně formou telefonického hovoru přes neprůstřelnou skleněnou přepážku bez přítomnosti policie.`,
+              `Návštěva probíhá standardně bez jakýchkoliv omezení za přítomnosti výhradně službu konajícího dozorce OVV, přičemž souhlas orgánů činných v trestním řízení se nevyžaduje. Písemný souhlas soudce ani státního zástupce se u koluzní vazby nevyžaduje a návštěvu povoluje dozorce.`,
+              `Návštěva je možná výhradně se souhlasem ředitele vazební věznice a probíhá výhradně formou telefonického hovoru přes neprůstřelnou skleněnou přepážku bez přítomnosti policie. Souhlas orgánu činného v trestním řízení se nevyžaduje a osobní kontakt je vyloučen po celou vazbu.`,
               `Návštěva je možná pouze s předchozím písemným souhlasem příslušného orgánu činného v trestním řízení (v přípravném řízení státní zástupce, v řízení před soudem soudce) a za přítomnosti zástupce OČTŘ (či s jeho výslovným souhlasem bez jeho přítomnosti).`,
-              `Návštěva je u koluzní vazby ze zákona absolutně vyloučena po celou dobu trvání tohoto důvodu vazby (nejvýše však po dobu 3 měsíců) a nelze udělit žádnou výjimku.`
+              `Návštěva je u koluzní vazby ze zákona absolutně vyloučena po celou dobu trvání tohoto důvodu vazby (nejvýše však po dobu 3 měsíců) a nelze udělit žádnou výjimku. Výjimku nelze udělit ani se souhlasem soudce a po třech měsících se návštěvy nepovolují.`
             ],
     correctOption: 2,
     rationale: 'Dle § 14 odst. 2 zákona č. 293/1993 Sb. a § 44 odst. 5 vyhlášky č. 109/1994 Sb. musí být u koluzní vazby vyloučeno maření vyšetřování a ovlivňování svědků prostřednictvím návštěvníků.',
@@ -654,10 +654,10 @@ export const penologieQuestions: Question[] = [
     question: 'Vysvětlete, jak je naplňováno právo odsouzeného na korespondenci a jaká jsou jeho případná omezení:',
     answer: 'Odsouzený má právo přijímat a na svůj náklad odesílat korespondenci bez početního limitu. VS je oprávněna ji otevírat a kontrolovat obsah. Kontrola je ZAKÁZÁNA u korespondence s obhájcem, advokátem, státními orgány ČR, prezidentem, ombudsmanem a mezinárodními institucemi lidských práv.',
     options: [
-              `Odsouzený může odeslat nejvýše 4 dopisy za měsíc na náklady věznice. Vězeňská služba je povinna otevírat a cenzurovat veškerou korespondenci včetně dopisů adresovaných obhájci a Evropskému soudu pro lidská práva.`,
+              `Odsouzený může odeslat nejvýše 4 dopisy za měsíc na náklady věznice. Vězeňská služba je povinna otevírat a cenzurovat veškerou korespondenci včetně dopisů adresovaných obhájci a Evropskému soudu pro lidská práva. Kontrola je vyloučena jen u dopisů prezidentu republiky.`,
               `Odsouzený má právo přijímat a na svůj náklad odesílat korespondenci bez početního limitu. VS je oprávněna ji otevírat a kontrolovat obsah. Kontrola je ZAKÁZÁNA u korespondence s obhájcem, advokátem, státními orgány ČR, prezidentem, ombudsmanem a mezinárodními institucemi lidských práv.`,
-              `Odsouzený smí vést korespondenci výhradně s rodinnými příslušníky zapsanými v osobním spise; veškeré dopisy cizím osobám nebo institucím jsou automaticky vraceny odesílateli bez odeslání.`,
-              `Korespondence odsouzeného nesmí být ze zákona nikdy otevírána ani kontrolována personálem věznice z důvodu ochrany listovního tajemství dle Listiny základních práv a svobod.`
+              `Odsouzený smí vést korespondenci výhradně s rodinnými příslušníky zapsanými v osobním spise; veškeré dopisy cizím osobám nebo institucím jsou automaticky vraceny odesílateli bez odeslání. Odesílání na vlastní náklady není přípustné a kontrola se provádí i u dopisů obhájci.`,
+              `Korespondence odsouzeného nesmí být ze zákona nikdy otevírána ani kontrolována personálem věznice z důvodu ochrany listovního tajemství dle Listiny základních práv a svobod. Početní limit není stanoven a náklady na odeslání hradí věznice z provozních prostředků, nikoli odsouzený.`
             ],
     correctOption: 1,
     rationale: 'Dle § 17 zákona č. 169/1999 Sb. a § 24 vyhlášky č. 345/1999 Sb. je korespondence významným sociálním kontaktem, přičemž ochrana obhajoby a kontrolních orgánů má absolutní zákonnou prioritu.',
@@ -671,10 +671,10 @@ export const penologieQuestions: Question[] = [
     question: 'Jak často má odsouzený nárok na nákup potravin a věcí osobní potřeby, jaká částka je na tyto nákupy uvolňována a dle čeho se určuje její výše?',
     answer: 'Nejméně 1× týdně (ve věznici zpravidla 2× týdně) formou bezhotovostní platby z volných peněz na zvláštním účtu (kapesné, peněžité odměny, doručené neúčelové peníze). Výše nákupu je omezena zůstatkem volných prostředků a maximálním jednorázovým limitem stanoveným vnitřním řádem věznice.',
     options: [
-              `Pouze 1× za měsíc formou věcných poukázek vydávaných vychovatelem. Maximální částka nákupu je pevně stanovena zákonem na 500 Kč měsíčně bez ohledu na výši pracovního příjmu.`,
-              `Jednou za 14 dní výhradně z prostředků zaslaných rodinou na účet vězeňské prodejny; z pracovní odměny ani z kapesného nelze nákup potravin dle předpisů hradit.`,
+              `Pouze 1× za měsíc formou věcných poukázek vydávaných vychovatelem. Maximální částka nákupu je pevně stanovena zákonem na 500 Kč měsíčně bez ohledu na výši pracovního příjmu. Nevyčerpaná část poukázky se do dalšího měsíce nepřenáší a o vydání rozhoduje vychovatel dle programu zacházení.`,
+              `Jednou za 14 dní výhradně z prostředků zaslaných rodinou na účet vězeňské prodejny; z pracovní odměny ani z kapesného nelze nákup potravin dle předpisů hradit. Sortiment schvaluje ředitel věznice, nákup zprostředkovává dozorčí ubytovny a zůstatek na účtu se vyplácí až při propuštění.`,
               `Nejméně 1× týdně (ve věznici zpravidla 2× týdně) formou bezhotovostní platby z volných peněz na zvláštním účtu (kapesné, peněžité odměny, doručené neúčelové peníze). Výše nákupu je omezena zůstatkem volných prostředků a maximálním jednorázovým limitem stanoveným vnitřním řádem věznice.`,
-              `Každý pracovní den formou hotovostní platby z peněz uložených u sebe v cele. Výše nákupu je neomezená a odsouzený může nakupovat jakékoliv zboží včetně lihovin a tabáku bez limitu.`
+              `Každý pracovní den formou hotovostní platby z peněz uložených u sebe v cele. Výše nákupu je neomezená a odsouzený může nakupovat jakékoliv zboží včetně lihovin a tabáku bez limitu. Hotovost si spravuje sám v uzamykatelné skříňce, prodejna vede evidenci a zvláštní účet se nezřizuje.`
             ],
     correctOption: 2,
     rationale: 'Dle § 23 zákona č. 169/1999 Sb. a § 31 vyhlášky č. 345/1999 Sb. se nákupy realizují bezhotovostně ve vězeňské prodejně za ceny nepřevyšující ceny v místě obvyklé.',
@@ -688,9 +688,9 @@ export const penologieQuestions: Question[] = [
     question: 'Jak často a do jaké váhy může přijmout odsouzený balík s potravinami a osobními věcmi, kdo povoluje jeho přijetí?',
     answer: 'Jedenkrát za 6 měsíců do hmotnosti 5 kg (tzv. nárokový balíček NB). Lhůta běží od nástupu do VTOS/převedení z VV. Potvrzení o právu na balíček s poučením pro odesílatele vydává a eviduje věznice (vychovatel OVT). Mladistvému lze mimořádný balíček udělit jako odměnu.',
     options: [
-              `Jedenkrát za rok do hmotnosti 15 kg u dospělých a 20 kg u mladistvých. Přijetí balíku schvaluje výhradně ředitel věznice po předchozím projednání v komisi pro zacházení.`,
-              `Jedenkrát za kalendářní měsíc do hmotnosti 3 kg bez omezení obsahu. Povolení není vyžadováno, balíček může poslat kdokoliv přímo na adresu věznice s uvedením jména odsouzeného.`,
-              `Jedenkrát za 3 měsíce do hmotnosti 10 kg (tzv. čtvrtletní balíček). Povolení vydává dozorový státní zástupce na základě písemné žádosti odsouzeného schválené lékařem věznice.`,
+              `Jedenkrát za rok do hmotnosti 15 kg u dospělých a 20 kg u mladistvých. Přijetí balíku schvaluje výhradně ředitel věznice po předchozím projednání v komisi pro zacházení. Mimořádný balíček nelze udělit ani jako odměnu a lhůta se počítá od prvního dne kalendářního roku.`,
+              `Jedenkrát za kalendářní měsíc do hmotnosti 3 kg bez omezení obsahu. Povolení není vyžadováno, balíček může poslat kdokoliv přímo na adresu věznice s uvedením jména odsouzeného. Věznice potvrzení o právu na balíček nevydává a hmotnost se při převzetí nekontroluje.`,
+              `Jedenkrát za 3 měsíce do hmotnosti 10 kg (tzv. čtvrtletní balíček). Povolení vydává dozorový státní zástupce na základě písemné žádosti odsouzeného schválené lékařem věznice. Potvrzení pro odesílatele vydává státní zástupce a lhůta běží od právní moci rozsudku.`,
               `Jedenkrát za 6 měsíců do hmotnosti 5 kg (tzv. nárokový balíček NB). Lhůta běží od nástupu do VTOS/převedení z VV. Potvrzení o právu na balíček s poučením pro odesílatele vydává a eviduje věznice (vychovatel OVT). Mladistvému lze mimořádný balíček udělit jako odměnu.`
             ],
     correctOption: 3,
@@ -706,9 +706,9 @@ export const penologieQuestions: Question[] = [
     answer: 'Vybavení: lůžko, uzamykatelná skříňka, stůl, židle dle počtu osob, umyvadlo s pitnou vodou, záchod oddělený neprůhlednou zástěnou/dveřmi, signalizační zařízení, osvětlení, vytápění, větrání. Plocha: jednolůžková cela min. 6 m², vícelůžková min. 6 m² pro prvního a min. 4 m² pro každého dalšího, min. 7 m³ vzduchu.',
     options: [
               `Vybavení: lůžko, uzamykatelná skříňka, stůl, židle dle počtu osob, umyvadlo s pitnou vodou, záchod oddělený neprůhlednou zástěnou/dveřmi, signalizační zařízení, osvětlení, vytápění, větrání. Plocha: jednolůžková cela min. 6 m², vícelůžková min. 6 m² pro prvního a min. 4 m² pro každého dalšího, min. 7 m³ vzduchu.`,
-              `Vybavení: lůžko, noční stolek, televizor, lednice, sprchový kout a mikrovlnná trouba. Plocha: minimálně 10 m² na každého odsouzeného a 15 m³ vzduchu, přičemž počet ubytovaných na cele nesmí překročit 2 osoby.`,
-              `Vybavení: matrace na podlaze, skříňka na chodbě ubytovny, společné sociální zařízení na patře. Plocha: minimálně 4 m² pro prvního a 2 m² pro každého dalšího ubytovaného, objem vzduchu není normou stanoven.`,
-              `Vybavení: patrová pryčna, společný stůl, otevřená toaleta bez oddělení, kamna na tuhá paliva. Plocha: jednotně 2,5 m² na osobu bez ohledu na počet lůžek a minimální objem vzduchu 4 m³ na odsouzeného.`
+              `Vybavení: lůžko, noční stolek, televizor, lednice, sprchový kout a mikrovlnná trouba. Plocha: minimálně 10 m² na každého odsouzeného a 15 m³ vzduchu, přičemž počet ubytovaných na cele nesmí překročit 2 osoby. Signalizační zařízení se zřizuje jen na odděleních se zvýšenou ostrahou a do ubytovací plochy se započítává i sociální zařízení.`,
+              `Vybavení: matrace na podlaze, skříňka na chodbě ubytovny, společné sociální zařízení na patře. Plocha: minimálně 4 m² pro prvního a 2 m² pro každého dalšího ubytovaného, objem vzduchu není normou stanoven. Umyvadlo s pitnou vodou na cele se nevyžaduje, osvětlení a větrání upravuje pouze vnitřní řád věznice.`,
+              `Vybavení: patrová pryčna, společný stůl, otevřená toaleta bez oddělení, kamna na tuhá paliva. Plocha: jednotně 2,5 m² na osobu bez ohledu na počet lůžek a minimální objem vzduchu 4 m³ na odsouzeného. Uzamykatelná skříňka ani židle se do vybavení cely nepočítají a počet ubytovaných stanoví vychovatel.`
             ],
     correctOption: 0,
     rationale: 'Dle § 9 a § 16 ZVTOS, § 9 ZVV a § 17 vyhlášky č. 345/1999 Sb. musí každé ubytovací místo splňovat hygienické, prostorové a bezpečnostní parametry.',
@@ -722,10 +722,10 @@ export const penologieQuestions: Question[] = [
     question: 'Za jakých podmínek je umožněno obviněným používání civilního oděvu ve výkonu vazby?',
     answer: 'Obviněný používá vlastní oděv, prádlo a obuv zpravidla po celou dobu vazby, pokud splňují podmínky hygienické a estetické nezávadnosti a má zajištěnu jejich pravidelnou výměnu na vlastní náklady (výměna prádla min. 1× týdně). Jinak mu věznice přidělí erární oděv.',
     options: [
-              `Civilní oděv je povolen výhradně u obviněných stíhaných pro nedbalostní trestné činy, u úmyslných trestných činů je nošení vlastního oděvu z bezpečnostních důvodů vyloučeno.`,
+              `Civilní oděv je povolen výhradně u obviněných stíhaných pro nedbalostní trestné činy, u úmyslných trestných činů je nošení vlastního oděvu z bezpečnostních důvodů vyloučeno. Vlastní prádlo i obuv jsou vyloučeny vždy a jejich pravidelnou výměnu zajišťuje věznice na své náklady.`,
               `Obviněný používá vlastní oděv, prádlo a obuv zpravidla po celou dobu vazby, pokud splňují podmínky hygienické a estetické nezávadnosti a má zajištěnu jejich pravidelnou výměnu na vlastní náklady (výměna prádla min. 1× týdně). Jinak mu věznice přidělí erární oděv.`,
-              `Obviněný musí povinně nosit vězeňský stejnokroj ihned po přijetí do vazební věznice; vlastní civilní oděv smí použít výhradně v den konání hlavního líčení u soudu na základě písemné žádosti obhájce.`,
-              `Obviněný smí nosit vlastní oděv výhradně o víkendech a ve dnech pracovního klidu; praní a chemické čištění civilního oděvu zajišťuje věznice bezplatně ve své centrální prádelně.`
+              `Obviněný musí povinně nosit vězeňský stejnokroj ihned po přijetí do vazební věznice; vlastní civilní oděv smí použít výhradně v den konání hlavního líčení u soudu na základě písemné žádosti obhájce. Hygienická a estetická nezávadnost se neposuzuje a výměna prádla se nevyžaduje.`,
+              `Obviněný smí nosit vlastní oděv výhradně o víkendech a ve dnech pracovního klidu; praní a chemické čištění civilního oděvu zajišťuje věznice bezplatně ve své centrální prádelně. Po zbytek týdne nosí erární oděv a hygienickou nezávadnost nikdo neposuzuje.`
             ],
     correctOption: 1,
     rationale: 'Dle § 12 zákona č. 293/1993 Sb. a § 29 vyhlášky č. 109/1994 Sb. je nošení vlastního oděvu u obviněných standardem vyplývajícím z presumpce neviny.',
@@ -740,9 +740,9 @@ export const penologieQuestions: Question[] = [
     answer: '1. Vězeňská zdravotnická střediska (ordinace praktického lékaře, zubního lékaře a sester ve věznici), 2. Vězeňské nemocnice (Praha-Pankrác a Brno s lůžkovými odděleními), 3. Civilní zdravotnická zařízení (ambulantní specialisté a nemocnice pod střežením VS), 4. Rychlá záchranná služba (RZS) při akutních stavech.',
     options: [
               `1. Vězeňská zdravotnická střediska (ordinace praktického lékaře, zubního lékaře a sester ve věznici), 2. Vězeňské nemocnice (Praha-Pankrác a Brno s lůžkovými odděleními), 3. Civilní zdravotnická zařízení (ambulantní specialisté a nemocnice pod střežením VS), 4. Rychlá záchranná služba (RZS) při akutních stavech.`,
-              `1. Vězeňské nemocnice ve Valdicích, na Mírově a v Ruzyni, 2. Posádková zdravotnická střediska Armády ČR, 3. Soukromé kliniky plastické a estetické chirurgie, 4. Lékařské konzultace zajišťované výhradně telefonicky.`,
-              `1. Ošetřovny vedené vyškolenými dozorci se základním kurzem první pomoci, 2. Krajské hygienické stanice docházející na vyžádání, 3. Samostatné polní lazarety Ministerstva vnitra, 4. Nestátní neziskové zdravotnické organizace.`,
-              `1. Ordinace závodního lékaře pro příslušníky VS využívané i pro vězně, 2. Lázeňské léčebny Ministerstva spravedlnosti, 3. Mobilní sanitní vozy bez stálé posádky, 4. Zajištění péče rodinou vězněného po propuštění na propustku.`
+              `1. Vězeňské nemocnice ve Valdicích, na Mírově a v Ruzyni, 2. Posádková zdravotnická střediska Armády ČR, 3. Soukromé kliniky plastické a estetické chirurgie, 4. Lékařské konzultace zajišťované výhradně telefonicky. O zařazení do jednotlivých úrovní rozhoduje vrchní inspektor ostrahy podle volné kapacity, nikoliv lékař.`,
+              `1. Ošetřovny vedené vyškolenými dozorci se základním kurzem první pomoci, 2. Krajské hygienické stanice docházející na vyžádání, 3. Samostatné polní lazarety Ministerstva vnitra, 4. Nestátní neziskové zdravotnické organizace. Vlastní zdravotnická střediska ani vězeňské nemocnice se v soustavě nevyskytují.`,
+              `1. Ordinace závodního lékaře pro příslušníky VS využívané i pro vězně, 2. Lázeňské léčebny Ministerstva spravedlnosti, 3. Mobilní sanitní vozy bez stálé posádky, 4. Zajištění péče rodinou vězněného po propuštění na propustku. Střežení při převozu do civilního zařízení se nezajišťuje a akutní stavy řeší dozorce.`
             ],
     correctOption: 0,
     rationale: 'Dle § 16 ZVTOS, § 18 ZVV a § 23 vyhlášky č. 345/1999 Sb. je zdravotní péče organizována vícestupňově k zajištění nepřetržité dostupnosti neodkladné i specializované péče.',
@@ -757,9 +757,9 @@ export const penologieQuestions: Question[] = [
     answer: 'Návštěvy: 5 hodin měsíčně (dospělí 3 h); Odměna návštěv: až na 8 hodin (dospělí 5 h); Balíčky: 4× ročně do 5 kg (dospělí 1× za 6 měsíců); Samovazba: max. 10 dnů (dospělí 20 dnů); UOMPZ: max. 14 dnů (dospělí 28 dnů); CUO: max. 10 dnů (dospělí 20 dnů); Nelze uložit finanční pokutu; Povinné denní vzdělávání místo práce.',
     options: [
               `Návštěvy: 5 hodin měsíčně (dospělí 3 h); Odměna návštěv: až na 8 hodin (dospělí 5 h); Balíčky: 4× ročně do 5 kg (dospělí 1× za 6 měsíců); Samovazba: max. 10 dnů (dospělí 20 dnů); UOMPZ: max. 14 dnů (dospělí 28 dnů); CUO: max. 10 dnů (dospělí 20 dnů); Nelze uložit finanční pokutu; Povinné denní vzdělávání místo práce.`,
-              `Návštěvy: 8 hodin týdně bez dohledu personálu; Balíčky: neomezeně každý týden do 20 kg; Samovazba a CUO jsou zcela zakázány; Hlavním kázeňským trestem je snížení kapesného a zákaz sledování televize až na 1 rok.`,
-              `Návštěvy: 3 hodiny měsíčně stejně jako u dospělých; Balíčky: 1× za rok do 10 kg; Samovazba: max. 20 dnů; UOMPZ: až na 30 dnů; Lze uložit finanční pokutu až do 10 000 Kč; Povinný výkon těžkých prací v dílnách.`,
-              `Návštěvy: 2 hodiny měsíčně pod přísným sluchovým dohledem; Balíčky: 2× ročně do 2 kg; Samovazba: až na 15 dnů (dospělí 10 dnů); UOMPZ: až na 21 dnů; Povinnost hradit plné náklady na výkon trestního opatření.`
+              `Návštěvy: 8 hodin týdně bez dohledu personálu; Balíčky: neomezeně každý týden do 20 kg; Samovazba a CUO jsou zcela zakázány; Hlavním kázeňským trestem je snížení kapesného a zákaz sledování televize až na 1 rok; UOMPZ: nelze uložit vůbec; Vzdělávání je dobrovolné a nahrazuje se prací v dílnách; Finanční pokutu lze uložit bez omezení výše.`,
+              `Návštěvy: 3 hodiny měsíčně stejně jako u dospělých; Balíčky: 1× za rok do 10 kg; Samovazba: max. 20 dnů; UOMPZ: až na 30 dnů; Lze uložit finanční pokutu až do 10 000 Kč; Povinný výkon těžkých prací v dílnách; CUO: až na 25 dnů; Odměna návštěv: nepřipouští se ani při výborném hodnocení.`,
+              `Návštěvy: 2 hodiny měsíčně pod přísným sluchovým dohledem; Balíčky: 2× ročně do 2 kg; Samovazba: až na 15 dnů (dospělí 10 dnů); UOMPZ: až na 21 dnů; Povinnost hradit plné náklady na výkon trestního opatření; CUO: až na 18 dnů; Vzdělávání se poskytuje jen na vlastní náklady mladistvého.`
             ],
     correctOption: 0,
     rationale: 'Zákon č. 169/1999 Sb. (§ 60–65) a zákon č. 218/2003 Sb. (ZSM) stanoví zvýšenou ochranu mladistvých, prioritní zaměření na vzdělávání a přípravu na povolání, rozšířená práva a mírnější sankce.',
@@ -775,9 +775,9 @@ export const penologieQuestions: Question[] = [
     question: 'Jaká jsou specifika výkonu zabezpečovací detence a kdo ji zajišťuje?',
     answer: 'Vykonává se v ústavech pro výkon zabezpečovací detence (ÚVZD), které spravuje Vězeňská služba ČR. Střežení a bezpečnost zajišťují příslušníci VS ČR, ale odborné zacházení, terapii a ošetřovatelství zajišťují psychologové, speciální pedagogové a zdravotnický personál. Režim je volnější než ve věznici, kladen je důraz na léčebně-terapeutické a výchovné působení.',
     options: [
-              `Vykonává se v běžných věznicích na odděleních se zvýšenou ostrahou; střežení i terapii zajišťují výhradně příslušníci VS ČR (dozorci).`,
-              `Detence se vykonává formou domácího vězení s elektronickým náramkem a povinnou ambulantní psychiatrickou léčbou.`,
-              `Zajišťují ji výhradně civilní psychiatrické nemocnice spadající pod Ministerstvo zdravotnictví, bez jakékoliv účasti Vězeňské služby ČR.`,
+              `Vykonává se v běžných věznicích na specializovaných odděleních se zvýšenou ostrahou; samostatné ústavy pro tento účel zřízeny nejsou. Střežení i odborné zacházení zajišťují výhradně příslušníci VS ČR, psychologové ani speciální pedagogové se na výkonu nepodílejí. Na chovance se vztahuje stejný program zacházení i stejná kázeňská pravomoc jako na odsouzené ve výkonu trestu.`,
+              `Detence se vykonává formou domácího vězení s elektronickým kontrolním náramkem a s povinnou ambulantní psychiatrickou léčbou. Dohled nad jejím průběhem vykonává Probační a mediační služba ve spolupráci s ošetřujícím lékařem; Vězeňská služba ČR se na výkonu nijak nepodílí a zajišťuje pouze technickou podporu monitorovacího systému.`,
+              `Zajišťují ji výhradně civilní psychiatrické nemocnice spadající pod Ministerstvo zdravotnictví, a to bez jakékoliv účasti Vězeňské služby ČR. O přijetí i o ukončení detence rozhoduje ošetřující lékař, prvek střežení se neuplatňuje a chovanec smí ústav se souhlasem primáře kdykoliv krátkodobě opustit i bez doprovodu.`,
               `Vykonává se v ústavech pro výkon zabezpečovací detence (ÚVZD), které spravuje Vězeňská služba ČR. Střežení a bezpečnost zajišťují příslušníci VS ČR, ale odborné zacházení, terapii a ošetřovatelství zajišťují psychologové, speciální pedagogové a zdravotnický personál. Režim je volnější než ve věznici, kladen je důraz na léčebně-terapeutické a výchovné působení.`
             ],
     correctOption: 3,
@@ -793,9 +793,9 @@ export const penologieQuestions: Question[] = [
     question: 'Jaké jsou dva základní typy věznic v ČR pro výkon trestu odnětí svobody plnoletých pachatelů podle platného znění TZ (§ 56)?',
     answer: '1. Věznice s ostrahou (dále se vnitřně člení na oddělení s nízkým, středním a vysokým stupněm zabezpečení) a 2. Věznice se zvýšenou ostrahou.',
     options: [
-              `1. Polouzavřené ústavy a 2. Plně uzavřené ústavy s maximální ostrahou.`,
-              `1. Věznice pro prvotrestané a 2. Věznice pro recidivisty.`,
-              `1. Věznice s dohledem, 2. Věznice s dozorem, 3. Věznice s ostrahou, 4. Věznice se zvýšenou ostrahou.`,
+              `1. Polouzavřené ústavy a 2. Plně uzavřené ústavy s maximální ostrahou. Vnitřní členění na oddělení podle stupně zabezpečení zákon nezná.`,
+              `1. Věznice pro prvotrestané a 2. Věznice pro recidivisty. O zařazení rozhoduje ředitel, nikoli soud, a diferenciace se neuplatňuje.`,
+              `1. Věznice s dohledem, 2. Věznice s dozorem, 3. Věznice s ostrahou, 4. Věznice se zvýšenou ostrahou. Toto členění platí i po roce 2017.`,
               `1. Věznice s ostrahou (dále se vnitřně člení na oddělení s nízkým, středním a vysokým stupněm zabezpečení) a 2. Věznice se zvýšenou ostrahou.`
             ],
     correctOption: 3,
@@ -811,10 +811,10 @@ export const penologieQuestions: Question[] = [
     question: 'K čemu slouží v penitenciární praxi nástroj SARPO (Souhrnná analýza rizik a kriminogenních potřeb)?',
     answer: 'Je to standardizovaný diagnostický nástroj pro hodnocení rizik (např. riziko recidivy, riziko agrese, útěku) a kriminogenních potřeb (např. závislosti, dluhy, vzdělání) odsouzených. Výsledky SARPO jsou klíčové pro nastavení individuálního Programu zacházení a pro rozhodování o umístění do prostupného režimu.',
     options: [
-              `Slouží k automatickému přidělování vězňů na pracovní zařazení bez posouzení jejich zdravotního stavu.`,
-              `Jedná se o účetní program pro výpočet srážek ze mzdy pracujících vězňů za výkon trestu.`,
+              `Slouží k automatickému přidělování vězňů na pracovní zařazení, a to bez posouzení jejich zdravotního stavu i bez vyjádření lékaře. Systém spravuje oddělení zaměstnávání odsouzených, generuje týdenní rozpisy směn podle volné kapacity provozů věznice a jeho výstupy jsou pro ředitele věznice závazné bez možnosti odchylky.`,
+              `Jedná se o účetní program pro výpočet srážek ze mzdy pracujících vězňů, který spravuje ekonomický odbor věznice. Stanovuje pořadí uspokojování pohledávek, vypočítává částku na úhradu nákladů výkonu trestu i výživného a každý měsíc vystavuje odsouzenému písemné vyúčtování pracovní odměny.`,
               `Je to standardizovaný diagnostický nástroj pro hodnocení rizik (např. riziko recidivy, riziko agrese, útěku) a kriminogenních potřeb (např. závislosti, dluhy, vzdělání) odsouzených. Výsledky SARPO jsou klíčové pro nastavení individuálního Programu zacházení a pro rozhodování o umístění do prostupného režimu.`,
-              `Je to formulář pro podávání stížností odsouzených proti rozhodnutí ředitele věznice o kázeňském trestu.`
+              `Je to formulář pro podávání stížností odsouzených proti rozhodnutí ředitele věznice o kázeňském trestu. Podává se do tří dnů od oznámení rozhodnutí, odkladný účinek nemá a věznice jej bez vlastního stanoviska postupuje dozorovému státnímu zástupci, který o stížnosti rozhodne s konečnou platností.`
             ],
     correctOption: 2,
     rationale: 'SARPO umožňuje objektivní posouzení rizik a potřeb vězně, čímž zefektivňuje zacílení odborného zacházení a snižuje pravděpodobnost recidivy po propuštění.',
@@ -830,9 +830,9 @@ export const penologieQuestions: Question[] = [
     answer: 'Skládá se z aktivit: 1. Pracovní (pracovní zařazení), 2. Vzdělávací (škola, kurzy), 3. Speciálně výchovné (terapeutické programy, zvládání agrese), 4. Zájmové (sport, kultura) a 5. Oblast utváření vnějších vztahů (udržování kontaktů s rodinou).',
     options: [
               `Skládá se z aktivit: 1. Pracovní (pracovní zařazení), 2. Vzdělávací (škola, kurzy), 3. Speciálně výchovné (terapeutické programy, zvládání agrese), 4. Zájmové (sport, kultura) a 5. Oblast utváření vnějších vztahů (udržování kontaktů s rodinou).`,
-              `1. Výslechy na policii, 2. Účast na soudech, 3. Advokátní poradny.`,
-              `Program zacházení zahrnuje výhradně povinnost mlčet a denně cvičit prostná.`,
-              `1. Úklid cely, 2. Sledování televize, 3. Nákup v kantýně, 4. Osobní volno.`
+              `Skládá se z aktivit: 1. Procesních (výslechy a účast na soudních jednáních), 2. Právních (advokátní a dluhové poradny), 3. Kontrolních (prověrky stavu vězněných osob), 4. Evidenčních (vedení osobní karty) a 5. Oblast styku s orgány činnými v trestním řízení.`,
+              `Program zacházení tvoří výhradně dvě povinné složky: 1. Režimová (dodržování časového rozvrhu dne a povinnost mlčet během pracovní doby) a 2. Tělovýchovná (denní prostná a nástupová cvičení). Vzdělávací ani zájmové aktivity jeho součástí nejsou.`,
+              `Skládá se z aktivit: 1. Úklidových (úklid cely a společných prostor), 2. Volnočasových (sledování televize, společenské hry), 3. Spotřebitelských (nákup v kantýně, nárokové balíčky), 4. Osobní volno a 5. Oblast osobní hygieny a úpravy zjevu.`
             ],
     correctOption: 0,
     rationale: 'Těchto 5 oblastí aktivit (PV, VV, SV, ZV, UVZ) tvoří komplexní rámec resocializace odsouzeného, který se individualizuje na základě výsledků SARPO.',
@@ -847,10 +847,10 @@ export const penologieQuestions: Question[] = [
     question: 'Která kategorie vězněných osob se označuje zkratkou DVO a jaká platí pro ni specifika?',
     answer: 'DVO = Duševně (psychicky) vysoce narušené osoby a osoby s mentální retardací (dále DVO-P, DVO-M). Vyžadují speciální zacházení, umístění na specializované oddělení, dohled psychologa a zvýšenou ochranu před šikanou ze strany ostatních vězňů.',
     options: [
-              `DVO = Dozorci ve výslužbě; označení pro bývalé příslušníky v civilu.`,
+              `DVO = dozorem vytypované osoby, tedy vězni zařazení do evidence možných agresorů na základě hlášení dozorce. Platí pro ně zvýšená frekvence osobních prohlídek, oddělené ubytování od ostatních a povinnost hlásit se při opuštění ubytovny.`,
               `DVO = Duševně (psychicky) vysoce narušené osoby a osoby s mentální retardací (dále DVO-P, DVO-M). Vyžadují speciální zacházení, umístění na specializované oddělení, dohled psychologa a zvýšenou ochranu před šikanou ze strany ostatních vězňů.`,
-              `DVO = Dobře vychované osoby; tyto osoby mají povoleny neomezené návštěvy.`,
-              `DVO = Dlouhodobě vydělávající osoby; mají přednost při zařazení do práce mimo věznici.`
+              `DVO = dlouhodobě vězněné osoby, tedy odsouzení k nepodmíněnému trestu odnětí svobody nad deset let. Vyžadují rozšířený program zacházení, přehodnocování rizik jednou ročně a přednostní zařazení do prostupného systému vnitřní diferenciace.`,
+              `DVO = dobrovolně vyčleněné osoby, tedy vězni, kteří sami požádali o umístění mimo kolektiv. Vyžadují písemný souhlas s omezením účasti na společných aktivitách, samostatnou celu a potvrzení psychologa, že vyčlenění neohrozí duševní stav.`
             ],
     correctOption: 1,
     rationale: 'Osoby v kategorii DVO jsou obzvlášť zranitelné (riziko viktimizace) nebo hůře zvladatelné běžnými metodami, proto se pro ně zřizují specializovaná oddělení s intenzivnějším dohledem odborných zaměstnanců.',
@@ -864,10 +864,10 @@ export const penologieQuestions: Question[] = [
         question: 'Kdo a na jakém základě rozhoduje o zařazení odsouzeného do konkrétního stupně zabezpečení v rámci věznice s ostrahou?',
         answer: 'Ředitel věznice na základě doporučení odborné komise a výsledků komplexní zprávy (včetně SARPO).',
         options: [
-            'Soudce okresního soudu v místě výkonu trestu při vstupním řízení.',
+            `Soudce okresního soudu v místě výkonu trestu při vstupním řízení. Odborná komise se nezřizuje.`,
             'Ředitel věznice na základě doporučení odborné komise a výsledků komplexní zprávy (včetně SARPO).',
-            'Výhradně dozorový státní zástupce na návrh vedoucího oddělení výkonu vazby a trestu.',
-            'Vedoucí oddělení vězeňské stráže bez nutnosti posouzení odbornou komisí.'
+            `Výhradně dozorový státní zástupce na návrh vedoucího oddělení. SARPO se nezohledňuje.`,
+            `Vedoucí oddělení vězeňské stráže bez nutnosti posouzení odbornou komisí. Zpráva se nezpracuje.`
         ],
         correctOption: 1,
         rationale: 'Dle § 9a zákona č. 169/1999 Sb. o VTOS soud zařazuje odsouzeného do typu věznice (ostraha / zvýšená ostraha), ale o umístění do konkrétního stupně zabezpečení (nízký, střední, vysoký) v rámci věznice s ostrahou rozhoduje ředitel věznice po doporučení komise.',
@@ -881,10 +881,10 @@ export const penologieQuestions: Question[] = [
         question: 'Jak často se standardně provádí komplexní hodnocení plnění individuálního programu zacházení u odsouzeného ve VTOS?',
         answer: 'Zpravidla jedenkrát za 3 měsíce (u mladistvých častěji), nebo vždy při významné změně v chování či zařazení.',
         options: [
-            'Pouze jednou za kalendářní rok bez ohledu na délku uloženého trestu.',
-            'Každý týden v rámci ranní prověrky na ubytovně.',
+            `Pouze jednou za kalendářní rok bez ohledu na délku uloženého trestu. Změna v chování ani přeřazení na vyhodnocení nemají vliv.`,
+            `Každý týden v rámci ranní prověrky na ubytovně. U mladistvých se vyhodnocení neprovádí vůbec a změny v chování se nezohledňují.`,
             'Zpravidla jedenkrát za 3 měsíce (u mladistvých častěji), nebo vždy při významné změně v chování či zařazení.',
-            'Výhradně těsně před podáním žádosti o podmíněné propuštění na soud.'
+            `Výhradně těsně před podáním žádosti o podmíněné propuštění na soud. V průběhu výkonu trestu se program zacházení nevyhodnocuje vůbec.`
         ],
         correctOption: 2,
         rationale: 'Dle prováděcí vyhlášky k zákonu o VTOS se plnění programu zacházení vyhodnocuje pravidelně ve čtvrtletních intervalech za účasti odborných zaměstnanců (vychovatel, psycholog, speciální pedagog).',
