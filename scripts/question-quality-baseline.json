@@ -1,0 +1,76 @@
+{
+  "popis": "Referenční stav kvality banky otázek. Kontrola check:questions hlídá, že počet otázek s délkovým tellem nevzroste. Po zlepšení obsahu přepiš tento soubor příkazem \"npm run check:questions -- --update-baseline\" a commitni ho.",
+  "vytvoreno": "2026-09-13T05:44:09.615Z",
+  "cil": {
+    "longestIsCorrectPct": 40
+  },
+  "global": {
+    "questions": 377,
+    "longestIsCorrect": 343,
+    "longestIsCorrectPct": 91,
+    "avgCorrectLen": 218,
+    "avgDistractorLen": 145
+  },
+  "predmety": {
+    "Bezpečnostní služba": {
+      "questions": 32,
+      "longestIsCorrect": 23,
+      "longestIsCorrectPct": 71.9
+    },
+    "Pedagogika": {
+      "questions": 31,
+      "longestIsCorrect": 27,
+      "longestIsCorrectPct": 87.1
+    },
+    "Penologie": {
+      "questions": 52,
+      "longestIsCorrect": 52,
+      "longestIsCorrectPct": 100
+    },
+    "Právo": {
+      "questions": 57,
+      "longestIsCorrect": 56,
+      "longestIsCorrectPct": 98.2
+    },
+    "Profesní etika": {
+      "questions": 57,
+      "longestIsCorrect": 54,
+      "longestIsCorrectPct": 94.7
+    },
+    "Psychologie": {
+      "questions": 42,
+      "longestIsCorrect": 41,
+      "longestIsCorrectPct": 97.6
+    },
+    "Služební příprava": {
+      "questions": 17,
+      "longestIsCorrect": 14,
+      "longestIsCorrectPct": 82.4
+    },
+    "taktika": {
+      "questions": 17,
+      "longestIsCorrect": 14,
+      "longestIsCorrectPct": 82.4
+    },
+    "Vězeňská administrativa": {
+      "questions": 27,
+      "longestIsCorrect": 19,
+      "longestIsCorrectPct": 70.4
+    },
+    "zbrane": {
+      "questions": 12,
+      "longestIsCorrect": 10,
+      "longestIsCorrectPct": 83.3
+    },
+    "Zdravověda a první pomoc": {
+      "questions": 29,
+      "longestIsCorrect": 29,
+      "longestIsCorrectPct": 100
+    },
+    "zop": {
+      "questions": 4,
+      "longestIsCorrect": 4,
+      "longestIsCorrectPct": 100
+    }
+  }
+}

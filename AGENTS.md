@@ -12,13 +12,14 @@ Technologický stack: React, Vite, TypeScript, Tailwind CSS.
   * **Unikátnost:** Všechna ID musí být napříč aplikací 100% unikátní.
 * **Správnost odpovědí:** Pole `correctOption` musí být platný číselný index (0 až options.length - 1) odpovídající správné textové variantě v `options` a poli `answer`.
 * **Zdrojování:** Každá otázka musí mít vyplněné pole `source` (číslo zákona, NGŘ, nařízení) a `rationale` (vysvětlení).
+* **Vyvážená délka možností (vynuceno v CI):** Správná odpověď NESMÍ být nápadně delší než distraktory — jinak jde otázka zodpovědět bez znalosti látky, stačí zvolit nejdelší možnost. Všechny 4 možnosti musí mít srovnatelnou délku, gramatickou strukturu a odborný tón. Kontrola `npm run check:questions` hlídá ráčnou, že počet otázek s tímto vzorcem nevzroste — ani celkově, ani v jednom předmětu. Při zavedení kontroly byla banka na 91 % (343 ze 377 otázek), cíl je ≤ 40 %. Zlepšíš-li obsah, přepiš referenční stav příkazem `npm run check:questions -- --update-baseline` a commitni `scripts/question-quality-baseline.json`.
 * **Modul Kriminalistika:** Byl záměrně trvale odstraněn. Tento modul ani soubor `kriminalistika.ts` nikdy neobnovuj.
 
 ## 2. Zásady pro úpravy kódu a komponent
 
 * **Žádné destruktivní změny:** Nikdy nemaž ani nepřepisuj existující otázky nebo komponenty bez výslovného pokynu uživatele.
 * **Zachování typů:** Nepoužívej typ `any`. Všechny nové stavy a vlastnosti musí mít explicitní TypeScript definice.
-* **Integrita build procesu:** Před dokončením úkolu vždy ověř typovou kontrolu a úspěšný build (`npm run build` nebo `npx tsc --noEmit`).
+* **Integrita build procesu:** Před dokončením úkolu vždy spusť `npm test` (typová kontrola + integrita předpisů + kvalita banky otázek) a `npm run build`. Totéž běží v CI na každý push a pull request (`.github/workflows/ci.yml`), takže neověřená změna shodí build.
 
 ## 3. Autonoma testovací data (`src/autonoma/`)
 

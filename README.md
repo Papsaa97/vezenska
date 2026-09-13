@@ -36,11 +36,31 @@ npm run dev          # http://localhost:3000
 | `npm run build` | Produkční build do `dist/` |
 | `npm run preview` | Náhled produkčního buildu |
 | `npm run lint` | Typová kontrola (`tsc --noEmit`) |
+| `npm test` | Typy + integrita předpisů + kvalita banky otázek |
 | `npm run check:legal` | Formální kontrola integrity dat předpisů |
+| `npm run check:questions` | Strukturální kontroly otázek a ráčna na délkový tell |
 | `npm run sync:laws` | Synchronizace textů předpisů |
 
-Před každým commitem spusť `npm run lint` a `npm run build` — v repozitáři zatím
-není CI, které by to ověřilo za tebe.
+Na každý push a pull request běží [CI](.github/workflows/ci.yml): typová kontrola,
+produkční build, integrita předpisů a kvalita banky otázek. Lokálně je spustíš
+přes `npm test && npm run build`.
+
+### Kontrola kvality banky otázek
+
+`npm run check:questions` dělá dvě věci. Strukturální kontroly (unikátní ID,
+platný `correctOption`, soulad `answer` s `options`, vyplněné `rationale`
+a `source`) jsou **tvrdé** — banka je dnes plní na 100 %, takže každá regrese
+shodí build.
+
+Druhá část hlídá **délkový tell**: u 343 ze 377 otázek (91 %) je správná odpověď
+zároveň nejdelší ze čtyř, takže se test dá projít bez znalosti předmětu. Opravit
+to znamená přepsat distraktory u stovek otázek, proto se nekontroluje absolutní
+cíl, ale to, že se stav nezhoršuje — počet takových otázek nesmí vzrůst ani
+celkově, ani v jednom předmětu. Po zlepšení obsahu přepiš referenční stav:
+
+```bash
+npm run check:questions -- --update-baseline   # a commitni baseline
+```
 
 ## Proměnné prostředí
 
