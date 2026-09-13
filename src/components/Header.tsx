@@ -302,18 +302,6 @@ export default function Header({
             }}
             className="flex-1 overflow-x-auto hide-scrollbar flex items-center gap-1.5 lg:gap-2 py-1"
           >
-            {/* 0. Dashboard - Nástěnka tříd ZOP */}
-            <button
-              onClick={() => { setActiveTab('dashboard'); setOpenDropdown(null); setDropdownPos(null); }}
-              className={`px-2.5 lg:px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
-                activeTab === 'dashboard' 
-                  ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
-              }`}
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              <span>Nástěnka</span>
-            </button>
 
             {/* 1. Subjects - Primary Item */}
             <button
