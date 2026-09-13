@@ -41,9 +41,9 @@ npm run dev          # http://localhost:3000
 | `npm run check:questions` | Strukturální kontroly otázek a ráčna na délkový tell |
 | `npm run sync:laws` | Synchronizace textů předpisů |
 
-Na každý push a pull request běží [CI](.github/workflows/ci.yml): typová kontrola,
-produkční build, integrita předpisů a kvalita banky otázek. Lokálně je spustíš
-přes `npm test && npm run build`.
+Na každý pull request (a na push do `main`) běží [CI](.github/workflows/ci.yml):
+typová kontrola, produkční build, integrita předpisů a kvalita banky otázek.
+Lokálně je spustíš přes `npm test && npm run build`.
 
 ### Kontrola kvality banky otázek
 

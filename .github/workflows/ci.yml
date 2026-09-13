@@ -2,9 +2,14 @@ name: CI
 
 # Dosud se na push ani pull request nespouštělo nic, takže nic nebránilo zanést
 # rozbitý build. Typová kontrola i build přitom proběhnou za několik sekund.
+# Push se omezuje na main, protože pro větve se stejně spustí pull_request:
+# kdyby tu bylo branches: ['**'], běželo by CI na každém PR dvakrát (concurrency
+# group je u push refs/heads/... a u pull_request refs/pull/N/merge, takže se
+# navzájem neruší). V tomhle repozitáři jde všechno přes PR, takže signál
+# neztrácíme.
 on:
   push:
-    branches: ['**']
+    branches: [main]
   pull_request:
 
 # Při rychlých po sobě jdoucích pushech nechej běžet jen ten poslední.
