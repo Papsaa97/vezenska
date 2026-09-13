@@ -8,9 +8,9 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jaký je prioritní a správný postup při masivním tepenném krvácení z končetiny (např. po bodném poranění odsouzeným)?',
     answer: 'Okamžitě naložit taktické škrtidlo (turniket / CAT) 5–7 cm nad ránu (nebo na horní část končetiny – „high and tight“), dotáhnout vratidlo až do úplného vymizení pulzu a zástavy krvácení, zajistit a poznamenat přesný čas naložení na čelo nebo pásek škrtidla.',
     options: [
-              `Naložit škrtidlo pod místo poranění, dotáhnout výhradně do pocitu mírného tlaku zraněného a po 30 minutách turniket zcela sejmout, aby se předešlo ischemické nekróze končetiny.`,
-              `Nejprve provést wound packing hemostatickou gázou a přiložit tlakový obvaz, vyčkat 10 minut na vytvoření krevního koláče a turniket použít až po selhání tlakového obvazu.`,
-              `Aplikovat turniket přímo na kloub nejblíže nad ránou a každých 15 minut škrtidlo povolit na 2 minuty pro obnovení perfuze tkáně bez nutnosti záznamu času naložení.`,
+              `Naložit škrtidlo pod místo poranění, dotáhnout výhradně do pocitu mírného tlaku zraněného a po 30 minutách turniket zcela sejmout, aby se předešlo ischemické nekróze končetiny. Čas naložení se nikam nezaznamenává, protože turniket je vždy jen dočasným opatřením do příjezdu ZZS.`,
+              `Nejprve provést wound packing hemostatickou gázou a přiložit tlakový obvaz, vyčkat 10 minut na vytvoření krevního koláče a turniket použít až po selhání tlakového obvazu. Turniket se nakládá vždy až jako poslední možnost a nikdy ne výše než těsně nad horní okraj rány.`,
+              `Aplikovat turniket přímo na kloub nejblíže nad ránou a každých 15 minut škrtidlo povolit na 2 minuty pro obnovení perfuze tkáně bez nutnosti záznamu času naložení. Naložení vysoko na končetinu se nepoužívá a vratidlo se dotahuje pouze do zeslabení krvácení, nikoli do vymizení pulzu.`,
               `Okamžitě naložit taktické škrtidlo (turniket / CAT) 5–7 cm nad ránu (nebo na horní část končetiny – „high and tight“), dotáhnout vratidlo až do úplného vymizení pulzu a zástavy krvácení, zajistit a poznamenat přesný čas naložení na čelo nebo pásek škrtidla.`
             ],
     correctOption: 3,
@@ -25,7 +25,7 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jaký je správný poměr stlačování hrudníku a umělých vdechů při kardiopulmonální resuscitaci (KPR) dospělého člověka podle platných doporučení ERC?',
     answer: '30 stlačení hrudníku : 2 umělé vdechy; frekvence stlačování 100–120/minuta, hloubka stlačení 5–6 cm uprostřed hrudníku na dolní polovině hrudní kosti.',
     options: [
-              `5 úvodních záchranných vdechů a následně poměr 15:2; frekvence stlačování 140–160/minuta, stlačování výhradně v levém mezižebří.`,
+              `5 úvodních záchranných vdechů a následně poměr 15:2; frekvence stlačování 140–160/minuta, stlačování výhradně v levém mezižebří, AED se nepoužívá.`,
               `30 stlačení hrudníku : 2 umělé vdechy; frekvence stlačování 100–120/minuta, hloubka stlačení 5–6 cm uprostřed hrudníku na dolní polovině hrudní kosti.`,
               `15 stlačení hrudníku : 2 umělé vdechy; frekvence stlačování 80–100/minuta, hloubka stlačení maximálně 3–4 cm v horní třetině hrudní kosti.`,
               `30 stlačení hrudníku : 5 umělých vdechů; frekvence stlačování 60–80/minuta, hloubka stlačení 7–8 cm v oblasti mečovitého výběžku kosti hrudní.`
@@ -43,9 +43,9 @@ export const zdravovedaQuestions: Question[] = [
     answer: 'AED ihned zapnout, řídit se hlasovými a vizuálními pokyny přístroje, nalepit elektrody na suchý holý hrudník (pod pravou klíční kost a na levý bok pod podpaží), při analýze a výboji se nikdo nesmí dotýkat postiženého a ihned po výboji pokračovat v KPR 30:2.',
     options: [
               `AED ihned zapnout, řídit se hlasovými a vizuálními pokyny přístroje, nalepit elektrody na suchý holý hrudník (pod pravou klíční kost a na levý bok pod podpaží), při analýze a výboji se nikdo nesmí dotýkat postiženého a ihned po výboji pokračovat v KPR 30:2.`,
-              `Před zapnutím AED provést nejprve 10 minut nepřerušované manuální KPR, elektrody nalepit na přední stranu břicha a bedra bez ohledu na vlhkost pokožky a po výboji vyčkávat na kontrolu pulzu.`,
-              `AED zapnout až po příjezdu zdravotníka ZZS, elektrody nalepit křížem přes hrudník, během analýzy rytmu a výboje pokračovat v nepřerušovaném stlačování hrudníku a po výboji 2 minuty pasivně čekat.`,
-              `Zapnout přístroj, elektrody umístit na obě klíční kosti, po aplikaci defibrilačního výboje elektrody ihned strhnout, uložit postiženého do zotavovací polohy a zkontrolovat zornicový reflex.`
+              `Před zapnutím AED provést nejprve 10 minut nepřerušované manuální KPR, elektrody nalepit na přední stranu břicha a bedra bez ohledu na vlhkost pokožky a po výboji vyčkávat na kontrolu pulzu. Pokyny přístroje se neřídí a po výboji se pokračuje až po kontrole zornicového reflexu.`,
+              `AED zapnout až po příjezdu zdravotníka ZZS, elektrody nalepit křížem přes hrudník, během analýzy rytmu a výboje pokračovat v nepřerušovaném stlačování hrudníku a po výboji 2 minuty pasivně čekat. Kontakt s postiženým během analýzy rytmu nevadí, protože výboj je synchronizovaný.`,
+              `Zapnout přístroj, elektrody umístit na obě klíční kosti, po aplikaci defibrilačního výboje elektrody ihned strhnout, uložit postiženého do zotavovací polohy a zkontrolovat zornicový reflex. KPR se po výboji nezahajuje a elektrody lze nalepit i na vlhko.`
             ],
     correctOption: 0,
     rationale: 'AED je bezpečný poloautomatický přístroj, který sám vyhodnotí fibrilaci komor či bezpulzovou komorovou tachykardii a instruuje zachránce. Včasná defibrilace během prvních 3–5 minut zvyšuje šanci na přežití až na 70 %.',
@@ -59,9 +59,9 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jaký je správný postup příslušníka při nálezu oběšené osoby na cele?',
     answer: 'Okamžitě nadzvednout a zajistit tělo proti pádu, přeříznout/přestřihnout smyčku (ne v uzlu, uzel nechat pro šetření), položit na pevnou podložku na záda, zprůchodnit dýchací cesty, zkontrolovat dech a v případě zástavy ihned zahájit KPR a přivolat lékaře/ZZS.',
     options: [
-              `Okamžitě přestřihnout závěs, postiženého uložit na břicho do stabilizované polohy na měkkou matraci, vyčkat 5 minut na spontánní obnovení dechu a teprve poté aktivovat poplach.`,
-              `Rozvázat nebo přeříznout uzel škrtidla, posadit osobu na lůžko, podepřít záda, podat tekutiny a provést vyšetření zornic bez zahájení kardiopulmonální resuscitace.`,
-              `Tělo ponechat v původní poloze z důvodu zachování stop pro orgány činné v trestním řízení, zajistit celu, vyčkat na příchod lékaře věznice a resuscitaci zahájit až po fotodokumentaci.`,
+              `Okamžitě přestřihnout závěs, postiženého uložit na břicho do stabilizované polohy na měkkou matraci, vyčkat 5 minut na spontánní obnovení dechu a teprve poté aktivovat poplach. Kontrola dechu ani zahájení KPR se v této fázi neprovádí a uzel smyčky je nutné rozvázat.`,
+              `Rozvázat nebo přeříznout uzel škrtidla, posadit osobu na lůžko, podepřít záda, podat tekutiny a provést vyšetření zornic bez zahájení kardiopulmonální resuscitace. Smyčka se přeřezává přímo v uzlu a tělo se proti pádu nezajišťuje, protože by hrozilo poškození stop.`,
+              `Tělo ponechat v původní poloze z důvodu zachování stop pro orgány činné v trestním řízení, zajistit celu, vyčkat na příchod lékaře věznice a resuscitaci zahájit až po fotodokumentaci. Dýchací cesty se nezprůchodňují a tělo se na pevnou podložku pokládá až po příjezdu ZZS.`,
               `Okamžitě nadzvednout a zajistit tělo proti pádu, přeříznout/přestřihnout smyčku (ne v uzlu, uzel nechat pro šetření), položit na pevnou podložku na záda, zprůchodnit dýchací cesty, zkontrolovat dech a v případě zástavy ihned zahájit KPR a přivolat lékaře/ZZS.`
             ],
     correctOption: 3,
@@ -76,10 +76,10 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jak se poskytuje první pomoc při otevřeném (penetrujícím) poranění hrudníku, kdy je slyšet nasávání vzduchu do hrudní dutiny?',
     answer: 'Přiložit poloprodyšné krytí s chlopní (Chest Seal / hrudní chlopeň) nebo improvizované krytí přilepené ze tří stran, které umožňuje únik vzduchu ven, ale brání nasátí dovnitř (prevence tenzního pneumotoraxu), polohovat v polosedě a sledovat dech.',
     options: [
-              `Ponechat ránu zcela volně otevřenou k volné ventilaci vzduchu, uložit zraněného na zdravý bok a aplikovat studený obklad na břicho k utlumení bolesti.`,
+              `Ponechat ránu zcela volně otevřenou k volné ventilaci vzduchu, uložit zraněného na zdravý bok a aplikovat studený obklad na břicho k utlumení bolesti. Poloprodyšné krytí s chlopní se nepoužívá a zraněného polohujeme vleže na zádech.`,
               `Přiložit poloprodyšné krytí s chlopní (Chest Seal / hrudní chlopeň) nebo improvizované krytí přilepené ze tří stran, které umožňuje únik vzduchu ven, ale brání nasátí dovnitř (prevence tenzního pneumotoraxu), polohovat v polosedě a sledovat dech.`,
-              `Ránu hermeticky a neprodyšně uzavřít sterilním krytím podlepeným ze všech čtyř stran bez možnosti odvodu vzduchu a zraněného položit na záda se zvednutými dolními končetinami.`,
-              `Provést hluboký wound packing rány hemostatickou gázou až do pleurální dutiny a pevně stáhnout elastickým obinadlem po celém obvodu hrudníku pro zabránění dýchacím pohybům.`
+              `Ránu hermeticky a neprodyšně uzavřít sterilním krytím podlepeným ze všech čtyř stran bez možnosti odvodu vzduchu a zraněného položit na záda se zvednutými dolními končetinami. Polosed se nepoužívá, protože by usnadnil nasátí vzduchu do pohrudniční dutiny.`,
+              `Provést hluboký wound packing rány hemostatickou gázou až do pleurální dutiny a pevně stáhnout elastickým obinadlem po celém obvodu hrudníku pro zabránění dýchacím pohybům. Chlopňové krytí se nepoužívá a dýchací pohyby je naopak žádoucí zcela omezit.`
             ],
     correctOption: 1,
     rationale: 'Otevřený pneumotorax může rychle přejít v tenzní (přetlakový) pneumotorax se stlačením srdce a velkých cév. Chlopňové krytí působí jako jednosměrný ventil.',
@@ -94,9 +94,9 @@ export const zdravovedaQuestions: Question[] = [
     answer: 'U osoby v bezvědomí, která normálně a spontánně dýchá a není u ní podezření na poranění páteře; poloha zajišťuje volné dýchací cesty a zabraňuje zapadnutí jazyka nebo vdechnutí zvratků.',
     options: [
               `U osoby v bezvědomí, která normálně a spontánně dýchá a není u ní podezření na poranění páteře; poloha zajišťuje volné dýchací cesty a zabraňuje zapadnutí jazyka nebo vdechnutí zvratků.`,
-              `U osoby při vědomí s probíhajícím masivním arteriálním krvácením nebo u pacienta v rozvinutém anafylaktickém šoku k prevenci kolapsu krevního oběhu.`,
-              `U osoby v bezvědomí s lapavými dechy (gasping) a nehmatným pulzem, aby se uvolnily dýchací cesty před případným zahájením resuscitace po 10 minutách sledování.`,
-              `U všech osob při podezření na zlomeninu krční páteře a pánve, protože poloha na boku fixuje osový skelet a zabraňuje vzniku míšního šoku.`
+              `U osoby při vědomí s probíhajícím masivním arteriálním krvácením nebo u pacienta v rozvinutém anafylaktickém šoku k prevenci kolapsu krevního oběhu. Kontrola dýchání se před uložením neprovádí.`,
+              `U osoby v bezvědomí s lapavými dechy (gasping) a nehmatným pulzem, aby se uvolnily dýchací cesty před případným zahájením resuscitace po 10 minutách sledování. Dýchání se nekontroluje.`,
+              `U všech osob při podezření na zlomeninu krční páteře a pánve, protože poloha na boku fixuje osový skelet a zabraňuje vzniku míšního šoku. Dýchání se před uložením nekontroluje.`
             ],
     correctOption: 0,
     rationale: 'Zotavovací poloha chrání dýchací cesty před obstrukcí a aspirací žaludečního obsahu u bezvědomého. Stav dýchání se musí nepřetržitě kontrolovat.',
@@ -110,9 +110,9 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jaké jsou typické příznaky předávkování opioidy (např. heroin, fentanyl, morfin) a jaká je první pomoc?',
     answer: 'Příznaky: bezvědomí, mióza (zúžené zornice jako špendlíkové hlavičky), těžký útlum až zástava dechu, cyanóza (promodrání rtů). První pomoc: zprůchodnit dýchací cesty, podat Naloxon (intranazální sprej Nyxoid do nosu), v případě zástavy dechu dýchat/resuscitovat a volat ZZS.',
     options: [
-              `Příznaky: mydriáza (široce rozšířené zornice), tachykardie, hyperventilace a agrese. První pomoc: podat perorálně živočišné uhlí, aplikovat studené obklady na čelo a vyčkat do odeznění účinku.`,
-              `Příznaky: křeče celého těla, nystagmus a zarudnutí kůže. První pomoc: podat intranazálně Glukagon, zahájit prudké pasivní rozdýchávání bez kontroly dýchacích cest a vyčkat 30 minut.`,
-              `Příznaky: bezvědomí, zúžené zornice a útlum dechu. První pomoc: podat postiženému vypít roztok slané vody k vyvolání zvracení, uložit do polosedu a nepodávat žádná antidota z důvodu rizika zástavy srdce.`,
+              `Příznaky: mydriáza (široce rozšířené zornice), tachykardie, hyperventilace a agrese. První pomoc: podat perorálně živočišné uhlí, aplikovat studené obklady na čelo a vyčkat do odeznění účinku. Naloxon se nepodává, protože u opioidů nemá účinek, a ZZS se volá až při zástavě oběhu.`,
+              `Příznaky: křeče celého těla, nystagmus a zarudnutí kůže. První pomoc: podat intranazálně Glukagon, zahájit prudké pasivní rozdýchávání bez kontroly dýchacích cest a vyčkat 30 minut. Zúžené zornice ani cyanóza se u této otravy nevyskytují a intranazální Naloxon je kontraindikován.`,
+              `Příznaky: bezvědomí, zúžené zornice a útlum dechu. První pomoc: podat postiženému vypít roztok slané vody k vyvolání zvracení, uložit do polosedu a nepodávat žádná antidota z důvodu rizika zástavy srdce. Zprůchodnění dýchacích cest se neprovádí a resuscitace se zahajuje až po vyloučení otravy.`,
               `Příznaky: bezvědomí, mióza (zúžené zornice jako špendlíkové hlavičky), těžký útlum až zástava dechu, cyanóza (promodrání rtů). První pomoc: zprůchodnit dýchací cesty, podat Naloxon (intranazální sprej Nyxoid do nosu), v případě zástavy dechu dýchat/resuscitovat a volat ZZS.`
             ],
     correctOption: 3,
@@ -127,9 +127,9 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jak správně postupovat při generalizovaném epileptickém záchvatu (tonicko-klonické křeče celého těla) vězněné osoby na cele?',
     answer: 'Zamezit sekundárnímu poranění (podložit hlavu měkkým oděvem, odstranit ostré a tvrdé předměty z okolí), nebránit křečím násilím, NIKDY nevkládat nic do úst, po odeznění křečí zkontrolovat dýchání, polohovat na bok a přivolat zdravotníka.',
     options: [
-              `Ihned zahájit nepřerušovanou masáž srdce a umělé dýchání i přes probíhající křeče, postiženého posadit a zaklonit mu hlavu do maximálního záklonu.`,
-              `Násilím rozevřít čelisti roubíkem, vytáhnout jazyk peánem nebo prsty, pevně znehybnit končetiny přilehnutím a podat vodu se sedativy.`,
-              `Položit postiženého na břicho s obličejem do polštáře k utlumení hluku, vložit mezi zuby kapesník a podat perorálně tablety proti křečím během záchvatu.`,
+              `Ihned zahájit nepřerušovanou masáž srdce a umělé dýchání i přes probíhající křeče, postiženého posadit a zaklonit mu hlavu do maximálního záklonu. Po odeznění křečí postiženého ihned posadit, podat tekutiny a ponechat vsedě; polohování na bok se neprovádí.`,
+              `Násilím rozevřít čelisti roubíkem, vytáhnout jazyk peánem nebo prsty, pevně znehybnit končetiny přilehnutím a podat vodu se sedativy. Zdravotníka je třeba volat až tehdy, pokud křeče trvají déle než deset minut; jinak postačí záznam do knihy služby.`,
+              `Položit postiženého na břicho s obličejem do polštáře k utlumení hluku, vložit mezi zuby kapesník a podat perorálně tablety proti křečím během záchvatu. Hlavu není nutné podkládat a ostré předměty z okolí se odstraňují až po skončení záchvatu.`,
               `Zamezit sekundárnímu poranění (podložit hlavu měkkým oděvem, odstranit ostré a tvrdé předměty z okolí), nebránit křečím násilím, NIKDY nevkládat nic do úst, po odeznění křečí zkontrolovat dýchání, polohovat na bok a přivolat zdravotníka.`
             ],
     correctOption: 3,
@@ -145,9 +145,9 @@ export const zdravovedaQuestions: Question[] = [
     answer: 'Sejmout bezpečnostní kryt, přiložit autoinjektor kolmo k vnější straně stehna (lze i přes oděv), silně zatlačit až do cvaknutí, podržet 5–10 sekund, masírovat místo vpichu a volat 155.',
     options: [
               `Sejmout bezpečnostní kryt, přiložit autoinjektor kolmo k vnější straně stehna (lze i přes oděv), silně zatlačit až do cvaknutí, podržet 5–10 sekund, masírovat místo vpichu a volat 155.`,
-              `Přiložit autoinjektor na palec ruky nebo plosku nohy pro rychlou periferní absorpci, stisknout píst a ponechat postiženého v chůzi pro zrychlení krevního oběhu.`,
-              `Sejmout kryt, aplikovat autoinjektor šikmo pod úhlem 45° do hýžďového svalu nebo přímo do podkoží břicha, ihned po vpichu vytáhnout a podat antihistaminika v tabletách.`,
-              `Aplikovat autoinjektor přímo do žíly na předloktí nebo do deltového svalu na paži, držet po dobu 60 sekund a postiženého uložit do polohy se svěšenou hlavou.`
+              `Přiložit autoinjektor na palec ruky nebo plosku nohy pro rychlou periferní absorpci, stisknout píst a ponechat postiženého v chůzi pro zrychlení krevního oběhu; ZZS se nevolá.`,
+              `Sejmout kryt, aplikovat autoinjektor šikmo pod úhlem 45° do hýžďového svalu nebo přímo do podkoží břicha, ihned po vpichu vytáhnout a podat antihistaminika v tabletách bez volání ZZS.`,
+              `Aplikovat autoinjektor přímo do žíly na předloktí nebo do deltového svalu na paži, držet po dobu 60 sekund a postiženého uložit do polohy se svěšenou hlavou; vpich se nemasíruje.`
             ],
     correctOption: 0,
     rationale: 'Adrenalin (epinefrin) intramuskulárně do anterolaterální strany stehna zužuje cévy, zvyšuje tlak a rozšiřuje dýchací cesty. Včasné podání zachraňuje život před udušením otokem hrtanu.',
@@ -161,10 +161,10 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Co znamená mezinárodní diagnostický test FAST pro rychlé rozpoznání cévní mozkové příhody (mrtvice)?',
     answer: 'F = Face (pokles koutku úst, asymetrie obličeje), A = Arms (ochrnutí/pokles jedné paže při předpažení), S = Speech (porucha řeči, nesrozumitelnost), T = Time (čas je mozek – okamžitě volat 155 a hlásit čas vzniku příznaků).',
     options: [
-              `F = Fractures (kontrola zlomenin), A = Airway (zprůchodnění dýchacích cest), S = Shock (protišoková opatření), T = Tourniquet (aplikace zaškrcovadla při krvácení).`,
-              `F = Frequency (tepová frekvence), A = Alertness (stupeň bdělosti dle AVPU), S = Saturation (okysličení krve pulzním oxymetrem), T = Tension (tlak krve tonometrem).`,
+              `F = Fractures (kontrola zlomenin), A = Airway (zprůchodnění dýchacích cest), S = Shock (protišoková opatření), T = Tourniquet (aplikace zaškrcovadla při krvácení). Test slouží k třídění raněných při hromadném postižení osob, nikoli u CMP.`,
+              `F = Frequency (tepová frekvence), A = Alertness (stupeň bdělosti dle AVPU), S = Saturation (okysličení krve pulzním oxymetrem), T = Tension (tlak krve tonometrem). Čas vzniku příznaků se nezaznamenává a ZZS se volá až po změření všech hodnot.`,
               `F = Face (pokles koutku úst, asymetrie obličeje), A = Arms (ochrnutí/pokles jedné paže při předpažení), S = Speech (porucha řeči, nesrozumitelnost), T = Time (čas je mozek – okamžitě volat 155 a hlásit čas vzniku příznaků).`,
-              `F = Fever (měření tělesné teploty), A = Abdomen (vyšetření břišní stěny), S = Spine (fixace krční páteře), T = Transport (okamžitý přesun do vězeňské nemocnice).`
+              `F = Fever (měření tělesné teploty), A = Abdomen (vyšetření břišní stěny), S = Spine (fixace krční páteře), T = Transport (okamžitý přesun do vězeňské nemocnice). Volání na linku 155 se v tomto postupu nevyskytuje.`
             ],
     correctOption: 2,
     rationale: 'Při ischemické mozkové příhodě rozhoduje časové okno pro trombolýzu (ideálně do 4,5 hodiny od prvních příznaků). Test FAST umožňuje laickému zachránci okamžité rozpoznání.',
@@ -178,9 +178,9 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jaký je správný postup první pomoci u dospělého člověka při těžké neprůchodnosti dýchacích cest cizím tělesem (nemůže mluvit, kašlat ani dýchat, drží se za krk)?',
     answer: 'Až 5 rázných úderů dlaní mezi lopatky v předklonu (Gordonovy údery); pokud nepomohou, provést až 5 stlačení nadbřišku (Heimlichův manévr) zezadu; postupy střídat, při ztrátě vědomí ihned zahájit KPR 30:2.',
     options: [
-              `Okamžitě provést naslepo hlubokou revizi dutiny ústní prsty, podat zraněnému 0,5 l vody k zapití sousta a provést 10 stlačení hrudní kosti v záklonu hlavy.`,
-              `Zavěsit postiženého za dolní končetiny hlavou dolů, provést 15 silných úderů pěstí do oblasti beder a podat léky na uvolnění hladkého svalstva průdušek.`,
-              `Okamžitě provést koniotomii kapesním nožem, uložit postiženého do lehu na zádech a provádět nepřerušované stlačování břicha oběma rukama až do uvolnění dýchacích cest.`,
+              `Okamžitě provést naslepo hlubokou revizi dutiny ústní prsty, podat zraněnému 0,5 l vody k zapití sousta a provést 10 stlačení hrudní kosti v záklonu hlavy. Údery mezi lopatky ani Heimlichův manévr se nepoužívají.`,
+              `Zavěsit postiženého za dolní končetiny hlavou dolů, provést 15 silných úderů pěstí do oblasti beder a podat léky na uvolnění hladkého svalstva průdušek. Heimlichův manévr se v tomto postupu neprovádí.`,
+              `Okamžitě provést koniotomii kapesním nožem, uložit postiženého do lehu na zádech a provádět nepřerušované stlačování břicha oběma rukama až do uvolnění dýchacích cest. Gordonovy údery se nepoužívají.`,
               `Až 5 rázných úderů dlaní mezi lopatky v předklonu (Gordonovy údery); pokud nepomohou, provést až 5 stlačení nadbřišku (Heimlichův manévr) zezadu; postupy střídat, při ztrátě vědomí ihned zahájit KPR 30:2.`
             ],
     correctOption: 3,
@@ -195,10 +195,10 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jaká jsou základní pravidla první pomoci při termických popáleninách II. a III. stupně?',
     answer: 'Okamžitě chladit čistou vlažnou/chladnou vodou (10–20 minut, vyvarovat se celkového podchlazení), nestrhávat přiškvařený oděv, sterilně či čistě překrýt (ideálně netrhavým krytím / Water-Jel gelem), nepíchat puchýře a nemaže se mastmi.',
     options: [
-              `Chladit ledem nebo ledovou tříští po dobu nejméně 60 minut, vzniklé puchýře sterilně propíchnout k vypuštění tekutiny a ránu potřít hojivou mastí s panthenolem nebo lihem.`,
+              `Chladit ledem nebo ledovou tříští po dobu nejméně 60 minut, vzniklé puchýře sterilně propíchnout k vypuštění tekutiny a ránu potřít hojivou mastí s panthenolem nebo lihem. Přiškvařený oděv se z rány odstraňuje tahem a krytí se přikládá až po úplném vychladnutí plochy.`,
               `Okamžitě chladit čistou vlažnou/chladnou vodou (10–20 minut, vyvarovat se celkového podchlazení), nestrhávat přiškvařený oděv, sterilně či čistě překrýt (ideálně netrhavým krytím / Water-Jel gelem), nepíchat puchýře a nemaže se mastmi.`,
-              `Přiškvařené syntetické oděvy ihned strhnout z rány, popálené plochy vydezinfikovat koncentrovaným jódovým roztokem a pevně stáhnout tlakovým obvazem pro zástavu edému.`,
-              `Ponořit celého popáleného do ledové lázně na 45 minut, na rány nasypat zásyp s antibiotiky a ponechat plochy zcela nezakryté pro volný přístup vzduchu.`
+              `Přiškvařené syntetické oděvy ihned strhnout z rány, popálené plochy vydezinfikovat koncentrovaným jódovým roztokem a pevně stáhnout tlakovým obvazem pro zástavu edému. Chlazení vodou se neprovádí vůbec a puchýře se propichují k urychlení hojení rány.`,
+              `Ponořit celého popáleného do ledové lázně na 45 minut, na rány nasypat zásyp s antibiotiky a ponechat plochy zcela nezakryté pro volný přístup vzduchu. Sterilní krytí se nepřikládá vůbec a přiškvařený oděv se z popálené plochy odstraňuje pinzetou.`
             ],
     correctOption: 1,
     rationale: 'Chlazení zastavuje termickou destrukci hlubších vrstev tkání a tlumí bolest. Aplikace mastí, zásypů nebo trhání oděvu zhoršuje infekci a poškozuje tkáň.',
@@ -212,10 +212,10 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jaký je postup při poranění příslušníka VS ČR o použitou injekční jehlu nalezenou při bezpečnostní prohlídce na cele (riziko HIV, HBV, HCV)?',
     answer: 'Ránu nechat krátce volně krvácet (nevymačkávat násilím), důkladně omýt mýdlovou vodou a vydezinfikovat (např. Jodisol / Betadine), jehlu bezpečně zajistit v pevném kontejneru, událost ihned ohlásit nadřízenému a do 2–4 hodin vyhledat infekční oddělení pro zahájení PEP (postexpoziční profylaxe).',
     options: [
-              `Krev z rány okamžitě vysát ústy, aplikovat alkoholový obklad, událost zapsat výhradně do denního záznamu bez hlášení a profylaxi zahájit nejdříve po uplynutí inkubační doby 3 měsíců.`,
+              `Krev z rány okamžitě vysát ústy, aplikovat alkoholový obklad, událost zapsat výhradně do denního záznamu bez hlášení a profylaxi zahájit nejdříve po uplynutí inkubační doby 3 měsíců. Nadřízenému se událost hlásí až po potvrzení sérologického nálezu a postexpoziční profylaxe se ve věznici nepodává.`,
               `Ránu nechat krátce volně krvácet (nevymačkávat násilím), důkladně omýt mýdlovou vodou a vydezinfikovat (např. Jodisol / Betadine), jehlu bezpečně zajistit v pevném kontejneru, událost ihned ohlásit nadřízenému a do 2–4 hodin vyhledat infekční oddělení pro zahájení PEP (postexpoziční profylaxe).`,
-              `Ránu okamžitě silně vymačkat až do hloubky, končetinu zaškrtit turniketem, ránu vypálit desinfekcí na bázi chloru a na infekční oddělení se dostavit až po 14 dnech na kontrolní test protilátek.`,
-              `Jehlu zabalit do igelitového sáčku pro chemickou expertizu, ránu výhradně zalepit rychloobvazem a lékařské vyšetření vyhledat pouze v případě, že se u odsouzeného potvrdí pozitivita na AIDS.`
+              `Ránu okamžitě silně vymačkat až do hloubky, končetinu zaškrtit turniketem, ránu vypálit desinfekcí na bázi chloru a na infekční oddělení se dostavit až po 14 dnech na kontrolní test protilátek. Ohlášení nadřízenému se nevyžaduje a použitá jehla se likviduje běžným způsobem do směsného odpadu.`,
+              `Jehlu zabalit do igelitového sáčku pro chemickou expertizu, ránu výhradně zalepit rychloobvazem a lékařské vyšetření vyhledat pouze v případě, že se u odsouzeného potvrdí pozitivita na AIDS. Ránu není třeba omývat ani dezinfikovat a postexpoziční profylaxe se zahajuje nejdříve po 30 dnech.`
             ],
     correctOption: 1,
     rationale: 'Včasné zahájení postexpoziční profylaxe (PEP) proti HIV do několika hodin po expozici dramaticky snižuje riziko sérokonverze. Současně se odebírají nulté vzorky krve a kontroluje se očkování proti žloutence B.',
@@ -229,10 +229,10 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jak se správně ošetřuje hluboká krvácející rána v místech, kde nelze použít turniket (např. tříslo, podpaží, krk)?',
     answer: 'Provést vyplnění (packing) rány hemostatickou nebo sterilní gázou s nepřetržitým přímým tlakem prsty/dlaní po dobu minimálně 3 minut a přiložit tlakový obvaz (např. Izraelský tlakový obvaz).',
     options: [
-              `Naložit škrtidlo CAT přímo přes krk nebo tříslo s maximálním dotažením vratidla a ránu výhradně povrchově překrýt jedním sterilním čtvercem bez manuální komprese.`,
-              `Do hloubky rány nasypat hemostatický prášek bez gázy, stlačit ránu po dobu 10 sekund a nechat krev volně prosakovat do savého obvazu bez fixace tlakovým prvkem.`,
+              `Naložit škrtidlo CAT přímo přes krk nebo tříslo s maximálním dotažením vratidla a ránu výhradně povrchově překrýt jedním sterilním čtvercem bez manuální komprese; přímý tlak prsty odpadá.`,
+              `Do hloubky rány nasypat hemostatický prášek bez gázy, stlačit ránu po dobu 10 sekund a nechat krev volně prosakovat do savého obvazu bez fixace tlakovým prvkem; tlakový obvaz odpadá.`,
               `Provést vyplnění (packing) rány hemostatickou nebo sterilní gázou s nepřetržitým přímým tlakem prsty/dlaní po dobu minimálně 3 minut a přiložit tlakový obvaz (např. Izraelský tlakový obvaz).`,
-              `Slepo v hloubce rány sondovat pinzetou a zachytit krvácející tepnu chirurgickým peánem, ránu vypláchnout fyziologickým roztokem a vyčkat příjezdu chirurgického týmu.`
+              `Slepo v hloubce rány sondovat pinzetou a zachytit krvácející tepnu chirurgickým peánem, ránu vypláchnout fyziologickým roztokem a vyčkat příjezdu chirurgického týmu; packing se nedělá.`
             ],
     correctOption: 2,
     rationale: 'V junkčních oblastech (třísla, axily) je wound packing jedinou účinnou metodou přímého stlačení poraněné cévy v hloubce rány. Na krk je aplikace škrtidla přísně zakázána.',
@@ -246,9 +246,9 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jaké jsou zásady manipulace s osobou s podezřením na poranění páteře (např. po pádu z výšky nebo autonehodě)?',
     answer: 'S postiženým nehýbat, nedochází-li k bezprostřednímu ohrožení života; zajistit manuální stabilizaci hlavy a krční páteře v neutrální ose a vyčkat na transportní pomůcky (vakuová matrace, Scoop rám, krční límec).',
     options: [
-              `Okamžitě provést vyproštění Rautekovým chvatem z jakéhokoliv prostoru bez ohledu na bezpečnost a aktivně vyzkoušet rozsah pohybu krku rotací hlavy do krajních poloh.`,
-              `Ihned přetočit zraněného do stabilizované polohy na břicho k uvolnění dýchacích cest bez fixace krční páteře a podložit dolní končetiny pro prevenci míšního šoku.`,
-              `Postiženého posadit s oporou zad, podložit hlavu měkkým polštářem do mírného předklonu a transportovat v sedě na běžné židli za asistence dvou zachránců.`,
+              `Okamžitě provést vyproštění Rautekovým chvatem z jakéhokoliv prostoru bez ohledu na bezpečnost a aktivně vyzkoušet rozsah pohybu krku rotací hlavy do krajních poloh. Manuální stabilizace hlavy v neutrální ose se neprovádí.`,
+              `Ihned přetočit zraněného do stabilizované polohy na břicho k uvolnění dýchacích cest bez fixace krční páteře a podložit dolní končetiny pro prevenci míšního šoku. Krční límec ani vakuová matrace se nepoužívají.`,
+              `Postiženého posadit s oporou zad, podložit hlavu měkkým polštářem do mírného předklonu a transportovat v sedě na běžné židli za asistence dvou zachránců. Vyčkání na transportní pomůcky se nevyžaduje.`,
               `S postiženým nehýbat, nedochází-li k bezprostřednímu ohrožení života; zajistit manuální stabilizaci hlavy a krční páteře v neutrální ose a vyčkat na transportní pomůcky (vakuová matrace, Scoop rám, krční límec).`
             ],
     correctOption: 3,
@@ -263,10 +263,10 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jak se poskytuje první pomoc při těžké hypoglykémii u diabetika (zmatenost, třes, pocení, agresivita až bezvědomí)?',
     answer: 'Při zachovaném vědomí a polykání podat rychle vstřebatelný cukr (slazený nápoj, hroznový cukr, džus); při bezvědomí NIKDY nepodávat tekutiny do úst, polohovat na bok a volat ZZS.',
     options: [
-              `Ihned aplikovat pacientovo inzulínové pero v plné dávce do břišní stěny, podat neslazený čaj a uložit postiženého do vodorovné polohy na zádech.`,
-              `Při bezvědomí nalít do úst koncentrovaný cukerný sirup nebo teplý slazený čaj, zaklonit hlavu a masírovat krk pro usnadnění polykacího reflexu.`,
+              `Ihned aplikovat pacientovo inzulínové pero v plné dávce do břišní stěny, podat neslazený čaj a uložit postiženého do vodorovné polohy na zádech; rychlý cukr se nepodává.`,
+              `Při bezvědomí nalít do úst koncentrovaný cukerný sirup nebo teplý slazený čaj, zaklonit hlavu a masírovat krk pro usnadnění polykacího reflexu; polohování na bok odpadá.`,
               `Při zachovaném vědomí a polykání podat rychle vstřebatelný cukr (slazený nápoj, hroznový cukr, džus); při bezvědomí NIKDY nepodávat tekutiny do úst, polohovat na bok a volat ZZS.`,
-              `Podat výhradně nízkoenergetické dietní potraviny s vysokým obsahem vlákniny, zakázat příjem jednoduchých sacharidů a nechat pacienta vyspat bez lékařské kontroly.`
+              `Podat výhradně nízkoenergetické dietní potraviny s vysokým obsahem vlákniny, zakázat příjem jednoduchých sacharidů a nechat pacienta vyspat bez volání ZZS.`
             ],
     correctOption: 2,
     rationale: 'Při hypoglykémii trpí mozkové buňky kritickým nedostatkem glukózy. Podání tekutin bezvědomému hrozí aspirací a udušením; v bezvědomí pomůže nitrožilní glukóza aplikovaná lékařem.',
@@ -281,9 +281,9 @@ export const zdravovedaQuestions: Question[] = [
     answer: 'Svíravá, pálivá nebo tlaková bolest za hrudní kostí trvající >15 minut, vyzařující do levé paže, krku, čelisti nebo zad, dušnost, pocení, nevolnost a úzkost ze smrti.',
     options: [
               `Svíravá, pálivá nebo tlaková bolest za hrudní kostí trvající >15 minut, vyzařující do levé paže, krku, čelisti nebo zad, dušnost, pocení, nevolnost a úzkost ze smrti.`,
-              `Křečovitá kolikovitá bolest v pravém podžebří s propagací do pravého stehna, provázená vysokou horečkou a svěděním kůže po požití tučného jídla.`,
-              `Ostrá píchavá bolest na hrotu srdce závislá na hlubokém nádechu a poloze těla, trvající několik sekund, která zcela vymizí při mírném rozcvičení hrudníku.`,
-              `Náhlá pulzující bolest v zátylku s dvojitým viděním, asymetrií zornic a jednostranným brněním prstů dolní končetiny bez přítomnosti dušnosti.`
+              `Křečovitá kolikovitá bolest v pravém podžebří s propagací do pravého stehna, provázená vysokou horečkou a svěděním kůže po požití tučného jídla; dušnost chybí.`,
+              `Ostrá píchavá bolest na hrotu srdce závislá na hlubokém nádechu a poloze těla, trvající několik sekund, která zcela vymizí při mírném rozcvičení hrudníku, bez pocení.`,
+              `Náhlá pulzující bolest v zátylku s dvojitým viděním, asymetrií zornic a jednostranným brněním prstů dolní končetiny bez dušnosti a bez bolesti na hrudi.`
             ],
     correctOption: 0,
     rationale: 'Ischémie srdečního svalu vyžaduje okamžitý klidový režim v polosedě, uvolnění těsného oděvu, zákaz jakékoliv fyzické námahy a neodkladné volání linky 155.',
@@ -297,10 +297,10 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jaká je správná první pomoc u silně podchlazeného vězně nalezeného v nevytápěném prostoru věznice (tělesná teplota <32 °C)?',
     answer: 'Zabránit dalším ztrátám tepla (odstranit mokrý oděv, zabalit do izotermické fólie a teplých dek), ohřívat pozvolna a pasivně, s postiženým manipulovat extrémně šetrně (hrozí fibrilace komor při prudkém pohybu), podat teplý slazený nápoj pouze při plném vědomí.',
     options: [
-              `Přinutit zraněného ke dřepům a rychlému běhu na místě pro stimulaci svalové termogeneze, omrzlé prsty třít sněhem a podat horkou kávu bez cukru.`,
+              `Přinutit zraněného ke dřepům a rychlému běhu na místě pro stimulaci svalové termogeneze, omrzlé prsty třít sněhem a podat horkou kávu bez cukru. Izotermická fólie se nepoužívá a s postiženým lze manipulovat bez jakéhokoli omezení, protože riziko fibrilace komor nehrozí.`,
               `Zabránit dalším ztrátám tepla (odstranit mokrý oděv, zabalit do izotermické fólie a teplých dek), ohřívat pozvolna a pasivně, s postiženým manipulovat extrémně šetrně (hrozí fibrilace komor při prudkém pohybu), podat teplý slazený nápoj pouze při plném vědomí.`,
-              `Postiženého okamžitě vložit do horké lázně o teplotě 45 °C, podat koncentrovaný alkohol k rozšíření cév a energicky třít končetiny hrubou tkaninou.`,
-              `Aplikovat horké termofory přímo na distální části končetin (chodidla a dlaně), provádět intenzivní masáž svalstva a uložit do Trendelenburgovy polohy.`
+              `Postiženého okamžitě vložit do horké lázně o teplotě 45 °C, podat koncentrovaný alkohol k rozšíření cév a energicky třít končetiny hrubou tkaninou. Teplý slazený nápoj se nepodává ani při plném vědomí a mokrý oděv se ponechává na těle jako izolační vrstva.`,
+              `Aplikovat horké termofory přímo na distální části končetin (chodidla a dlaně), provádět intenzivní masáž svalstva a uložit do Trendelenburgovy polohy. Ohřívání má být co nejrychlejší a mokrý oděv se z postiženého nesvléká, aby se dále nesnižovala teplota.`
             ],
     correctOption: 1,
     rationale: 'Prudké zahřívání nebo hrubá manipulace vyvolá návrat studené a kyselé krve z periferie do jádra (afterdrop) s fatální srdeční zástavou. Alkohol navíc roztahuje periferní cévy a zrychluje prochladnutí.',
@@ -316,8 +316,8 @@ export const zdravovedaQuestions: Question[] = [
     options: [
               `Před přiložením dlahy provést silným tahem reponaci a narovnání kostních úlomků do anatomické osy a zafixovat výhradně samotné místo zlomeniny elastickým obinadlem.`,
               `Znehybnit minimálně dva sousední klouby – jeden nad a jeden pod místem zlomeniny (pomocí dlahy SAM splint nebo improvizovaně) a kontrolovat periferní prokrvení a citlivost.`,
-              `Fixovat celou končetinu včetně páteře do vakuové matrace bez použití dlahy a aplikovat hřejivé zábaly přímo na místo předpokládané fraktury.`,
-              `Znehybnit výhradně jeden kloub nejblíže ke zlomenině a končetinu pevně stáhnout škrtidlem k prevenci vzniku poúrazového edému a hematomu.`
+              `Fixovat celou končetinu včetně páteře do vakuové matrace bez použití dlahy a aplikovat hřejivé zábaly přímo na místo fraktury; sousední klouby se nefixují.`,
+              `Znehybnit výhradně jeden kloub nejblíže ke zlomenině a končetinu pevně stáhnout škrtidlem k prevenci edému; prokrvení se nekontroluje.`
             ],
     correctOption: 1,
     rationale: 'Správná fixace zabraňuje pohybu kostních úlomků, tlumí bolest a předchází sekundárnímu poškození cév, nervů a svalů.',
@@ -331,10 +331,10 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jak se poskytuje první pomoc při mechanickém zapíchnutí cizího tělesa (např. střepu či kovu) do oční koule?',
     answer: 'Cizí těleso z oka NIKDY nevytahovat, těleso sterilně zastabilizovat a fixovat (např. pomocí kelímku či obvazového věnečku), krýt obě oči (z důvodu synkineze a zamezení pohybu poraněného oka) a zajistit transport k očnímu lékaři.',
     options: [
-              `Cizí těleso opatrně vytáhnout sterilní pinzetou ve směru osy vniku, oko důkladně vypláchnout proudem tekoucí vody a přiložit krytí výhradně na zraněné oko.`,
+              `Cizí těleso opatrně vytáhnout sterilní pinzetou ve směru osy vniku, oko důkladně vypláchnout proudem tekoucí vody a přiložit krytí výhradně na zraněné oko. Druhé oko se zásadně nekryje, protože by to zbytečně omezilo orientaci zraněného.`,
               `Cizí těleso z oka NIKDY nevytahovat, těleso sterilně zastabilizovat a fixovat (např. pomocí kelímku či obvazového věnečku), krýt obě oči (z důvodu synkineze a zamezení pohybu poraněného oka) a zajistit transport k očnímu lékaři.`,
-              `Vyzvat zraněného k intenzivnímu mrkání a promnutí oka přes sterilní gázu, aplikovat dezinfekční kapky s alkoholem a zkontrolovat zrak čtením textu.`,
-              `Na poraněné oko aplikovat oční mast s antibiotiky, přiložit pevný tlakový obvaz k zástavě nitroočního krvácení a nechat druhé oko zcela nezakryté pro orientaci.`
+              `Vyzvat zraněného k intenzivnímu mrkání a promnutí oka přes sterilní gázu, aplikovat dezinfekční kapky s alkoholem a zkontrolovat zrak čtením textu. Cizí těleso se z oka odstraňuje vždy a fixace kelímkem ani obvazovým věnečkem se nepoužívá.`,
+              `Na poraněné oko aplikovat oční mast s antibiotiky, přiložit pevný tlakový obvaz k zástavě nitroočního krvácení a nechat druhé oko zcela nezakryté pro orientaci. Transport k očnímu lékaři se nevyžaduje a stačí ranní vizita.`
             ],
     correctOption: 1,
     rationale: 'Vytahování tělesa laickým zachráncem vede k výhřezu očních struktur a trvalé slepotě. Zakrytí obou očí eliminuje zrcadlový pohyb očních bulbů.',
@@ -349,9 +349,9 @@ export const zdravovedaQuestions: Question[] = [
     answer: '1. Kde přesně se incident stal (název věznice, adresa, přesný vchod/brána), 2. Co se stalo a kolik je zraněných, 3. Stav vědomí a dýchání zraněných, 4. Kdo volá, 5. Nikdy nezavěšovat jako první.',
     options: [
               `1. Kde přesně se incident stal (název věznice, adresa, přesný vchod/brána), 2. Co se stalo a kolik je zraněných, 3. Stav vědomí a dýchání zraněných, 4. Kdo volá, 5. Nikdy nezavěšovat jako první.`,
-              `Pouze sdělit kód věznice a požadavek na příjezd sanitky, okamžitě zavěsit pro uvolnění linky a vyčkávat na příjezd posádky u hlavní brány bez upřesnění stavu pacienta.`,
-              `Nahlásit trestní minulost a paragrafové zařazení zraněného vězně, datum konce trestu, jméno velitele směny a požadovat výhradně leteckou záchrannou službu.`,
-              `Uvést výhradně počet přítomných příslušníků eskorty, typ použitých služebních zbraní a vyčkat na zpětné zavolání krajského operačního střediska policie.`
+              `Pouze sdělit kód věznice a požadavek na příjezd sanitky, okamžitě zavěsit pro uvolnění linky a vyčkávat na příjezd posádky u hlavní brány bez upřesnění stavu pacienta. Stav vědomí a dýchání se operátorovi nehlásí.`,
+              `Nahlásit trestní minulost a paragrafové zařazení zraněného vězně, datum konce trestu, jméno velitele směny a požadovat výhradně leteckou záchrannou službu. Místo incidentu se neupřesňuje.`,
+              `Uvést výhradně počet přítomných příslušníků eskorty, typ použitých služebních zbraní a vyčkat na zpětné zavolání krajského operačního střediska policie. Stav zraněných se nehlásí vůbec.`
             ],
     correctOption: 0,
     rationale: 'Strukturované hlášení umožňuje operátorovi vyslat adekvátní posádku (RLP s lékařem vs RZP) a navigovat personál k místu zásahu v rozsáhlém vězeňském areálu.',
@@ -365,10 +365,10 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Co zahrnuje klasické pravidlo 5T jako souhrn protišokových opatření při rozvoji traumatického šoku?',
     answer: '1. Teplo (zabalení do fólie/deky), 2. Ticho (uklidnění, psychická podpora), 3. Tišení bolesti (znehybnění, šetrné ošetření), 4. Tekutiny (pouze vlhčení rtů, NIKDY nepodávat pít), 5. Transport (odborný transport ZZS).',
     options: [
-              `1. Trénink (fyzická aktivita), 2. Tlak (měření TK každou minutu), 3. Tlumení (aplikace sedativ), 4. Termofor (přikládání vroucí vody na břicho), 5. Telefonát (kontakt rodiny).`,
-              `1. Tourniquet (zaškrcení končetin), 2. Třídění (triáž dle START), 3. Tenze (dekomprese hrudníku jehlou), 4. Tamponáda (packing rány), 5. Trakce (narovnání zlomenin).`,
+              `1. Trénink (fyzická aktivita), 2. Tlak (měření TK každou minutu), 3. Tlumení (aplikace sedativ), 4. Termofor (přikládání vroucí vody na břicho), 5. Telefonát (kontakt rodiny). Transport zajišťuje vězeňská služba vlastními prostředky.`,
+              `1. Tourniquet (zaškrcení končetin), 2. Třídění (triáž dle START), 3. Tenze (dekomprese hrudníku jehlou), 4. Tamponáda (packing rány), 5. Trakce (narovnání zlomenin). Teplo ani ticho mezi opatření nepatří.`,
               `1. Teplo (zabalení do fólie/deky), 2. Ticho (uklidnění, psychická podpora), 3. Tišení bolesti (znehybnění, šetrné ošetření), 4. Tekutiny (pouze vlhčení rtů, NIKDY nepodávat pít), 5. Transport (odborný transport ZZS).`,
-              `1. Tekutiny (vypití min. 1,5 l minerálky), 2. Teplota (horká sprcha), 3. Terapie (podání analgetik perorálně), 4. Tlak (tlakový obvaz na celé tělo), 5. Testování (chůze).`
+              `1. Tekutiny (vypití min. 1,5 l minerálky), 2. Teplota (horká sprcha), 3. Terapie (podání analgetik perorálně), 4. Tlak (tlakový obvaz na celé tělo), 5. Testování (chůze). Zabalení do fólie se neprovádí.`
             ],
     correctOption: 2,
     rationale: 'Protišoková opatření 5T stabilizují mikrocirkulaci a brání prohloubení centralizace oběhu před příjezdem záchranné služby.',
@@ -385,9 +385,9 @@ export const zdravovedaQuestions: Question[] = [
     answer: 'Příznaky: zpomalené až zástavové dýchání, bezvědomí, modrání rtů a prstů (cyanóza), extrémně zúžené zorničky (špendlíkové hlavičky). První pomoc: přivolat ZZS, zajistit dýchací cesty, při zástavě dechu zahájit KPR, pokud je k dispozici, podat antidotum Naloxon (Nyxoid sprej do nosu).',
     options: [
               `Příznaky: zpomalené až zástavové dýchání, bezvědomí, modrání rtů a prstů (cyanóza), extrémně zúžené zorničky (špendlíkové hlavičky). První pomoc: přivolat ZZS, zajistit dýchací cesty, při zástavě dechu zahájit KPR, pokud je k dispozici, podat antidotum Naloxon (Nyxoid sprej do nosu).`,
-              `Příznaky: zvracení krve a silné křeče. První pomoc: podat aktivní uhlí a donutit osobu vypít velké množství vody.`,
-              `Příznaky: hyperaktivita, rozšířené zorničky, rychlý tep. První pomoc: podat kávu a nechat osobu běhat, aby se urychlil metabolismus.`,
-              `Příznaky: žluté zbarvení kůže a očí. První pomoc: podat sladký čaj a uložit do stabilizované polohy.`
+              `Příznaky: zvracení krve, silné křeče a vzestup tělesné teploty nad 40 °C, zorničky zůstávají normálně široké. První pomoc: podat aktivní uhlí, donutit osobu vypít velké množství vody a vyvolat zvracení stlačením kořene jazyka. Naloxon se nepodává, protože u této otravy nemá účinek, a ZZS se volá až při bezvědomí.`,
+              `Příznaky: hyperaktivita, rozšířené zorničky, rychlý tep a nadměrné pocení, dýchání je naopak zrychlené. První pomoc: podat kávu, nechat osobu chodit nebo běhat, aby se urychlil metabolismus, a zajistit dostatek chladných nápojů. Zajištění dýchacích cest ani KPR nejsou u tohoto stavu namístě.`,
+              `Příznaky: žluté zbarvení kůže a očních bělem, tmavá moč a bolest pod pravým žeberním obloukem, dýchání i zorničky jsou bez odchylky. První pomoc: podat sladký čaj, uložit do stabilizované polohy a zajistit klid na lůžku. Antidotum Naloxon se u tohoto stavu nepoužívá a postačí ranní vizita lékaře.`
             ],
     correctOption: 0,
     rationale: 'Předávkování opioidy je život ohrožující stav kvůli útlumu dýchacího centra v mozku. Rychlé podání Naloxonu (antidota) a podpora dýchání zachraňuje život.',
@@ -402,10 +402,10 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jak se projevuje anafylaktický šok a jaká je neodkladná první pomoc?',
     answer: 'Jde o těžkou alergickou reakci (např. na bodnutí hmyzem, potravinu, lék). Projevuje se otokem (zejména rtů, jazyka a dýchacích cest), dušností, poklesem krevního tlaku a poruchou vědomí. První pomoc: přivolat ZZS, uložit do protišokové polohy, u pacienta s předepsaným adrenalinovým autoinjektorem (EpiPen) pomoci s jeho aplikací do stehna, při zástavě dechu zahájit KPR.',
     options: [
-              `Jde o mírnou vyrážku. První pomoc: namazat kůži chladivou mastí a podat sklenici vody.`,
-              `Jde o psychický šok po špatné zprávě. První pomoc: uklidnit osobu a nechat ji odpočívat v sedě.`,
+              `Jde o mírnou kožní vyrážku (kopřivku) po kontaktu s dráždivou látkou. Projevuje se zarudnutím, svěděním a drobnými pupínky, dýchání ani krevní tlak přitom nejsou nikdy postiženy. První pomoc: namazat kůži chladivou mastí, podat sklenici vody a osobu ponechat v klidu na cele. Přivolání ZZS se nevyžaduje, adrenalinový autoinjektor se u tohoto stavu nepoužívá a stav odezní sám do několika hodin.`,
+              `Jde o psychický šok po špatné zprávě nebo po stresové události. Projevuje se zblednutím, třesem, zrychleným dechem a pocitem na omdlení, otok jazyka ani dýchacích cest se nevyskytuje. První pomoc: uklidnit osobu, posadit ji s hlavou mezi kolena a nechat ji odpočívat vsedě. Volání ZZS ani protišoková poloha nejsou namístě a aplikace adrenalinu by stav jen zhoršila.`,
               `Jde o těžkou alergickou reakci (např. na bodnutí hmyzem, potravinu, lék). Projevuje se otokem (zejména rtů, jazyka a dýchacích cest), dušností, poklesem krevního tlaku a poruchou vědomí. První pomoc: přivolat ZZS, uložit do protišokové polohy, u pacienta s předepsaným adrenalinovým autoinjektorem (EpiPen) pomoci s jeho aplikací do stehna, při zástavě dechu zahájit KPR.`,
-              `Jde o úpal ze slunce. První pomoc: přesunout do stínu a podat teplý nápoj.`
+              `Jde o úpal ze slunce po delším pobytu na vycházkovém dvoře. Projevuje se bolestí hlavy, zvýšenou teplotou, zarudlou a suchou kůží a malátností, otok rtů ani dušnost k obrazu nepatří. První pomoc: přesunout osobu do stínu, podat teplý nápoj a nechat ji ležet se zvednutou hlavou. Adrenalinový autoinjektor se nepoužívá a ZZS se volá až při bezvědomí trvajícím déle než hodinu.`
             ],
     correctOption: 2,
     rationale: 'Anafylaxe je život ohrožující stav vyžadující okamžitou aplikaci adrenalinu (EpiPen), který rozšíří dýchací cesty a zvedne krevní tlak.',
@@ -420,10 +420,10 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Jaká je správná první pomoc u popálenin 2. a 3. stupně?',
     answer: 'Bezpečně ukončit působení tepla, zasažené místo začít ihned chladit mírným proudem studené vody (minimálně 10-20 minut, chladit pouze popálenou plochu, ne celé tělo - riziko podchlazení), neslupovat přiškvařený oděv, nepropichovat puchýře, nic na ránu nemazat, sterilně krýt (nebo použít čistý igelitový sáček) a přivolat ZZS.',
     options: [
-              `Puchýře propíchnout jehlou, aby vytekla tekutina, a ránu zasypat dětským pudrem.`,
-              `Popáleninu okamžitě namazat mastným krémem, olejem nebo máslem a pevně zavázat obinadlem.`,
+              `Puchýře co nejdříve propíchnout sterilní jehlou, aby vytekla tekutina, ránu zasypat dětským pudrem a pevně stáhnout elastickým obinadlem. Chlazení vodou se neprovádí, protože by hrozilo podchlazení a poškození tkáně. Přiškvařený oděv je nutné z rány odstranit tahem a ZZS se volá jen tehdy, pokud popálenina přesahuje plochu obou dlaní.`,
+              `Popáleninu okamžitě namazat mastným krémem, olejem nebo máslem, aby se rána uzavřela před vzduchem, a pevně zavázat obinadlem. Chladit studenou vodou se nesmí, protože by mast smyla. Puchýře se ponechají neporušené a přiškvařený oděv se odstraní až ve zdravotnickém zařízení; přivolání ZZS je nutné pouze u popálenin obličeje.`,
               `Bezpečně ukončit působení tepla, zasažené místo začít ihned chladit mírným proudem studené vody (minimálně 10-20 minut, chladit pouze popálenou plochu, ne celé tělo - riziko podchlazení), neslupovat přiškvařený oděv, nepropichovat puchýře, nic na ránu nemazat, sterilně krýt (nebo použít čistý igelitový sáček) a přivolat ZZS.`,
-              `Popáleninu ničím nechladit, protože hrozí infekce, a výhradně podat léky proti bolesti.`
+              `Popáleninu ničím nechladit, protože chlazení otevírá cestu infekci, a výhradně podat léky proti bolesti. Ránu je třeba ihned sterilně krýt, puchýře ponechat a přiškvařený oděv neodstraňovat. Voda ani studený obklad se nepoužívají za žádných okolností a ZZS se přivolává pouze tehdy, není-li bolest tlumitelná dostupnými analgetiky.`
             ],
     correctOption: 2,
     rationale: 'Chlazení snižuje hloubku poškození tkání a tlumí bolest. Použití mastí nebo krémů ránu uzavře a brání odvodu tepla (zhoršuje stav).',
@@ -438,10 +438,10 @@ export const zdravovedaQuestions: Question[] = [
     question: 'Kdy se používá zotavovací (stabilizovaná) poloha na boku?',
     answer: 'Používá se výhradně u pacienta, který je v bezvědomí, ALE normálně a pravidelně dýchá (a nemá podezření na zranění páteře). Účelem je udržet průchodné dýchací cesty a zabránit vdechnutí zvratků.',
     options: [
-              `Používá se u všech pacientů s bolestí břicha nebo hrudníku jako úlevová poloha.`,
-              `Používá se u pacienta v bezvědomí, který vůbec nedýchá nebo lapá po dechu (gasping).`,
+              `Používá se u všech pacientů s bolestí břicha nebo hrudníku jako úlevová poloha, která snižuje napětí břišní stěny. U pacienta v bezvědomí se naopak nepoužívá, protože by ztížila kontrolu dýchání.`,
+              `Používá se u pacienta v bezvědomí, který vůbec nedýchá nebo lapá po dechu (gasping), aby se uvolnily dýchací cesty. Zahájení KPR se do jejího uložení odkládá a podezření na poranění páteře jejímu použití nebrání.`,
               `Používá se výhradně u pacienta, který je v bezvědomí, ALE normálně a pravidelně dýchá (a nemá podezření na zranění páteře). Účelem je udržet průchodné dýchací cesty a zabránit vdechnutí zvratků.`,
-              `Používá se u zlomenin dolních končetin k fixaci kostí.`
+              `Používá se u zlomenin dolních končetin k fixaci kostí a ke snížení bolesti při transportu. U pacienta v bezvědomí se nepoužívá, protože kontrolu dýchání provádíme vleže na zádech se zakloněnou hlavou.`
             ],
     correctOption: 2,
     rationale: 'Zotavovací poloha zajišťuje dýchací cesty (jazyk nepadá dozadu). Pokud pacient nedýchá normálně, musí ležet na zádech a musí být zahájena KPR.',
@@ -457,9 +457,9 @@ export const zdravovedaQuestions: Question[] = [
     answer: 'NE. Škrtidlo (turniket) se používá výhradně k zástavě masivního tepenného krvácení na končetinách (paže, stehna). Aplikace na krk by způsobila udušení. Krvácení na krku se zastavuje přímým tlakem v ráně (prsty/dlouhodobým tlakem ruky) nebo metodou wound packing (tamponáda rány).',
     options: [
               `NE. Škrtidlo (turniket) se používá výhradně k zástavě masivního tepenného krvácení na končetinách (paže, stehna). Aplikace na krk by způsobila udušení. Krvácení na krku se zastavuje přímým tlakem v ráně (prsty/dlouhodobým tlakem ruky) nebo metodou wound packing (tamponáda rány).`,
-              `Ano, ale škrtidlo se smí utáhnout výhradně na 50 % maximální síly.`,
-              `Ano, je to standardní postup TCCC pro všechny typy masivního krvácení.`,
-              `Ne, škrtidlo se používá výhradně k fixaci zlomenin a nikdy k zástavě krvácení.`
+              `Ano, ale škrtidlo se na krku smí utáhnout výhradně na 50 % maximální síly, aby zůstal zachován průtok krve mozkem. Standard TCCC tento postup připouští u pronikajících poranění krku, pokud přímý tlak v ráně selhal. Wound packing se na krku neprovádí a škrtidlo se povoluje každých 20 minut na dobu jedné minuty.`,
+              `Ano, je to standardní postup TCCC pro všechny typy masivního krvácení bez ohledu na lokalizaci. Škrtidlo se přikládá vždy nejméně 5 cm nad ránu, tedy i na krk, trup a třísla, a ponechává se bez povolení až do předání ZZS. Přímý tlak v ráně ani tamponáda rány se podle tohoto standardu nepoužívají.`,
+              `Ne, škrtidlo se používá výhradně k fixaci zlomenin dlouhých kostí a nikdy k zástavě krvácení, protože by způsobilo odumření končetiny. Masivní tepenné krvácení na končetinách se zastavuje výhradně zaškrcením tlakového bodu prsty a následným tlakovým obvazem; wound packing je vyhrazen pouze pro poranění břicha.`
             ],
     correctOption: 0,
     rationale: 'Turniket okluduje krevní řečiště kompletním stlačením tkáně proti kosti. Na krku by to znemožnilo dýchání a zablokovalo průtok krve do mozku oběma karotidami.',
@@ -473,10 +473,10 @@ export const zdravovedaQuestions: Question[] = [
         question: 'Jaký je správný poměr stlačení hrudníku a umělých vdechů při poskytování KPR u dospělé osoby v bezvědomí bez normálního dýchání?',
         answer: '30 stlačení ku 2 vdechům (frekvence stlačování 100–120 za minutu, hloubka 5–6 cm).',
         options: [
-            '15 stlačení ku 2 vdechům s frekvencí 80 za minutu.',
+            `15 stlačení ku 2 vdechům s frekvencí 80 za minutu, hloubka se neurčuje.`,
             '30 stlačení ku 2 vdechům (frekvence stlačování 100–120 za minutu, hloubka 5–6 cm).',
-            'Pouze 5 vdechů a následně vyčkání na příjezd záchranné služby.',
-            '50 stlačení ku 5 vdechům bez přerušení.'
+            `Pouze 5 vdechů a následně vyčkání na příjezd záchranné služby, bez stlačování.`,
+            `50 stlačení ku 5 vdechům bez přerušení; frekvence ani hloubka se neurčují.`
         ],
         correctOption: 1,
         rationale: 'Doporučené postupy ERC (European Resuscitation Council) stanovují pro dospělé poměr 30:2 s frekvencí kompresí 100–120/min a hloubkou 5–6 cm.',
@@ -490,10 +490,10 @@ export const zdravovedaQuestions: Question[] = [
         question: 'Kam a jak se správně aplikuje taktické škrtidlo (turniket typu CAT) při masivním tepenném krvácení na končetině?',
         answer: 'Přikládá se na končetinu přibližně 5–7 cm nad místo krvácení (nikdy přímo přes kloub), dotáhne se do zástavy krvácení a zaznamená se čas aplikace.',
         options: [
-            'Přímo přes otevřenou ránu nebo přes kloub pod ránou.',
+            `Přímo přes otevřenou ránu nebo přes kloub pod ránou. Čas aplikace se nezaznamenává a vratidlo se dotahuje pouze do zeslabení krvácení, nikoli do jeho zástavy.`,
             'Přikládá se na končetinu přibližně 5–7 cm nad místo krvácení (nikdy přímo přes kloub), dotáhne se do zástavy krvácení a zaznamená se čas aplikace.',
-            'Vždy co nejblíže k trupu bez ohledu na to, kde se nachází rána, a čas se nezaznamenává.',
-            'Turniket se nesmí utahovat napevno, aby se nepřerušila cirkulace krve.'
+            `Vždy co nejblíže k trupu bez ohledu na to, kde se nachází rána, a čas se nezaznamenává. Vzdálenost 5–7 cm nad ránu se nedodržuje a kloub nepředstavuje překážku.`,
+            `Turniket se nesmí utahovat napevno, aby se nepřerušila cirkulace krve. Čas aplikace se zaznamenává až při předání zdravotnické záchranné službě.`
         ],
         correctOption: 1,
         rationale: 'Turniket CAT se umísťuje 5–7 cm proximálně od rány mimo kloub. Zápis času naložení na bílý pásek (TIME) je nezbytný pro lékařský tým v nemocnici k prevenci ischemického poškození.',
