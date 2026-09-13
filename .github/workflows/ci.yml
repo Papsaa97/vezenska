@@ -1,0 +1,62 @@
+name: CI
+
+# Dosud se na push ani pull request nespouštělo nic, takže nic nebránilo zanést
+# rozbitý build. Typová kontrola i build přitom proběhnou za několik sekund.
+# Push se omezuje na main, protože pro větve se stejně spustí pull_request:
+# kdyby tu bylo branches: ['**'], běželo by CI na každém PR dvakrát (concurrency
+# group je u push refs/heads/... a u pull_request refs/pull/N/merge, takže se
+# navzájem neruší). V tomhle repozitáři jde všechno přes PR, takže signál
+# neztrácíme.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Při rychlých po sobě jdoucích pushech nechej běžet jen ten poslední.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Typová kontrola a build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typová kontrola (tsc --noEmit)
+        run: npm run lint
+
+      # Build nepotřebuje žádná tajemství — chybí-li VITE_SUPABASE_*, klient se
+      # sestaví s placeholderem a jen varuje do konzole.
+      - name: Produkční build
+        run: npm run build
+
+  content:
+    name: Integrita obsahu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Integrita textů předpisů
+        run: npm run check:legal
+
+      # Strukturální kontroly banky otázek (tvrdé selhání) a ráčna na délkový tell:
+      # počet otázek, kde je správná odpověď nejdelší ze čtyř, nesmí vzrůst.
+      # Podrobnosti v scripts/check-question-quality.ts.
+      - name: Kvalita banky otázek
+        run: npm run check:questions

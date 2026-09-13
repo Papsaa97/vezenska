@@ -9,8 +9,10 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
+    "test": "npm run lint && npm run check:legal && npm run check:questions",
     "sync:laws": "tsx scripts/sync-regulations.ts",
     "check:legal": "tsx scripts/verify-legal-integrity.ts",
+    "check:questions": "tsx scripts/check-question-quality.ts",
     "deploy": "vercel",
     "deploy:prod": "vercel --prod"
   },
