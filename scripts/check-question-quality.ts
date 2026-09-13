@@ -63,6 +63,16 @@ interface Baseline {
 const pct = (part: number, whole: number): number =>
   whole === 0 ? 0 : Math.round((part / whole) * 1000) / 10;
 
+/** Ideální podíl obou extrémů u čtyř možností — délka pak nenese žádnou informaci. */
+const IDEAL_PCT = 25;
+
+/**
+ * Jak daleko je předmět od stavu, kdy délka neprozrazuje nic.
+ * 0 = dokonale vyvážené, 75 = jeden extrém u všech otázek.
+ */
+const deviation = (longestPct: number, shortestPct: number): number =>
+  Math.round(Math.max(Math.abs(longestPct - IDEAL_PCT), Math.abs(shortestPct - IDEAL_PCT)) * 10) / 10;
+
 // ─── 1. Strukturální kontroly ────────────────────────────────────────────────
 
 function structuralProblems(questions: Question[]): string[] {
@@ -217,18 +227,20 @@ console.log(
     ` (${(global.avgCorrectLen / Math.max(1, global.avgDistractorLen)).toFixed(2)}×)`
 );
 console.log();
-console.log('  předmět'.padEnd(28) + 'nejdelší'.padStart(16) + 'nejkratší'.padStart(16));
+console.log('  předmět'.padEnd(28) + 'nejdelší'.padStart(16) + 'nejkratší'.padStart(16) + 'od 25 %'.padStart(11));
 for (const [subject, m] of Object.entries(predmety).sort(
   (a, b) =>
     Math.max(b[1].longestIsCorrectPct, b[1].shortestIsCorrectPct) -
     Math.max(a[1].longestIsCorrectPct, a[1].shortestIsCorrectPct)
 )) {
   const worst = Math.max(m.longestIsCorrectPct, m.shortestIsCorrectPct);
-  const bar = worst >= 90 ? ' ←' : worst <= 40 ? ' ✓' : '';
+  const dev = deviation(m.longestIsCorrectPct, m.shortestIsCorrectPct);
+  const bar = worst >= 90 ? ' ←' : dev <= 15 ? ' ✓' : '';
   console.log(
     `  ${subject}`.padEnd(28) +
       `${m.longestIsCorrect}/${m.questions} (${m.longestIsCorrectPct} %)`.padStart(16) +
       `${m.shortestIsCorrect}/${m.questions} (${m.shortestIsCorrectPct} %)`.padStart(16) +
+      `odch. ${dev}`.padStart(11) +
       bar
   );
 }
@@ -288,17 +300,28 @@ for (const [subject, m] of Object.entries(predmety)) {
     }
     continue;
   }
+  // Vzrostl-li počet, ale předmět se přitom přiblížil ideálním 25 %, nejde o regresi,
+  // ale o záměrné vyvažování (typicky když předmět startoval na 100 % / 0 %).
+  // Ráčna i tak selže — baseline se přepisuje vědomě a je vidět v diffu —, ale
+  // hlášení musí říct, o který z obou případů jde.
+  const devBase = deviation(base.longestIsCorrectPct, base.shortestIsCorrectPct ?? 0);
+  const devNow = deviation(m.longestIsCorrectPct, m.shortestIsCorrectPct);
+  const note =
+    devNow < devBase
+      ? ` — posun K vyváženosti (odchylka od ${IDEAL_PCT} %: ${devBase} → ${devNow}); je-li záměrný, přepiš baseline`
+      : ` — REGRESE (odchylka od ${IDEAL_PCT} %: ${devBase} → ${devNow})`;
+
   if (m.longestIsCorrect > base.longestIsCorrect) {
     regressions.push(
       `${subject} (nejdelší): ${base.longestIsCorrect} → ${m.longestIsCorrect} ` +
-        `(+${m.longestIsCorrect - base.longestIsCorrect})`
+        `(+${m.longestIsCorrect - base.longestIsCorrect})${note}`
     );
   }
   // Starší baseline shortestIsCorrect neobsahuje; pak tuto část přeskoč.
   if (base.shortestIsCorrect !== undefined && m.shortestIsCorrect > base.shortestIsCorrect) {
     regressions.push(
       `${subject} (nejkratší): ${base.shortestIsCorrect} → ${m.shortestIsCorrect} ` +
-        `(+${m.shortestIsCorrect - base.shortestIsCorrect})`
+        `(+${m.shortestIsCorrect - base.shortestIsCorrect})${note}`
     );
   }
 }
