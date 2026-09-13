@@ -1,76 +1,102 @@
 {
   "popis": "Referenční stav kvality banky otázek. Kontrola check:questions hlídá, že počet otázek s délkovým tellem nevzroste. Po zlepšení obsahu přepiš tento soubor příkazem \"npm run check:questions -- --update-baseline\" a commitni ho.",
-  "vytvoreno": "2026-09-13T05:44:09.615Z",
+  "vytvoreno": "2026-09-13T15:22:59.347Z",
   "cil": {
     "longestIsCorrectPct": 40
   },
   "global": {
     "questions": 377,
-    "longestIsCorrect": 343,
-    "longestIsCorrectPct": 91,
+    "longestIsCorrect": 304,
+    "longestIsCorrectPct": 80.6,
+    "shortestIsCorrect": 31,
+    "shortestIsCorrectPct": 8.2,
     "avgCorrectLen": 218,
-    "avgDistractorLen": 145
+    "avgDistractorLen": 157
   },
   "predmety": {
     "Bezpečnostní služba": {
       "questions": 32,
       "longestIsCorrect": 23,
-      "longestIsCorrectPct": 71.9
+      "longestIsCorrectPct": 71.9,
+      "shortestIsCorrect": 5,
+      "shortestIsCorrectPct": 15.6
     },
     "Pedagogika": {
       "questions": 31,
       "longestIsCorrect": 27,
-      "longestIsCorrectPct": 87.1
+      "longestIsCorrectPct": 87.1,
+      "shortestIsCorrect": 3,
+      "shortestIsCorrectPct": 9.7
     },
     "Penologie": {
       "questions": 52,
-      "longestIsCorrect": 52,
-      "longestIsCorrectPct": 100
+      "longestIsCorrect": 13,
+      "longestIsCorrectPct": 25,
+      "shortestIsCorrect": 14,
+      "shortestIsCorrectPct": 26.9
     },
     "Právo": {
       "questions": 57,
       "longestIsCorrect": 56,
-      "longestIsCorrectPct": 98.2
+      "longestIsCorrectPct": 98.2,
+      "shortestIsCorrect": 1,
+      "shortestIsCorrectPct": 1.8
     },
     "Profesní etika": {
       "questions": 57,
       "longestIsCorrect": 54,
-      "longestIsCorrectPct": 94.7
+      "longestIsCorrectPct": 94.7,
+      "shortestIsCorrect": 2,
+      "shortestIsCorrectPct": 3.5
     },
     "Psychologie": {
       "questions": 42,
       "longestIsCorrect": 41,
-      "longestIsCorrectPct": 97.6
+      "longestIsCorrectPct": 97.6,
+      "shortestIsCorrect": 1,
+      "shortestIsCorrectPct": 2.4
     },
     "Služební příprava": {
       "questions": 17,
       "longestIsCorrect": 14,
-      "longestIsCorrectPct": 82.4
+      "longestIsCorrectPct": 82.4,
+      "shortestIsCorrect": 0,
+      "shortestIsCorrectPct": 0
     },
     "taktika": {
       "questions": 17,
       "longestIsCorrect": 14,
-      "longestIsCorrectPct": 82.4
+      "longestIsCorrectPct": 82.4,
+      "shortestIsCorrect": 0,
+      "shortestIsCorrectPct": 0
     },
     "Vězeňská administrativa": {
       "questions": 27,
       "longestIsCorrect": 19,
-      "longestIsCorrectPct": 70.4
+      "longestIsCorrectPct": 70.4,
+      "shortestIsCorrect": 4,
+      "shortestIsCorrectPct": 14.8
     },
     "zbrane": {
       "questions": 12,
       "longestIsCorrect": 10,
-      "longestIsCorrectPct": 83.3
+      "longestIsCorrectPct": 83.3,
+      "shortestIsCorrect": 1,
+      "shortestIsCorrectPct": 8.3
     },
     "Zdravověda a první pomoc": {
       "questions": 29,
       "longestIsCorrect": 29,
-      "longestIsCorrectPct": 100
+      "longestIsCorrectPct": 100,
+      "shortestIsCorrect": 0,
+      "shortestIsCorrectPct": 0
     },
     "zop": {
       "questions": 4,
       "longestIsCorrect": 4,
-      "longestIsCorrectPct": 100
+      "longestIsCorrectPct": 100,
+      "shortestIsCorrect": 0,
+      "shortestIsCorrectPct": 0
     }
   }
 }

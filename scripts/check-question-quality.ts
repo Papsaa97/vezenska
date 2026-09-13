@@ -22,6 +22,12 @@
  *    předmětu. Hlídá se počet, nikoli procento: u předmětu, který je na 100 %,
  *    by přidání další špatné otázky procento nezměnilo.
  *
+ *    POZOR, hlídají se OBA extrémy. Dorovnat distraktory tak, aby byly všechny
+ *    delší než správná odpověď, tell neodstraní — jen ho překlopí na "vyber
+ *    nejkratší". Proto se zvlášť počítá i to, jak často je správná odpověď
+ *    nejkratší ze čtyř, a ráčna platí na oba počty. Cílem je, aby délka nenesla
+ *    žádnou informaci: oba podíly mají vyjít poblíž 25 % (náhoda u 4 možností).
+ *
  *    Po zlepšení přepiš baseline přes --update-baseline a commitni ji.
  */
 
@@ -41,6 +47,9 @@ interface SubjectMetrics {
   questions: number;
   longestIsCorrect: number;
   longestIsCorrectPct: number;
+  /** Opačný tell: správná odpověď je nejkratší ze čtyř ("vyber nejkratší"). */
+  shortestIsCorrect: number;
+  shortestIsCorrectPct: number;
 }
 
 interface Baseline {
@@ -113,9 +122,10 @@ function structuralProblems(questions: Question[]): string[] {
 // ─── 2. Měření délkového tellu ───────────────────────────────────────────────
 
 function measure(questions: Question[]): Baseline['global'] & { predmety: Record<string, SubjectMetrics> } {
-  const perSubject = new Map<string, { questions: number; longestIsCorrect: number }>();
+  const perSubject = new Map<string, { questions: number; longestIsCorrect: number; shortestIsCorrect: number }>();
   let total = 0;
   let longest = 0;
+  let shortest = 0;
   let correctLenSum = 0;
   let distractorLenSum = 0;
   let distractorCount = 0;
@@ -127,13 +137,16 @@ function measure(questions: Question[]): Baseline['global'] & { predmety: Record
     if (correctLen === undefined) continue;
 
     const isLongest = correctLen >= Math.max(...lengths);
-    const entry = perSubject.get(q.subject) ?? { questions: 0, longestIsCorrect: 0 };
+    const isShortest = correctLen <= Math.min(...lengths);
+    const entry = perSubject.get(q.subject) ?? { questions: 0, longestIsCorrect: 0, shortestIsCorrect: 0 };
     entry.questions++;
     if (isLongest) entry.longestIsCorrect++;
+    if (isShortest) entry.shortestIsCorrect++;
     perSubject.set(q.subject, entry);
 
     total++;
     if (isLongest) longest++;
+    if (isShortest) shortest++;
     correctLenSum += correctLen;
     lengths.forEach((len, i) => {
       if (i !== q.correctOption) {
@@ -149,6 +162,8 @@ function measure(questions: Question[]): Baseline['global'] & { predmety: Record
       questions: e.questions,
       longestIsCorrect: e.longestIsCorrect,
       longestIsCorrectPct: pct(e.longestIsCorrect, e.questions),
+      shortestIsCorrect: e.shortestIsCorrect,
+      shortestIsCorrectPct: pct(e.shortestIsCorrect, e.questions),
     };
   }
 
@@ -156,6 +171,8 @@ function measure(questions: Question[]): Baseline['global'] & { predmety: Record
     questions: total,
     longestIsCorrect: longest,
     longestIsCorrectPct: pct(longest, total),
+    shortestIsCorrect: shortest,
+    shortestIsCorrectPct: pct(shortest, total),
     avgCorrectLen: Math.round(correctLenSum / Math.max(1, total)),
     avgDistractorLen: Math.round(distractorLenSum / Math.max(1, distractorCount)),
     predmety,
@@ -185,26 +202,33 @@ if (problems.length > 0) {
 }
 console.log();
 
-console.log('DÉLKOVÝ TELL (správná odpověď je nejdelší ze čtyř)');
+console.log('DÉLKOVÝ TELL — nese délka možnosti informaci o správné odpovědi?');
 console.log('─'.repeat(68));
 console.log(
-  `Celkem: ${global.longestIsCorrect} / ${global.questions} = ${global.longestIsCorrectPct} %` +
-    `   (cíl: ≤ ${TARGET_LONGEST_PCT} %)`
+  `Správná je NEJDELŠÍ:  ${global.longestIsCorrect} / ${global.questions} = ${global.longestIsCorrectPct} %` +
+    `   (cíl: ≤ ${TARGET_LONGEST_PCT} %, ideál ~25 %)`
+);
+console.log(
+  `Správná je NEJKRATŠÍ: ${global.shortestIsCorrect} / ${global.questions} = ${global.shortestIsCorrectPct} %` +
+    `   (cíl: ≤ ${TARGET_LONGEST_PCT} %, ideál ~25 %)`
 );
 console.log(
   `Průměrná délka: správná ${global.avgCorrectLen} znaků, distraktor ${global.avgDistractorLen} znaků` +
     ` (${(global.avgCorrectLen / Math.max(1, global.avgDistractorLen)).toFixed(2)}×)`
 );
 console.log();
-console.log('  předmět'.padEnd(30) + 'tell'.padStart(10) + 'podíl'.padStart(9));
+console.log('  předmět'.padEnd(28) + 'nejdelší'.padStart(16) + 'nejkratší'.padStart(16));
 for (const [subject, m] of Object.entries(predmety).sort(
-  (a, b) => b[1].longestIsCorrectPct - a[1].longestIsCorrectPct
+  (a, b) =>
+    Math.max(b[1].longestIsCorrectPct, b[1].shortestIsCorrectPct) -
+    Math.max(a[1].longestIsCorrectPct, a[1].shortestIsCorrectPct)
 )) {
-  const bar = m.longestIsCorrectPct >= 90 ? ' ←' : '';
+  const worst = Math.max(m.longestIsCorrectPct, m.shortestIsCorrectPct);
+  const bar = worst >= 90 ? ' ←' : worst <= 40 ? ' ✓' : '';
   console.log(
-    `  ${subject}`.padEnd(30) +
-      `${m.longestIsCorrect}/${m.questions}`.padStart(10) +
-      `${m.longestIsCorrectPct} %`.padStart(9) +
+    `  ${subject}`.padEnd(28) +
+      `${m.longestIsCorrect}/${m.questions} (${m.longestIsCorrectPct} %)`.padStart(16) +
+      `${m.shortestIsCorrect}/${m.questions} (${m.shortestIsCorrectPct} %)`.padStart(16) +
       bar
   );
 }
@@ -241,35 +265,51 @@ const regressions: string[] = [];
 
 if (global.longestIsCorrect > baseline.global.longestIsCorrect) {
   regressions.push(
-    `celkem: ${baseline.global.longestIsCorrect} → ${global.longestIsCorrect} ` +
+    `celkem (nejdelší): ${baseline.global.longestIsCorrect} → ${global.longestIsCorrect} ` +
       `(+${global.longestIsCorrect - baseline.global.longestIsCorrect})`
+  );
+}
+if (global.shortestIsCorrect > baseline.global.shortestIsCorrect) {
+  regressions.push(
+    `celkem (nejkratší): ${baseline.global.shortestIsCorrect} → ${global.shortestIsCorrect} ` +
+      `(+${global.shortestIsCorrect - baseline.global.shortestIsCorrect})`
   );
 }
 for (const [subject, m] of Object.entries(predmety)) {
   const base = baseline.predmety[subject];
   if (!base) {
     // Nový předmět: posuzujeme ho rovnou proti cíli, ne proti baseline.
-    if (m.longestIsCorrectPct > TARGET_LONGEST_PCT) {
+    const worst = Math.max(m.longestIsCorrectPct, m.shortestIsCorrectPct);
+    if (worst > TARGET_LONGEST_PCT) {
       regressions.push(
-        `nový předmět "${subject}": ${m.longestIsCorrectPct} % > cíl ${TARGET_LONGEST_PCT} % ` +
-          `(${m.longestIsCorrect}/${m.questions})`
+        `nový předmět "${subject}": ${worst} % > cíl ${TARGET_LONGEST_PCT} % ` +
+          `(nejdelší ${m.longestIsCorrect}/${m.questions}, nejkratší ${m.shortestIsCorrect}/${m.questions})`
       );
     }
     continue;
   }
   if (m.longestIsCorrect > base.longestIsCorrect) {
     regressions.push(
-      `${subject}: ${base.longestIsCorrect} → ${m.longestIsCorrect} ` +
+      `${subject} (nejdelší): ${base.longestIsCorrect} → ${m.longestIsCorrect} ` +
         `(+${m.longestIsCorrect - base.longestIsCorrect})`
+    );
+  }
+  // Starší baseline shortestIsCorrect neobsahuje; pak tuto část přeskoč.
+  if (base.shortestIsCorrect !== undefined && m.shortestIsCorrect > base.shortestIsCorrect) {
+    regressions.push(
+      `${subject} (nejkratší): ${base.shortestIsCorrect} → ${m.shortestIsCorrect} ` +
+        `(+${m.shortestIsCorrect - base.shortestIsCorrect})`
     );
   }
 }
 
-const improvement = baseline.global.longestIsCorrect - global.longestIsCorrect;
+const worstNow = Math.max(global.longestIsCorrect, global.shortestIsCorrect);
+const worstBase = Math.max(baseline.global.longestIsCorrect, baseline.global.shortestIsCorrect ?? 0);
+const improvement = worstBase - worstNow;
 if (improvement > 0) {
   console.log(
-    `↓ Zlepšení proti baseline: o ${improvement} otázek méně ` +
-      `(${baseline.global.longestIsCorrectPct} % → ${global.longestIsCorrectPct} %).`
+    `↓ Zlepšení proti baseline: o ${improvement} otázek méně s délkovým tellem ` +
+      `(${pct(worstBase, baseline.global.questions)} % → ${pct(worstNow, global.questions)} %).`
   );
   console.log('  Přepiš baseline: npm run check:questions -- --update-baseline');
   console.log();
@@ -279,9 +319,9 @@ if (regressions.length > 0) {
   console.log('✗ ZHORŠENÍ DÉLKOVÉHO TELLU proti baseline:');
   regressions.forEach((r) => console.log(`    ${r}`));
   console.log();
-  console.log('  Nové ani upravené otázky nesmí mít správnou odpověď výrazně delší než');
-  console.log('  distraktory. Dorovnej distraktory na srovnatelnou délku, odbornost');
-  console.log('  a gramatickou strukturu (viz AGENTS.md).');
+  console.log('  Délka možnosti nesmí prozrazovat správnou odpověď — ani tím, že je');
+  console.log('  nejdelší, ani tím, že je nejkratší. Dorovnej distraktory na srovnatelnou');
+  console.log('  délku, odbornost a gramatickou strukturu (viz AGENTS.md).');
 }
 
 if (problems.length > 0 || regressions.length > 0) {
@@ -293,10 +333,11 @@ if (problems.length > 0 || regressions.length > 0) {
 }
 
 console.log('═'.repeat(68));
+const worstPct = Math.max(global.longestIsCorrectPct, global.shortestIsCorrectPct);
 console.log(
-  global.longestIsCorrectPct > TARGET_LONGEST_PCT
+  worstPct > TARGET_LONGEST_PCT
     ? `KONTROLA PROŠLA (bez zhoršení). Do cíle ${TARGET_LONGEST_PCT} % zbývá přepracovat ` +
-        `~${Math.max(0, global.longestIsCorrect - Math.floor((TARGET_LONGEST_PCT / 100) * global.questions))} otázek.`
-    : `KONTROLA PROŠLA — cíl ${TARGET_LONGEST_PCT} % je splněn.`
+        `~${Math.max(0, worstNow - Math.floor((TARGET_LONGEST_PCT / 100) * global.questions))} otázek.`
+    : `KONTROLA PROŠLA — cíl ${TARGET_LONGEST_PCT} % je splněn v obou směrech.`
 );
 console.log('═'.repeat(68));
