@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useId } from 'react';
+import React, { useState, useEffect, useId, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, LogIn, UserPlus, Eye, EyeOff, Loader2, ShieldCheck, AlertCircle, HelpCircle } from 'lucide-react';
 import { useAuth, UserRole } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
 import { MIN_PASSWORD_LENGTH, translateAuthError, weakPasswordNotice } from '../constants/auth';
+import CaptchaWidget, { isCaptchaConfigured, type CaptchaWidgetHandle } from './CaptchaWidget';
 import {
   isBiometricsSupported,
   storeBrowserCredential,
@@ -51,6 +52,9 @@ export function AuthModal({ onClose }: AuthModalProps) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   /** Přihlášení prošlo, ale heslo nevyhovuje zpřísněným požadavkům serveru. */
   const [weakPasswordMsg, setWeakPasswordMsg] = useState<string | null>(null);
+  /** Token z ověření proti robotům. Null, dokud uživatel výzvu nedokončí. */
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<CaptchaWidgetHandle>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -84,8 +88,16 @@ export function AuthModal({ onClose }: AuthModalProps) {
   };
 
   const handleBiometricSignIn = async () => {
-    setLoading(true);
     setErrorMsg(null);
+
+    // Ochranu proti robotům musí projít i přihlášení biometrikou — Supabase
+    // ji vyžaduje u volání, ne u způsobu, jakým uživatel zadal heslo.
+    if (isCaptchaConfigured() && !captchaToken) {
+      setErrorMsg('Nejprve prosím dokončete ověření, že nejste robot.');
+      return;
+    }
+
+    setLoading(true);
     try {
       // Načteme uložené přihlašovací údaje z nativního správce hesel / klíčenky.
       // Prohlížeč (Safari / Chrome) zobrazí biometrické ověření automaticky jako součást
@@ -94,7 +106,8 @@ export function AuthModal({ onClose }: AuthModalProps) {
       if (cred?.email && cred?.password) {
         setEmail(cred.email);
         setPassword(cred.password);
-        const { error, signedIn } = await signIn(cred.email, cred.password);
+        const { error, signedIn } = await signIn(cred.email, cred.password, captchaToken ?? undefined);
+        captchaRef.current?.reset();
         if (error && !signedIn) {
           setErrorMsg(translateAuthError(error));
         } else if (error) {
@@ -119,12 +132,22 @@ export function AuthModal({ onClose }: AuthModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setErrorMsg(null);
     setSuccessMsg(null);
 
+    // Je-li ochrana proti robotům nastavená, bez tokenu by server formulář
+    // odmítl s technickou hláškou. Lepší je říct rovnou, na co se čeká.
+    if (isCaptchaConfigured() && !captchaToken) {
+      setErrorMsg('Nejprve prosím dokončete ověření, že nejste robot.');
+      return;
+    }
+
+    setLoading(true);
+
     if (mode === 'signin') {
-      const { error, signedIn } = await signIn(email, password);
+      const { error, signedIn } = await signIn(email, password, captchaToken ?? undefined);
+      // Token je jednorázový — server ho odesláním spotřebuje.
+      captchaRef.current?.reset();
       if (error && !signedIn) {
         setErrorMsg(translateAuthError(error));
       } else {
@@ -148,7 +171,8 @@ export function AuthModal({ onClose }: AuthModalProps) {
         setLoading(false);
         return;
       }
-      const { error } = await signUp(email, password, fullName);
+      const { error } = await signUp(email, password, fullName, captchaToken ?? undefined);
+      captchaRef.current?.reset();
       if (error) {
         setErrorMsg(translateAuthError(error));
       } else {
@@ -353,6 +377,10 @@ export function AuthModal({ onClose }: AuthModalProps) {
             )}
 
             {/* Error / Success messages */}
+            {/* Ověření proti robotům. Bez nastavených proměnných
+                VITE_CAPTCHA_* se nevykreslí vůbec. */}
+            <CaptchaWidget ref={captchaRef} onToken={setCaptchaToken} onError={setErrorMsg} />
+
             {errorMsg && (
               <div className="flex items-start gap-2.5 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
                 <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
