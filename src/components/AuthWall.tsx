@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useId } from 'react';
+import React, { useState, useEffect, useId, useRef } from 'react';
 import { motion } from 'motion/react';
 import { 
   ShieldCheck, 
@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { MIN_PASSWORD_LENGTH, translateAuthError, weakPasswordNotice } from '../constants/auth';
+import CaptchaWidget, { isCaptchaConfigured, type CaptchaWidgetHandle } from './CaptchaWidget';
 import {
   isBiometricsSupported,
   storeBrowserCredential,
@@ -51,6 +52,9 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   /** Přihlášení prošlo, ale heslo nevyhovuje zpřísněným požadavkům serveru. */
   const [weakPasswordMsg, setWeakPasswordMsg] = useState<string | null>(null);
+  /** Token z ověření proti robotům. Null, dokud uživatel výzvu nedokončí. */
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<CaptchaWidgetHandle>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -80,14 +84,23 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
   };
 
   const handleBiometricSignIn = async () => {
-    setLoading(true);
     setErrorMsg(null);
+
+    // Ochranu proti robotům musí projít i přihlášení biometrikou — Supabase
+    // ji vyžaduje u volání, ne u způsobu, jakým uživatel zadal heslo.
+    if (isCaptchaConfigured() && !captchaToken) {
+      setErrorMsg('Nejprve prosím dokončete ověření, že nejste robot.');
+      return;
+    }
+
+    setLoading(true);
     try {
       const cred = await getStoredBrowserCredential();
       if (cred?.email && cred?.password) {
         setEmail(cred.email);
         setPassword(cred.password);
-        const { error, signedIn } = await signIn(cred.email, cred.password);
+        const { error, signedIn } = await signIn(cred.email, cred.password, captchaToken ?? undefined);
+        captchaRef.current?.reset();
         if (error && !signedIn) {
           setErrorMsg(translateAuthError(error));
         } else if (error) {
@@ -108,12 +121,23 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setErrorMsg(null);
     setSuccessMsg(null);
 
+    // Je-li ochrana proti robotům nastavená, bez tokenu by server formulář
+    // odmítl s technickou hláškou. Lepší je říct rovnou, na co se čeká.
+    if (isCaptchaConfigured() && !captchaToken) {
+      setErrorMsg('Nejprve prosím dokončete ověření, že nejste robot.');
+      return;
+    }
+
+    setLoading(true);
+
     if (mode === 'signin') {
-      const { error, signedIn } = await signIn(email, password);
+      const { error, signedIn } = await signIn(email, password, captchaToken ?? undefined);
+      // Token je jednorázový — po odeslání ho server spotřebuje, takže další
+      // pokus potřebuje novou výzvu.
+      captchaRef.current?.reset();
       if (error && !signedIn) {
         setErrorMsg(translateAuthError(error));
       } else {
@@ -133,7 +157,8 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
         setLoading(false);
         return;
       }
-      const { error } = await signUp(email, password, fullName);
+      const { error } = await signUp(email, password, fullName, captchaToken ?? undefined);
+      captchaRef.current?.reset();
       if (error) {
         setErrorMsg(translateAuthError(error));
       } else {
@@ -460,6 +485,14 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                     </div>
                   </div>
                 )}
+
+                {/* Ověření proti robotům. Bez nastavených proměnných
+                    VITE_CAPTCHA_* se nevykreslí vůbec. */}
+                <CaptchaWidget
+                  ref={captchaRef}
+                  onToken={setCaptchaToken}
+                  onError={setErrorMsg}
+                />
 
                 {/* Alerts */}
                 {errorMsg && (

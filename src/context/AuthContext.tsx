@@ -57,8 +57,8 @@ interface AuthContextValue {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null; signedIn: boolean }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: AuthError | null }>;
+  signIn: (email: string, password: string, captchaToken?: string) => Promise<{ error: AuthError | null; signedIn: boolean }>;
+  signUp: (email: string, password: string, fullName: string, captchaToken?: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   updateProfile: (data: UpdateProfileInput) => Promise<ProfileUpdateResult>;
   updateRole: (targetUserId: string, role: UserRole) => Promise<ProfileUpdateResult>;
@@ -250,8 +250,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // ── Auth actions ────────────────────────────────────────────────────────────
 
   const signIn = useCallback(
-    async (email: string, password: string) => {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    async (email: string, password: string, captchaToken?: string) => {
+      // captchaToken se posílá jen tehdy, když ho formulář má. Je-li v Supabase
+      // zapnutá ochrana CAPTCHA a token chybí, server přihlášení odmítne.
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+        options: captchaToken ? { captchaToken } : undefined,
+      });
       // Session se vrací spolu s chybou schválně. U slabého hesla může Supabase
       // přihlášení povolit a chybu vrátit jen jako upozornění; bez session by
       // volající nepoznal, jestli se uživatel dostal dovnitř, nebo ne.
@@ -261,12 +267,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signUp = useCallback(
-    async (email: string, password: string, fullName: string) => {
+    async (email: string, password: string, fullName: string, captchaToken?: string) => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: { full_name: fullName },
+          ...(captchaToken ? { captchaToken } : {}),
         },
       });
 
