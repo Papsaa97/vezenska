@@ -26,8 +26,9 @@ projektu spusťte v tomto pořadí:
 | 12 | `fix_admin_rls_recursion.sql` | Oprava rekurze v politikách (starší instalace) |
 | 13 | `013_harden_rls.sql` | **Utažení politik**, které byly `USING (true)`; funkce `is_staff()`, `my_class()`, `can_manage_class()` |
 | 14 | `012_materials_storage.sql` | Bucket `studijni-materialy` (potřebuje funkce z kroku 13) |
-| 15 | `avatars_storage.sql` | Bucket `avatars` |
-| 16 | `set_admin_miichalpapi.sql` | Prvotní nastavení správce — **uprav si e-mail** |
+| 15 | `014_drop_leftover_policies.sql` | **Shodí zbylé povolující politiky**, které rušily účinek kroku 13 |
+| 16 | `avatars_storage.sql` | Bucket `avatars` |
+| 17 | `set_admin_miichalpapi.sql` | Prvotní nastavení správce — **uprav si e-mail** |
 
 > Kroky 13 a 14 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 13 na sobě nezávisí. Spustíte-li
@@ -53,11 +54,37 @@ Pokud už aplikaci provozujete, doplňte jen nové skripty:
 011_profiles_role_constraint.sql
 013_harden_rls.sql
 012_materials_storage.sql
+014_drop_leftover_policies.sql
 ```
 
 Po spuštění `011` lze poprvé skutečně přidělit roli **velitel třídy**. Veliteli
 nezapomeňte ve správě uživatelů vyplnit i **třídu** (`user_class`) — politika
 `can_manage_class()` ho bez ní nepustí k žádné nástěnce (úmyslně fail-closed).
+
+## Proč je potřeba i `014` (ověřte si to)
+
+`013_harden_rls.sql` shazuje staré politiky podle **přesných názvů**, které očekává
+z dřívějších souborů — všechny české. Pokud na vaší instalaci vznikly politiky pod
+anglickými názvy (`profiles_select_authenticated`, `Authenticated users can read
+feedback`…), v seznamu `DROP` nejsou a **přežijí**.
+
+To není jen nepořádek. PERMISSIVE politiky se v Postgresu slučují přes **OR**,
+takže jediná zbylá s `USING (true)` zneplatní všechna utažení, která 013 vytvořilo
+vedle ní. Utažení pak vypadá provedené — funkce i nové politiky existují — ale
+neúčinkuje.
+
+Zkontrolujte si to tímto dotazem:
+
+```sql
+SELECT tablename, cmd, policyname, coalesce(qual, with_check) AS podminka
+FROM pg_policies
+WHERE schemaname = 'public' AND (qual = 'true' OR with_check = 'true')
+ORDER BY tablename, cmd, policyname;
+```
+
+Vrátit smí jen `class_boards` a `global_announcements` (čtení pro přihlášené) a
+`quiz_questions` (záměrně veřejné). Cokoli dalšího — hlavně `profiles` nebo
+`user_feedback` — znamená, že 013 neúčinkuje a je potřeba spustit `014`.
 
 ## Po utažení politik se změní chování
 
