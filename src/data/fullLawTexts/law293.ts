@@ -1,5 +1,7 @@
 // =========================================================================
-// ZÁKON Č. 293/1993 SB. – 100% KOMPLETNÍ NEZKRÁCENÉ ÚŘEDNÍ ZNĚNÍ Z E-SBÍRKY
+// ZÁKON Č. 293/1993 SB. – VÝBĚR USTANOVENÍ PODSTATNÝCH PRO ZOP A
+// POZOR: nejde o úplné znění. Soubor obsahuje 25 paragrafů v rozsahu § 1–35 (8 kB).
+// Úplné znění viz e-Sbírka.gov.cz — před zkouškou si ověřte tam.
 // Zákon České národní rady ze dne 1. prosince 1993
 // o výkonu vazby
 // (ve znění účinném k 1. 1. 2026 dle oficiální e-Sbírky ČR)

@@ -1,6 +1,5 @@
 import React from 'react';
-import { Check } from 'lucide-react';
-import { CheckCircle2 } from 'lucide-react';
+import { Check, AlertTriangle, Info, CheckCircle2, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AuditReport } from '../../utils/legalIntegrity';
 
@@ -15,6 +14,14 @@ export default function LegalAuditModal({
   setShowIntegrityModal,
   auditReport,
 }: LegalAuditModalProps) {
+  const isValid = auditReport.valid;
+
+  // Předpisy, u kterých je z počtu nadpisů § a rozsahu číselné řady zřejmé,
+  // že jde o výběr ustanovení. Práh 60 % je stejný jako ve skriptu.
+  const selections = (auditReport.regulationCoverage ?? []).filter(
+    (c) => c.highestSection > 0 && c.sectionHeadings / c.highestSection < 0.6
+  );
+
   return (
     <AnimatePresence>
       {showIntegrityModal && (
@@ -30,15 +37,21 @@ export default function LegalAuditModal({
           >
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">
-                  <CheckCircle2 className="w-5 h-5" />
+                <div
+                  className={
+                    isValid
+                      ? 'p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400'
+                      : 'p-2 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400'
+                  }
+                >
+                  {isValid ? <CheckCircle2 className="w-5 h-5" /> : <ShieldAlert className="w-5 h-5" />}
                 </div>
                 <div>
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                    Kontrola integrity předpisů a paragrafů
+                    Kontrola tvaru dat předpisů a paragrafů
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Automatický validační audit databáze ZOP VS ČR
+                    Automatická kontrola databáze ZOP VS ČR
                   </p>
                 </div>
               </div>
@@ -50,15 +63,54 @@ export default function LegalAuditModal({
               </button>
             </div>
 
-            {/* Status Banner */}
-            <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-900 dark:text-emerald-200 space-y-1">
-              <div className="font-bold flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300">
-                <Check className="w-4 h-4" />
-                <span>Všechny zákonné normy jsou 100% kompletní a validní</span>
+            {/* Status Banner — vychází ze skutečného výsledku kontroly */}
+            {isValid ? (
+              <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-900 dark:text-emerald-200 space-y-1">
+                <div className="font-bold flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300">
+                  <Check className="w-4 h-4" />
+                  <span>Kontrola tvaru dat prošla bez nálezu</span>
+                </div>
+                <p>
+                  U {auditReport.totalArticles} položek není prázdné ani podezřele krátké pole, text nekončí uprostřed věty a identifikátory jsou unikátní.
+                </p>
+              </div>
+            ) : (
+              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 space-y-2">
+                <div className="font-bold flex items-center gap-1.5 text-amber-700 dark:text-amber-300">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span>
+                    Nalezeno {auditReport.issues.length}{' '}
+                    {auditReport.issues.length === 1 ? 'vada' : auditReport.issues.length < 5 ? 'vady' : 'vad'} v tvaru dat
+                  </span>
+                </div>
+                <ul className="space-y-1 max-h-40 overflow-y-auto pr-1">
+                  {auditReport.issues.map((iss, i) => (
+                    <li key={`${iss.id}-${iss.field}-${i}`} className="flex gap-1.5">
+                      <span className="font-mono text-[10px] shrink-0 opacity-70">{iss.type}</span>
+                      <span>
+                        <strong>{iss.id}</strong> ({iss.field}): {iss.message}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Co kontrola neověřuje — dřív tu stálo, že je vše "100% kompletní" */}
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-600 dark:text-slate-300 space-y-1.5">
+              <div className="font-bold flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
+                <Info className="w-3.5 h-3.5" />
+                <span>Co tato kontrola neověřuje</span>
               </div>
               <p>
-                Žádné odstavce nejsou prázdné, zkrácené ani chybně ořezané. Všechny položky obsahují plné znění, aplikační výklad i zkušební chytáky.
+                Kontroluje se <strong>tvar dat</strong>, nikoli soulad s platným zněním. Neověřuje, že text odpovídá aktuální Sbírce zákonů, ani že je úplný — k porovnání chybí závazný zdroj.
               </p>
+              {selections.length > 0 && (
+                <p>
+                  U těchto předpisů jde o <strong>výběr klíčových ustanovení</strong>, ne o úplné znění:{' '}
+                  {selections.map((c) => c.code).join(', ')}. Před zkouškou porovnejte s oficiálním zněním na e-Sbírce.
+                </p>
+              )}
             </div>
 
             {/* Stats Grid */}

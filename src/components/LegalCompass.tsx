@@ -7,8 +7,8 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { legalDatabase, LegalArticle } from '../data/legalCompasData';
-import { VscrRegulation } from '../data/vscrRegulationsRegistry';
-import { auditLegalDatabase, AuditReport } from '../utils/legalIntegrity';
+import { VscrRegulation, VSCR_REGULATIONS_REGISTRY } from '../data/vscrRegulationsRegistry';
+import { auditLegalDatabase, measureRegulationCoverage, AuditReport } from '../utils/legalIntegrity';
 import { speakText, isSpeechSupported } from '../utils/speech';
 import {
   getStoredRegulations,
@@ -67,7 +67,12 @@ export default function LegalCompass() {
   });
 
   const auditReport: AuditReport = useMemo(() => {
-    return auditLegalDatabase(legalDatabase);
+    // Rozsah plných textů předpisů se měří i tady, aby okno kontroly mohlo
+    // poctivě říct, u kterých předpisů jde jen o výběr ustanovení.
+    const coverage = VSCR_REGULATIONS_REGISTRY
+      .filter((reg) => typeof reg.fullLegalText === 'string' && reg.fullLegalText.length > 0)
+      .map((reg) => measureRegulationCoverage(reg.code, reg.shortTitle, reg.fullLegalText));
+    return auditLegalDatabase(legalDatabase, coverage);
   }, []);
 
   const showToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {

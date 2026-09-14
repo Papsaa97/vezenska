@@ -1,5 +1,7 @@
 // =========================================================================
-// ZÁKON Č. 555/1992 SB. – KOMPLETNÍ DOSLOVNÉ ÚŘEDNÍ ZNĚNÍ Z E-SBÍRKY
+// ZÁKON Č. 555/1992 SB. – ÚPLNÉ DOSLOVNÉ ÚŘEDNÍ ZNĚNÍ Z E-SBÍRKY
+// Úplnost ověřena porovnáním s oficiálním PDF: 48 nadpisů §, rozsah § 1–30
+// (§ 26 a 27 jsou v platném znění zrušeny), 52 387 znaků.
 // Zákon České národní rady ze dne 17. listopadu 1992
 // o Vězeňské službě a justiční stráži České republiky
 // (ve znění účinném k 1. 1. 2026 dle oficiální e-Sbírky ČR)
