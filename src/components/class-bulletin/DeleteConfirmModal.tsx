@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Trash2 } from 'lucide-react';
+import { useDialog } from '../../hooks/useDialog';
 
 interface DeleteConfirmModalProps {
   className: string;
@@ -15,8 +16,22 @@ export default function DeleteConfirmModal({
   onConfirm,
   onCancel,
 }: DeleteConfirmModalProps) {
+  // Escape, past na fokus a jeho návrat po zavření — viz hooks/useDialog.
+  const dialogRef = useDialog<HTMLDivElement>({
+    isOpen: true,
+    onClose: onCancel,
+    closeOnEscape: !isDeleting,
+  });
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-confirm-title"
+      tabIndex={-1}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -27,7 +42,7 @@ export default function DeleteConfirmModal({
           <Trash2 className="w-6 h-6" />
         </div>
         <div>
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">
+          <h3 id="delete-confirm-title" className="text-base font-bold text-slate-900 dark:text-white">
             Smazat třídu {className}?
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">

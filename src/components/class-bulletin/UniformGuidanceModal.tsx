@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Plus, Shirt, Trash2, X } from 'lucide-react';
+import { useDialog } from '../../hooks/useDialog';
 import {
   ClassBoardItem,
   DayUniformItem,
@@ -85,8 +86,18 @@ export default function UniformGuidanceModal({
     }
   };
 
+  // Escape (ne během ukládání), past na fokus a jeho návrat — viz hooks/useDialog.
+  const dialogRef = useDialog<HTMLDivElement>({ isOpen: true, onClose, closeOnEscape: !saving });
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto">
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="uniform-guidance-title"
+      tabIndex={-1}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto"
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -100,7 +111,7 @@ export default function UniformGuidanceModal({
               <Shirt className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white">
+              <h3 id="uniform-guidance-title" className="font-bold text-base sm:text-lg text-slate-900 dark:text-white">
                 Ústroj pro třídu {item.className}
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -110,6 +121,7 @@ export default function UniformGuidanceModal({
           </div>
           <button
             onClick={onClose}
+            aria-label="Zavřít ústrojovou kázeň"
             className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />

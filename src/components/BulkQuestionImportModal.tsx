@@ -18,6 +18,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useDialog } from '../hooks/useDialog';
 import {
   ParsedQuestionImport,
   ParseValidationError,
@@ -247,8 +248,20 @@ export default function BulkQuestionImportModal({
   const totalErrors = parseResult.errors.length;
   const totalValid = parseResult.validQuestions.length;
 
+  // Escape (ne během importu), past na fokus a jeho návrat — viz hooks/useDialog.
+  const dialogRef = useDialog<HTMLDivElement>({
+    isOpen: true,
+    onClose,
+    closeOnEscape: !isExecuting,
+  });
+
   return (
     <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="bulk-import-title"
+      tabIndex={-1}
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget && !isExecuting) {
@@ -269,7 +282,7 @@ export default function BulkQuestionImportModal({
               <UploadCloud className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white flex items-center gap-2">
+              <h3 id="bulk-import-title" className="font-bold text-base sm:text-lg text-slate-900 dark:text-white flex items-center gap-2">
                 Hromadný import otázek
                 <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300">
                   Lektor / Admin

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, LogIn, UserPlus, Eye, EyeOff, Loader2, ShieldCheck, AlertCircle, HelpCircle } from 'lucide-react';
 import { useAuth, UserRole } from '../context/AuthContext';
+import { useDialog } from '../hooks/useDialog';
 import {
   isBiometricsSupported,
   storeBrowserCredential,
@@ -57,6 +58,9 @@ export function AuthModal({ onClose }: AuthModalProps) {
       setHasSavedCredentials(false);
     });
   }, []);
+
+  // Escape, past na fokus a jeho návrat po zavření — viz hooks/useDialog.
+  const dialogRef = useDialog<HTMLDivElement>({ isOpen: true, onClose });
 
   const resetForm = () => {
     setEmail('');
@@ -158,6 +162,11 @@ export function AuthModal({ onClose }: AuthModalProps) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.94, y: 20 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Přihlášení do aplikace"
+        tabIndex={-1}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
       >
         <div
@@ -168,6 +177,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            aria-label="Zavřít přihlášení"
           >
             <X className="w-4 h-4" />
           </button>

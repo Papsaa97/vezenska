@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, Send, CheckCircle2, AlertCircle, Loader2, MessageSquareWarning } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { useDialog } from '../hooks/useDialog';
 
 // ─── Kategorie zpětné vazby ───────────────────────────────────────────────────
 
@@ -43,6 +44,9 @@ export default function FeedbackModal({ onClose, screenContext }: FeedbackModalP
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+
+  // Escape (ne během odesílání), past na fokus a jeho návrat — viz hooks/useDialog.
+  const dialogRef = useDialog<HTMLDivElement>({ isOpen: true, onClose, closeOnEscape: !submitting });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,7 +108,14 @@ export default function FeedbackModal({ onClose, screenContext }: FeedbackModalP
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
       >
+        {/* Obsah se po odeslání celý vymění za poděkování, takže tu nemá co
+            ukazovat aria-labelledby — název dialogu je proto zapsaný přímo. */}
         <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Zpětná vazba"
+          tabIndex={-1}
           className="pointer-events-auto w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-3xl shadow-2xl p-6 sm:p-7 relative"
           onClick={(e) => e.stopPropagation()}
         >
@@ -112,6 +123,7 @@ export default function FeedbackModal({ onClose, screenContext }: FeedbackModalP
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            aria-label="Zavřít formulář zpětné vazby"
           >
             <X className="w-4 h-4" />
           </button>

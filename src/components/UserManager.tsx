@@ -21,6 +21,7 @@ import {
 import { supabase } from '../lib/supabase';
 import { useAuth, useIsAdmin, UserRole } from '../context/AuthContext';
 import { getUserRank } from '../utils/gamification';
+import { useDialog } from '../hooks/useDialog';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -580,8 +581,18 @@ function EditNameDialog({ targetUser, onClose, onSaved }: EditNameDialogProps) {
     }
   };
 
+  // Escape (ne během ukládání), past na fokus a jeho návrat — viz hooks/useDialog.
+  const dialogRef = useDialog<HTMLDivElement>({ isOpen: true, onClose, closeOnEscape: !saving });
+
   return (
-    <div className="no-print fixed inset-0 z-[60] flex items-center justify-center p-4">
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Úprava uživatele"
+      tabIndex={-1}
+      className="no-print fixed inset-0 z-[60] flex items-center justify-center p-4"
+    >
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -661,8 +672,18 @@ interface DeleteConfirmDialogProps {
 }
 
 function DeleteConfirmDialog({ targetUser, deleting, onCancel, onConfirm }: DeleteConfirmDialogProps) {
+  // Escape (ne během mazání), past na fokus a jeho návrat — viz hooks/useDialog.
+  const dialogRef = useDialog<HTMLDivElement>({ isOpen: true, onClose: onCancel, closeOnEscape: !deleting });
+
   return (
-    <div className="no-print fixed inset-0 z-[60] flex items-center justify-center p-4">
+    <div
+      ref={dialogRef}
+      role="alertdialog"
+      aria-modal="true"
+      aria-label="Potvrzení smazání uživatele"
+      tabIndex={-1}
+      className="no-print fixed inset-0 z-[60] flex items-center justify-center p-4"
+    >
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

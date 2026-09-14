@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, Save, Edit3, Eye, EyeOff, AlertCircle, Loader2, Sparkles, BookOpen } from 'lucide-react';
 import { Question } from '../../types';
 import { updateQuestionInSupabase, isQuestionHidden } from '../../utils/questionActions';
+import { useDialog } from '../../hooks/useDialog';
 
 interface QuestionEditModalProps {
   question: Question | null;
@@ -38,14 +39,9 @@ export default function QuestionEditModal({
     }
   }, [question, isOpen]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !isSaving) onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, isSaving, onClose]);
+  // Vlastní obsluha Escape nahrazena sdíleným hookem — ten navíc drží fokus
+  // uvnitř dialogu a po zavření ho vrátí tam, odkud se otevíral.
+  const dialogRef = useDialog<HTMLDivElement>({ isOpen, onClose, closeOnEscape: !isSaving });
 
   if (!question) return null;
 
@@ -112,6 +108,8 @@ export default function QuestionEditModal({
     <AnimatePresence>
       {isOpen && (
         <div
+          ref={dialogRef}
+          tabIndex={-1}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs no-print overflow-y-auto"
           role="dialog"
           aria-modal="true"

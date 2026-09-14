@@ -1134,8 +1134,14 @@ export default function Quiz({
                 </button>
               )}
 
-              <button 
+              <button
                 onClick={() => toggleFavorite(currentQ.id)}
+                aria-pressed={favorites.includes(currentQ.id)}
+                aria-label={
+                  favorites.includes(currentQ.id)
+                    ? 'Odebrat otázku z oblíbených'
+                    : 'Přidat otázku mezi oblíbené'
+                }
                 className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg text-slate-300 dark:text-slate-600 hover:text-yellow-500 transition-colors"
               >
                 <Star className={`w-5 h-5 ${favorites.includes(currentQ.id) ? 'fill-yellow-400 text-yellow-400' : ''}`} />

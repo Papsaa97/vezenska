@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { useDialog } from '../../hooks/useDialog';
 import { Calendar, Download, Printer, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { ClassBoardItem } from '../../utils/classBoardService';
 
@@ -32,8 +33,16 @@ export default function ScheduleLightbox({
     a.click();
   };
 
+  // Escape, past na fokus a jeho návrat po zavření — viz hooks/useDialog.
+  const dialogRef = useDialog<HTMLDivElement>({ isOpen: true, onClose });
+
   return (
     <motion.div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="schedule-lightbox-title"
+      tabIndex={-1}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -42,7 +51,7 @@ export default function ScheduleLightbox({
       <div className="px-4 py-3 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between gap-4 text-white">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-blue-400" />
-          <span className="font-bold text-sm sm:text-base">Rozvrh hodin – {item.className}</span>
+          <span id="schedule-lightbox-title" className="font-bold text-sm sm:text-base">Rozvrh hodin – {item.className}</span>
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
