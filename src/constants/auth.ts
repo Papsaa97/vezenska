@@ -1,3 +1,5 @@
+import { isCaptchaConfigured } from './captcha';
+
 /**
  * Minimální délka hesla používaná v nápovědě a v atributu minLength.
  *
@@ -34,6 +36,15 @@ export function translateAuthError(error: TranslatableAuthError): string {
     return required
       ? `Heslo musí mít alespoň ${required} znaků.`
       : 'Heslo nesplňuje požadavky na sílu. Zvolte delší heslo s číslicemi a velkými i malými písmeny.';
+  }
+
+  // Ochrana proti robotům. Server ji vyžaduje, ale rozhoduje, jestli ji
+  // aplikace vůbec umí zobrazit — a podle toho se liší, kdo to může spravit.
+  if (/captcha/i.test(msg)) {
+    return isCaptchaConfigured()
+      ? 'Ověření, že nejste robot, se nepodařilo dokončit. Zkuste ho prosím projít znovu.'
+      : 'Přihlášení blokuje ochrana proti robotům, kterou tahle verze aplikace neumí zobrazit — '
+        + 'chybí jí nastavení ověření. Nejde o chybu vašich údajů; obraťte se prosím na správce portálu.';
   }
 
   if (msg.includes('Invalid login credentials')) return 'Nesprávný e-mail nebo heslo.';
