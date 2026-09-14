@@ -221,9 +221,24 @@ async function main() {
 
   const sb = createClient(supabaseUrl, supabaseKey);
 
-  // Přihlášení synchronizačního správce
-  const email = 'sync-agent@akademie-vscr.cz';
-  const password = 'SyncPassword2026!';
+  // Přihlášení synchronizačního správce.
+  //
+  // Údaje se čtou z .env.local (soubor je v .gitignore). Dřív byly zapsané přímo
+  // tady v kódu — repozitář je veřejný, takže to heslo je nutné považovat za
+  // vyzrazené a při dalším použití skriptu ho změnit.
+  //
+  // Účet potřebuje roli lektor nebo admin v public.profiles, jinak RLS zápis do
+  // quiz_questions odmítne (viz politika quiz_questions_write).
+  const email = env['SYNC_AGENT_EMAIL'];
+  const password = env['SYNC_AGENT_PASSWORD'];
+  if (!email || !password) {
+    console.error(
+      'Chybí SYNC_AGENT_EMAIL nebo SYNC_AGENT_PASSWORD v .env.local.\n' +
+      'Skript se bez přihlašovacích údajů synchronizačního účtu spustit nedá.'
+    );
+    process.exit(1);
+  }
+
   const { data: authData, error: authError } = await sb.auth.signInWithPassword({ email, password });
   if (authError) {
     console.error('Chyba při přihlášení správce do Supabase:', authError.message);
