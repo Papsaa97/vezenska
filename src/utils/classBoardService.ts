@@ -1,5 +1,42 @@
 import { supabase } from '../lib/supabase';
 
+// ─── Výsledky operací ────────────────────────────────────────────────────────
+//
+// Nástěnka je SDÍLENÝ obsah — rozvrh, služby a ústrojová kázeň, které velitel
+// třídy píše pro ostatní. Když zápis do databáze selže, data skončí jen
+// v localStorage autora a nikdo další je neuvidí. Dřív o tom volající nevěděl
+// nic: funkce chybu zalogovaly do konzole a vrátily uložený objekt, jako by se
+// operace povedla. Proto každá operace hlásí, jestli se dostala na server.
+
+export interface PersistResult<T> {
+  /** Uložená položka. Vrací se i při neúspěchu — lokální kopie existuje vždy. */
+  item: T;
+  /** True = změna dorazila do databáze. False = uloženo jen v tomto zařízení. */
+  persisted: boolean;
+  /** Popis chyby pro uživatele, nebo null při úspěchu. */
+  error: string | null;
+}
+
+export interface DeleteResult {
+  /** True = smazáno i v databázi. False = zmizelo jen z tohoto zařízení. */
+  persisted: boolean;
+  error: string | null;
+}
+
+export interface FetchResult<T> {
+  items: T[];
+  /**
+   * Odkud data pocházejí.
+   *
+   * 'server' — čerstvá data z databáze.
+   * 'local'  — záložní kopie ze zařízení. Buď se nepodařilo spojit se serverem
+   *            (pak je vyplněno `error`), nebo databáze zatím nic neobsahuje
+   *            a použila se výchozí sada (pak je `error` null).
+   */
+  source: 'server' | 'local';
+  error: string | null;
+}
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export type DutyType = 'pankrac' | 'recepce' | 'strelby' | 'zkouska' | 'jine';
@@ -681,15 +718,25 @@ export function saveLocalGlobalAnnouncements(items: GlobalAnnouncement[]): void 
   }
 }
 
-export async function fetchGlobalAnnouncements(): Promise<GlobalAnnouncement[]> {
+export async function fetchGlobalAnnouncements(): Promise<FetchResult<GlobalAnnouncement>> {
   try {
     const { data, error } = await supabase
       .from('global_announcements')
       .select('*')
       .order('updated_at', { ascending: false });
 
-    if (error || !data || data.length === 0) {
-      return loadLocalGlobalAnnouncements();
+    // Chyba a prázdný výsledek se dřív řešily stejně, takže nešlo poznat
+    // nedostupný server od databáze, ve které opravdu nic není.
+    if (error) {
+      return {
+        items: loadLocalGlobalAnnouncements(),
+        source: 'local',
+        error: `Hlášení se nepodařilo načíst ze serveru (${error.message}).`,
+      };
+    }
+
+    if (!data || data.length === 0) {
+      return { items: loadLocalGlobalAnnouncements(), source: 'local', error: null };
     }
 
     const items = (data as Array<{
@@ -713,15 +760,19 @@ export async function fetchGlobalAnnouncements(): Promise<GlobalAnnouncement[]> 
     }));
 
     saveLocalGlobalAnnouncements(items);
-    return items;
-  } catch {
-    return loadLocalGlobalAnnouncements();
+    return { items, source: 'server', error: null };
+  } catch (err) {
+    return {
+      items: loadLocalGlobalAnnouncements(),
+      source: 'local',
+      error: `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`,
+    };
   }
 }
 
 export async function saveGlobalAnnouncement(
   item: Omit<GlobalAnnouncement, 'id' | 'updatedAt'> & { id?: string }
-): Promise<GlobalAnnouncement> {
+): Promise<PersistResult<GlobalAnnouncement>> {
   const now = new Date().toISOString();
   const id = item.id || `announcement-${Date.now()}`;
   const record: GlobalAnnouncement = {
@@ -730,8 +781,12 @@ export async function saveGlobalAnnouncement(
     updatedAt: now,
   };
 
+  // POZOR: klient Supabase chybu databáze NEVYHAZUJE, vrací ji v `error`.
+  // Dokud se `error` nečetl, neozval se ani tenhle catch — selhání zápisu bylo
+  // úplně neviditelné a celoškolní hlášení zůstalo jen v prohlížeči autora.
+  let persistError: string | null = null;
   try {
-    await supabase.from('global_announcements').upsert(
+    const { error } = await supabase.from('global_announcements').upsert(
       {
         id: record.id,
         title: record.title,
@@ -744,8 +799,11 @@ export async function saveGlobalAnnouncement(
       },
       { onConflict: 'id' }
     );
+    if (error) {
+      persistError = `Hlášení se nepodařilo uložit na server (${error.message}).`;
+    }
   } catch (err) {
-    console.warn('[ClassBoard] Supabase upsert announcement selhal, ukládám lokálně:', err);
+    persistError = `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`;
   }
 
   const current = loadLocalGlobalAnnouncements();
@@ -758,18 +816,25 @@ export async function saveGlobalAnnouncement(
     next = [record, ...current];
   }
   saveLocalGlobalAnnouncements(next);
-  return record;
+  return { item: record, persisted: persistError === null, error: persistError };
 }
 
-export async function deleteGlobalAnnouncement(id: string): Promise<void> {
+export async function deleteGlobalAnnouncement(id: string): Promise<DeleteResult> {
+  let persistError: string | null = null;
   try {
-    await supabase.from('global_announcements').delete().eq('id', id);
+    const { error } = await supabase.from('global_announcements').delete().eq('id', id);
+    if (error) {
+      persistError = `Hlášení se nepodařilo smazat na serveru (${error.message}).`;
+    }
   } catch (err) {
-    console.warn('[ClassBoard] Supabase delete announcement selhal:', err);
+    persistError = `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`;
   }
+
   const current = loadLocalGlobalAnnouncements();
   const next = current.filter((x) => x.id !== id);
   saveLocalGlobalAnnouncements(next);
+
+  return { persisted: persistError === null, error: persistError };
 }
 
 // ─── Class Board Service ──────────────────────────────────────────────────────
@@ -821,7 +886,7 @@ function mapRowToItem(row: SupabaseClassBoardRow): ClassBoardItem {
 /**
  * Načte všechny třídy z databáze Supabase nebo localStorage.
  */
-export async function fetchClassBoards(): Promise<ClassBoardItem[]> {
+export async function fetchClassBoards(): Promise<FetchResult<ClassBoardItem>> {
   try {
     const { data, error } = await supabase
       .from('class_boards')
@@ -829,20 +894,27 @@ export async function fetchClassBoards(): Promise<ClassBoardItem[]> {
       .order('class_name', { ascending: true });
 
     if (error) {
-      console.warn('[ClassBoard] Dotaz na Supabase selhal, používám lokální úložiště:', error.message);
-      return loadLocalBoards();
+      return {
+        items: loadLocalBoards(),
+        source: 'local',
+        error: `Třídy se nepodařilo načíst ze serveru (${error.message}).`,
+      };
     }
 
     if (data && data.length > 0) {
       const items = (data as SupabaseClassBoardRow[]).map(mapRowToItem);
       saveLocalBoards(items);
-      return items;
+      return { items, source: 'server', error: null };
     }
 
-    return loadLocalBoards();
+    // Prázdná databáze není chyba — použije se výchozí sada tříd (INITIAL_CLASS_BOARDS).
+    return { items: loadLocalBoards(), source: 'local', error: null };
   } catch (err) {
-    console.warn('[ClassBoard] Výjimka při stahování tříd:', err);
-    return loadLocalBoards();
+    return {
+      items: loadLocalBoards(),
+      source: 'local',
+      error: `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`,
+    };
   }
 }
 
@@ -852,7 +924,7 @@ export async function fetchClassBoards(): Promise<ClassBoardItem[]> {
 export async function saveClassBoard(
   input: ClassBoardInput,
   userEmail?: string | null
-): Promise<ClassBoardItem> {
+): Promise<PersistResult<ClassBoardItem>> {
   const now = new Date().toISOString();
   const id = input.id || `class-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
@@ -873,6 +945,7 @@ export async function saveClassBoard(
     updatedBy: userEmail || input.updatedBy || null,
   };
 
+  let persistError: string | null = null;
   try {
     const rowPayload = {
       id: itemToSave.id,
@@ -896,10 +969,10 @@ export async function saveClassBoard(
       .upsert(rowPayload, { onConflict: 'id' });
 
     if (error) {
-      console.warn('[ClassBoard] Supabase upsert selhal, ukládám lokálně:', error.message);
+      persistError = `Změnu se nepodařilo uložit na server (${error.message}).`;
     }
   } catch (err) {
-    console.warn('[ClassBoard] Výjimka při ukládání do Supabase:', err);
+    persistError = `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`;
   }
 
   const localItems = loadLocalBoards();
@@ -913,27 +986,31 @@ export async function saveClassBoard(
   }
   saveLocalBoards(updatedLocal);
 
-  return itemToSave;
+  return { item: itemToSave, persisted: persistError === null, error: persistError };
 }
 
 /**
  * Smaže kartu třídy podle ID.
  */
-export async function deleteClassBoard(id: string): Promise<boolean> {
+export async function deleteClassBoard(id: string): Promise<DeleteResult> {
+  // Dřív vracela natvrdo `true` bez ohledu na to, co řekla databáze — volající
+  // tedy nemohl poznat, že třída zmizela jen z tohoto zařízení a ostatním
+  // zůstala na nástěnce dál.
+  let persistError: string | null = null;
   try {
     const { error } = await supabase.from('class_boards').delete().eq('id', id);
     if (error) {
-      console.warn('[ClassBoard] Smazání ze Supabase selhalo:', error.message);
+      persistError = `Třídu se nepodařilo smazat na serveru (${error.message}).`;
     }
   } catch (err) {
-    console.warn('[ClassBoard] Výjimka při mazání ze Supabase:', err);
+    persistError = `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`;
   }
 
   const localItems = loadLocalBoards();
   const filtered = localItems.filter((x) => x.id !== id);
   saveLocalBoards(filtered);
 
-  return true;
+  return { persisted: persistError === null, error: persistError };
 }
 
 /**

@@ -279,6 +279,8 @@ export default function PrisonAdministration() {
   const [selectedBodyParts, setSelectedBodyParts] = useState<string[]>(() => RECORD_TEMPLATES[0].affectedBodyPartsDefault || []);
   const [copiedSuccess, setCopiedSuccess] = useState(false);
   const [copyError, setCopyError] = useState(false);
+  /** Selhalo kopírování Č.j. Vlastní stav, protože `copyError` patří k tlačítku „Kopírovat záznam". */
+  const [cjCopyFailed, setCjCopyFailed] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
   const [draftNotice, setDraftNotice] = useState(false);
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -303,10 +305,14 @@ export default function PrisonAdministration() {
   const copyCJ = useCallback(() => {
     if (formData.refNumber) {
       navigator.clipboard.writeText(formData.refNumber).then(() => {
+        setCjCopyFailed(false);
         setCopiedSuccess(true);
         setTimeout(() => setCopiedSuccess(false), 2000);
       }).catch(() => {
-        // Clipboard API unavailable — silently ignore
+        // Schránka bývá nedostupná bez HTTPS nebo bez svolení uživatele. Dřív se
+        // po kliknutí nestalo vůbec nic a nešlo poznat, jestli se zkopírovalo.
+        setCjCopyFailed(true);
+        setTimeout(() => setCjCopyFailed(false), 4000);
       });
     }
   }, [formData.refNumber]);
@@ -657,10 +663,21 @@ export default function PrisonAdministration() {
                             type="button"
                             onClick={copyCJ}
                             className="p-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] transition-colors cursor-pointer"
-                            title="Zkopírovat Č.j. do schránky"
+                            title={cjCopyFailed ? 'Zkopírování do schránky se nezdařilo — označte Č.j. a zkopírujte ručně' : 'Zkopírovat Č.j. do schránky'}
                           >
-                            {copiedSuccess ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                            {cjCopyFailed ? (
+                              <AlertTriangle className="w-3 h-3 text-red-600" />
+                            ) : copiedSuccess ? (
+                              <Check className="w-3 h-3 text-emerald-600" />
+                            ) : (
+                              <Copy className="w-3 h-3" />
+                            )}
                           </button>
+                          {cjCopyFailed && (
+                            <span role="alert" className="text-[10px] font-semibold text-red-600 dark:text-red-400">
+                              Kopírování selhalo — zkopírujte Č.j. ručně.
+                            </span>
+                          )}
                         </div>
                       </div>
                       <input

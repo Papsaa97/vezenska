@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Bell, CheckCheck, Check, Loader2, Inbox } from 'lucide-react';
+import { Bell, CheckCheck, Check, Loader2, Inbox, AlertTriangle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { UserNotification } from './UserManager';
@@ -24,6 +24,8 @@ export default function NotificationBell() {
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [markingId, setMarkingId] = useState<string | null>(null);
+  /** Chyba načtení nebo zápisu. Bez ní se selhání projeví jen tím, že se „nic nestane". */
+  const [notice, setNotice] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const loadNotifications = useCallback(async (userId: string) => {
@@ -35,7 +37,12 @@ export default function NotificationBell() {
       .order('created_at', { ascending: false })
       .limit(100);
 
-    if (!error && data) {
+    if (error) {
+      // Bez tohohle hlášení vypadá nedostupný server stejně jako „žádné zprávy" —
+      // uživatel by o zprávě od správce nevěděl a neměl by jak zjistit proč.
+      setNotice(`Zprávy se nepodařilo načíst (${error.message}).`);
+    } else if (data) {
+      setNotice(null);
       setNotifications(data as UserNotification[]);
     }
     setLoading(false);
@@ -67,7 +74,10 @@ export default function NotificationBell() {
     if (notification.is_read || markingId) return;
     setMarkingId(notification.id);
     const { error } = await supabase.from('user_notifications').update({ is_read: true }).eq('id', notification.id);
-    if (!error) {
+    if (error) {
+      setNotice(`Zprávu se nepodařilo označit jako přečtenou (${error.message}).`);
+    } else {
+      setNotice(null);
       setNotifications((prev) => prev.map((n) => (n.id === notification.id ? { ...n, is_read: true } : n)));
     }
     setMarkingId(null);
@@ -76,8 +86,20 @@ export default function NotificationBell() {
   const markAllAsRead = async () => {
     const unreadIds = notifications.filter((n) => !n.is_read).map((n) => n.id);
     if (unreadIds.length === 0) return;
+
+    // Zobrazí se hned, ale při neúspěchu se to musí vrátit zpět. Dřív se výsledek
+    // zápisu vůbec nečetl: odznak zmizel, v databázi zůstaly zprávy nepřečtené
+    // a při dalším otevření aplikace se objevily znovu bez vysvětlení.
+    const previous = notifications;
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
-    await supabase.from('user_notifications').update({ is_read: true }).in('id', unreadIds);
+
+    const { error } = await supabase.from('user_notifications').update({ is_read: true }).in('id', unreadIds);
+    if (error) {
+      setNotifications(previous);
+      setNotice(`Zprávy se nepodařilo označit jako přečtené (${error.message}).`);
+    } else {
+      setNotice(null);
+    }
   };
 
   if (!user) return null;
@@ -121,13 +143,24 @@ export default function NotificationBell() {
               )}
             </div>
 
+            {notice && (
+              <div
+                role="alert"
+                aria-live="assertive"
+                className="flex items-start gap-2 bg-red-950/50 border border-red-800/70 rounded-xl px-2.5 py-2 text-[11px] text-red-200 leading-snug"
+              >
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-red-400" />
+                <span>{notice}</span>
+              </div>
+            )}
+
             {loading && (
               <div className="flex items-center justify-center gap-2 text-slate-400 text-xs py-8">
                 <Loader2 className="w-4 h-4 animate-spin" /> Načítám…
               </div>
             )}
 
-            {!loading && notifications.length === 0 && (
+            {!loading && !notice && notifications.length === 0 && (
               <div className="flex flex-col items-center gap-2 text-slate-500 text-xs py-8">
                 <Inbox className="w-8 h-8 opacity-50" />
                 Zatím žádné zprávy

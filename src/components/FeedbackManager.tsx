@@ -8,6 +8,7 @@ import {
   Inbox,
   Monitor,
   User,
+  AlertTriangle,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { FEEDBACK_CATEGORY_COLORS, feedbackCategoryLabel } from './FeedbackModal';
@@ -38,6 +39,8 @@ interface FeedbackManagerProps {
 export default function FeedbackManager({ onNewCountChange }: FeedbackManagerProps = {}) {
   const [items, setItems] = useState<FeedbackItem[]>([]);
   const [loading, setLoading] = useState(true);
+  /** Chyba načtení. Bez ní by se neúspěšný dotaz tvářil jako „žádná zpětná vazba". */
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterValue>('all');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -53,9 +56,12 @@ export default function FeedbackManager({ onNewCountChange }: FeedbackManagerPro
         .limit(500);
 
       if (error) {
-        console.error('[Feedback] Chyba při načítání:', error);
+        // Prázdný seznam je tvrzení „nic nepřišlo". Když dotaz selže, není to
+        // pravda a správce by přišel o hlášení, aniž by tušil, že nějaká jsou.
+        setLoadError(error.message);
         setItems([]);
       } else if (data) {
+        setLoadError(null);
         setItems(data as FeedbackItem[]);
       }
     } finally {
@@ -205,7 +211,31 @@ export default function FeedbackManager({ onNewCountChange }: FeedbackManagerPro
       )}
 
       {/* Empty state */}
-      {!loading && filteredItems.length === 0 && (
+      {!loading && loadError && (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="p-6 text-center rounded-2xl border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-900/25 space-y-2"
+        >
+          <AlertTriangle className="w-9 h-9 text-red-500 mx-auto" />
+          <div className="font-bold text-sm text-red-800 dark:text-red-200">
+            Zpětnou vazbu se nepodařilo načíst
+          </div>
+          <p className="text-xs text-red-700 dark:text-red-300/90 max-w-md mx-auto leading-snug">
+            Seznam níže je prázdný kvůli chybě, ne proto, že by žádná hlášení nebyla. Chyba: {loadError}
+          </p>
+          <button
+            type="button"
+            onClick={() => fetchFeedback()}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-colors cursor-pointer"
+          >
+            <RotateCcw className="w-3 h-3" />
+            Zkusit znovu
+          </button>
+        </div>
+      )}
+
+      {!loading && !loadError && filteredItems.length === 0 && (
         <div className="p-8 text-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/40 space-y-2">
           <Inbox className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
           <div className="font-semibold text-sm text-slate-700 dark:text-slate-300">
