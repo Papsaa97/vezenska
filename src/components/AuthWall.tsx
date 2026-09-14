@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { motion } from 'motion/react';
 import { 
   ShieldCheck, 
@@ -20,6 +20,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { MIN_PASSWORD_LENGTH, translateAuthError, weakPasswordNotice } from '../constants/auth';
 import {
   isBiometricsSupported,
   storeBrowserCredential,
@@ -33,6 +34,9 @@ interface AuthWallProps {
 }
 
 export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const { signIn, signUp } = useAuth();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
@@ -45,6 +49,8 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
   const [hasSavedCredentials, setHasSavedCredentials] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  /** Přihlášení prošlo, ale heslo nevyhovuje zpřísněným požadavkům serveru. */
+  const [weakPasswordMsg, setWeakPasswordMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -81,9 +87,12 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
       if (cred?.email && cred?.password) {
         setEmail(cred.email);
         setPassword(cred.password);
-        const { error } = await signIn(cred.email, cred.password);
-        if (error) {
-          setErrorMsg(translateError(error.message));
+        const { error, signedIn } = await signIn(cred.email, cred.password);
+        if (error && !signedIn) {
+          setErrorMsg(translateAuthError(error));
+        } else if (error) {
+          // Přihlášení prošlo, jen heslo nesplňuje zpřísněné požadavky.
+          setWeakPasswordMsg(weakPasswordNotice(error));
         }
       } else {
         setErrorMsg('Nejprve se přihlaste e-mailem a heslem. Údaje budou uloženy do klíčenky pro příští přihlášení.');
@@ -104,10 +113,13 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
     setSuccessMsg(null);
 
     if (mode === 'signin') {
-      const { error } = await signIn(email, password);
-      if (error) {
-        setErrorMsg(translateError(error.message));
+      const { error, signedIn } = await signIn(email, password);
+      if (error && !signedIn) {
+        setErrorMsg(translateAuthError(error));
       } else {
+        // I při upozornění na slabé heslo je uživatel přihlášený, takže se
+        // údaje uloží do klíčenky jako při běžném přihlášení.
+        if (error) setWeakPasswordMsg(weakPasswordNotice(error));
         await storeBrowserCredential(email, password);
       }
     } else {
@@ -123,7 +135,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
       }
       const { error } = await signUp(email, password, fullName);
       if (error) {
-        setErrorMsg(translateError(error.message));
+        setErrorMsg(translateAuthError(error));
       } else {
         await storeBrowserCredential(email, password);
         setSuccessMsg('Registrace proběhla úspěšně! Zkontrolujte svůj e-mail pro potvrzení účtu, nebo se přihlaste.');
@@ -331,14 +343,14 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
               <form onSubmit={handleSubmit} method="post" autoComplete="on" className="space-y-4">
                 {mode === 'signup' && (
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5" htmlFor={`${fieldIds}-0`}>
                       Jméno a příjmení *
                     </label>
                     <div className="relative">
                       <input
+                        id={`${fieldIds}-0`}
                         type="text"
                         name="name"
-                        id="wall-name"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         placeholder="nstržm. Jan Novák"
@@ -352,14 +364,14 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                 )}
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5" htmlFor={`${fieldIds}-1`}>
                     E-mailová adresa *
                   </label>
                   <div className="relative">
                     <input
+                      id={`${fieldIds}-1`}
                       type="email"
                       name="email"
-                      id="wall-email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Váš e-mail"
@@ -374,7 +386,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="block text-xs font-semibold text-slate-300">
+                    <label className="block text-xs font-semibold text-slate-300" htmlFor={`${fieldIds}-3`}>
                       Heslo *
                     </label>
                     <button
@@ -394,7 +406,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                         <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
                         Požadavky na heslo:
                       </div>
-                      <p className="text-[11px] text-slate-400">• Minimální délka je 6 znaků</p>
+                      <p className="text-[11px] text-slate-400">• Minimální délka je {MIN_PASSWORD_LENGTH} znaků</p>
                       <p className="text-[11px] text-slate-400">• Doporučujeme kombinaci velkých a malých písmen a číslic</p>
                       <p className="text-[11px] text-slate-300 font-medium">• Musí obsahovat alespoň jeden speciální znak (např. <span className="font-mono">!@#$%^&*</span>)</p>
                       <p className="text-[11px] text-slate-400">• Heslo je bezpečně šifrováno v Supabase Auth</p>
@@ -403,14 +415,14 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
 
                   <div className="relative">
                     <input
+                      id={`${fieldIds}-3`}
                       type={showPassword ? 'text' : 'password'}
                       name="password"
-                      id="wall-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       required
-                      minLength={6}
+                      minLength={MIN_PASSWORD_LENGTH}
                       autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
                       className="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-10 pr-11 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
                     />
@@ -428,19 +440,19 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
 
                 {mode === 'signup' && (
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5" htmlFor={`${fieldIds}-2`}>
                       Potvrzení hesla *
                     </label>
                     <div className="relative">
                       <input
+                        id={`${fieldIds}-2`}
                         type={showPassword ? 'text' : 'password'}
                         name="confirm-password"
-                        id="wall-confirm-password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Zadejte heslo znovu pro ověření"
                         required
-                        minLength={6}
+                        minLength={MIN_PASSWORD_LENGTH}
                         autoComplete="new-password"
                         className="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-10 pr-11 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
                       />
@@ -458,6 +470,19 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                   >
                     <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
                     <p className="text-xs text-red-300 leading-snug">{errorMsg}</p>
+                  </motion.div>
+                )}
+
+                {weakPasswordMsg && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    role="status"
+                    aria-live="polite"
+                    className="flex items-start gap-2.5 bg-amber-500/10 border border-amber-500/40 rounded-xl px-4 py-3"
+                  >
+                    <AlertCircle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+                    <p className="text-xs text-amber-200 leading-snug">{weakPasswordMsg}</p>
                   </motion.div>
                 )}
 
@@ -552,11 +577,3 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
   );
 }
 
-function translateError(msg: string): string {
-  if (msg.includes('Invalid login credentials')) return 'Nesprávný e-mail nebo heslo.';
-  if (msg.includes('Email not confirmed')) return 'E-mail ještě nebyl ověřen. Zkontrolujte prosím svou schránku.';
-  if (msg.includes('User already registered')) return 'Účet s tímto e-mailem již existuje.';
-  if (msg.includes('Password should be at least')) return 'Heslo musí mít alespoň 6 znaků.';
-  if (msg.includes('rate limit')) return 'Příliš mnoho pokusů. Zkuste to prosím za chvíli.';
-  return msg;
-}

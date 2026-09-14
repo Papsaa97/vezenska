@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useId } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Users,
@@ -559,6 +559,9 @@ interface EditNameDialogProps {
 }
 
 function EditNameDialog({ targetUser, onClose, onSaved }: EditNameDialogProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const [name, setName] = useState(targetUser.full_name ?? '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -625,8 +628,9 @@ function EditNameDialog({ targetUser, onClose, onSaved }: EditNameDialogProps) {
         </div>
         <form onSubmit={handleSave} className="space-y-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Jméno a příjmení</label>
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5" htmlFor={`${fieldIds}-0`}>Jméno a příjmení</label>
             <input
+              id={`${fieldIds}-0`}
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -745,6 +749,9 @@ interface SendMessageModalProps {
 }
 
 function SendMessageModal({ target, recipientCount, onClose, onSend }: SendMessageModalProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [sending, setSending] = useState(false);
@@ -816,8 +823,9 @@ function SendMessageModal({ target, recipientCount, onClose, onSend }: SendMessa
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Předmět / Titulek *</label>
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5" htmlFor={`${fieldIds}-0`}>Předmět / Titulek *</label>
             <input
+              id={`${fieldIds}-0`}
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -829,8 +837,9 @@ function SendMessageModal({ target, recipientCount, onClose, onSend }: SendMessa
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Text zprávy *</label>
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5" htmlFor={`${fieldIds}-1`}>Text zprávy *</label>
             <textarea
+              id={`${fieldIds}-1`}
               value={body}
               onChange={(e) => setBody(e.target.value)}
               required

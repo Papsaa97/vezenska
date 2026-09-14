@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Send, CheckCircle2, AlertCircle, Loader2, MessageSquareWarning } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -37,6 +37,9 @@ interface FeedbackModalProps {
 }
 
 export default function FeedbackModal({ onClose, screenContext }: FeedbackModalProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const { user, profile } = useAuth();
 
   const [category, setCategory] = useState<FeedbackCategory>('app_bug');
@@ -152,10 +155,16 @@ export default function FeedbackModal({ onClose, screenContext }: FeedbackModalP
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Category */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+                  {/* Popisuje skupinu tlačítek, ne jedno pole — proto <span> a
+                      role="group", ne <label>. Popisek bez svázaného vstupu by
+                      odečítač neměl k čemu přiřadit. */}
+                  <span
+                    id={`${fieldIds}-kategorie`}
+                    className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5"
+                  >
                     Kategorie *
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
+                  </span>
+                  <div className="grid grid-cols-2 gap-2" role="group" aria-labelledby={`${fieldIds}-kategorie`}>
                     {FEEDBACK_CATEGORIES.map((cat) => (
                       <button
                         key={cat.value}
@@ -175,10 +184,11 @@ export default function FeedbackModal({ onClose, screenContext }: FeedbackModalP
 
                 {/* Message */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5" htmlFor={`${fieldIds}-0`}>
                     Zpráva *
                   </label>
                   <textarea
+                    id={`${fieldIds}-0`}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     rows={4}

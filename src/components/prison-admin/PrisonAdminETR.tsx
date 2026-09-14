@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import {
   Shield,
   ArrowRight,
@@ -15,6 +15,9 @@ import {
  * Obsahuje interaktivní generátor čísla jednacího s vlastním lokálním state.
  */
 export default function PrisonAdminETR() {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const [cjOrg, setCjOrg] = useState('VS');
   const [cjSpisNumber, setCjSpisNumber] = useState('123');
   const [cjDocNumber, setCjDocNumber] = useState('1');
@@ -97,8 +100,9 @@ export default function PrisonAdminETR() {
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-            <label className="font-bold text-slate-700 dark:text-slate-300">1. Organizace</label>
+            <label className="font-bold text-slate-700 dark:text-slate-300" htmlFor={`${fieldIds}-0`}>1. Organizace</label>
             <input
+              id={`${fieldIds}-0`}
               type="text"
               value={cjOrg}
               onChange={(e) => setCjOrg(e.target.value)}
@@ -108,8 +112,9 @@ export default function PrisonAdminETR() {
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-            <label className="font-bold text-slate-700 dark:text-slate-300">2. Číslo spisu</label>
+            <label className="font-bold text-slate-700 dark:text-slate-300" htmlFor={`${fieldIds}-1`}>2. Číslo spisu</label>
             <input
+              id={`${fieldIds}-1`}
               type="text"
               value={cjSpisNumber}
               onChange={(e) => setCjSpisNumber(e.target.value)}
@@ -119,8 +124,9 @@ export default function PrisonAdminETR() {
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-            <label className="font-bold text-slate-700 dark:text-slate-300">3. Číslo dok.</label>
+            <label className="font-bold text-slate-700 dark:text-slate-300" htmlFor={`${fieldIds}-2`}>3. Číslo dok.</label>
             <input
+              id={`${fieldIds}-2`}
               type="text"
               value={cjDocNumber}
               onChange={(e) => setCjDocNumber(e.target.value)}
@@ -130,8 +136,9 @@ export default function PrisonAdminETR() {
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-            <label className="font-bold text-slate-700 dark:text-slate-300">4. Typ spisu</label>
+            <label className="font-bold text-slate-700 dark:text-slate-300" htmlFor={`${fieldIds}-3`}>4. Typ spisu</label>
             <select
+              id={`${fieldIds}-3`}
               value={cjSpisType}
               onChange={(e) => setCjSpisType(e.target.value as 'ČJ' | 'PŘ' | 'TČ')}
               className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono cursor-pointer"
@@ -144,8 +151,9 @@ export default function PrisonAdminETR() {
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-            <label className="font-bold text-slate-700 dark:text-slate-300">5. Rok</label>
+            <label className="font-bold text-slate-700 dark:text-slate-300" htmlFor={`${fieldIds}-4`}>5. Rok</label>
             <input
+              id={`${fieldIds}-4`}
               type="text"
               value={cjYear}
               onChange={(e) => setCjYear(e.target.value)}
@@ -155,8 +163,9 @@ export default function PrisonAdminETR() {
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-            <label className="font-bold text-slate-700 dark:text-slate-300">6. Kód OJ (80XXXX)</label>
+            <label className="font-bold text-slate-700 dark:text-slate-300" htmlFor={`${fieldIds}-5`}>6. Kód OJ (80XXXX)</label>
             <input
+              id={`${fieldIds}-5`}
               type="text"
               value={cjOrgCode}
               onChange={(e) => setCjOrgCode(e.target.value)}
@@ -170,8 +179,9 @@ export default function PrisonAdminETR() {
         {/* Custom Extension Input */}
         <div className="flex items-center gap-3 text-xs">
           <div className="flex-1 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-            <label className="font-bold text-slate-700 dark:text-slate-300">7. Přípona (volitelná, např. LOG/02)</label>
+            <label className="font-bold text-slate-700 dark:text-slate-300" htmlFor={`${fieldIds}-6`}>7. Přípona (volitelná, např. LOG/02)</label>
             <input
+              id={`${fieldIds}-6`}
               type="text"
               value={cjCustomExt}
               onChange={(e) => setCjCustomExt(e.target.value)}

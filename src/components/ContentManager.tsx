@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useId } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Settings2,
@@ -163,6 +163,9 @@ function getInitialCmTab(): ContentManagerTab {
 }
 
 function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const { profile } = useAuth();
   const isAdmin = profile?.role === 'admin';
 
@@ -432,10 +435,11 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
         <form onSubmit={handleUpload} className="space-y-4">
           {/* Subject select */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5" htmlFor={`${fieldIds}-0`}>
               Předmět *
             </label>
             <select
+              id={`${fieldIds}-0`}
               value={selectedSubject}
               onChange={(e) => setSelectedSubject(e.target.value as MaterialSubject)}
               className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
@@ -448,10 +452,11 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
 
           {/* Display name */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5" htmlFor={`${fieldIds}-1`}>
               Název materiálu *
             </label>
             <input
+              id={`${fieldIds}-1`}
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}

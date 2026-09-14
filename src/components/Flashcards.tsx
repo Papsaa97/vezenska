@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useId } from 'react';
 import { 
   Search, 
   Star, 
@@ -39,6 +39,9 @@ export default function Flashcards({
   presetSubject,
   onUpdateQuestion 
 }: FlashcardsProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const { profile } = useAuth();
   const canEdit = profile?.role === 'lektor' || profile?.role === 'admin';
 
@@ -411,8 +414,9 @@ export default function Flashcards({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Předmět</label>
-              <select 
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2" htmlFor={`${fieldIds}-0`}>Předmět</label>
+              <select
+                id={`${fieldIds}-0`} 
                 className="w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-sm bg-slate-50 dark:bg-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}

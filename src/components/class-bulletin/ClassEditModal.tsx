@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useId } from 'react';
 import { motion } from 'motion/react';
 import {
   AlertCircle,
@@ -20,6 +20,9 @@ interface ClassEditModalProps {
 }
 
 export default function ClassEditModal({ item, onClose, onSave }: ClassEditModalProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const [className, setClassName] = useState(item?.className ?? '');
   const [courseStartDate, setCourseStartDate] = useState(item?.courseStartDate ?? '');
   const [courseEndDate, setCourseEndDate] = useState(item?.courseEndDate ?? '');
@@ -149,10 +152,11 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
           )}
 
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300" htmlFor={`${fieldIds}-0`}>
               Název třídy *
             </label>
             <input
+              id={`${fieldIds}-0`}
               type="text"
               required
               value={className}
@@ -173,10 +177,11 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block mb-1">
+                <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block mb-1" htmlFor={`${fieldIds}-1`}>
                   Datum zahájení kurzu
                 </label>
                 <input
+                  id={`${fieldIds}-1`}
                   type="date"
                   value={courseStartDate}
                   onChange={(e) => setCourseStartDate(e.target.value)}
@@ -184,10 +189,11 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
                 />
               </div>
               <div>
-                <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block mb-1">
+                <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block mb-1" htmlFor={`${fieldIds}-2`}>
                   Datum ukončení kurzu
                 </label>
                 <input
+                  id={`${fieldIds}-2`}
                   type="date"
                   value={courseEndDate}
                   onChange={(e) => setCourseEndDate(e.target.value)}

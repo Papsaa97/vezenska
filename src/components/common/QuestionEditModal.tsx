@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Save, Edit3, Eye, EyeOff, AlertCircle, Loader2, Sparkles, BookOpen } from 'lucide-react';
 import { Question } from '../../types';
@@ -18,6 +18,9 @@ export default function QuestionEditModal({
   onClose,
   onQuestionUpdated,
 }: QuestionEditModalProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const [questionText, setQuestionText] = useState('');
   const [answerText, setAnswerText] = useState('');
   const [sourceText, setSourceText] = useState('');
@@ -162,10 +165,11 @@ export default function QuestionEditModal({
 
                 {/* Question Text */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5" htmlFor={`${fieldIds}-0`}>
                     Znění otázky / Přední strana kartičky *
                   </label>
                   <textarea
+                    id={`${fieldIds}-0`}
                     rows={3}
                     value={questionText}
                     onChange={(e) => setQuestionText(e.target.value)}
@@ -177,10 +181,11 @@ export default function QuestionEditModal({
 
                 {/* Answer Text */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-1.5" htmlFor={`${fieldIds}-1`}>
                     Správná odpověď / Zadní strana kartičky *
                   </label>
                   <textarea
+                    id={`${fieldIds}-1`}
                     rows={2}
                     value={answerText}
                     onChange={(e) => setAnswerText(e.target.value)}
@@ -193,10 +198,11 @@ export default function QuestionEditModal({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Legal Source */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5" htmlFor={`${fieldIds}-2`}>
                       Zákonný pramen / předpis (source)
                     </label>
                     <input
+                      id={`${fieldIds}-2`}
                       type="text"
                       value={sourceText}
                       onChange={(e) => setSourceText(e.target.value)}
@@ -207,10 +213,11 @@ export default function QuestionEditModal({
 
                   {/* Topic */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5" htmlFor={`${fieldIds}-3`}>
                       Tématický okruh (topic)
                     </label>
                     <input
+                      id={`${fieldIds}-3`}
                       type="text"
                       value={topicText}
                       onChange={(e) => setTopicText(e.target.value)}
@@ -222,11 +229,12 @@ export default function QuestionEditModal({
 
                 {/* Rationale / Explanation */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5" htmlFor={`${fieldIds}-4`}>
                     <Sparkles className="w-3.5 h-3.5 text-blue-500" />
                     Zákonné odůvodnění a vysvětlení (rationale)
                   </label>
                   <textarea
+                    id={`${fieldIds}-4`}
                     rows={3}
                     value={rationaleText}
                     onChange={(e) => setRationaleText(e.target.value)}

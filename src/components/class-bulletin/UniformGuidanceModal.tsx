@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import { motion } from 'motion/react';
 import { Plus, Shirt, Trash2, X } from 'lucide-react';
 import { useDialog } from '../../hooks/useDialog';
@@ -22,6 +22,9 @@ export default function UniformGuidanceModal({
   onClose,
   onSave,
 }: UniformGuidanceModalProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const [days, setDays] = useState<DayUniformItem[]>(() => {
     return normalizeUniformDays(item.uniformGuidance);
   });
@@ -220,10 +223,11 @@ export default function UniformGuidanceModal({
 
           {/* Poznámka velitele třídy */}
           <div className="pt-1">
-            <label className="block font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px] mb-1">
+            <label className="block font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px] mb-1" htmlFor={`${fieldIds}-0`}>
               Doplňující poznámka pro celou třídu (volitelné)
             </label>
             <textarea
+              id={`${fieldIds}-0`}
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

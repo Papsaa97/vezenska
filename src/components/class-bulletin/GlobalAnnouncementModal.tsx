@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import { motion } from 'motion/react';
 import { X } from 'lucide-react';
 import { GlobalAnnouncement } from '../../utils/classBoardService';
@@ -17,6 +17,9 @@ export default function GlobalAnnouncementModal({
   onClose,
   onSave,
 }: GlobalAnnouncementModalProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const [title, setTitle] = useState(item?.title ?? '');
   const [content, setContent] = useState(item?.content ?? '');
   const [badge, setBadge] = useState(item?.badge ?? 'CELOŠKOLNÍ ROZKAZ');
@@ -76,10 +79,11 @@ export default function GlobalAnnouncementModal({
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-0`}>
               Nadpis hlášení *
             </label>
             <input
+              id={`${fieldIds}-0`}
               type="text"
               required
               value={title}
@@ -91,10 +95,11 @@ export default function GlobalAnnouncementModal({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+              <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-1`}>
                 Kategorie / Štítek
               </label>
               <input
+                id={`${fieldIds}-1`}
                 type="text"
                 value={badge}
                 onChange={(e) => setBadge(e.target.value)}
@@ -103,10 +108,11 @@ export default function GlobalAnnouncementModal({
               />
             </div>
             <div>
-              <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+              <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-2`}>
                 Priorita
               </label>
               <select
+                id={`${fieldIds}-2`}
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as 'normal' | 'high' | 'urgent')}
                 className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white"
@@ -119,10 +125,11 @@ export default function GlobalAnnouncementModal({
           </div>
 
           <div>
-            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-3`}>
               Text hlášení *
             </label>
             <textarea
+              id={`${fieldIds}-3`}
               rows={4}
               required
               value={content}
@@ -133,10 +140,11 @@ export default function GlobalAnnouncementModal({
           </div>
 
           <div>
-            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-4`}>
               Autor / Vydal
             </label>
             <input
+              id={`${fieldIds}-4`}
               type="text"
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
