@@ -368,10 +368,10 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     question: 'Jaké jsou tři základní skartační znaky při vyřazování dokumentů z elektronické spisové služby (ETŘ)?',
     answer: 'S (stoupa - dokumenty bez trvalé hodnoty určené ke zničení po uplynutí lhůty), V (výběr - dokumenty, které po uplynutí lhůty posoudí archivář a buď zničí, nebo uloží) a A (archiv - dokumenty trvalé hodnoty určené k trvalému uložení v Národním archivu).',
     options: [
-              `X (smazat), Y (přesunout), Z (zamknout). (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
+              `X (smazat - dokumenty určené k okamžitému vymazání), Y (přesunout - dokumenty k předání jinému útvaru) a Z (zamknout - dokumenty s omezeným přístupem po dobu deseti let od vzniku).`,
               `S (stoupa - dokumenty bez trvalé hodnoty určené ke zničení po uplynutí lhůty), V (výběr - dokumenty, které po uplynutí lhůty posoudí archivář a buď zničí, nebo uloží) a A (archiv - dokumenty trvalé hodnoty určené k trvalému uložení v Národním archivu).`,
-              `R (rychlé smazání), P (pomalé smazání), N (nikdy nesmazat).`,
-              `T (tajné), D (důvěrné), V (vyhrazené). (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`
+              `R (rychlé smazání - dokumenty bez hodnoty), P (pomalé smazání - dokumenty se skartační lhůtou) a N (nikdy nesmazat - dokumenty trvalé hodnoty ukládané v archivu věznice).`,
+              `T (tajné - dokumenty s nejvyšším stupněm utajení), D (důvěrné - dokumenty s omezeným okruhem adresátů) a V (vyhrazené - dokumenty pro vnitřní potřebu organizační jednotky).`
             ],
     correctOption: 1,
     rationale: 'Skartační řízení se řídí zákonem č. 499/2004 Sb. Každý typ dokumentu (spisový znak) má přiřazenou skartační lhůtu (např. S5 znamená zničit po 5 letech).',
@@ -386,10 +386,10 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     question: 'Je dozorce oprávněn telefonicky sdělit rodinnému příslušníkovi informaci o tom, zda je konkrétní osoba ve výkonu vazby?',
     answer: 'Ne, bez ověření totožnosti (např. pomocí předem stanoveného hesla) nelze po telefonu podávat informace o umístění osob. Informace se poskytují pouze oprávněným orgánům (OČTŘ) nebo na základě písemného souhlasu vězněné osoby oprávněným subjektům.',
     options: [
-              `Ano, ale výhradně manželce nebo rodičům obviněného. (tento postup platí pouze pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
+              `Ano, ale výhradně manželce nebo rodičům obviněného. Ověření totožnosti volajícího se nevyžaduje, protože příbuzenský vztah sám o sobě zakládá právo na informaci o umístění vězněné osoby.`,
               `Ne, bez ověření totožnosti (např. pomocí předem stanoveného hesla) nelze po telefonu podávat informace o umístění osob. Informace se poskytují pouze oprávněným orgánům (OČTŘ) nebo na základě písemného souhlasu vězněné osoby oprávněným subjektům.`,
-              `Ano, pokud volající uvede rodné číslo hledané osoby.`,
-              `Ano, seznam všech vězněných osob je veřejně dostupný na internetu.`
+              `Ano, pokud volající uvede rodné číslo hledané osoby. Rodné číslo se považuje za dostatečné ověření totožnosti a písemný souhlas vězněné osoby se v takovém případě nevyžaduje.`,
+              `Ano, seznam všech vězněných osob je veřejně dostupný na internetu. Informace o umístění proto nepodléhají ochraně osobních údajů a lze je sdělit komukoliv bez omezení.`
             ],
     correctOption: 1,
     rationale: 'Ochrana osobních údajů (GDPR) a zákon o VS a JS zakazuje neoprávněné poskytování informací z evidencí. Telefonické lustrace jsou rizikové kvůli nemožnosti spolehlivě ověřit volajícího (tzv. sociální inženýrství).',
