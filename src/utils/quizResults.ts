@@ -19,6 +19,8 @@ export interface QuizResultRow {
 
 export interface QuizResultOperationResult {
   error: string | null;
+  /** True, když řádek v databázi už byl — konflikt primárního klíče při opakovaném odeslání. */
+  alreadyStored?: boolean;
 }
 
 function formatRelativeDate(iso: string): string {
@@ -58,10 +60,22 @@ export async function fetchQuizHistory(userId: string): Promise<{ history: QuizS
   return { history: rows.map(rowToSessionRecord), error: null };
 }
 
-/** Uloží nově dokončenou relaci testu do Supabase pod účet přihlášeného uživatele. */
-export async function saveQuizResult(userId: string, result: QuizSessionRecord): Promise<QuizResultOperationResult> {
+/**
+ * Uloží nově dokončenou relaci testu do Supabase pod účet přihlášeného uživatele.
+ *
+ * `rowId` je identifikátor generovaný na klientovi (viz utils/quizResultQueue).
+ * Posílá se jako primární klíč, takže opakované odeslání téhož výsledku po
+ * výpadku sítě skončí konfliktem klíče místo vzniku duplikátu — volající to
+ * pozná podle příznaku `alreadyStored`.
+ */
+export async function saveQuizResult(
+  userId: string,
+  result: QuizSessionRecord,
+  rowId?: string
+): Promise<QuizResultOperationResult> {
   const { error } = await supabase.from('quiz_results').insert([
     {
+      ...(rowId ? { id: rowId } : {}),
       user_id: userId,
       subject: result.subject,
       total_questions: result.totalQuestions,
@@ -75,7 +89,15 @@ export async function saveQuizResult(userId: string, result: QuizSessionRecord):
     },
   ]);
 
-  return { error: error?.message ?? null };
+  if (error) {
+    // 23505 = unique_violation. Řádek s tímhle klíčem už v databázi je, což při
+    // opakovaném odeslání z fronty znamená, že první pokus prošel a jen se
+    // ztratilo potvrzení. Pro volajícího je to úspěch, ne chyba.
+    const alreadyStored = error.code === '23505';
+    return { error: alreadyStored ? null : error.message, alreadyStored };
+  }
+
+  return { error: null, alreadyStored: false };
 }
 
 /** Trvale smaže celou historii testů přihlášeného uživatele. */
