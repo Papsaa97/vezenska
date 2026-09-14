@@ -1,7 +1,14 @@
-// Vite injektuje __APP_VERSION__ při buildu (viz vite.config.ts → define).
-// V dev módu fallback na 'dev'.
-const _version = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'dev';
-const CACHE_NAME = `vscr-akademie-${_version}`;
+// Verzi si worker bere z query stringu vlastní adresy (/sw.js?v=…), kterou nastavuje
+// src/registerServiceWorker.ts.
+//
+// PROČ NE Vite `define`: soubory v public/ se do buildu kopírují beze změny, žádné
+// `define` se na ně nevztahuje. Zápis `__APP_VERSION__` tu dřív zůstával doslovně,
+// takže verze byla natrvalo 'dev', název mezipaměti se nikdy nezměnil a úklid staré
+// mezipaměti v události activate neměl co mazat — uživatel dostával starou verzi
+// aplikace i po nasazení oprav.
+const CACHE_PREFIX = 'vscr-akademie-';
+const _version = new URL(self.location.href).searchParams.get('v') || 'dev';
+const CACHE_NAME = `${CACHE_PREFIX}${_version}`;
 const CORE_ASSETS = [
   '/',
   '/index.html',
@@ -12,13 +19,64 @@ const CORE_ASSETS = [
   '/icon-512.svg'
 ];
 
+/**
+ * Smí se odpověď uložit do mezipaměti?
+ *
+ * Kromě stavu odpovědi odfiltruje HTML vrácené na požadavek, který HTML nečekal.
+ * vercel.json přepisuje všechny neznámé cesty na /index.html, takže požadavek na
+ * chunk smazané verze nevrátí 404, ale HTML se stavem 200. Uložit ho pod adresou
+ * skriptu by mezipaměť otrávilo natrvalo — stránka by místo JavaScriptu dostávala
+ * "<" a padala by dál i po nasazení opravy.
+ */
+function isCacheable(request, response) {
+  if (!response || response.status !== 200 || response.type !== 'basic') return false;
+  if (request.mode === 'navigate') return true;
+  const contentType = response.headers.get('Content-Type') || '';
+  return !contentType.includes('text/html');
+}
+
+/**
+ * Předuloží základ aplikace pro offline režim.
+ *
+ * Každý soubor se řeší zvlášť: cache.addAll() zruší celou instalaci, když selže
+ * jediný požadavek. Instalace teď probíhá při každém nasazení, takže jedna
+ * nedostupná ikona nesmí uživateli zablokovat doručení nové verze — co se
+ * nepředuloží, doplní se při prvním použití (viz fetch handler).
+ */
+async function precacheCoreAssets() {
+  const cache = await caches.open(CACHE_NAME);
+  await Promise.all(
+    CORE_ASSETS.map(async (asset) => {
+      try {
+        // cache: 'reload' obchází HTTP mezipaměť prohlížeče. Bez toho by si nová
+        // verze mohla předuložit index.html té staré.
+        const response = await fetch(new Request(asset, { cache: 'reload' }));
+        if (response && response.status === 200) {
+          await cache.put(asset, response);
+        }
+      } catch (error) {
+        // Bez připojení nebo při chybě serveru se soubor prostě nepředuloží.
+      }
+    })
+  );
+}
+
 // 1. Install event: Precache core assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(CORE_ASSETS);
-    }).then(() => {
-      return self.skipWaiting();
+    precacheCoreAssets().then(() => {
+      // První instalace (žádný předchozí worker) → převzít řízení hned, aby offline
+      // režim fungoval bez obnovení stránky.
+      //
+      // AKTUALIZACE → počkat. Běžící stránka má načtené soubory staré verze a
+      // aktivace nového workera je z mezipaměti smaže; při samovolném převzetí by
+      // si stránka nedosáhla na vlastní chunky a rozpadla se uprostřed práce.
+      // Worker proto zůstane ve stavu waiting, dokud uživatel aktualizaci
+      // nepotvrdí — viz zpráva SKIP_WAITING níže.
+      if (!self.registration.active) {
+        return self.skipWaiting();
+      }
+      return undefined;
     })
   );
 });
@@ -28,11 +86,10 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map((name) => {
-          if (name !== CACHE_NAME) {
-            return caches.delete(name);
-          }
-        })
+        cacheNames
+          // Mazat jen vlastní mezipaměti, ne cizí na téže doméně.
+          .filter((name) => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
       );
     }).then(() => {
       return self.clients.claim();
@@ -65,7 +122,7 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response && response.status === 200) {
+          if (isCacheable(request, response)) {
             const responseClone = response.clone();
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(request, responseClone);
@@ -94,7 +151,7 @@ self.addEventListener('fetch', (event) => {
       // Return cached version if found, while updating cache in background (Stale-While-Revalidate)
       const fetchPromise = fetch(request)
         .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
+          if (isCacheable(request, networkResponse)) {
             const responseClone = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(request, responseClone);
