@@ -5,13 +5,32 @@ import { defineConfig } from 'vite';
 import { autonomaVitePlugin } from './src/autonoma/vitePlugin';
 import pkg from './package.json';
 
+/**
+ * Identifikátor buildu. Mění se s každým nasazením a používá se jako klíč
+ * mezipaměti Service Workeru (viz src/registerServiceWorker.ts a public/sw.js).
+ *
+ * PROČ NE package.json "version": to je natrvalo "0.0.0" a nikdo ho nezvyšuje,
+ * takže by se klíč nikdy nezměnil a stará mezipaměť by uživateli zůstala napořád.
+ *
+ * Na Vercelu se vezme hash commitu — dvě nasazení téhož commitu tak dostanou
+ * stejný klíč (stejný obsah = žádné zbytečné zneplatnění) a z klíče je poznat,
+ * na jaké verzi uživatel běží. Mimo Vercel (lokální build, jiný hosting) se
+ * použije čas buildu, který se také mění s každým během.
+ */
+function resolveBuildId(): string {
+  const commit = process.env.VERCEL_GIT_COMMIT_SHA;
+  if (commit) return `${pkg.version}-${commit.slice(0, 12)}`;
+  return `${pkg.version}-${Date.now().toString(36)}`;
+}
+
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss(), autonomaVitePlugin()],
     define: {
-      // Injektováno do sw.js i do aplikace — umožňuje dynamický cache name v Service Workeru
-      '__APP_VERSION__': JSON.stringify(pkg.version),
-      '__BUILD_TIME__': JSON.stringify(new Date().toISOString()),
+      // POZOR: define NEPLATÍ pro soubory v public/ — ty se kopírují beze změny.
+      // Service Worker proto verzi nedostane odsud, ale z query stringu vlastní
+      // registrační URL (/sw.js?v=…), kterou nastavuje registerServiceWorker.ts.
+      '__BUILD_ID__': JSON.stringify(resolveBuildId()),
     },
     resolve: {
       alias: {
