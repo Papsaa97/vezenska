@@ -540,8 +540,11 @@ export default function Quiz({
             </div>
 
             <div className={isMistakesMode ? 'opacity-50 pointer-events-none' : ''}>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Časový limit na otázku</label>
-              <div className="grid grid-cols-2 gap-1.5">
+              {/* Popisuje skupinu voleb, ne jedno pole. */}
+              <span id={`${fieldIds}-limit`} className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
+                Časový limit na otázku
+              </span>
+              <div className="grid grid-cols-2 gap-1.5" role="group" aria-labelledby={`${fieldIds}-limit`}>
                 {[
                   { label: 'Bez limitu', value: null },
                   { label: '30 s', value: 30 },

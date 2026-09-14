@@ -468,7 +468,7 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
 
           {/* Drag & drop zone */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5" htmlFor={`${fieldIds}-soubor`}>
               Soubor * <span className="font-normal text-slate-400">({ALLOWED_EXT_LABEL})</span>
             </label>
             <div
@@ -484,12 +484,17 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
                   : 'border-slate-300 dark:border-slate-600 hover:border-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700/30'
               }`}
             >
+              {/* sr-only místo hidden: display:none vyřadí pole z přístupnostního
+                  stromu úplně, takže by na něj popisek neměl na co ukázat a
+                  klávesnicí by se na výběr souboru nedalo dostat vůbec.
+                  Vizuálně je výsledek stejný — pole zůstává neviditelné. */}
               <input
                 ref={fileInputRef}
+                id={`${fieldIds}-soubor`}
                 type="file"
                 accept=".pdf,.docx,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation"
                 onChange={handleFileInput}
-                className="hidden"
+                className="sr-only"
               />
               {selectedFile ? (
                 <>

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useId } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Sparkles, 
@@ -58,6 +58,9 @@ export default function CaptainExamAssistant({
   onStartCustomQuiz,
   onStartCustomFlashcards
 }: CaptainExamAssistantProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const [apiKey, setApiKey] = useState<string>(() => getSavedApiKey());
   const [showKeyModal, setShowKeyModal] = useState<boolean>(false);
   const [tempKey, setTempKey] = useState<string>('');
@@ -341,7 +344,7 @@ export default function CaptainExamAssistant({
             {inputMode === 'text' && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider" htmlFor={`${fieldIds}-zadani`}>
                     Otázky nebo zadání od učitele / kapitána:
                   </label>
                   <button
@@ -354,6 +357,7 @@ export default function CaptainExamAssistant({
                   </button>
                 </div>
                 <textarea
+                  id={`${fieldIds}-zadani`}
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
                   placeholder="Sem vložte otázky, zadání písemky nebo modelovou situaci od kapitána..."

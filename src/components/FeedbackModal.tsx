@@ -155,9 +155,9 @@ export default function FeedbackModal({ onClose, screenContext }: FeedbackModalP
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Category */}
                 <div>
-                  {/* Popisuje skupinu tlačítek, ne jedno pole — proto <span> a
-                      role="group", ne <label>. Popisek bez svázaného vstupu by
-                      odečítač neměl k čemu přiřadit. */}
+                  {/* Popisuje skupinu tlačítek, ne jedno pole. Proto span
+                      s role="group", nikoli popisek formulářového pole —
+                      ten by odečítač neměl k čemu přiřadit. */}
                   <span
                     id={`${fieldIds}-kategorie`}
                     className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5"
