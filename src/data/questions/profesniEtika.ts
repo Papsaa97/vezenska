@@ -8,10 +8,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jakými jevy se zabývá vědní disciplína Etika?',
     answer: 'Etika je praktická filozofická disciplína, věda o správném způsobu života a teorie normativních systémů (mravnost, morálka, právo). Hledá pravidla harmonického a vzájemně prospěšného soužití lidí a zkoumá směřování k nejvyššímu etickému cíli (dobru).',
     options: [
-              `Etika je pozitivněprávní nauka zabývající se striktně jazykovým a systematickým výkladem procesních předpisů v trestním řízení a tvorbou služebních předpisů bezpečnostních sborů.`,
-              `Etika je teoretická sociologická disciplína zkoumající výhradně statistické rozložení kriminality a efektivitu represivních opatření státu vůči recidivistům bez vazby na morální hodnoty.`,
+              `Etika je pozitivněprávní nauka zabývající se striktně jazykovým a systematickým výkladem procesních předpisů v trestním řízení a tvorbou služebních předpisů bezpečnostních sborů. Normativní systémy mravnosti a morálky do jejího předmětu vůbec nespadají, těmi se zabývá sociologie.`,
+              `Etika je teoretická sociologická disciplína zkoumající výhradně statistické rozložení kriminality a efektivitu represivních opatření státu vůči recidivistům bez vazby na morální hodnoty. Nejvyšší etický cíl ani otázka dobra se v ní vůbec nezkoumají, protože nejsou měřitelné.`,
               `Etika je praktická filozofická disciplína, věda o správném způsobu života a teorie normativních systémů (mravnost, morálka, právo). Hledá pravidla harmonického a vzájemně prospěšného soužití lidí a zkoumá směřování k nejvyššímu etickému cíli (dobru).`,
-              `Etika je odvětví obecné psychologie studující biochemické reakce mozku na stresové situace při rozhodování v mezních situacích ohrožení života.`
+              `Etika je odvětví obecné psychologie studující biochemické reakce mozku na stresové situace při rozhodování v mezních situacích ohrožení života. Pravidly harmonického a vzájemně prospěšného soužití lidí se etika nezabývá, ta jsou předmětem práva a psychologie osobnosti.`
             ],
     correctOption: 2,
     rationale: 'Etika zkoumá tři základní normativní systémy společnosti (mravnost, morálku a právo), které tvoří vrstvy rozhodování člověka a směřují k naplnění nejvyššího etického cíle.',
@@ -25,10 +25,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaký je vztah svobody a odpovědnosti při rozhodování a jednání člověka?',
     answer: 'Každý člověk se rodí svobodný a má svobodnou vůli volit své jednání, avšak se svobodou je neoddělitelně spojena osobní odpovědnost za volbu cílů a důsledky svých činů vůči sobě, společnosti i právnímu řádu.',
     options: [
-              `Svoboda je v etice chápána jako absolutní nevázanost jakýmikoli pravidly, přičemž odpovědnost nese výhradně stát a nadřízený služební funkcionář, který vydal konkrétní rozkaz.`,
+              `Svoboda je v etice chápána jako absolutní nevázanost jakýmikoli pravidly, přičemž odpovědnost nese výhradně stát a nadřízený služební funkcionář, který vydal konkrétní rozkaz. Osobní odpovědnost za volbu cílů neexistuje.`,
               `Každý člověk se rodí svobodný a má svobodnou vůli volit své jednání, avšak se svobodou je neoddělitelně spojena osobní odpovědnost za volbu cílů a důsledky svých činů vůči sobě, společnosti i právnímu řádu.`,
-              `Svoboda jedince je v bezpečnostním sboru zcela potlačena principem subordinace, takže příslušník nenese žádnou osobní ani morální odpovědnost za zvolené prostředky.`,
-              `Svoboda volby existuje výhradně v oblasti soukromého života, zatímco při výkonu státní správy je rozhodování determinováno bez možnosti etické sebereflexe a odpovědnosti.`
+              `Svoboda jedince je v bezpečnostním sboru zcela potlačena principem subordinace, takže příslušník nenese žádnou osobní ani morální odpovědnost za zvolené prostředky. Svobodná vůle volit své jednání příslušníkovi nepřísluší.`,
+              `Svoboda volby existuje výhradně v oblasti soukromého života, zatímco při výkonu státní správy je rozhodování determinováno bez možnosti etické sebereflexe a odpovědnosti. Důsledky vlastních činů vůči společnosti se nehodnotí.`
             ],
     correctOption: 1,
     rationale: 'Svobodné rozhodování zakládá morální a právní odpovědnost. Člověk volí směřování k etickému cíli nebo odklon od něj a nese následky své volby.',
@@ -42,9 +42,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'O jaké společné základy se opírají normy mravní, morální a právní?',
     answer: 'Opírají se o společný cíl – hledání nejvyššího etického cíle (dobra), ochranu lidské důstojnosti, života, spravedlnosti a zajištění mírového a bezpečného soužití lidí ve společnosti.',
     options: [
-              `Nemají žádný společný základ, protože mravnost zkoumá výhradně biologické reflexy, morálka tržní vztahy a právo represivní techniky vězeňství.`,
-              `Opírají se o historicky podmíněné náboženské dogmatické předpisy, které jsou pro všechny tři normativní systémy nadřazené platné Ústavě ČR.`,
-              `Opírají se výhradně o státní donucení, hrozbu trestní sankce a ekonomickou efektivitu výkonu státní správy v daném rozpočtovém období.`,
+              `Nemají žádný společný základ, protože mravnost zkoumá výhradně biologické reflexy, morálka tržní vztahy a právo represivní techniky vězeňství. Společný cíl nemají.`,
+              `Opírají se o historicky podmíněné náboženské dogmatické předpisy, které jsou pro všechny tři normativní systémy nadřazené platné Ústavě ČR. Hledání dobra jim je cizí.`,
+              `Opírají se výhradně o státní donucení, hrozbu trestní sankce a ekonomickou efektivitu výkonu státní správy v daném rozpočtovém období. Ochranu důstojnosti neřeší.`,
               `Opírají se o společný cíl – hledání nejvyššího etického cíle (dobra), ochranu lidské důstojnosti, života, spravedlnosti a zajištění mírového a bezpečného soužití lidí ve společnosti.`
             ],
     correctOption: 3,
@@ -59,9 +59,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaký vztah k našemu životu má idea a směr jednání, který označujeme jako nejvyšší etický cíl?',
     answer: 'Etický cíl je ideový směr zaměřený k absolutnímu dobru; není to dosažitelný fyzický bod, ale celoživotní kompas, podle kterého poměřujeme své úmysly, činy a hodnotový žebříček.',
     options: [
-              `Etický cíl je vymezen jako stav absolutního utilitarianismu, kde jednorázový užitek většiny plně ospravedlňuje porušení základních práv jednotlivce.`,
+              `Etický cíl je vymezen jako stav absolutního utilitarianismu, kde jednorázový užitek většiny plně ospravedlňuje porušení základních práv jednotlivce. Ideovým směrem k absolutnímu dobru není.`,
               `Etický cíl je ideový směr zaměřený k absolutnímu dobru; není to dosažitelný fyzický bod, ale celoživotní kompas, podle kterého poměřujeme své úmysly, činy a hodnotový žebříček.`,
-              `Etický cíl je formalizovaný soubor interních protikorupčních opatření vydaný formou nařízení generálního ředitele, jehož platnost končí splněním úkolu.`,
+              `Etický cíl je formalizovaný soubor interních protikorupčních opatření vydaný formou nařízení generálního ředitele, jehož platnost končí splněním úkolu. Celoživotním kompasem jednání není.`,
               `Etický cíl představuje konkrétní a měřitelný kariérní postup v hierarchii bezpečnostního sboru stanovený ve služebním hodnocení pro daný kalendářní rok.`
             ],
     correctOption: 1,
@@ -76,10 +76,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Co jsou při rozhodování a jednání člověka sankce vnitřní a vnější, pozitivní a negativní?',
     answer: 'Vnitřní sankce působí skrze svědomí (pocit viny vs. čisté svědomí/sebeúcta), vnější sankce přicházejí z okolí od společnosti nebo státu jako pozitivní (pochvala, odměna, uznání) či negativní (odsouzení, vyloučení, trest, pokuta).',
     options: [
-              `Vnitřní sankce jsou somatické projevy stresu a nemoci, zatímco vnější sankce jsou výhradně pozitivní stimuly ve formě služebního povýšení a medailí.`,
+              `Vnitřní sankce jsou somatické projevy stresu a nemoci, zatímco vnější sankce jsou výhradně pozitivní stimuly ve formě služebního povýšení a medailí. Svědomí ani pocit viny mezi sankce nepatří, protože nemají vnější pozorovatelnou a měřitelnou podobu.`,
               `Vnitřní sankce působí skrze svědomí (pocit viny vs. čisté svědomí/sebeúcta), vnější sankce přicházejí z okolí od společnosti nebo státu jako pozitivní (pochvala, odměna, uznání) či negativní (odsouzení, vyloučení, trest, pokuta).`,
-              `Všechny sankce v normativních systémech mají ze své podstaty výhradně negativní a represivní charakter; pozitivní sankce etická teorie neuznává.`,
-              `Vnitřní sankce představují služební kázeňské tresty udělené ředitelem věznice a vnější sankce jsou výhradně peněžité tresty vymáhané soudním exekutorem.`
+              `Všechny sankce v normativních systémech mají ze své podstaty výhradně negativní a represivní charakter; pozitivní sankce etická teorie neuznává. Pochvala, odměna ani uznání proto nemohou být sankcí, sankce je vždy újmou uloženou státem nebo zaměstnavatelem.`,
+              `Vnitřní sankce představují služební kázeňské tresty udělené ředitelem věznice a vnější sankce jsou výhradně peněžité tresty vymáhané soudním exekutorem. Rozdělení na sankce vnitřní a vnější se v teorii normativních systémů nepoužívá, rozhoduje jen orgán, který je ukládá.`
             ],
     correctOption: 1,
     rationale: 'Mravnost využívá interní sankce (svědomí), morálka nepsané vnější sociální sankce a právo institucionalizované vnější právní sankce.',
@@ -93,9 +93,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaké sankce při rozhodování a jednání člověka využívá normativní systém mravnost?',
     answer: 'Využívá výhradně vnitřní (interní) sankce, kterými je lidské svědomí (pocit viny, výčitky svědomí při provinění, pocit klidu a sebeúcty při správném jednání).',
     options: [
-              `Využívá nepsané společenské sankce v podobě veřejného odsouzení, ostrakizace a vyloučení jednotlivce z profesní komunity.`,
-              `Využívá formalizované vnější sankce, jako je uložení kázeňského trestu písemné důtky nebo snížení základního služebního tarifu.`,
-              `Využívá právní sankce spočívající v odnětí svobody, propadnutí majetku nebo zákazu činnosti na základě soudního rozhodnutí.`,
+              `Využívá nepsané společenské sankce v podobě veřejného odsouzení, ostrakizace a vyloučení jednotlivce z profesní komunity. Svědomí sem nepatří.`,
+              `Využívá formalizované vnější sankce, jako je uložení kázeňského trestu písemné důtky nebo snížení základního služebního tarifu. Svědomí nerozhoduje.`,
+              `Využívá právní sankce spočívající v odnětí svobody, propadnutí majetku nebo zákazu činnosti na základě soudního rozhodnutí. Vnitřní sankce nezná.`,
               `Využívá výhradně vnitřní (interní) sankce, kterými je lidské svědomí (pocit viny, výčitky svědomí při provinění, pocit klidu a sebeúcty při správném jednání).`
             ],
     correctOption: 3,
@@ -110,9 +110,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaké sociální sankce při rozhodování a jednání člověka využívá normativní systém morálka?',
     answer: 'Využívá vnější nepsané sociální sankce: pozitivní (společenské uznání, respekt, přijetí skupinou) a negativní (veřejné odsouzení, pohrdání, pomluva, ostrakizace/vyloučení z komunity).',
     options: [
-              `Využívá institucionalizované právní tresty stanovené v trestním zákoníku a vynucované státním aparátem a justiční stráží.`,
-              `Využívá výhradně vnitřní psychické sankce, kterými jsou výčitky svědomí a pocit studu bez jakékoliv vazby na sociální okolí jedince.`,
-              `Využívá administrativní procesní pokuty a opatření k nápravě ukládaná orgány dohledu a kontrolními inspekcemi státu.`,
+              `Využívá institucionalizované právní tresty stanovené v trestním zákoníku a vynucované státním aparátem a justiční stráží. Nepsané sociální sankce jako pomluva nebo ostrakizace mezi sankce morálky nepatří.`,
+              `Využívá výhradně vnitřní psychické sankce, kterými jsou výčitky svědomí a pocit studu bez jakékoliv vazby na sociální okolí jedince. Vnější sankce ze strany sociálního okolí morálka vůbec nepoužívá.`,
+              `Využívá administrativní procesní pokuty a opatření k nápravě ukládaná orgány dohledu a kontrolními inspekcemi státu. Společenské uznání ani respekt skupiny nejsou pozitivní sankcí normativní morálky.`,
               `Využívá vnější nepsané sociální sankce: pozitivní (společenské uznání, respekt, přijetí skupinou) a negativní (veřejné odsouzení, pohrdání, pomluva, ostrakizace/vyloučení z komunity).`
             ],
     correctOption: 3,
@@ -127,10 +127,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaké sociální sankce při rozhodování a jednání člověka využívá normativní systém právo?',
     answer: 'Využívá formalizované, státem vynutitelné vnější sankce: negativní (tresty, pokuty, propadnutí majetku, odnětí svobody) a pozitivní (právní ochrana, přiznání nároků a právních záruk).',
     options: [
-              `Využívá výhradně pozitivní finanční pobídky a dotace pro bezúhonné občany, přičemž negativní sankce jsou v právním státě zakázány.`,
-              `Využívá výhradně nepsané etické zvyklosti a společenský posměch komunity při zjištění protiprávního chování pachatele.`,
+              `Využívá výhradně pozitivní finanční pobídky a dotace pro bezúhonné občany, přičemž negativní sankce jsou v právním státě zakázány. Negativní sankce jako pokuty a odnětí svobody právní řád nezná.`,
+              `Využívá výhradně nepsané etické zvyklosti a společenský posměch komunity při zjištění protiprávního chování pachatele. Formalizované státem vynutitelné sankce právo nepoužívá, spoléhá na společenský tlak komunity.`,
               `Využívá formalizované, státem vynutitelné vnější sankce: negativní (tresty, pokuty, propadnutí majetku, odnětí svobody) a pozitivní (právní ochrana, přiznání nároků a právních záruk).`,
-              `Využívá výhradně neformální vnitřní sankce svědomí a morální apele na čest a bezúhonnost občana bez možnosti mocenského donucení.`
+              `Využívá výhradně neformální vnitřní sankce svědomí a morální apele na čest a bezúhonnost občana bez možnosti mocenského donucení. Vnější sankce vynutitelné státní mocí právo vůbec neobsahuje.`
             ],
     correctOption: 2,
     rationale: 'Právo nastupuje tam, kde selhává morálka a mravnost. Legitimně deleguje moc na státní orgány k vynucení dodržování norem vnějšími sankcemi.',
@@ -145,9 +145,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'Zkoumá procesy mravního zrání jednotlivce, vlivy působící na dosahování různých stupňů socializace, formování svědomí a osobní volbu směřování k nejvyššímu etickému cíli.',
     options: [
               `Zkoumá procesy mravního zrání jednotlivce, vlivy působící na dosahování různých stupňů socializace, formování svědomí a osobní volbu směřování k nejvyššímu etickému cíli.`,
-              `Zabývá se výhradně statistickou analýzou korupčních rizik u vedoucích služebních funkcionářů v ozbrojených sborech.`,
-              `Zkoumá kolektivní rozhodovací procesy ve státní správě a optimalizaci legislativních procedur v parlamentních výborech.`,
-              `Zkoumá makroekonomické dopady vězeňství na státní rozpočet a efektivitu zadávání veřejných zakázek ve VS ČR.`
+              `Zabývá se výhradně statistickou analýzou korupčních rizik u vedoucích služebních funkcionářů v ozbrojených sborech. Mravní zrání jedince nezkoumá.`,
+              `Zkoumá kolektivní rozhodovací procesy ve státní správě a optimalizaci legislativních procedur v parlamentních výborech. Formováním svědomí se nezabývá.`,
+              `Zkoumá makroekonomické dopady vězeňství na státní rozpočet a efektivitu zadávání veřejných zakázek ve VS ČR. Osobní volbu etického cíle neřeší.`
             ],
     correctOption: 0,
     rationale: 'Individuální etika se zaměřuje na člověka jako samostatnou bytost, jeho morální profil, vliv edukace a prostředí na jeho hodnotovou orientaci.',
@@ -161,10 +161,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaké souvislosti rozlišuje etická disciplína „Deskriptivní etika“?',
     answer: 'Popisuje a analyzuje reálné etické kontexty situací bez jejich hodnocení – zúčastněné osoby, čas, místo, vztahy, kulturní prostředí a skutečné mravní zvyklosti dané společnosti.',
     options: [
-              `Vytváří hierarchický žebříček služebních povinností a předepisuje přesné vzorce chování při provádění osobních prohlídek odsouzených.`,
+              `Vytváří hierarchický žebříček služebních povinností a předepisuje přesné vzorce chování při provádění osobních prohlídek odsouzených. Reálné mravní zvyklosti dané společnosti vůbec nepopisuje.`,
               `Popisuje a analyzuje reálné etické kontexty situací bez jejich hodnocení – zúčastněné osoby, čas, místo, vztahy, kulturní prostředí a skutečné mravní zvyklosti dané společnosti.`,
-              `Zkoumá metafyzickou podstatu dobra a zla a odvozuje etická pravidla výhradně z přirozeného božského práva a církevních dogmat.`,
-              `Formuluje závazné normativní imperativy a stanovuje trestněprávní odpovědnost za nedodržení etických zásad v bezpečnostních sborech.`
+              `Zkoumá metafyzickou podstatu dobra a zla a odvozuje etická pravidla výhradně z přirozeného božského práva a církevních dogmat. Popis etického kontextu situace bez hodnocení jejím předmětem není.`,
+              `Formuluje závazné normativní imperativy a stanovuje trestněprávní odpovědnost za nedodržení etických zásad v bezpečnostních sborech. Zúčastněné osoby, čas, místo ani vztahy mezi nimi nezkoumá.`
             ],
     correctOption: 1,
     rationale: 'Deskriptivní etika na rozdíl od normativní etiky (která říká, co má být) nestanoví normy, ale věcně popisuje reálný stav lidského chování a mravních postojů.',
@@ -178,10 +178,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Co je to právní vědomí?',
     answer: 'Právní vědomí je souhrn znalostí o platném právu (znalost norem) spojený s vnitřním postojem k právu, mírou jeho uznávání, respektování a reálného dodržování v každodenní praxi.',
     options: [
-              `Právní vědomí je soubor represivních opatření státu směřujících k potlačení disociálního chování rizikových skupin obyvatelstva.`,
-              `Právní vědomí je formální osvědčení o složení závěrečné zkoušky v základní odborné přípravě na Akademii Vězeňské služby ČR.`,
+              `Právní vědomí je soubor represivních opatření státu směřujících k potlačení disociálního chování rizikových skupin obyvatelstva. Znalost platných norem ani vnitřní postoj k právu do něj nepatří.`,
+              `Právní vědomí je formální osvědčení o složení závěrečné zkoušky v základní odborné přípravě na Akademii Vězeňské služby ČR. S dodržováním práva nesouvisí.`,
               `Právní vědomí je souhrn znalostí o platném právu (znalost norem) spojený s vnitřním postojem k právu, mírou jeho uznávání, respektování a reálného dodržování v každodenní praxi.`,
-              `Právní vědomí je schopnost obhájce vyhledávat procesní chyby v trestním řízení a účelově mařit výkon spravedlnosti.`
+              `Právní vědomí je schopnost obhájce vyhledávat procesní chyby v trestním řízení a účelově mařit výkon spravedlnosti. Míra uznávání práva je mu cizí.`
             ],
     correctOption: 2,
     rationale: 'Právní filosofie dokládá, že právní vědomí tvoří nejen pasivní znalost práva, ale především úroveň jeho dobrovolného dodržování a realizace občany i funkcionáři.',
@@ -195,9 +195,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaký význam pro míru socializace má péče o rozvoj právního vědomí?',
     answer: 'Rozvoj právního vědomí je klíčovým pilířem úspěšné socializace a resocializace; vede jedince k dobrovolnému respektování práv druhých, k prevenci kriminality a k ochraně demokratického řádu.',
     options: [
-              `Nemá pro socializaci podstatný vliv, neboť adaptace jedince na společnost je determinována výhradně biologickými vlohami a socioekonomickým statusem rodiny.`,
+              `Nemá pro socializaci podstatný vliv, neboť adaptace jedince na společnost je determinována výhradně biologickými vlohami a socioekonomickým statusem rodiny. Prevence kriminality na právním vědomí nezávisí.`,
               `Rozvoj právního vědomí je klíčovým pilířem úspěšné socializace a resocializace; vede jedince k dobrovolnému respektování práv druhých, k prevenci kriminality a k ochraně demokratického řádu.`,
-              `Péče o právní vědomí vede k nadměrné kverulaci vězněných osob a znesnadňuje uplatňování kázeňské pravomoci služebních funkcionářů.`,
+              `Péče o právní vědomí vede k nadměrné kverulaci vězněných osob a znesnadňuje uplatňování kázeňské pravomoci služebních funkcionářů. Resocializaci právní vědomí naopak brzdí a ochrana demokratického řádu s ním nesouvisí.`,
               `Význam má výhradně pro příslušníky justičních orgánů, zatímco u pachatelů trestné činnosti rozvoj právního vědomí zvyšuje riziko sofistikovanější kriminality.`
             ],
     correctOption: 1,
@@ -212,7 +212,7 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaké nároky na právní vědomí jsou kladeny na osoby, na které jsou delegovány kompetence výkonu státní moci (zákonodárné, soudní a výkonné)?',
     answer: 'Mimořádně vysoké nároky – musí nejen bezchybně znát a aplikovat zákony, ale jít příkladem v bezúhonnosti, nestrannosti, odmítání korupce a ochraně lidské důstojnosti.',
     options: [
-              `Nároky zaměřené výhradně na ekonomickou efektivitu a rychlost rozhodování bez ohledu na dodržování procesních práv dotčených osob.`,
+              `Nároky zaměřené výhradně na ekonomickou efektivitu a rychlost rozhodování bez ohledu na dodržování procesních práv dotčených osob. Bezúhonnost se nežádá.`,
               `Mimořádně vysoké nároky – musí nejen bezchybně znát a aplikovat zákony, ale jít příkladem v bezúhonnosti, nestrannosti, odmítání korupce a ochraně lidské důstojnosti.`,
               `Standardní nároky odpovídající běžnému občanovi, přičemž případná pochybení jsou kryta služební imunitou a zásadou presumpce správnosti úředních aktů.`,
               `Pouze formální nároky na znalost základních organizačních předpisů daného rezortu bez požadavku na osobní etickou integritu a morální profil.`
@@ -230,9 +230,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'Ústava ČR, Listina základních práv a svobod (č. 2/1993 Sb.), zákony č. 555/1992 Sb., 169/1999 Sb., 293/1993 Sb., 129/2008 Sb., Evropská vězeňská pravidla (Rec(2006)2-rev) a Mandelova pravidla OSN.',
     options: [
               `Ústava ČR, Listina základních práv a svobod (č. 2/1993 Sb.), zákony č. 555/1992 Sb., 169/1999 Sb., 293/1993 Sb., 129/2008 Sb., Evropská vězeňská pravidla (Rec(2006)2-rev) a Mandelova pravidla OSN.`,
-              `Ženevské úmluvy o ochraně obětí mezinárodních ozbrojených konfliktů a Haagské úmluvy o válečném právu z roku 1907.`,
-              `Výhradně mezinárodní obchodní dohody Světové obchodní organizace (WTO) a směrnice Evropské unie o volném pohybu služeb a kapitálu.`,
-              `Pouze zákon o státní službě č. 234/2014 Sb. a interní pokyny ředitele konkrétní věznice bez vazby na ústavní pořádek ČR.`
+              `Ženevské úmluvy o ochraně obětí mezinárodních ozbrojených konfliktů a Haagské úmluvy o válečném právu z roku 1907. Ústava ČR ani Listina základních práv a svobod mezi prameny ochrany práv vězněných osob nepatří.`,
+              `Výhradně mezinárodní obchodní dohody Světové obchodní organizace (WTO) a směrnice Evropské unie o volném pohybu služeb a kapitálu. Zákon č. 169/1999 Sb. se na ně nevztahuje.`,
+              `Pouze zákon o státní službě č. 234/2014 Sb. a interní pokyny ředitele konkrétní věznice bez vazby na ústavní pořádek ČR. Mandelova pravidla OSN pro ČR závazná nejsou.`
             ],
     correctOption: 0,
     rationale: 'Ochrana lidských práv vězněných osob tvoří provázaný systém od mezinárodních úmluv přes ústavní pořádek ČR až po speciální vězeňské zákony.',
@@ -246,10 +246,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Co je to korupce a jaké jsou její formy?',
     answer: 'Zneužití pravomoci a postavení k získání neoprávněného prospěchu pro sebe nebo jiného. Zahrnuje úplatkářství (přijetí úplatku, podplácení, nepřímé úplatkářství), klientelismus (vzájemné výhody) i nepotismus (protežování příbuzných).',
     options: [
-              `Každé legální poskytnutí finančního sponzorského daru Vězeňské službě ČR řádně zaevidované v účetní evidenci organizační jednotky.`,
-              `Výhradně přímé předání peněžní hotovosti v částce převyšující 500 000 Kč úřední osobě bez přítomnosti dalších svědků.`,
+              `Každé legální poskytnutí finančního sponzorského daru Vězeňské službě ČR řádně zaevidované v účetní evidenci organizační jednotky. Klientelismus ani nepotismus se za korupci nepovažují, protože z nich neplyne přímý majetkový prospěch pro úřední osobu.`,
+              `Výhradně přímé předání peněžní hotovosti v částce převyšující 500 000 Kč úřední osobě bez přítomnosti dalších svědků. Nižší částky se za úplatek nepovažují a nepřímé úplatkářství trestní zákoník nezná.`,
               `Zneužití pravomoci a postavení k získání neoprávněného prospěchu pro sebe nebo jiného. Zahrnuje úplatkářství (přijetí úplatku, podplácení, nepřímé úplatkářství), klientelismus (vzájemné výhody) i nepotismus (protežování příbuzných).`,
-              `Standardní vyjednávání odborových organizací o navýšení platových tarifů a benefitů pro příslušníky bezpečnostních sborů.`
+              `Standardní vyjednávání odborových organizací o navýšení platových tarifů a benefitů pro příslušníky bezpečnostních sborů. Zneužití pravomoci k získání prospěchu pro jiného korupcí není.`
             ],
     correctOption: 2,
     rationale: 'Korupci nelze zužovat jen na finanční úplatky; zahrnuje veškeré formy neoprávněného zvýhodňování na úkor rovnosti, veřejného zájmu a zákona.',
@@ -263,10 +263,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Co obsahuje Katalog korupčních rizik, který je přílohou NGŘ č. 28/2018 Sb.?',
     answer: 'Strukturovaný přehled činností ve VS ČR, popisy konkrétních korupčních rizik, jejich pravděpodobnost (1–5), dopad (1–5), celkovou míru rizika (1–25) a stanovená preventivní/kontrolní protikorupční opatření.',
     options: [
-              `Trestní sazby za zneužití pravomoci úřední osoby a sazebník odměn pro informátory z řad vězněných osob poskytujících operativní poznatky.`,
-              `Seznam pravomocně odsouzených bývalých příslušníků bezpečnostních sborů a výši uložených trestů odnětí svobody za trestné činy úplatkářství.`,
+              `Trestní sazby za zneužití pravomoci úřední osoby a sazebník odměn pro informátory z řad vězněných osob poskytujících operativní poznatky. Pravděpodobnost ani dopad rizika se v katalogu nevyčíslují, jde o prostý výčet zakázaných jednání.`,
+              `Seznam pravomocně odsouzených bývalých příslušníků bezpečnostních sborů a výši uložených trestů odnětí svobody za trestné činy úplatkářství. Preventivní a kontrolní opatření katalog neobsahuje, ta stanoví až rozhodnutí ředitele věznice.`,
               `Strukturovaný přehled činností ve VS ČR, popisy konkrétních korupčních rizik, jejich pravděpodobnost (1–5), dopad (1–5), celkovou míru rizika (1–25) a stanovená preventivní/kontrolní protikorupční opatření.`,
-              `Metodický návod pro vedení vyšetřovacích spisů Generální inspekcí bezpečnostních sborů (GIBS) při prověřování korupčních kauz.`
+              `Metodický návod pro vedení vyšetřovacích spisů Generální inspekcí bezpečnostních sborů (GIBS) při prověřování korupčních kauz. Míra rizika se nevyjadřuje číselnou škálou.`
             ],
     correctOption: 2,
     rationale: 'Katalog korupčních rizik je klíčovým nástrojem Interního protikorupčního programu pro identifikaci a eliminaci rizik na všech úrovních řízení VS ČR.',
@@ -280,9 +280,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Je v Katalogu korupčních rizik uvedeno jednání, při kterém vzniká korupční riziko, nebo trestní sazby za korupci?',
     answer: 'V Katalogu jsou uvedeny konkrétní činnosti, riziková jednání a míra rizika s preventivními opatřeními (trestní sazby stanovuje Trestní zákoník, v katalogu nejsou).',
     options: [
-              `Katalog obsahuje výhradně jmenný seznam vedoucích funkcionářů podléhajících povinnému bezpečnostnímu prověření NBÚ na stupeň Tajné.`,
+              `Katalog obsahuje výhradně jmenný seznam vedoucích funkcionářů podléhajících povinnému bezpečnostnímu prověření NBÚ na stupeň Tajné. Míra rizika chybí.`,
               `V Katalogu jsou uvedeny konkrétní činnosti, riziková jednání a míra rizika s preventivními opatřeními (trestní sazby stanovuje Trestní zákoník, v katalogu nejsou).`,
-              `Katalog uvádí výhradně statistické přehledy zachycených nepovolených předmětů a drog ve věznicích za uplynulé pětileté období.`,
+              `Katalog uvádí výhradně statistické přehledy zachycených nepovolených předmětů a drog ve věznicích za uplynulé pětileté období. Riziková jednání neuvádí.`,
               `V Katalogu jsou uvedeny výhradně trestní sazby a peněžité tresty podle trestního zákoníku, zatímco preventivní opatření jsou obsažena v trestním řádu.`
             ],
     correctOption: 1,
@@ -297,10 +297,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Co vede ke správnému etickému rozhodnutí?',
     answer: 'Kritická sebereflexe, znalost a úcta k etickým zásadám a právním normám, orientace na nejvyšší etický cíl (dobro), potlačení sobeckých zájmů a vnímání společenské prospěšnosti a lidské důstojnosti.',
     options: [
-              `Nekritické podřízení se neformálnímu nátlaku kolektivu a loajalita ke kolegům i za cenu porušení služebních a právních předpisů.`,
+              `Nekritické podřízení se neformálnímu nátlaku kolektivu a loajalita ke kolegům i za cenu porušení služebních a právních předpisů. Kritická sebereflexe etické rozhodování naopak znesnadňuje, protože zpomaluje reakci příslušníka.`,
               `Kritická sebereflexe, znalost a úcta k etickým zásadám a právním normám, orientace na nejvyšší etický cíl (dobro), potlačení sobeckých zájmů a vnímání společenské prospěšnosti a lidské důstojnosti.`,
-              `Mechanické upřednostnění okamžitého osobního prospěchu a pragmatické minimalizování rizika odhalení nestandardního postupu kontrolními orgány.`,
-              `Rychlé intuitivní rozhodnutí motivované snahou vyhnout se administrativní zátěži spojené s řádným zadokumentováním incidentu.`
+              `Mechanické upřednostnění okamžitého osobního prospěchu a pragmatické minimalizování rizika odhalení nestandardního postupu kontrolními orgány. Orientace na nejvyšší etický cíl se v běžné služební praxi vůbec neuplatňuje.`,
+              `Rychlé intuitivní rozhodnutí motivované snahou vyhnout se administrativní zátěži spojené s řádným zadokumentováním incidentu. Potlačení sobeckých zájmů se nevyžaduje.`
             ],
     correctOption: 1,
     rationale: 'Správné etické rozhodnutí vyžaduje harmonii mezi svědomím (mravnost), společenskou odpovědností (morálka) a zákonností (právo).',
@@ -315,9 +315,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'Protože samotná mravnost (svědomí) a morálka (nepsané zvyky) nemají dostatečnou donucovací moc zabránit škůdcům v páchání nebezpečných činů; právo proto kodifikuje závazná pravidla a dává státu legitimní donucovací moc.',
     options: [
               `Protože samotná mravnost (svědomí) a morálka (nepsané zvyky) nemají dostatečnou donucovací moc zabránit škůdcům v páchání nebezpečných činů; právo proto kodifikuje závazná pravidla a dává státu legitimní donucovací moc.`,
-              `Z důvodu potřeby generovat finanční příjmy do státního rozpočtu prostřednictvím soudních poplatků a ukládaných majetkových sankcí.`,
-              `Aby bylo možné vyloučit jakékoli etické hodnocení činů a nahradit jej čistě mechanickou aplikací tabulkových procesů státní správy.`,
-              `Protože morální normy a mravní principy zcela pozbyly v moderní společnosti platnost a byly plně nahrazeny tržními mechanismy.`
+              `Z důvodu potřeby generovat finanční příjmy do státního rozpočtu prostřednictvím soudních poplatků a ukládaných majetkových sankcí. Mravnost ani morálka přitom nikdy neměly povahu normativního systému, protože nestanoví žádná pravidla chování.`,
+              `Aby bylo možné vyloučit jakékoli etické hodnocení činů a nahradit jej čistě mechanickou aplikací tabulkových procesů státní správy. Donucovací moc státu s etikou nijak nesouvisí, vyplývá výhradně z ústavy.`,
+              `Protože morální normy a mravní principy zcela pozbyly v moderní společnosti platnost a byly plně nahrazeny tržními mechanismy. Právo proto žádná mravní pravidla nekodifikuje ani z nich nevychází.`
             ],
     correctOption: 0,
     rationale: 'Právo vzniká jako nezbytný formalizovaný nástroj ochrany společnosti, když selhávají neformální morální korektivy.',
@@ -331,10 +331,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Čím se zabývá etická disciplína Axiologie?',
     answer: 'Axiologie (z řec. axia = hodnota) je věda o hodnotách; zkoumá procesy vzniku hodnot, jejich povahu, třídění (materiální vs. nemateriální) a vytváření hodnotových žebříčků u člověka.',
     options: [
-              `Axiologie je odvětví penologie zkoumající architektonické standardy a stavebně-technické zabezpečení vězeňských objektů.`,
+              `Axiologie je odvětví penologie zkoumající architektonické standardy a stavebně-technické zabezpečení vězeňských objektů. Hodnotami ani jejich tříděním se axiologie nezabývá, tím se zabývá deskriptivní etika.`,
               `Axiologie (z řec. axia = hodnota) je věda o hodnotách; zkoumá procesy vzniku hodnot, jejich povahu, třídění (materiální vs. nemateriální) a vytváření hodnotových žebříčků u člověka.`,
-              `Axiologie je filozofická disciplína studující výhradně logickou stavbu právních norem a metody jejich jazykového výkladu.`,
-              `Axiologie je nauka o služebních povinnostech a odpovědnosti příslušníků bezpečnostních sborů při zákrocích pod jednotným velením.`
+              `Axiologie je filozofická disciplína studující výhradně logickou stavbu právních norem a metody jejich jazykového výkladu. Řecké axia znamená v překladu norma, nikoli hodnota, a hodnotové žebříčky axiologie nezkoumá.`,
+              `Axiologie je nauka o služebních povinnostech a odpovědnosti příslušníků bezpečnostních sborů při zákrocích pod jednotným velením. Hodnotové žebříčky nezkoumá.`
             ],
     correctOption: 1,
     rationale: 'Axiologie objasňuje, jak si člověk vytváří vztah k idejím, lidem a věcem a proč staví určité hodnoty nad jiné.',
@@ -348,9 +348,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Co je to hodnotový žebříček a která disciplína zkoumá jeho vznik a projevy?',
     answer: 'Hodnotový žebříček je individuální hierarchické uspořádání hodnot podle jejich důležitosti pro daného jedince; vznikem a tříděním hodnot se zabývá axiologie, jejich individuálními projevy individuální etika.',
     options: [
-              `Hodnotový žebříček je tabulka tarifních platových tříd a stupňů ve veřejné správě zkoumaná mzdovou a pracovní legislativou.`,
-              `Hodnotový žebříček představuje klasifikaci věznic podle stupně zabezpečení, jejíž tvorbou se zabývá penitenciární administrativa.`,
-              `Hodnotový žebříček je systém služebního hodnocení příslušníků dle zákona č. 361/2003 Sb., kterým se zabývá personální odbor generálního ředitelství.`,
+              `Hodnotový žebříček je tabulka tarifních platových tříd a stupňů ve veřejné správě zkoumaná mzdovou a pracovní legislativou. Axiologie ani individuální etika se jeho tvorbou nezabývají.`,
+              `Hodnotový žebříček představuje klasifikaci věznic podle stupně zabezpečení, jejíž tvorbou se zabývá penitenciární administrativa. Hierarchické uspořádání hodnot jedince tento pojem neoznačuje.`,
+              `Hodnotový žebříček je systém služebního hodnocení příslušníků dle zákona č. 361/2003 Sb., kterým se zabývá personální odbor generálního ředitelství. S hodnotami jedince nijak nesouvisí.`,
               `Hodnotový žebříček je individuální hierarchické uspořádání hodnot podle jejich důležitosti pro daného jedince; vznikem a tříděním hodnot se zabývá axiologie, jejich individuálními projevy individuální etika.`
             ],
     correctOption: 3,
@@ -365,10 +365,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaké jsou příčiny deformace hodnotového systému u pachatelů trestné činnosti?',
     answer: 'Jde o multifaktoriální jev z hlediska bio-psycho-sociálně-spirituálního modelu: vliv nevhodného prostředí a subkultury, výchovná zanedbanost, dominance okamžitého materiálního zisku, závislosti, nízké právní vědomí a chybějící respekt k právům druhých.',
     options: [
-              `Výhradně genetická determinace s přítomností chromozomální anomálie XYY, kterou nelze výchovným působením ani resocializací nijak ovlivnit.`,
+              `Výhradně genetická determinace s přítomností chromozomální anomálie XYY, kterou nelze výchovným působením ani resocializací nijak ovlivnit. Vliv prostředí ani výchovná zanedbanost se na hodnotové orientaci nepodílejí.`,
               `Jde o multifaktoriální jev z hlediska bio-psycho-sociálně-spirituálního modelu: vliv nevhodného prostředí a subkultury, výchovná zanedbanost, dominance okamžitého materiálního zisku, závislosti, nízké právní vědomí a chybějící respekt k právům druhých.`,
-              `Jedinou příčinou je nadměrná přísnost trestních sazeb v platném trestním zákoníku vedoucí k sekundární stigmatizaci pachatele.`,
-              `Deformace hodnotového systému delikventů je mýtus; hodnotová orientace pachatelů je plně identická se standardní většinovou populací.`
+              `Jedinou příčinou je nadměrná přísnost trestních sazeb v platném trestním zákoníku vedoucí k sekundární stigmatizaci pachatele. Bio-psycho-sociálně-spirituální model se v praxi nepoužívá, jde o koncept teologický.`,
+              `Deformace hodnotového systému delikventů je mýtus; hodnotová orientace pachatelů je plně identická se standardní většinovou populací. Závislosti ani touha po okamžitém zisku nejsou pro pachatele typické.`
             ],
     correctOption: 1,
     rationale: 'Hodnotový žebříček delikventa je typický preferencí materiálního prospěchu a ignorováním vyšších nemateriálních hodnot a práv ostatních lidí.',
@@ -399,10 +399,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jakým způsobem jsou ve společnosti tvořeny normy?',
     answer: 'Vývojem od mravních intuicí a zvyklostí přes společenskou morální dohodu až po formální legislativní proces, kterým stát kodifikuje nejdůležitější pravidla do zákonů.',
     options: [
-              `Okamžitým ústním konsensem vězněných osob na ubytovnách při řešení vnitřních sporů ve vězeňské subkultuře.`,
+              `Okamžitým ústním konsensem vězněných osob na ubytovnách při řešení vnitřních sporů ve vězeňské subkultuře. Mravní intuice ani zvyklosti se na tvorbě norem nepodílejí, protože nejsou nikde zapsány.`,
               `Vývojem od mravních intuicí a zvyklostí přes společenskou morální dohodu až po formální legislativní proces, kterým stát kodifikuje nejdůležitější pravidla do zákonů.`,
-              `Výhradně direktivním rozhodnutím mezinárodních bankovních institucí bez ohledu na historické a kulturní tradice daného státu.`,
-              `Automatickým generováním prediktivních algoritmů umělé inteligence na základě ekonomických ukazatelů trhu.`
+              `Výhradně direktivním rozhodnutím mezinárodních bankovních institucí bez ohledu na historické a kulturní tradice daného státu. Formální legislativní proces se na tvorbě norem nepodílí.`,
+              `Automatickým generováním prediktivních algoritmů umělé inteligence na základě ekonomických ukazatelů trhu. Společenská morální dohoda roli nehraje.`
             ],
     correctOption: 1,
     rationale: 'Normotvorba prochází procesem zrání normy od etické ideje dobra přes morální konsensus až ke kodifikaci do platného práva.',
@@ -417,9 +417,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'Evropská vězeňská pravidla (Doporučení Rec(2006)2-rev Rady Evropy ve znění revize 2020) a Standardní minimální pravidla OSN pro zacházení s vězni (Mandelova pravidla z roku 2015, původně 1955/1957).',
     options: [
               `Evropská vězeňská pravidla (Doporučení Rec(2006)2-rev Rady Evropy ve znění revize 2020) a Standardní minimální pravidla OSN pro zacházení s vězni (Mandelova pravidla z roku 2015, původně 1955/1957).`,
-              `Model zacházení v ČR vychází výhradně z interních instrukcí Ministerstva spravedlnosti bez návaznosti na mezinárodní standardy.`,
-              `Smlouva o fungování Evropské unie (Lisabonská smlouva) a Schengenská prováděcí úmluva o ochraně vnějších hranic.`,
-              `Severoatlantická smlouva (Washingtonská úmluva) a předpisy mezinárodní organizace civilního letectví ICAO.`
+              `Model zacházení v ČR vychází výhradně z interních instrukcí Ministerstva spravedlnosti bez návaznosti na mezinárodní standardy. Rada Evropy ani OSN vězeňské standardy nevydávají.`,
+              `Smlouva o fungování Evropské unie (Lisabonská smlouva) a Schengenská prováděcí úmluva o ochraně vnějších hranic. Mandelova pravidla ani Evropská vězeňská pravidla neexistují.`,
+              `Severoatlantická smlouva (Washingtonská úmluva) a předpisy mezinárodní organizace civilního letectví ICAO. Zacházení s vězni žádné mezinárodní dokumenty vůbec neupravují.`
             ],
     correctOption: 0,
     rationale: 'Tato dvě stěžejní mezinárodní doporučení definují evropské a světové standardy humánního zacházení s vězněnými osobami.',
@@ -433,10 +433,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'K čemu nám slouží etický cíl a jaký vztah bychom k němu měli zaujmout?',
     answer: 'Slouží jako hodnotový kompas v rozhodování; měli bychom k němu zaujmout aktivní, dobrovolný vztah a vědomě pěstovat schopnost směřovat své myšlení i činy k dobru i za cenu osobního úsilí.',
     options: [
-              `Slouží výhradně jako formální deklarace v etickém kodexu, ke které je žádoucí přistupovat pragmaticky a uplatňovat ji jen při přímé kontrole nadřízenými.`,
-              `Etický cíl představuje rigidní dogma, které zbavuje příslušníka nutnosti samostatně vyhodnocovat bezpečnostní rizika na stanovišti.`,
+              `Slouží výhradně jako formální deklarace v etickém kodexu, ke které je žádoucí přistupovat pragmaticky a uplatňovat ji jen při přímé kontrole nadřízenými. Aktivní a dobrovolný vztah k němu se nevyžaduje.`,
+              `Etický cíl představuje rigidní dogma, které zbavuje příslušníka nutnosti samostatně vyhodnocovat bezpečnostní rizika na stanovišti. Hodnotovým kompasem v rozhodování není.`,
               `Slouží jako hodnotový kompas v rozhodování; měli bychom k němu zaujmout aktivní, dobrovolný vztah a vědomě pěstovat schopnost směřovat své myšlení i činy k dobru i za cenu osobního úsilí.`,
-              `Slouží k ospravedlnění jakýchkoli nezákonných metod služebního zákroku, pokud vedou k rychlému zpacifikování agresora.`
+              `Slouží k ospravedlnění jakýchkoli nezákonných metod služebního zákroku, pokud vedou k rychlému zpacifikování agresora. Směřování myšlení k dobru nepředpokládá.`
             ],
     correctOption: 2,
     rationale: 'Kultivace etického myšlení posiluje morální integritu příslušníka při zvládání náročných a konfliktních služebních situací.',
@@ -450,9 +450,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jak se liší právo od etiky?',
     answer: 'Etika zkoumá vnitřní mravní motivy, svědomí a dobrovolné směřování k dobru, zatímco právo upravuje vnější chování lidí, stanovuje přesné minimum závazných povinností a vynucuje je státní mocí a formálními sankcemi.',
     options: [
-              `Etika je souborem státem vynutitelných pravidel obsažených ve Sbírce zákonů, zatímco právo představuje výhradně nezávazná filozofická doporučení.`,
-              `Právo reguluje výhradně vztahy mezi rodinnými příslušníky, zatímco etika stanovuje pravidla pro výkon služby v ozbrojených sborech.`,
-              `Mezi právem a etikou není žádný věcný ani formální rozdíl; obě disciplíny využívají totožné nástroje trestního postihu.`,
+              `Etika je souborem státem vynutitelných pravidel obsažených ve Sbírce zákonů, zatímco právo představuje výhradně nezávazná filozofická doporučení. Svědomí ani vnitřní mravní motivy nejsou předmětem etiky, ta zkoumá výhradně vnější chování.`,
+              `Právo reguluje výhradně vztahy mezi rodinnými příslušníky, zatímco etika stanovuje pravidla pro výkon služby v ozbrojených sborech. Vynucování státní mocí je přitom typickým znakem etiky, nikoli práva, protože etické normy jsou přísnější.`,
+              `Mezi právem a etikou není žádný věcný ani formální rozdíl; obě disciplíny využívají totožné nástroje trestního postihu. Právo i etika stanovují totožné minimum závazných povinností.`,
               `Etika zkoumá vnitřní mravní motivy, svědomí a dobrovolné směřování k dobru, zatímco právo upravuje vnější chování lidí, stanovuje přesné minimum závazných povinností a vynucuje je státní mocí a formálními sankcemi.`
             ],
     correctOption: 3,
@@ -468,9 +468,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'Axiologie.',
     options: [
               `Axiologie.`,
-              `Deskriptivní etika. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
-              `Profesní deontologie. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
-              `Normativní kriminologie. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`
+              `Deontologie.`,
+              `Teleologie.`,
+              `Praxeologie.`
             ],
     correctOption: 0,
     rationale: 'Axiologie třídí hodnoty a hodnotí jejich postavení v hierarchii lidských motivů a cílů.',
@@ -484,9 +484,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Čím se zabývá etická disciplína deontologie?',
     answer: 'Zabývá se vytvářením žebříčku a pořadí plnění povinností odvozených z hierarchie hodnot, stanovuje profesní etické normy a profesní odpovědnost pracovníků.',
     options: [
-              `Zabývá se výpočtem ekonomických nákladů na stravování a ubytování vězněných osob v jednotlivých typech věznic.`,
-              `Zkoumá biologickou dědičnost psychopatických rysů u odsouzených pachatelů násilné trestné činnosti.`,
-              `Popisuje historický vývoj střelných zbraní a donucovacích prostředků používaných vězeňskou stráží od 19. století.`,
+              `Zabývá se výpočtem ekonomických nákladů na stravování a ubytování vězněných osob v jednotlivých typech věznic. Profesní etické normy nestanovuje.`,
+              `Zkoumá biologickou dědičnost psychopatických rysů u odsouzených pachatelů násilné trestné činnosti. Hierarchií hodnot se nezabývá vůbec.`,
+              `Popisuje historický vývoj střelných zbraní a donucovacích prostředků používaných vězeňskou stráží od 19. století. Profesní odpovědnost neřeší.`,
               `Zabývá se vytvářením žebříčku a pořadí plnění povinností odvozených z hierarchie hodnot, stanovuje profesní etické normy a profesní odpovědnost pracovníků.`
             ],
     correctOption: 3,
@@ -501,10 +501,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'O jaké vztahy se opírá normativní etika?',
     answer: 'Opírá se o vztahy mezi tím, „co je“ a tím, „co má být“ (preskripce); formuluje morální pravidla, principy spravedlnosti, povinnosti a ideály žádoucího jednání jednotlivce i společnosti.',
     options: [
-              `Zkoumá výhradně finanční toky a ekonomickou bilanci hospodaření příspěvkových organizací ve vězeňství.`,
-              `Opírá se o biomechanické zákonitosti lidského pohybu při použití chvatů a hmatů sebeobrany.`,
+              `Zkoumá výhradně finanční toky a ekonomickou bilanci hospodaření příspěvkových organizací ve vězeňství. Vztah mezi tím, co je, a tím, co má být, normativní etika vůbec nezkoumá, tím se zabývá deskriptivní etika.`,
+              `Opírá se o biomechanické zákonitosti lidského pohybu při použití chvatů a hmatů sebeobrany. Morální pravidla, principy spravedlnosti ani ideály jednání neformuluje.`,
               `Opírá se o vztahy mezi tím, „co je“ a tím, „co má být“ (preskripce); formuluje morální pravidla, principy spravedlnosti, povinnosti a ideály žádoucího jednání jednotlivce i společnosti.`,
-              `Opírá se výhradně o empirický popis existujících kriminálních zvyklostí ve vězeňské subkultuře bez jejich morálního hodnocení.`
+              `Opírá se výhradně o empirický popis existujících kriminálních zvyklostí ve vězeňské subkultuře bez jejich morálního hodnocení. Preskripce je jí zcela cizí.`
             ],
     correctOption: 2,
     rationale: 'Normativní etika stanovuje etické standardy a kritéria pro hodnocení činů jako dobrých či zlých, spravedlivých či nespravedlivých.',
@@ -519,9 +519,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'Zaujmout profesionální, nediskriminační a věcný přístup; aktivně odmítat genderové předsudky, respektovat rovnost mužů a žen a důsledně dodržovat zákonná a etická pravidla (např. při osobních prohlídkách osob stejného pohlaví).',
     options: [
               `Zaujmout profesionální, nediskriminační a věcný přístup; aktivně odmítat genderové předsudky, respektovat rovnost mužů a žen a důsledně dodržovat zákonná a etická pravidla (např. při osobních prohlídkách osob stejného pohlaví).`,
-              `Povolit provádění důkladných osobních prohlídek vězněných žen příslušníky mužského pohlaví pro urychlení ranních prověrek početního stavu.`,
-              `Uplatňovat tradiční patriarchální přístup a omezovat kariérní postup příslušnic na velitelských pozicích z důvodu fyzické náročnosti služby.`,
-              `Považovat genderovou rovnost za ryze administrativní formalitu, kterou není nutné při výkonu přímé strážní a dozorčí služby respektovat.`
+              `Povolit provádění důkladných osobních prohlídek vězněných žen příslušníky mužského pohlaví pro urychlení ranních prověrek početního stavu. Pravidlo o prohlídkách osobou stejného pohlaví platí pouze u vazby, nikoli u výkonu trestu odnětí svobody.`,
+              `Uplatňovat tradiční patriarchální přístup a omezovat kariérní postup příslušnic na velitelských pozicích z důvodu fyzické náročnosti služby. Evropská vězeňská pravidla rovnost mužů a žen ve služebním poměru neupravují, ponechávají ji na vnitřních předpisech sboru.`,
+              `Považovat genderovou rovnost za ryze administrativní formalitu, kterou není nutné při výkonu přímé strážní a dozorčí služby respektovat. Etická pravidla se při přímém výkonu strážní služby neuplatňují vůbec.`
             ],
     correctOption: 0,
     rationale: 'Etický kodex (Čl. 4) a EVP (bod 85) vyžadují vyloučení jakékoliv diskriminace na základě pohlaví a rovnoměrné profesní zastoupení mužů i žen.',
@@ -536,9 +536,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'Vyvíjí se celoživotní edukací, fungováním právního státu a vymahatelností práva; vysoká úroveň posiluje dobrovolné dodržování zákonů a důvěru ve spravedlnost, nízká úroveň vede k anomii, obcházení norem a nárůstu kriminality.',
     options: [
               `Vyvíjí se celoživotní edukací, fungováním právního státu a vymahatelností práva; vysoká úroveň posiluje dobrovolné dodržování zákonů a důvěru ve spravedlnost, nízká úroveň vede k anomii, obcházení norem a nárůstu kriminality.`,
-              `Závisí výhradně na počtu policistů a dozorců v ulicích a věznicích; úroveň vzdělání a fungování institucí na ni nemá žádný vliv.`,
-              `Vyvíjí se výhradně mechanickým opisováním paragrafů zákonů při absolvování kurzu základní odborné přípravy.`,
-              `Je to vrozený reflex podmíněný genetickou výbavou jedince, který zůstává po celý život zcela konstantní a nelze jej výchovou změnit.`
+              `Závisí výhradně na počtu policistů a dozorců v ulicích a věznicích; úroveň vzdělání a fungování institucí na ni nemá žádný vliv. Anomie ani obcházení norem s právním vědomím nesouvisejí, jde o jevy ekonomické.`,
+              `Vyvíjí se výhradně mechanickým opisováním paragrafů zákonů při absolvování kurzu základní odborné přípravy. Fungování právního státu a vymahatelnost práva na jeho úroveň žádný vliv nemají, rozhoduje jen výuka.`,
+              `Je to vrozený reflex podmíněný genetickou výbavou jedince, který zůstává po celý život zcela konstantní a nelze jej výchovou změnit. Celoživotní edukace jej proto nemůže posílit a právní stát na něj nepůsobí.`
             ],
     correctOption: 0,
     rationale: 'Právní vědomí odráží ztotožnění občanů s hodnotami právního řádu a přímo determinuje stabilitu a bezpečnost společnosti.',
@@ -553,9 +553,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'Pouze na základě zákona a v jeho mezích, je-li to v demokratické společnosti nezbytné pro bezpečnost státu, ochranu veřejného pořádku, zdraví, mravnosti nebo pro ochranu práv a svobod druhých (Čl. 4 odst. 2 a Čl. 14, 16, 17 LZPS).',
     options: [
               `Pouze na základě zákona a v jeho mezích, je-li to v demokratické společnosti nezbytné pro bezpečnost státu, ochranu veřejného pořádku, zdraví, mravnosti nebo pro ochranu práv a svobod druhých (Čl. 4 odst. 2 a Čl. 14, 16, 17 LZPS).`,
-              `Základní lidská práva a svobody nelze omezit v žádném případě a za žádných okolností, a to ani pravomocným rozsudkem o uložení nepodmíněného trestu odnětí svobody.`,
-              `Na základě neformálního ústního pokynu předsedy senátu nebo ředitele věznice i bez existence výslovného zákonného zmocnění.`,
-              `Kdykoli to služební funkcionář uzná za vhodné z důvodu zjednodušení organizace denního rozvrhu na ubytovně odsouzených.`
+              `Základní lidská práva a svobody nelze omezit v žádném případě a za žádných okolností, a to ani pravomocným rozsudkem o uložení nepodmíněného trestu odnětí svobody. Výhrada zákona podle čl. 4 Listiny se na vězněné osoby nevztahuje, protože jejich postavení upravuje vnitřní řád.`,
+              `Na základě neformálního ústního pokynu předsedy senátu nebo ředitele věznice i bez existence výslovného zákonného zmocnění. Podmínka nezbytnosti v demokratické společnosti se posuzuje až dodatečně soudem, nikoli při vydání pokynu, takže zákonné zmocnění není třeba.`,
+              `Kdykoli to služební funkcionář uzná za vhodné z důvodu zjednodušení organizace denního rozvrhu na ubytovně odsouzených. Ochrana veřejného pořádku, zdraví ani mravnosti mezi zákonné důvody omezení základních práv nepatří, uvádí je pouze Evropská úmluva.`
             ],
     correctOption: 0,
     rationale: 'Dle Listiny základních práv a svobod mohou být meze základních práv stanoveny pouze zákonem a nesmí být zneužity k jiným účelům.',
@@ -570,9 +570,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'Štrasburk (Rada Evropy, ESLP – Evropský soud pro lidská práva, CPT – Evropský výbor pro prevenci mučení) a Ženeva (evropská pobočka Výboru OSN proti mučení).',
     options: [
               `Štrasburk (Rada Evropy, ESLP – Evropský soud pro lidská práva, CPT – Evropský výbor pro prevenci mučení) a Ženeva (evropská pobočka Výboru OSN proti mučení).`,
-              `Brusel (Evropská komise a velitelství NATO) a Frankfurt nad Mohanem (Evropská centrální banka).`,
-              `Haag (Mezinárodní trestní soud pro válečné zločiny) a Vídeň (Mezinárodní agentura pro atomovou energii).`,
-              `Lucemburk (Soudní dvůr EU pro hospodářské spory) a Londýn (Mezinárodní námořní organizace IMO).`
+              `Brusel (Evropská komise a velitelství NATO) a Frankfurt nad Mohanem (Evropská centrální banka). Evropský soud pro lidská práva sídlí zde.`,
+              `Haag (Mezinárodní trestní soud pro válečné zločiny) a Vídeň (Mezinárodní agentura pro atomovou energii). Výbor CPT zasedá rovněž zde.`,
+              `Lucemburk (Soudní dvůr EU pro hospodářské spory) a Londýn (Mezinárodní námořní organizace IMO). Rada Evropy má sídlo právě v Lucemburku.`
             ],
     correctOption: 0,
     rationale: 'Štrasburk a Ženeva jsou hlavními evropskými centry mezinárodní soudní a inspekční ochrany lidských práv.',
@@ -586,10 +586,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Které instituce kontrolující lidská práva vězňů se opírají o vládní dohody a které jsou nevládní organizace (NGO)?',
     answer: 'Mezivládní/státní: Výbor OSN proti mučení, CPT, ESLP, Veřejný ochránce práv, Dozorový státní zástupce; Nevládní (NGO): Český helsinský výbor a Amnesty International.',
     options: [
-              `Všechny mezinárodní i vnitrostátní kontrolní orgány ve vězeňství mají statut soukromých nevládních společností financovaných z grantů.`,
-              `Mezivládní/státní: Amnesty International a Nadace Charty 77; Nevládní (NGO): Evropský soud pro lidská práva a Dozorový státní zástupce.`,
+              `Všechny mezinárodní i vnitrostátní kontrolní orgány ve vězeňství mají statut soukromých nevládních společností financovaných z grantů. Mezivládní ani státní orgány ve vězeňství nepůsobí.`,
+              `Mezivládní/státní: Amnesty International a Nadace Charty 77; Nevládní (NGO): Evropský soud pro lidská práva a Dozorový státní zástupce. Jiné dělení není.`,
               `Mezivládní/státní: Výbor OSN proti mučení, CPT, ESLP, Veřejný ochránce práv, Dozorový státní zástupce; Nevládní (NGO): Český helsinský výbor a Amnesty International.`,
-              `Mezivládní/státní: Český helsinský výbor a Transparency International; Nevládní (NGO): Výbor OSN proti mučení a Veřejný ochránce práv.`
+              `Mezivládní/státní: Český helsinský výbor a Transparency International; Nevládní (NGO): Výbor OSN proti mučení a Veřejný ochránce práv. Toto dělení platí.`
             ],
     correctOption: 2,
     rationale: 'Mezivládní instituce mají kontrolní a soudní pravomoc z mezinárodních úmluv; nevládní organizace působí nezávisle na státu jako občanský dohled.',
@@ -603,9 +603,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Které z právních norem v právním řádu České republiky mají nejvyšší právní sílu?',
     answer: 'Ústavní zákony ČR (Ústava ČR č. 1/1993 Sb. a Listina základních práv a svobod č. 2/1993 Sb.) a ratifikované vyhlášené mezinárodní smlouvy o lidských právech (Čl. 10 Ústavy).',
     options: [
-              `Vyhlášky Ministerstva spravedlnosti a metodické pokyny odboru výkonu vazby a trestu.`,
-              `Nařízení generálního ředitele Vězeňské služby ČR a služební pokyny náměstků pro bezpečnost a kontrolu.`,
-              `Vnitřní řády věznic a vazebních věznic schválené generálním ředitelstvím pro konkrétní kalendářní rok.`,
+              `Vyhlášky Ministerstva spravedlnosti a metodické pokyny odboru výkonu vazby a trestu. Ústavní zákony ani ratifikované mezinárodní smlouvy nemají v českém právním řádu vyšší právní sílu než podzákonné předpisy.`,
+              `Nařízení generálního ředitele Vězeňské služby ČR a služební pokyny náměstků pro bezpečnost a kontrolu. Ústava ČR ani Listina na výkon služby nedopadají.`,
+              `Vnitřní řády věznic a vazebních věznic schválené generálním ředitelstvím pro konkrétní kalendářní rok. Vnitřní řády mají přednost před zákonem.`,
               `Ústavní zákony ČR (Ústava ČR č. 1/1993 Sb. a Listina základních práv a svobod č. 2/1993 Sb.) a ratifikované vyhlášené mezinárodní smlouvy o lidských právech (Čl. 10 Ústavy).`
             ],
     correctOption: 3,
@@ -637,10 +637,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaká základní doporučení a zásady obsahuje Kodex profesní etiky zaměstnance a příslušníka VS ČR (Příloha č. 6 NGŘ č. 28/2018 Sb.)?',
     answer: 'Zákonnost a rovné zacházení, respekt k lidské důstojnosti, zákaz korupce a nepřijímání darů, mlčenlivost a ochrana osobních údajů, zdvořilé a nestranné vystupování a povinnost oznámit neetické či protiprávní jednání.',
     options: [
-              `Zásadu profesní solidarity vyžadující utajení jakýchkoli excesů a nezákonných zákroků kolegů před inspekčními orgány sboru.`,
+              `Zásadu profesní solidarity vyžadující utajení jakýchkoli excesů a nezákonných zákroků kolegů před inspekčními orgány sboru. Oznámení protiprávního jednání kolegy kodex naopak výslovně zakazuje.`,
               `Zákonnost a rovné zacházení, respekt k lidské důstojnosti, zákaz korupce a nepřijímání darů, mlčenlivost a ochrana osobních údajů, zdvořilé a nestranné vystupování a povinnost oznámit neetické či protiprávní jednání.`,
-              `Doporučení uplatňovat přísnější sankční režim a omezení stravy vůči problémovým a kverulujícím odsouzeným.`,
-              `Pravidla pro přijímání věcných a finančních darů do hodnoty 10 000 Kč od rodinných příslušníků vězněných osob za mimořádnou vstřícnost.`
+              `Doporučení uplatňovat přísnější sankční režim a omezení stravy vůči problémovým a kverulujícím odsouzeným. Respekt k lidské důstojnosti se podle kodexu na kverulující odsouzené nevztahuje.`,
+              `Pravidla pro přijímání věcných a finančních darů do hodnoty 10 000 Kč od rodinných příslušníků vězněných osob za mimořádnou vstřícnost. Zákaz přijímání darů se týká jen darů finančních.`
             ],
     correctOption: 1,
     rationale: 'Kodex definuje žádoucí etické standardy personálu vůči veřejnosti, vězňům i spolupracovníkům a jeho porušení je porušením služební kázně.',
@@ -654,9 +654,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaký význam pro komunikaci s vězni, kolegy i nadřízenými má výcvik podle pravidel služební zdvořilosti a pořadové přípravy ve VS ČR?',
     answer: 'Upevňuje profesionální vystupování, autoritu sboru, vzájemný respekt, jednoznačnost velení a předchází zbytečné eskalaci konfliktů a projevům neúcty.',
     options: [
-              `Slouží výhradně k nácviku slavnostních přehlídek pro veřejnost a v běžném služebním styku na oddílech ubytoven se neuplatňuje.`,
-              `Umožňuje demonstrovat nadřazenost personálu prostřednictvím ponižujících a vulgárních povelů vůči odsouzeným osobám.`,
-              `Nahrazuje potřebu psychologické přípravy a eliminuje nutnost individuálního hodnocení rizikovosti vězněných osob.`,
+              `Slouží výhradně k nácviku slavnostních přehlídek pro veřejnost a v běžném služebním styku na oddílech ubytoven se neuplatňuje. Autoritu sboru ani vzájemný respekt neupevňuje.`,
+              `Umožňuje demonstrovat nadřazenost personálu prostřednictvím ponižujících a vulgárních povelů vůči odsouzeným osobám. Jednoznačnost velení tím trpí a eskalaci konfliktů to nepředchází.`,
+              `Nahrazuje potřebu psychologické přípravy a eliminuje nutnost individuálního hodnocení rizikovosti vězněných osob. Profesionální vystupování se tím nijak neupevňuje.`,
               `Upevňuje profesionální vystupování, autoritu sboru, vzájemný respekt, jednoznačnost velení a předchází zbytečné eskalaci konfliktů a projevům neúcty.`
             ],
     correctOption: 3,
@@ -671,9 +671,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaký vztah nastává mezi nejvyšším etickým cílem, mravním příkazem „Nezabiješ!“ a § 18 zákona č. 555/1992 Sb. v případě, že příslušník VS ČR použil střelnou zbraň?',
     answer: 'Zákon v § 18 legitimně prolamuje mravní zákaz při obraně života jiných lidí či odvrácení nebezpečného útoku; příslušník jedná v souladu s etickým cílem (ochrana nevinných), avšak musí šetřit život útočníka a poskytnout mu první pomoc.',
     options: [
-              `Použití zbraně v bezpečnostním sboru je ryze technický úkon zbavený jakéhokoli etického rozměru a nepodléhající mravnímu hodnocení svědomí.`,
-              `Použití střelné zbraně představuje vždy absolutní etické i právní selhání příslušníka, které musí vést k jeho okamžitému propuštění ze služebního poměru.`,
-              `Ustanovení § 18 zákona č. 555/1992 Sb. dává příslušníkovi právo usmrtit útočníka bez nutnosti posuzovat přiměřenost a bez povinnosti poskytnout první pomoc.`,
+              `Použití zbraně v bezpečnostním sboru je ryze technický úkon zbavený jakéhokoli etického rozměru a nepodléhající mravnímu hodnocení svědomí. Povinnost šetřit život útočníka a poskytnout mu první pomoc z žádného právního předpisu nevyplývá, protože jde o technický zásah.`,
+              `Použití střelné zbraně představuje vždy absolutní etické i právní selhání příslušníka, které musí vést k jeho okamžitému propuštění ze služebního poměru. Zákon o Vězeňské službě proto mravní zákaz zabíjení nijak neprolamuje a použití zbraně nelze ospravedlnit ochranou nevinných.`,
+              `Ustanovení § 18 zákona č. 555/1992 Sb. dává příslušníkovi právo usmrtit útočníka bez nutnosti posuzovat přiměřenost a bez povinnosti poskytnout první pomoc. Etický cíl ochrany nevinných se přitom vůbec neposuzuje.`,
               `Zákon v § 18 legitimně prolamuje mravní zákaz při obraně života jiných lidí či odvrácení nebezpečného útoku; příslušník jedná v souladu s etickým cílem (ochrana nevinných), avšak musí šetřit život útočníka a poskytnout mu první pomoc.`
             ],
     correctOption: 3,
@@ -688,9 +688,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jak se má zachovat příslušník VS ČR, pokud se stane svědkem extremistických projevů vězněných osob, kterým nejsou přítomny další osoby?',
     answer: 'Zachovat klid a profesionální nestrannost, neprodleně vyzvat vězněné osoby k zanechání protiprávního jednání jménem zákona, událost zadokumentovat a sepsat úřední záznam / oznámení prošetřované jako kázeňský přestupek či trestný čin.',
     options: [
-              `Extremistické projevy ignorovat a nepodnikat žádné kroky, pokud nedochází k přímému fyzickému napadení nebo ničení majetku věznice.`,
-              `Vstoupit s vězněnými osobami do ideologické polemiky a tolerovat jejich symboliku výměnou za udržení klidu na oddělení.`,
-              `Okamžitě na místě fyzicky potrestat vězněné osoby donucovacími prostředky bez předchozí výzvy a bez sepsání služebního záznamu.`,
+              `Extremistické projevy ignorovat a nepodnikat žádné kroky, pokud nedochází k přímému fyzickému napadení nebo ničení majetku věznice. Výzva jménem zákona ani sepsání úředního záznamu se u extremistických projevů nevyžadují, protože nejde o protiprávní jednání.`,
+              `Vstoupit s vězněnými osobami do ideologické polemiky a tolerovat jejich symboliku výměnou za udržení klidu na oddělení. Profesionální nestrannost znamená vstoupit do ideologické diskuse a názor vězněné osoby vyvrátit vlastní argumentací; dokumentace se nepořizuje.`,
+              `Okamžitě na místě fyzicky potrestat vězněné osoby donucovacími prostředky bez předchozí výzvy a bez sepsání služebního záznamu. Dokumentovat událost není třeba, postačí ústní hlášení veliteli směny.`,
               `Zachovat klid a profesionální nestrannost, neprodleně vyzvat vězněné osoby k zanechání protiprávního jednání jménem zákona, událost zadokumentovat a sepsat úřední záznam / oznámení prošetřované jako kázeňský přestupek či trestný čin.`
             ],
     correctOption: 3,
@@ -705,9 +705,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jak má být genderově a bezpečnostně zajištěn standardní průběh osobních prohlídek občanů a vězněných osob?',
     answer: 'Osobní prohlídku provádí výhradně osoba stejného pohlaví; při prohlídce občana (vstupující osoby) je nezbytná přítomnost dalšího příslušníka stejného pohlaví jako svědka (celkem 2 příslušníci stejného pohlaví). Intimní prohlídky smí provádět pouze lékař.',
     options: [
-              `Při prohlídce vstupujícího občana nesmí být přítomen žádný svědek z důvodu ochrany osobních údajů a utajení bezpečnostních procedur.`,
-              `Prohlídku vězněných žen provádí zásadně smíšená hlídka za přítomnosti psovoda se služebním psem bez náhubku.`,
-              `Osobní prohlídku může provádět příslušník libovolného pohlaví o samotě, přičemž tělesné prohlídky tělních dutin provádí dozorce směny.`,
+              `Při prohlídce vstupujícího občana nesmí být přítomen žádný svědek z důvodu ochrany osobních údajů a utajení bezpečnostních procedur. Přítomnost druhého příslušníka jako svědka zákon nevyžaduje ani u vstupujících osob a prohlídku smí provést příslušník sám, pokud o ní sepíše úřední záznam.`,
+              `Prohlídku vězněných žen provádí zásadně smíšená hlídka za přítomnosti psovoda se služebním psem bez náhubku. Pohlaví prohlížející osoby zákon neupravuje, rozhodující je pouze přítomnost služebního psa jako donucovacího prostředku a záznam do knihy prohlídek oddělení.`,
+              `Osobní prohlídku může provádět příslušník libovolného pohlaví o samotě, přičemž tělesné prohlídky tělních dutin provádí dozorce směny. Intimní prohlídky nejsou vyhrazeny lékaři, jde o úkon bezpečnostní povahy.`,
               `Osobní prohlídku provádí výhradně osoba stejného pohlaví; při prohlídce občana (vstupující osoby) je nezbytná přítomnost dalšího příslušníka stejného pohlaví jako svědka (celkem 2 příslušníci stejného pohlaví). Intimní prohlídky smí provádět pouze lékař.`
             ],
     correctOption: 3,
@@ -722,10 +722,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Na jakém postupu a principech je založena asertivní komunikace příslušníků VS ČR?',
     answer: 'Na zachování klidu, sebevědomí a vědomí svých zákonných kompetencí; na slušném a pevném vyžadování povinností s respektem k důstojnosti druhé osoby, věcném zdůvodnění požadavků bez agrese a pasivity a schopnosti čelit manipulaci.',
     options: [
-              `Na verbální agresi, autoritativním nátlaku a okamžitém vyhrožování kázeňskými tresty při jakémkoli dotazu vězněné osoby.`,
+              `Na verbální agresi, autoritativním nátlaku a okamžitém vyhrožování kázeňskými tresty při jakémkoli dotazu vězněné osoby. Asertivita v penitenciární praxi znamená prosadit služební pokyn nejrychlejším dostupným způsobem, protože vyjednávání s odsouzeným oslabuje autoritu příslušníka.`,
               `Na zachování klidu, sebevědomí a vědomí svých zákonných kompetencí; na slušném a pevném vyžadování povinností s respektem k důstojnosti druhé osoby, věcném zdůvodnění požadavků bez agrese a pasivity a schopnosti čelit manipulaci.`,
-              `Na používání manipulativních technik, slibování neoprávněných výhod a vytváření neformálních spojenectví s vězeňskou hierarchií.`,
-              `Na pasivním ustupování požadavkům odsouzených a vyhýbání se nepříjemným konfrontacím za účelem zachování zdánlivého klidu.`
+              `Na používání manipulativních technik, slibování neoprávněných výhod a vytváření neformálních spojenectví s vězeňskou hierarchií. Schopnost čelit manipulaci se v asertivní komunikaci nevyžaduje, klíčové je naopak navázat s neformálním vůdcem oddělení funkční vztah.`,
+              `Na pasivním ustupování požadavkům odsouzených a vyhýbání se nepříjemným konfrontacím za účelem zachování zdánlivého klidu. Věcné zdůvodnění požadavku se neuvádí, protože odsouzenému nepřísluší znát důvody služebního pokynu a diskuse jen prodlužuje incident.`
             ],
     correctOption: 1,
     rationale: 'Asertivita je klíčový profesní nástroj – příslušník neustupuje pod tlakem manipulace či zastrašování, ale jedná korektně a v mezích zákona.',
@@ -740,9 +740,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'Příslušník požívá zákonné ochrany a všechny osoby (včetně nadřízených) jsou povinny řídit se jeho pokyny; pokyny nadřízených nesmí být v rozporu se zákonem a nesmí odvracet pozornost strážného ani vyžadovat vydání zbraně.',
     options: [
               `Příslušník požívá zákonné ochrany a všechny osoby (včetně nadřízených) jsou povinny řídit se jeho pokyny; pokyny nadřízených nesmí být v rozporu se zákonem a nesmí odvracet pozornost strážného ani vyžadovat vydání zbraně.`,
-              `Nadřízený služební funkcionář má právo zkoušet bdělost strážného simulovaným přepadením nebo pokusem o neoprávněný vstup na stanoviště.`,
-              `Příslušník na strážním stanovišti nemá žádná zvláštní oprávnění a musí se podřídit pokynům odsouzených zařazených na pracovišti.`,
-              `Strážný je povinen na první vyzvání odevzdat svou služební zbraň jakémukoli kontrolnímu orgánu nebo návštěvě ve věznici.`
+              `Nadřízený služební funkcionář má právo zkoušet bdělost strážného simulovaným přepadením nebo pokusem o neoprávněný vstup na stanoviště. Zákonná ochrana strážného se na nadřízené nevztahuje, protože jsou v nadřízeném služebním postavení a jejich pokyny mají vždy přednost.`,
+              `Příslušník na strážním stanovišti nemá žádná zvláštní oprávnění a musí se podřídit pokynům odsouzených zařazených na pracovišti. Pokyny strážného nejsou pro ostatní osoby závazné, závaznost mají pouze pokyny velitele směny a ředitele věznice.`,
+              `Strážný je povinen na první vyzvání odevzdat svou služební zbraň jakémukoli kontrolnímu orgánu nebo návštěvě ve věznici. Povinnost nevydat služební zbraň se vztahuje jen na vězněné osoby; kontrolním orgánům a nadřízeným ji strážný vydat musí.`
             ],
     correctOption: 0,
     rationale: 'Stráž na stanovišti má specifické postavení – zákon chrání výkon strážní služby před neoprávněnými zásahy odkudkoli.',
@@ -756,10 +756,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Je účast na duchovní péči pro vězněné osoby povinná?',
     answer: 'Ne, účast na duchovní péči a náboženských aktivitách je zcela dobrovolná a zajišťuje se výhradně na základě svobodného přání vězněné osoby (nikdo nesmí být k víře nucen).',
     options: [
-              `Účast je povinná výhradně pro prvotrestané odsouzené mladší 21 let jako součást eticko-výchovného působení sboru.`,
-              `Duchovní péče je ve věznicích ČR povolena výhradně v případě, že si odsouzený hradí veškeré náklady na kaplana ze svých úspor.`,
+              `Účast je povinná výhradně pro prvotrestané odsouzené mladší 21 let jako součást eticko-výchovného působení sboru. Svobodné přání vězněné osoby se u duchovní péče nezjišťuje a Listina se na výkon trestu nevztahuje.`,
+              `Duchovní péče je ve věznicích ČR povolena výhradně v případě, že si odsouzený hradí veškeré náklady na kaplana ze svých úspor. Dobrovolnost se nevyžaduje.`,
               `Ne, účast na duchovní péči a náboženských aktivitách je zcela dobrovolná a zajišťuje se výhradně na základě svobodného přání vězněné osoby (nikdo nesmí být k víře nucen).`,
-              `Ano, účast na bohoslužbách je povinnou součástí programu zacházení pro všechny odsouzené bez výjimky dle zákona o výkonu trestu.`
+              `Ano, účast na bohoslužbách je povinnou součástí programu zacházení pro všechny odsouzené bez výjimky dle zákona o výkonu trestu. Dobrovolnost zákon nezná.`
             ],
     correctOption: 2,
     rationale: 'Dle Čl. 15–16 Listiny a bodu 29 EVP je zaručena svoboda vyznání; vězněná osoba nesmí být k náboženským úkonům jakkoli nucena.',
@@ -773,10 +773,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Kdo a jakou formou poskytuje vězněným osobám duchovní péči ve věznicích VS ČR?',
     answer: 'Duchovní registrovaných církví sdružení ve spolku Vězeňská duchovenská péče (VDP, z.s.) jako dobrovolníci a kaplani Vězeňské duchovní služby (VDS) jako zaměstnanci VS ČR; formou individuálních rozhovorů, bohoslužeb, besed a zájmových aktivit.',
     options: [
-              `Výhradně příslušníci oddělení výkonu vazby a trestu po absolvování víkendového teologického semináře na Akademii VS ČR.`,
-              `Pouze zahraniční misionářské organizace bez registrace v ČR, které získaly jednorázové povolení od dozorového státního zástupce.`,
+              `Výhradně příslušníci oddělení výkonu vazby a trestu po absolvování víkendového teologického semináře na Akademii VS ČR. Duchovní registrovaných církví do věznic vstupovat nesmějí, protože nejsou v služebním poměru a nevztahuje se na ně povinnost mlčenlivosti podle zákona o VS ČR.`,
+              `Pouze zahraniční misionářské organizace bez registrace v ČR, které získaly jednorázové povolení od dozorového státního zástupce. Vězeňská duchovenská péče ani Vězeňská duchovní služba v České republice neexistují, duchovní péči zajišťují výhradně externí subjekty.`,
               `Duchovní registrovaných církví sdružení ve spolku Vězeňská duchovenská péče (VDP, z.s.) jako dobrovolníci a kaplani Vězeňské duchovní služby (VDS) jako zaměstnanci VS ČR; formou individuálních rozhovorů, bohoslužeb, besed a zájmových aktivit.`,
-              `Duchovní péči vykonávají výhradně odsouzení zvolení samosprávou ubytovny formou laických přednášek na celách.`
+              `Duchovní péči vykonávají výhradně odsouzení zvolení samosprávou ubytovny formou laických přednášek na celách. Kaplani nejsou zaměstnanci Vězeňské služby a bohoslužby ani individuální rozhovory se ve věznicích nekonají, protože by narušovaly režim dne a bezpečnost oddělení.`
             ],
     correctOption: 2,
     rationale: 'Duchovní péče funguje na základě dohod mezi VS ČR a ČBK + ERC (trojstranná) a NSSJ (dvoustranná dohoda).',
@@ -790,9 +790,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Komu lze sdělovat osobní údaje a informace o umístění vězněných osob?',
     answer: 'Pouze orgánům činným v trestním řízení a oprávněným státním orgánům ze zákona; jiným fyzickým či právnickým osobám (věřitelé, zaměstnavatelé, příbuzní) pouze pokud osvědčí právní zájem v souladu s § 23a z. č. 555/1992 Sb. a předpisy o ochraně osobních údajů.',
     options: [
-              `Všem zástupcům hromadných sdělovacích prostředků a novinářům bez omezení na základě zákona o svobodném přístupu k informacím.`,
-              `Jakékoli osobě, která o informaci požádá telefonicky nebo prostřednictvím sociálních sítí, pokud uvede jméno a datum narození vězně.`,
-              `Spoluvězňům a zájmovým skupinám ve věznici pro účely zajištění transparentnosti a vnitřního pořádku na oddílu.`,
+              `Všem zástupcům hromadných sdělovacích prostředků a novinářům bez omezení na základě zákona o svobodném přístupu k informacím. Zákon o svobodném přístupu k informacím se vztahuje i na osobní údaje vězněných osob, protože Vězeňská služba je povinným subjektem bez výjimek.`,
+              `Jakékoli osobě, která o informaci požádá telefonicky nebo prostřednictvím sociálních sítí, pokud uvede jméno a datum narození vězně. Právní zájem se u telefonických dotazů neosvědčuje, postačí uvedení jména a data narození.`,
+              `Spoluvězňům a zájmovým skupinám ve věznici pro účely zajištění transparentnosti a vnitřního pořádku na oddílu. Osobní údaje vězněných osob nejsou vůči spoluvězňům chráněny, protože všichni podléhají témuž vnitřnímu řádu věznice.`,
               `Pouze orgánům činným v trestním řízení a oprávněným státním orgánům ze zákona; jiným fyzickým či právnickým osobám (věřitelé, zaměstnavatelé, příbuzní) pouze pokud osvědčí právní zájem v souladu s § 23a z. č. 555/1992 Sb. a předpisy o ochraně osobních údajů.`
             ],
     correctOption: 3,
@@ -808,9 +808,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'Je povinen bez zbytečného odkladu oznámit střet zájmů a možnou podjatost svému nadřízenému a nechat se vyloučit z rozhodování, hodnocení či přímého služebního dohledu nad touto osobou.',
     options: [
               `Je povinen bez zbytečného odkladu oznámit střet zájmů a možnou podjatost svému nadřízenému a nechat se vyloučit z rozhodování, hodnocení či přímého služebního dohledu nad touto osobou.`,
-              `Oznámit tuto skutečnost výhradně dotčené osobě a dohodnout se s ní na utajení jejich vztahu před ostatními kolegy ve směně.`,
-              `Může v řízení pokračovat a situaci nikomu nehlásit, pokud se vnitřně cítí být zcela nestranný a objektivní.`,
-              `Využít svých služebních pravomocí k přednostnímu vyřízení požadavků příbuzného či známého v zájmu udržení dobrých rodinných vztahů.`
+              `Oznámit tuto skutečnost výhradně dotčené osobě a dohodnout se s ní na utajení jejich vztahu před ostatními kolegy ve směně. Oznamovací povinnost vůči nadřízenému zákon ani kodex nestanoví, postačí dohoda mezi dotčenými osobami.`,
+              `Může v řízení pokračovat a situaci nikomu nehlásit, pokud se vnitřně cítí být zcela nestranný a objektivní. Vyloučení z rozhodování se nevyžaduje.`,
+              `Využít svých služebních pravomocí k přednostnímu vyřízení požadavků příbuzného či známého v zájmu udržení dobrých rodinných vztahů. Střet zájmů se nehlásí.`
             ],
     correctOption: 0,
     rationale: 'Zamezení nepotismu a klientelismu je základním požadavkem Etického kodexu (Čl. 5 a 7) a Protikorupčního programu VS ČR.',
@@ -824,9 +824,9 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaká je nejvyšší trestní sazba odnětí svobody za korupční jednání (úplatkářství) dle Trestního zákoníku?',
     answer: 'Až 12 let odnětí svobody (např. u přijetí úplatku velkého rozsahu či v úmyslu opatřit jinému prospěch velkého rozsahu dle § 331 odst. 4 TZ), spojené s trestem propadnutí majetku či zákazem činnosti.',
     options: [
-              `Maximálně 2 roky odnětí svobody s možností podmíněného odložení výkonu trestu na zkušební dobu 1 roku.`,
-              `Až 20 let odnětí svobody nebo výjimečný trest doživotí bez možnosti podmíněného propuštění.`,
-              `Korupční jednání úředních osob se trestá výhradně peněžitým trestem do výše 50 000 Kč a zákazem vstupu do budov soudů.`,
+              `Maximálně 2 roky odnětí svobody s možností podmíněného odložení výkonu trestu na zkušební dobu 1 roku. Trestní zákoník u přijetí úplatku vyšší sazbu nezná, protože jde o přečin bez ohledu na rozsah prospěchu.`,
+              `Až 20 let odnětí svobody nebo výjimečný trest doživotí bez možnosti podmíněného propuštění. Propadnutí majetku ani zákaz činnosti u korupčních trestných činů uložit nelze.`,
+              `Korupční jednání úředních osob se trestá výhradně peněžitým trestem do výše 50 000 Kč a zákazem vstupu do budov soudů. Odnětí svobody u korupce hrozí jen soukromým osobám.`,
               `Až 12 let odnětí svobody (např. u přijetí úplatku velkého rozsahu či v úmyslu opatřit jinému prospěch velkého rozsahu dle § 331 odst. 4 TZ), spojené s trestem propadnutí majetku či zákazem činnosti.`
             ],
     correctOption: 3,
@@ -841,10 +841,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Na úkor koho se obohacují pachatelé korupce?',
     answer: 'Na úkor celé společnosti, státního rozpočtu, poctivých občanů a uchazečů a na úkor důvěryhodnosti a bezpečnosti Vězeňské služby ČR jako pilíře spravedlnosti.',
     options: [
-              `Výhradně na úkor mezinárodních finančních spekulantů a nadnárodních korporací bez dopadu na občany ČR.`,
+              `Výhradně na úkor mezinárodních finančních spekulantů a nadnárodních korporací bez dopadu na občany ČR. Státní rozpočet ani důvěryhodnost Vězeňské služby korupce nijak nepoškozuje.`,
               `Na úkor celé společnosti, státního rozpočtu, poctivých občanů a uchazečů a na úkor důvěryhodnosti a bezpečnosti Vězeňské služby ČR jako pilíře spravedlnosti.`,
-              `Pouze na úkor neúspěšných uchazečů o zaměstnání v bezpečnostních sborech, přičemž státní rozpočet není nijak krácen.`,
-              `Korupce nepředstavuje obohacení na něčí úkor, ale je legitimním tržním nástrojem optimalizace procesů státní správy.`
+              `Pouze na úkor neúspěšných uchazečů o zaměstnání v bezpečnostních sborech, přičemž státní rozpočet není nijak krácen. Poctiví občané ani společnost jako celek korupcí nijak netrpí.`,
+              `Korupce nepředstavuje obohacení na něčí úkor, ale je legitimním tržním nástrojem optimalizace procesů státní správy. Na úkor důvěryhodnosti sboru tedy korupce nepůsobí.`
             ],
     correctOption: 1,
     rationale: 'Korupční jednání narušuje princip rovnosti a nestrannosti, způsobuje finanční škody státu a podkopává samotné základy právního státu.',
@@ -860,10 +860,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jaké etické a právní důsledky má ztráta osobní bezúhonnosti pro příslušníka bezpečnostního sboru?',
     answer: 'Ztráta bezúhonnosti (např. pravomocné odsouzení pro úmyslný trestný čin) je ze zákona důvodem k okamžitému propuštění ze služebního poměru. Eticky představuje fatální selhání a ztrátu důvěry veřejnosti v nestrannost a zákonnost bezpečnostního sboru.',
     options: [
-              `Nemá žádné důsledky, pokud k trestnému činu nedošlo přímo ve věznici nebo ve službě.`,
-              `Příslušník je výhradně upozorněn na porušení etického kodexu bez vlivu na jeho pracovní smlouvu.`,
+              `Nemá žádné důsledky, pokud k trestnému činu nedošlo přímo ve věznici nebo ve službě. Bezúhonnost se podle zákona o služebním poměru posuzuje výhradně ve vztahu k jednání při výkonu služby, takže odsouzení za čin spáchaný v soukromí na trvání služebního poměru nemá vliv.`,
+              `Příslušník je výhradně upozorněn na porušení etického kodexu bez vlivu na jeho pracovní smlouvu. Kodex profesní etiky je pouze doporučením bez právní závaznosti, a proto z jeho porušení nelze vyvodit kázeňskou ani služební odpovědnost. Propustit lze jen za porušení zákona.`,
               `Ztráta bezúhonnosti (např. pravomocné odsouzení pro úmyslný trestný čin) je ze zákona důvodem k okamžitému propuštění ze služebního poměru. Eticky představuje fatální selhání a ztrátu důvěry veřejnosti v nestrannost a zákonnost bezpečnostního sboru.`,
-              `Příslušník může být výhradně dočasně převeden na jinou práci, dokud se trest nevymaže z rejstříku.`
+              `Příslušník může být výhradně dočasně převeden na jinou práci, dokud se trest nevymaže z rejstříku. Po zahlazení odsouzení se automaticky vrací na původní služební místo, protože ztráta bezúhonnosti je vždy jen přechodná.`
             ],
     correctOption: 2,
     rationale: 'Zákon č. 361/2003 Sb. (o služebním poměru) stanoví bezúhonnost jako základní předpoklad pro přijetí i setrvání ve službě. Kriminalita ochránců zákona narušuje samotný smysl existence bezpečnostních sborů.',
@@ -878,10 +878,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Co je podle Protikorupčního programu VS ČR základní povinností příslušníka, kterému je nabídnut úplatek?',
     answer: 'Úplatek jednoznačně odmítnout a celou událost bezodkladně nahlásit svým nadřízeným nebo příslušným kontrolním orgánům (GIBS, pověřený orgán). Neoznámení korupce může být samo o sobě trestným činem nebo kázeňským proviněním.',
     options: [
-              `Úplatek si dočasně ponechat jako důkaz a pak ho předat poškozeným.`,
-              `Přijmout peníze, ale odevzdat je do státního rozpočtu přes účtárnu věznice.`,
+              `Úplatek si dočasně ponechat jako důkaz a pak ho předat poškozeným. Oznamovací povinnost vzniká až po zajištění důkazu, takže do té doby příslušník nemusí incident hlásit nadřízenému ani GIBS.`,
+              `Přijmout peníze, ale odevzdat je do státního rozpočtu přes účtárnu věznice. Odevzdáním úplatku do rozpočtu je věc vyřízena a neoznámení už není trestné, protože příslušník neměl majetkový prospěch.`,
               `Úplatek jednoznačně odmítnout a celou událost bezodkladně nahlásit svým nadřízeným nebo příslušným kontrolním orgánům (GIBS, pověřený orgán). Neoznámení korupce může být samo o sobě trestným činem nebo kázeňským proviněním.`,
-              `Úplatek odmítnout a celou věc utajit, aby se vyhnul papírování a problémům na pracovišti.`
+              `Úplatek odmítnout a celou věc utajit, aby se vyhnul papírování a problémům na pracovišti. Odmítnutím je povinnost splněna a hlášení se vyžaduje jen tehdy, pokud byl úplatek skutečně převzat.`
             ],
     correctOption: 2,
     rationale: 'Oznamovací povinnost (tzv. whistleblowing) je stěžejním nástrojem boje proti korupci. Zaměstnanec, který upozorní na korupci, je chráněn před odvetnými opatřeními (šikanou na pracovišti).',
@@ -897,9 +897,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'K jakémukoliv projevu mučení, nelidského či ponižujícího zacházení, rasismu, diskriminace a korupce. Na tyto činy neexistuje žádná omluva ani polehčující okolnost (jako je stres, vyčerpání nebo příkaz nadřízeného).',
     options: [
               `K jakémukoliv projevu mučení, nelidského či ponižujícího zacházení, rasismu, diskriminace a korupce. Na tyto činy neexistuje žádná omluva ani polehčující okolnost (jako je stres, vyčerpání nebo příkaz nadřízeného).`,
-              `K užívání vulgarismů při komunikaci s kolegy. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
-              `K pozdním příchodům do služby a nedodržování přestávek na jídlo.`,
-              `Ke ztrátě klíčů od kanceláří a skladů. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`
+              `K užívání vulgarismů při komunikaci s kolegy na pracovišti. Kodex profesní etiky na ně uplatňuje nulovou toleranci a řadí je na stejnou úroveň jako ponižující zacházení s vězněnou osobou.`,
+              `K pozdním příchodům do služby a nedodržování přestávek na jídlo. Právě u nich kodex vylučuje jakoukoliv omluvu, zatímco u projevů diskriminace připouští polehčující okolnost v podobě stresu nebo vyčerpání.`,
+              `Ke ztrátě klíčů od kanceláří a skladů věznice. Nulová tolerance se podle kodexu vztahuje výhradně na majetkové škody a nedbalostní porušení služebních povinností, nikoli na jednání vůči osobám.`
             ],
     correctOption: 0,
     rationale: 'Zákaz mučení a nelidského zacházení je absolutním lidským právem (čl. 3 EÚLP), které nelze omezit ani v době války či výjimečného stavu. Kodex etiky tento zákaz plně přejímá.',
@@ -914,10 +914,10 @@ export const profesniEtikaQuestions: Question[] = [
     question: 'Jak by se měl příslušník VS ČR chovat v době mimo službu (v občanském životě a na sociálních sítích)?',
     answer: 'I mimo službu je povinen chovat se tak, aby nesnižoval vážnost a důvěryhodnost bezpečnostního sboru. Nesmí se opíjet na veřejnosti, vyvolávat konflikty, stýkat se se závadovými osobami a na sociálních sítích sdílet obsah, který podporuje extremismus, nenávist nebo odhaluje utajované skutečnosti z výkonu služby.',
     options: [
-              `Mimo službu (bez uniformy) se na něj nevztahují žádná pravidla a může se chovat zcela podle vlastního uvážení.`,
-              `Mimo službu nesmí vůbec používat sociální sítě ani se účastnit veřejného života v obci.`,
+              `Mimo službu (bez uniformy) se na něj nevztahují žádná pravidla a může se chovat zcela podle vlastního uvážení. Zákon o služebním poměru upravuje výhradně dobu výkonu služby, takže chování v soukromí, na sociálních sítích ani styk se závadovými osobami nelze nijak postihnout. Vážnost sboru se posuzuje pouze podle služebních výsledků.`,
+              `Mimo službu nesmí vůbec používat sociální sítě ani se účastnit veřejného života v obci. Kodex profesní etiky zakazuje příslušníkovi jakoukoliv veřejnou aktivitu, včetně členství ve spolcích, kandidatury v komunálních volbách a vystupování v médiích, protože každý takový projev snižuje důvěryhodnost sboru.`,
               `I mimo službu je povinen chovat se tak, aby nesnižoval vážnost a důvěryhodnost bezpečnostního sboru. Nesmí se opíjet na veřejnosti, vyvolávat konflikty, stýkat se se závadovými osobami a na sociálních sítích sdílet obsah, který podporuje extremismus, nenávist nebo odhaluje utajované skutečnosti z výkonu služby.`,
-              `Může na sociálních sítích volně kritizovat vedení státu a soudy, protože má právo na svobodu slova.`
+              `Může na sociálních sítích volně kritizovat vedení státu a soudy, protože má právo na svobodu slova. Svoboda projevu podle čl. 17 Listiny je absolutní a nelze ji u příslušníka bezpečnostního sboru omezit ani služebním předpisem. Omezit lze pouze sdílení utajovaných skutečností z výkonu služby.`
             ],
     correctOption: 2,
     rationale: 'Zákon o služebním poměru (§ 46) a Kodex etiky vyžadují od příslušníků zvýšený standard morálního chování 24/7. Neetické chování v soukromí (např. rasistické komentáře na Facebooku) často vede ke kárnému řízení.',
@@ -933,9 +933,9 @@ export const profesniEtikaQuestions: Question[] = [
     answer: 'Příslušník přistupuje ke všem vězněným osobám bez předsudků, nezvýhodňuje ani nediskriminuje na základě rasy, národnosti, náboženství, pohlaví nebo majetku. Svá rozhodnutí zakládá výhradně na faktech, zákonech a vnitřních řádech.',
     options: [
               `Příslušník přistupuje ke všem vězněným osobám bez předsudků, nezvýhodňuje ani nediskriminuje na základě rasy, národnosti, náboženství, pohlaví nebo majetku. Svá rozhodnutí zakládá výhradně na faktech, zákonech a vnitřních řádech.`,
-              `Příslušník musí dávat přednost těm vězňům, kteří s ním spolupracují a donášejí na ostatní.`,
-              `Příslušník nesmí volit ve volbách, aby zůstal politicky neutrální.`,
-              `Příslušník se nesmí bavit s vězni o ničem jiném než o práci.`
+              `Příslušník musí dávat přednost těm vězňům, kteří s ním spolupracují a donášejí na ostatní. Kodex profesní etiky tento postup výslovně doporučuje jako nástroj zajištění bezpečnosti oddělení, protože informace od spolupracujících odsouzených mají přednost před zásadou rovného zacházení.`,
+              `Příslušník nesmí volit ve volbách, aby zůstal politicky neutrální. Nestrannost podle kodexu znamená úplné vyloučení z politického života, takže příslušník nemá volební právo ani právo být členem politické strany po celou dobu trvání služebního poměru.`,
+              `Příslušník se nesmí bavit s vězni o ničem jiném než o práci. Rovný přístup ke všem vězněným osobám se podle kodexu zajišťuje omezením komunikace na služební pokyny, protože jakýkoliv osobní rozhovor už zakládá zvýhodnění jednoho odsouzeného.`
             ],
     correctOption: 0,
     rationale: 'Nestrannost a rovný přístup (zákaz diskriminace) tvoří základní pilíř spravedlivého výkonu trestu. Vězeň musí vnímat, že s ním stát jedná férově a na základě pravidel, nikoli na základě osobních sympatií dozorce.',
@@ -949,10 +949,10 @@ export const profesniEtikaQuestions: Question[] = [
         question: 'Může příslušník nebo zaměstnanec VS ČR přijmout peněžitý dar nebo pozornost od rodinného příslušníka vězněné osoby jako poděkování za lidský přístup?',
         answer: 'Ne, přijetí jakéhokoliv daru nebo výhody v souvislosti s výkonem služby je striktně zakázáno a zakládá podezření z korupčního jednání.',
         options: [
-            'Ano, pokud hodnota daru nepřesáhne částku 500 Kč a je o tom sepsán neformální záznam.',
+            `Ano, pokud hodnota daru nepřesáhne částku 500 Kč a je o tom sepsán neformální záznam. Zákon o služebním poměru stanoví u darů hodnotový limit 500 Kč.`,
             'Ne, přijetí jakéhokoliv daru nebo výhody v souvislosti s výkonem služby je striktně zakázáno a zakládá podezření z korupčního jednání.',
-            'Ano, ale pouze pokud se jedná o kávu, čokoládu nebo jiné trvanlivé potraviny.',
-            'Ano, pokud k předání dojde mimo areál věznice v době osobního volna.'
+            `Ano, ale pouze pokud se jedná o kávu, čokoládu nebo jiné trvanlivé potraviny. Zákaz přijímání darů se vztahuje jen na peněžní plnění, nikoli na věci.`,
+            `Ano, pokud k předání dojde mimo areál věznice v době osobního volna. Mimo areál věznice a mimo službu zákaz neplatí.`
         ],
         correctOption: 1,
         rationale: 'Dle zákona č. 361/2003 Sb. i Kodexu etiky VS ČR nesmí příslušník v souvislosti s výkonem služby požadovat ani přijímat dary nebo jiné výhody pro sebe ani pro jiného.',
@@ -966,9 +966,9 @@ export const profesniEtikaQuestions: Question[] = [
         question: 'Která mezinárodní úmluva a evropská pravidla tvoří základní etický standard zacházení s vězněnými osobami v podmínkách VS ČR?',
         answer: 'Evropská úmluva o lidských právech a Evropská vězeňská pravidla Rady Evropy.',
         options: [
-            'Ženevské úmluvy o válečných zajatcích výhradně pro případ válečného stavu.',
+            `Ženevské úmluvy o válečných zajatcích výhradně pro případ vyhlášeného válečného stavu v Evropě.`,
             'Evropská úmluva o lidských právech a Evropská vězeňská pravidla Rady Evropy.',
-            'Mezinárodní obchodní kodex pro nápravná zařízení.',
+            `Mezinárodní obchodní kodex pro nápravná zařízení a jejich smluvní dodavatele služeb v EU.`,
             'Vnitřní předpisy Mezinárodní vězeňské asociace pro soukromé věznice.'
         ],
         correctOption: 1,
