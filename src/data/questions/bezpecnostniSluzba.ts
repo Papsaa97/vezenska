@@ -44,7 +44,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     options: [
               `Vystaví jednostranné potvrzení o převzetí zbraně, zbraň uloží do přenosné bezpečnostní schránky a při odchodu ji vydá kterékoli osobě, která předloží příslušnou stvrzenku bez ověření totožnosti.`,
               `Zbraň zkontroluje, vybije před držitelem u bezpečnostního rámu, vystaví stvrzenku o převzetí s dobou platnosti 24 hodin a uloží ji do neuzamčené zásuvky služebního pultu.`,
-              `Vyplní Protokol o uschování ve třech vyhotoveních, originál odešle do 24 hodin na Policejní prezidium ČR, zbraň zapečetí do plastového obalu a vrátí ji výhradně na základě písemného souhlasu předsedy soudu.`,
+              `Vyplní Protokol o uschování ve třech vyhotoveních, originál odešle do 24 hodin na Policejní prezidium ČR, zbraň zapečetí do plastového obalu a vrátí ji výhradně na základě písemného souhlasu předsedy soudu. Doklad totožnosti se při vrácení zbraně nevyžaduje a protokol se zakládá do spisu na dobu deseti let.`,
               `Vyplní Protokol o uschování (odebrání) a vrácení zakázané věci ve dvou výtiscích (jeden pro osobu, jeden k uložení), zbraň bezpečně uzamkne do trezoru; při odchodu ji vrátí proti předložení protokolu a dokladu totožnosti a oba výtisky zlikviduje.`
             ],
     correctOption: 3,
@@ -60,7 +60,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     answer: 'Typ I (zelený pruh) umožňuje náhradní doručení (po 10 dnech vyvěšení/výzvy se vhodí do schránky s fikcí doručení). Typ II (červený pruh) je striktně do vlastních rukou bez vhození do schránky (pokud nevyzvedne, vrací se odesílateli bez fikce vhozením).',
     options: [
               `Typ I (zelený pruh) je určen výhradně pro orgány činné v trestním řízení s fikcí po 15 dnech; Typ II (červený pruh) se doručuje civilním osobám a vhazuje se do schránky ihned při nezastižení adresáta.`,
-              `Typ I (zelený pruh) se doručuje výhradně do vlastních rukou bez možnosti náhradního doručení; Typ II (červený pruh) umožňuje po 3 dnech uložení vhození do domovní schránky s okamžitým účinkem doručení.`,
+              `Typ I (zelený pruh) se doručuje výhradně do vlastních rukou bez možnosti náhradního doručení; Typ II (červený pruh) umožňuje po 3 dnech uložení vhození do domovní schránky s okamžitým účinkem doručení. Fikce doručení nastává u obou typů vždy až po uplynutí třiceti dnů od uložení na poště.`,
               `Typ I i Typ II umožňují vhození do schránky po 10 dnech, ale u Typu II musí doručující příslušník JS osobně ověřit přítomnost adresáta u sousedů a vyhotovit úřední záznam pro Policii ČR.`,
               `Typ I (zelený pruh) umožňuje náhradní doručení (po 10 dnech vyvěšení/výzvy se vhodí do schránky s fikcí doručení). Typ II (červený pruh) je striktně do vlastních rukou bez vhození do schránky (pokud nevyzvedne, vrací se odesílateli bez fikce vhozením).`
             ],
@@ -95,7 +95,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     options: [
               `Použít nejprve slzotvorný prostředek vržený ze stanoviště věže, vyčkat na příjezd zásahové hlídky a střelbu použít až v případě, že odsouzený překoná vnější perimetr mimo dohled věznice.`,
               `Okamžitě vyhlásit poplach na OS, dát zákonnou výzvu s výstrahou, provést varovný výstřel do bezpečného prostoru, a pokud vězeň neuposlechne a útěk nelze zmařit jinak, použít střelnou zbraň k zamezení útěku.`,
-              `Dát zákonnou výzvu „Stůj!“, vyčkat 60 sekund na reakci odsouzeného, vystřelit varovný výstřel směrem k ubytovně a v případě neuposlechnutí opustit strážní věž a zahájit pěší pronásledování.`,
+              `Dát zákonnou výzvu „Stůj!“, vyčkat 60 sekund na reakci odsouzeného, vystřelit varovný výstřel směrem k ubytovně a v případě neuposlechnutí opustit strážní věž a zahájit pěší pronásledování. Poplach na operační středisko se vyhlašuje až po návratu na stanoviště.`,
               `Okamžitě zahájit mířenou střelbu na trup odsouzeného bez varovného výstřelu a výzvy, aby nebyl zmařen moment překvapení, a poplach nahlásit až po eliminaci hrozby.`
             ],
     correctOption: 1,
@@ -110,7 +110,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     question: 'Jaká bezpečnostní pravidla platí pro eskortu vězněné osoby při vyšetření na magnetické rezonanci (MR) v civilní nemocnici?',
     answer: 'Před vstupem do vyšetřovací místnosti s magnetickým polem musí příslušník odložit zbraň a kovové předměty do trezoru nebo je předat kolegovi vně zóny; střežení probíhá přes prosklený průhled.',
     options: [
-              `Příslušník vstupuje do vyšetřovací místnosti MR se zbraní zajištěnou v pouzdře s pojistkou proti vytržení úrovně III a vězně nepřetržitě drží za předváděcí řetízek.`,
+              `Příslušník vstupuje do vyšetřovací místnosti MR se zbraní zajištěnou v pouzdře s pojistkou proti vytržení úrovně III a vězně nepřetržitě drží za předváděcí řetízek. Magnetické pole nemá na služební zbraň ani na pouta žádný vliv, proto se odkládat nemusí.`,
               `Před vstupem do vyšetřovací místnosti s magnetickým polem musí příslušník odložit zbraň a kovové předměty do trezoru nebo je předat kolegovi vně zóny; střežení probíhá přes prosklený průhled.`,
               `Vězněná osoba musí mít po celou dobu vyšetření nasazena ocelová řetízková pouta s poutacím opaskem a strážný stojí ve vzdálenosti 1 metru od vstupu do tunelu MR.`,
               `Příslušník zbraň vybije a náboje uschová v kapse, přičemž samotnou zbraň ponechá v magnetickém poli na vyšetřovacím lůžku pod dohledem radiologického asistenta.`
@@ -127,7 +127,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     question: 'Jaký je hmotnostní limit pro balíček s potravinami a věcmi osobní potřeby zasílaný vězněné osobě a jak se provádí jeho kontrola?',
     answer: 'Hmotnost nesmí přesáhnout 5 kg včetně obalu; balíček projde kontrolou na RTG, fyzickou kontrolou obsahu a kontrolou na přítomnost OPL a nepovolených předmětů za přítomnosti vězně.',
     options: [
-              `Hmotnost je limitována na 3 kg včetně obalu; kontrola probíhá výhradně orientačním převážením na příjmu a vizuální kontrolou neporušenosti originálního poštovního obalu.`,
+              `Hmotnost je limitována na 3 kg včetně obalu; kontrola probíhá výhradně orientačním převážením na příjmu a vizuální kontrolou neporušenosti originálního poštovního obalu. Rentgenová kontrola ani přítomnost vězněné osoby se nevyžadují.`,
               `Hmotnost nesmí přesáhnout 5 kg netto (bez obalu); kontrola se provádí výhradně stěrem na detekci výbušnin bez nutnosti rozbalení jednotlivých potravinových balení.`,
               `Hmotnost nesmí přesáhnout 5 kg včetně obalu; balíček projde kontrolou na RTG, fyzickou kontrolou obsahu a kontrolou na přítomnost OPL a nepovolených předmětů za přítomnosti vězně.`,
               `Hmotnost nesmí přesáhnout 10 kg bez obalu; balíček se otevírá a kontroluje výhradně na oddělení prevence za nepřítomnosti vězně a předává se jednou za 6 měsíců.`
@@ -162,7 +162,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     answer: 'Okamžitě tělo nadzvednout a odříznout/uvolnit škrtidlo, položit na záda na pevnou podlahu, zkontrolovat životní funkce, zahájit KPR, současně rádiem/hlásičem vyhlásit poplach a přivolat lékaře a VIDS.',
     options: [
               `Odříznout škrtidlo, posadit odsouzeného na lůžko, podat mu vodu a vyčkat na příchod psychologa k vyhodnocení suicidálního rizika.`,
-              `Ponechat tělo v původní poloze z důvodu zachování stop pro vyšetřování GIBS a PČR, uzamknout celu a z chodby vyrozumět operační středisko a lékaře.`,
+              `Ponechat tělo v původní poloze z důvodu zachování stop pro vyšetřování GIBS a PČR, uzamknout celu a z chodby vyrozumět operační středisko a lékaře. Resuscitaci zahajuje výhradně přivolaný lékař, dozorce do cely nevstupuje.`,
               `Okamžitě vyhlásit poplach a vyčkat před celou na příchod minimálně tříčlenné zásahové hlídky, aby nedošlo k ohrožení zasahujícího dozorce.`,
               `Okamžitě tělo nadzvednout a odříznout/uvolnit škrtidlo, položit na záda na pevnou podlahu, zkontrolovat životní funkce, zahájit KPR, současně rádiem/hlásičem vyhlásit poplach a přivolat lékaře a VIDS.`
             ],
@@ -181,7 +181,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
               `Ponechá zbývající odsouzené bez dozoru na pracovišti, zahájí samostatné pronásledování uprchlého a operační středisko vyrozumí až po jeho dopadení.`,
               `Ihned nařídí všem zbývajícím odsouzeným pěší návrat do věznice, sám na místě vyčká příjezdu hlídky Policie ČR a zahájí pátrání v nejbližším okolí.`,
               `Zkontroluje prostor pracoviště k vyloučení úrazu, ihned uvědomí operační středisko a VIDS s popisem osoby a směrem odchodu, zabezpečí zbývající odsouzené na pracovišti a vyčká pokynů.`,
-              `Využije služební zbraň k varovnému výstřelu do vzduchu k přivolání pomoci civilních osob a uzamkne ostatní odsouzené v prostorách civilního zaměstnavatele.`
+              `Využije služební zbraň k varovnému výstřelu do vzduchu k přivolání pomoci civilních osob a uzamkne ostatní odsouzené v prostorách civilního zaměstnavatele. Operační středisko a VIDS vyrozumí až po skončení pracovní směny.`
             ],
     correctOption: 2,
     rationale: 'Při svévolném odchodu z nestřeženého pracoviště je nutné okamžitě zahájit pátrací relaci přes operační středisko a Policii ČR a současně udržet dohled nad ostatními odsouzenými na pracovišti.',
@@ -196,7 +196,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     answer: 'Kontrolu podvozku a dutin (inspekční zrcadlo/kamera), kontrolu nákladového prostoru (fyzicky, detektorem či propichovací sondou u sypkých materiálů), kabiny řidiče a ověření totožnosti osádky.',
     options: [
               `Kontrolu podvozku a dutin (inspekční zrcadlo/kamera), kontrolu nákladového prostoru (fyzicky, detektorem či propichovací sondou u sypkých materiálů), kabiny řidiče a ověření totožnosti osádky.`,
-              `Zkontroluje podvozek inspekčním zrcadlem a nákladový prostor vizuálně přes kameru propusťového systému, přičemž osádka nemusí předkládat doklady totožnosti při výjezdu.`,
+              `Zkontroluje podvozek inspekčním zrcadlem a nákladový prostor vizuálně přes kameru propusťového systému, přičemž osádka nemusí předkládat doklady totožnosti při výjezdu. Dutiny vozidla ani kabina řidiče se při výjezdu nekontrolují.`,
               `Ověří propustku vozidla v IS, zkontroluje kabinu řidiče a bez nutnosti kontroly nákladového prostoru otevře vnější vrata, pokud má vozidlo neporušenou celní plombu.`,
               `Provede kontrolu motorového prostoru a podvozku, ale kontrolu korby a sypkého nákladu přenechá řidiči vozidla, který podepíše čestné prohlášení o nepřítomnosti osob.`
             ],
@@ -249,7 +249,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
               `Minimálně 2× denně (ranní a večerní sčíták) vizuální kontrolou každého vězně podle jmenného seznamu; při pochybnostech se nařídí mimořádná sčítací prověrka.`,
               `Provádí se 1× denně v poledne nahlášením počtů předsedou samosprávy odsouzených dozorci na chodbě oddílu bez nutnosti vstupu do cel.`,
               `Minimálně 4× denně elektronickým načtením identifikačních čipů vězňů u vchodu do jídelny bez fyzické kontroly na obytných celách.`,
-              `Pouze při ranním budíčku vizuální kontrolou ubytovny a v nočních hodinách výhradně dálkovou kontrolou z kamerového systému bez vstupu na oddíl.`
+              `Pouze při ranním budíčku vizuální kontrolou ubytovny a v nočních hodinách výhradně dálkovou kontrolou z kamerového systému bez vstupu na oddíl. Mimořádnou sčítací prověrku lze nařídit jen s předchozím souhlasem ředitele věznice.`
             ],
     correctOption: 0,
     rationale: 'Pravidelná sčítací prověrka je základním bezpečnostním prvkem dozorčí služby. Dozorce musí vidět obličej a živé tělo každého vězně (v noci ověřit dýchání).',
@@ -283,7 +283,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
               `Veškeré kovové předměty včetně snubních prstenů, opaskových spon, mincí a běžných léků na předpis bez výjimky.`,
               `Alkoholické nápoje a tabákové výrobky; mobilní telefony a záznamová zařízení jsou povoleny všem návštěvám po vizuální kontrole dozorcem.`,
               `Zbraně a střelivo, alkohol a jiné návykové látky (OPL), mobilní telefony a záznamová zařízení, finanční hotovost nad povolený limit a předměty umožňující útěk.`,
-              `Pouze střelné zbraně a výbušniny; mobilní telefony, fotoaparáty a drobnou elektroniku lze vnášet bez omezení po předložení občanského průkazu.`
+              `Pouze střelné zbraně a výbušniny; mobilní telefony, fotoaparáty a drobnou elektroniku lze vnášet bez omezení po předložení občanského průkazu. Zákaz vnášení se nevztahuje na finanční hotovost ani na alkohol.`
             ],
     correctOption: 2,
     rationale: 'Vnášení zakázaných věcí (zejména komunikátorů a OPL) představuje zásadní narušení bezpečnosti věznice a může naplnit skutkovou podstatu trestného činu maření výkonu úředního rozhodnutí.',
@@ -315,7 +315,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     answer: 'Dělí se na psy všestranné (hlídkové, obranáře pro eskorty a zákroky) a psy speciální (vyhledávání drog/OPL, výbušnin a mobilních telefonů).',
     options: [
               `Dělí se výhradně na psy záchranářské (vyhledávání zavalených osob) a psy pastevecké pro střežení vnějších zemědělských ploch věznice.`,
-              `Využívají se výhradně psi se specializací na vyhledávání akcelerantů hoření a biologických stop pro potřeby kriminalistického oddělení.`,
+              `Využívají se výhradně psi se specializací na vyhledávání akcelerantů hoření a biologických stop pro potřeby kriminalistického oddělení. Hlídkoví ani obranní psi se ve Vězeňské službě vůbec nezařazují.`,
               `Dělí se na psy hlídkové (výhradně pro noční pochůzkovou službu na perimetru) a psy terapeutické určené pro výkon trestu mladistvých.`,
               `Dělí se na psy všestranné (hlídkové, obranáře pro eskorty a zákroky) a psy speciální (vyhledávání drog/OPL, výbušnin a mobilních telefonů).`
             ],
@@ -333,7 +333,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     options: [
               `Dozorce provádí nepřetržitý zrakový dohled, sleduje předávání nedovolených předmětů a při hrubém porušení pořádku nebo pokusu o předání OPL návštěvu ihned ukončí.`,
               `Dozorce sedí přímo u stolu mezi vězněm a návštěvou, osobně ochutnává přinesené potraviny a kontroluje veškeré písemné poznámky návštěvníků.`,
-              `Dozorce kontroluje návštěvní místnost v nepravidelných intervalech 1× za 30 minut a při podezření na předávání věcí provede zápis až po ukončení návštěvy.`,
+              `Dozorce kontroluje návštěvní místnost v nepravidelných intervalech 1× za 30 minut a při podezření na předávání věcí provede zápis až po ukončení návštěvy. Návštěvu lze ukončit pouze s předchozím souhlasem vedoucího oddělení výkonu trestu.`,
               `Dozor je prováděn výhradně prostřednictvím audio odposlechu z vedlejší místnosti bez přímé fyzické a zrakové přítomnosti personálu v sále.`
             ],
     correctOption: 0,
@@ -351,7 +351,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
               `Automaticky a povinně u všech eskortovaných osob bez výjimky, včetně těhotných žen a osob s trvalým tělesným postižením horních končetin.`,
               `Pouze v případech, kdy je eskorta prováděna pěšky po veřejných komunikacích nebo městskou hromadnou dopravou.`,
               `U osob nebezpečných, násilných, podezřelých z plánování útěku nebo eskortovaných k soudním jednáním u závažných trestných činů na základě bezpečnostního vyhodnocení.`,
-              `Výhradně u odsouzených zařazených do věznice s ostrahou s vysokým stupněm zabezpečení a výhradně na základě předchozího písemného souhlasu soudce.`
+              `Výhradně u odsouzených zařazených do věznice s ostrahou s vysokým stupněm zabezpečení a výhradně na základě předchozího písemného souhlasu soudce. Bezpečnostní vyhodnocení rizika útěku se přitom vůbec neprovádí.`
             ],
     correctOption: 2,
     rationale: 'Použití pout a poutacích pásů při eskortě se řídí mírou bezpečnostního rizika odsouzeného/obviněného v souladu s § 17 zákona č. 555/1992 Sb. a eskortním příkazem.',
@@ -368,7 +368,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
               `Okamžitě otevřít všechny cely v celém patře a ponechat odsouzeným volný pohyb na dvůr věznice bez zajištění střežení perimetru.`,
               `Samostatně zahájit hašení uvnitř zasažené cely vodním proudem z hydrantu a operační středisko informovat až po úplné likvidaci ohniska požáru.`,
               `Okamžitě ohlásit požár na operační středisko (vyhlásit požární poplach), zahájit evakuaci osob do bezpečného sektoru a zahájit hašení dostupnými hasicími přístroji/hydrantem.`,
-              `Nejprve otevřít všechna okna na chodbě a celách k odvětrání kouře, uzamknout katry a vyčkat na příjezd jednotky HZS bez vyhlašování poplachu na OS.`
+              `Nejprve otevřít všechna okna na chodbě a celách k odvětrání kouře, uzamknout katry a vyčkat na příjezd jednotky HZS bez vyhlašování poplachu na OS. Evakuace vězněných osob se zahajuje teprve na pokyn velitele zásahu HZS.`
             ],
     correctOption: 2,
     rationale: 'Záchrana životů a evakuace ohrožených osob v kombinaci s okamžitým vyhlášením požárního poplachu a zásahem vězeňské jednotky PO/HZS je základem požárního řádu věznice.',
@@ -385,7 +385,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
               `K lokalizaci kovových předmětů a zbraní pod hladinou vody nebo v hlubokých výkopech areálu věznice.`,
               `K odposlechu a dekódování šifrované radiokomunikace mezi nepovolanými vysílačkami v okolí věznice.`,
               `K vyhledávání skrytých polovodičových součástek – zejména vypnutých mobilních telefonů, SIM karet, diktafonů a elektroniky ukryté ve zdech, matracích nebo nábytku.`,
-              `K dálkové detekci radioaktivního záření a kontrole přítomnosti toxických plynů ve vězeňských dílnách.`
+              `K dálkové detekci radioaktivního záření a kontrole přítomnosti toxických plynů ve vězeňských dílnách. Vypnuté mobilní telefony ani SIM karty přístroj odhalit nedokáže, protože nevyzařují žádný signál.`
             ],
     correctOption: 2,
     rationale: 'Detektor nelineárních přechodů (NLJD - Non-Linear Junction Detector) reaguje na křemíkové polovodičové přechody, a proto spolehlivě odhalí i zcela vypnutý mobilní telefon či samotnou SIM kartu, bez ohledu na to, zda jsou pod napětím.',

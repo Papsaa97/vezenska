@@ -1,23 +1,23 @@
 {
   "popis": "Referenční stav kvality banky otázek. Kontrola check:questions hlídá, že počet otázek s délkovým tellem nevzroste. Po zlepšení obsahu přepiš tento soubor příkazem \"npm run check:questions -- --update-baseline\" a commitni ho.",
-  "vytvoreno": "2026-09-14T14:45:51.966Z",
+  "vytvoreno": "2026-09-14T22:12:55.306Z",
   "cil": {
     "longestIsCorrectPct": 40
   },
   "global": {
     "questions": 377,
-    "longestIsCorrect": 150,
-    "longestIsCorrectPct": 39.8,
-    "shortestIsCorrect": 81,
-    "shortestIsCorrectPct": 21.5,
+    "longestIsCorrect": 93,
+    "longestIsCorrectPct": 24.7,
+    "shortestIsCorrect": 92,
+    "shortestIsCorrectPct": 24.4,
     "avgCorrectLen": 218,
-    "avgDistractorLen": 206
+    "avgDistractorLen": 211
   },
   "predmety": {
     "Bezpečnostní služba": {
       "questions": 32,
-      "longestIsCorrect": 23,
-      "longestIsCorrectPct": 71.9,
+      "longestIsCorrect": 8,
+      "longestIsCorrectPct": 25,
       "shortestIsCorrect": 5,
       "shortestIsCorrectPct": 15.6
     },
@@ -58,31 +58,31 @@
     },
     "Služební příprava": {
       "questions": 17,
-      "longestIsCorrect": 14,
-      "longestIsCorrectPct": 82.4,
-      "shortestIsCorrect": 0,
-      "shortestIsCorrectPct": 0
+      "longestIsCorrect": 4,
+      "longestIsCorrectPct": 23.5,
+      "shortestIsCorrect": 4,
+      "shortestIsCorrectPct": 23.5
     },
     "taktika": {
       "questions": 17,
-      "longestIsCorrect": 14,
-      "longestIsCorrectPct": 82.4,
-      "shortestIsCorrect": 0,
-      "shortestIsCorrectPct": 0
+      "longestIsCorrect": 4,
+      "longestIsCorrectPct": 23.5,
+      "shortestIsCorrect": 4,
+      "shortestIsCorrectPct": 23.5
     },
     "Vězeňská administrativa": {
       "questions": 27,
-      "longestIsCorrect": 19,
-      "longestIsCorrectPct": 70.4,
+      "longestIsCorrect": 7,
+      "longestIsCorrectPct": 25.9,
       "shortestIsCorrect": 4,
       "shortestIsCorrectPct": 14.8
     },
     "zbrane": {
       "questions": 12,
-      "longestIsCorrect": 10,
-      "longestIsCorrectPct": 83.3,
-      "shortestIsCorrect": 1,
-      "shortestIsCorrectPct": 8.3
+      "longestIsCorrect": 3,
+      "longestIsCorrectPct": 25,
+      "shortestIsCorrect": 3,
+      "shortestIsCorrectPct": 25
     },
     "Zdravověda a první pomoc": {
       "questions": 29,
@@ -93,10 +93,10 @@
     },
     "zop": {
       "questions": 4,
-      "longestIsCorrect": 4,
-      "longestIsCorrectPct": 100,
-      "shortestIsCorrect": 0,
-      "shortestIsCorrectPct": 0
+      "longestIsCorrect": 1,
+      "longestIsCorrectPct": 25,
+      "shortestIsCorrect": 1,
+      "shortestIsCorrectPct": 25
     }
   }
 }
