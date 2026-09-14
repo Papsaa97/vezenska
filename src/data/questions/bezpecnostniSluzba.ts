@@ -435,9 +435,9 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     question: 'Co znamená "zásada dvojic" při výkonu služby ve věznici?',
     answer: 'Příslušníci nesmí provádět otevírání cel nebo zasahovat na ubytovnách o samotě. Úkony, při nichž hrozí napadení (např. řešení konfliktů, prohlídky, předvádění agresivních vězňů, vstup do cely v noční době), se provádějí vždy za přítomnosti minimálně dvou příslušníků (jeden koná, druhý jistí).',
     options: [
-              `Při každé službě musí být přítomni dva velitelé oddělení.`,
-              `Strážný na věži musí mít u sebe vždy dva typy donucovacích prostředků.`,
-              `Každý vězeň musí mít přidělené dva vychovatele. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`,
+              `Při každé službě musí být přítomni dva velitelé oddělení, kteří se vzájemně jistí při vstupu do ubytovny a při otevírání cel; ostatní úkony včetně prohlídek a předvádění agresivních vězňů smí příslušník provádět sám.`,
+              `Strážný na věži musí mít u sebe vždy dva typy donucovacích prostředků, aby mohl zasáhnout sám; zásada dvou příslušníků se vztahuje výhradně na střežení vnějšího obvodu, nikoli na úkony uvnitř objektu.`,
+              `Každý vězeň musí mít přidělené dva vychovatele, kteří se střídají ve službě; otevírání cel a vstup do cely v noční době přitom smí provádět jediný příslušník, pokud o tom učiní záznam.`,
               `Příslušníci nesmí provádět otevírání cel nebo zasahovat na ubytovnách o samotě. Úkony, při nichž hrozí napadení (např. řešení konfliktů, prohlídky, předvádění agresivních vězňů, vstup do cely v noční době), se provádějí vždy za přítomnosti minimálně dvou příslušníků (jeden koná, druhý jistí).`
             ],
     correctOption: 3,

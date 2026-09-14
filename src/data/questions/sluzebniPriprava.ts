@@ -688,10 +688,10 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "U jakých kategorií osob je příslušníkům VS ČR zakázáno použít úderů, kopů, slzotvorných prostředků, taseru a zbraně (neplatí pro nutnou obranu a krajní nouzi)?",
     "answer": "U zjevně těhotných žen, osob zjevně vysokého věku, osob se zjevnou tělesnou vadou (invalidů) a dětí mladších 15 let.",
     "options": [
-      "U všech cizích státních příslušníků a diplomatů. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)",
+      "U všech cizích státních příslušníků, diplomatů a dalších osob požívajících diplomatické imunity podle mezinárodního práva.",
       "U zjevně těhotných žen, osob zjevně vysokého věku, osob se zjevnou tělesnou vadou (invalidů) a dětí mladších 15 let.",
       "Zákon nedefinuje žádné chráněné kategorie, donucovací prostředky lze použít bez omezení vůči každému.",
-      "U osob, které jsou ve výkonu vazby déle než 1 rok."
+      "U osob, které jsou ve výkonu vazby déle než 1 rok bez pravomocného rozsudku."
     ],
     "correctOption": 1,
     "rationale": "Zákon jasně chrání vybrané zranitelné skupiny. Výjimka pro použití DP vůči nim platí POUZE tehdy, pokud útok těchto osob bezprostředně ohrožuje život nebo zdraví jiných a nelze jej odvrátit jinak (§ 21 zákona č. 555/1992 Sb.).",
@@ -705,10 +705,10 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jak zní první a nejdůležitější pravidlo bezpečné manipulace se střelnou zbraní?",
     "answer": "S každou zbraní je třeba vždy zacházet tak, jako by byla nabitá a připravená k výstřelu.",
     "options": [
-      "Při předání zbraně je nutné se podívat do hlavně zepředu.",
+      "Při předání zbraně je nutné se podívat do hlavně zepředu a ověřit, že je prázdná.",
       "S každou zbraní je třeba vždy zacházet tak, jako by byla nabitá a připravená k výstřelu.",
-      "Zbraň musí být vždy uzamčena v trezoru. (tento postup platí pouze pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)",
-      "Před výstřelem je třeba zbraň namazat olejem. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)"
+      "Zbraň musí být vždy uzamčena v trezoru a vydává se výhradně proti podpisu velitele směny oddělení.",
+      "Před výstřelem je třeba zbraň namazat olejem a zkontrolovat průchodnost hlavně pohledem zepředu."
     ],
     "correctOption": 1,
     "rationale": "Toto pravidlo (spolu s mířením do bezpečného prostoru a prstem mimo spoušť) tvoří celosvětový standard pro prevenci nechtěných výstřelů a fatálních zranění při manipulaci.",
@@ -722,10 +722,10 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaké je základní taktické pravidlo při nečekaném útoku nožem na krátkou vzdálenost?",
     "answer": "Prioritou je zablokovat/kontrolovat útočící končetinu (ruku s nožem) a narušit stabilitu útočníka, nikoliv se primárně pokoušet nůž vytrhnout.",
     "options": [
-      "Otočit se k útočníkovi zády a utíkat rovně pryč. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)",
-      "Stát na místě a snažit se zachytit čepel nože holýma rukama.",
+      "Otočit se k útočníkovi zády a utíkat rovně pryč, protože útěk je vždy rychlejší než jakýkoliv obranný zákrok proti ozbrojenému útočníkovi na blízkou vzdálenost.",
+      "Stát na místě a snažit se zachytit čepel nože holýma rukama za ostří.",
       "Prioritou je zablokovat/kontrolovat útočící končetinu (ruku s nožem) a narušit stabilitu útočníka, nikoliv se primárně pokoušet nůž vytrhnout.",
-      "Zavřít oči a doufat, že si to útočník rozmyslí. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)"
+      "Zavřít oči a doufat, že si to útočník rozmyslí, protože jakýkoliv pohyb obránce útočníka podle taktických zásad jen dále provokuje k opakovanému útoku."
     ],
     "correctOption": 2,
     "rationale": "Kontrola zbraně a vytvoření bezpečné vzdálenosti/úhlu je klíčové pro přežití útoku bodnou zbraní. Snaha o disarm (vytržení) před plnou kontrolou pohybu vede k těžkým řezným poraněním.",
