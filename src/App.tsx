@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Header, { NavTab } from './components/Header';
 import OfflineBanner from './components/OfflineBanner';
@@ -50,6 +50,13 @@ import {
 import { QuizSessionRecord, MatchingRecord, Question } from './types';
 import { loadMatchingHistory, updateDailyStreak } from './utils/gamification';
 import { fetchQuizHistory, saveQuizResult, clearQuizHistory } from './utils/quizResults';
+import {
+  enqueuePendingResult,
+  flushPendingResults,
+  pendingResultsForUser,
+  removePendingResults,
+  PendingQuizResult,
+} from './utils/quizResultQueue';
 import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -180,12 +187,18 @@ export default function App() {
   // public.quiz_results) - nový uživatel vždy startuje na prázdné historii / 0 XP.
   const [quizHistory, setQuizHistory] = useState<QuizSessionRecord[]>([]);
   const [quizHistoryLoading, setQuizHistoryLoading] = useState<boolean>(true);
+  const [quizHistoryError, setQuizHistoryError] = useState<string | null>(null);
+
+  // Výsledky, které se ještě nepodařilo odeslat do Supabase (náprava Z-16).
+  // Žijí v localStorage, takže přežijí obnovení stránky i zavření prohlížeče.
+  const [pendingResults, setPendingResults] = useState<PendingQuizResult[]>([]);
 
   useEffect(() => {
     let cancelled = false;
 
     if (!user) {
       setQuizHistory([]);
+      setQuizHistoryError(null);
       setQuizHistoryLoading(false);
       return;
     }
@@ -194,9 +207,14 @@ export default function App() {
     fetchQuizHistory(user.id).then(({ history, error }) => {
       if (cancelled) return;
       if (error) {
+        // Historii NEMAŽEME na prázdnou: vypadalo by to, že o ni uživatel přišel.
+        // Necháme dosavadní stav a řekneme, že se ji nepodařilo načíst.
         console.error('[App] Nepodařilo se načíst historii testů:', error);
+        setQuizHistoryError(error);
+      } else {
+        setQuizHistoryError(null);
+        setQuizHistory(history);
       }
-      setQuizHistory(history);
       setQuizHistoryLoading(false);
     });
 
@@ -204,6 +222,47 @@ export default function App() {
       cancelled = true;
     };
   }, [user]);
+
+  /** Odešle vše, co čeká ve frontě, a promítne výsledek do stavu. */
+  const flushQueue = useCallback(async (userId: string) => {
+    const outcome = await flushPendingResults(userId, async (pending) => {
+      const res = await saveQuizResult(pending.userId, pending.result, pending.id);
+      return { error: res.error, alreadyStored: res.alreadyStored };
+    });
+    setPendingResults(pendingResultsForUser(userId));
+    return outcome;
+  }, []);
+
+  // Fronta se vyprazdňuje při přihlášení, po startu aplikace a při návratu sítě.
+  useEffect(() => {
+    if (!user) {
+      setPendingResults([]);
+      return;
+    }
+
+    setPendingResults(pendingResultsForUser(user.id));
+    void flushQueue(user.id);
+
+    const handleOnline = () => {
+      void flushQueue(user.id);
+    };
+    window.addEventListener('online', handleOnline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+    };
+  }, [user, flushQueue]);
+
+  // Čekající výsledky patří do zobrazené historie — jinak by test po dokončení
+  // z přehledu zmizel, dokud se neodešle, a působilo by to jako ztráta dat.
+  const effectiveQuizHistory = useMemo(() => {
+    if (pendingResults.length === 0) return quizHistory;
+    const known = new Set(quizHistory.map((h) => h.id));
+    const extra = pendingResults
+      .map((p) => p.result)
+      .filter((r) => !known.has(r.id));
+    if (extra.length === 0) return quizHistory;
+    return [...quizHistory, ...extra].sort((a, b) => a.timestamp - b.timestamp);
+  }, [quizHistory, pendingResults]);
 
   // Load matching history from localStorage
   const [matchingHistory, setMatchingHistory] = useState<MatchingRecord[]>(() => {
@@ -379,13 +438,25 @@ export default function App() {
   };
 
   const handleSaveQuizResult = (result: QuizSessionRecord) => {
-    setQuizHistory(prev => [...prev, result]);
     updateDailyStreak();
-    if (user) {
-      saveQuizResult(user.id, result).then(({ error }) => {
-        if (error) console.error('[App] Nepodařilo se uložit výsledek testu:', error);
-      });
+
+    if (!user) {
+      // Bez přihlášení se historie nikam neukládá (viz komentář u quizHistory).
+      setQuizHistory(prev => [...prev, result]);
+      return;
     }
+
+    // Nejdřív do trvalé fronty, teprve potom pokus o odeslání. Kdyby se
+    // v tuhle chvíli ztratilo připojení nebo uživatel zavřel kartu, výsledek
+    // zůstane v localStorage a odešle se při dalším spuštění.
+    enqueuePendingResult(user.id, result);
+    setPendingResults(pendingResultsForUser(user.id));
+
+    // Odesílá se výhradně přes frontu — jedno odeslání, jedno místo, kde se
+    // řeší chyby. Při úspěchu položka z fronty zmizí, jinak v ní zůstane.
+    flushQueue(user.id).catch((e) => {
+      console.error('[App] Odeslání výsledku testu selhalo, zůstává ve frontě:', e);
+    });
   };
 
   const handleMatchingGameComplete = (record: MatchingRecord) => {
@@ -421,6 +492,11 @@ export default function App() {
     setMatchingHistory([]);
     localStorage.removeItem('vscr_matching_history');
     if (user) {
+      // Frontu je nutné vyprázdnit také, jinak by se čekající výsledky po
+      // odeslání vrátily do právě smazané historie.
+      const mine = pendingResultsForUser(user.id).map((p) => p.id);
+      removePendingResults(mine);
+      setPendingResults([]);
       clearQuizHistory(user.id).then(({ error }) => {
         if (error) console.error('[App] Nepodařilo se smazat historii testů:', error);
       });
@@ -439,14 +515,14 @@ export default function App() {
           setActiveTab={handleTabChange} 
           isDarkMode={isDarkMode} 
           toggleDarkMode={toggleDarkMode}
-          quizHistory={quizHistory}
+          quizHistory={effectiveQuizHistory}
           matchingHistory={matchingHistory}
           canGoBack={canGoBack}
           canGoForward={canGoForward}
           onGoBack={handleGoBack}
           onGoForward={handleGoForward}
         />
-        <OfflineBanner />
+        <OfflineBanner pendingResultCount={pendingResults.length} />
       </div>
       <PWAInstallPrompt />
       <FeedbackButton screenLabel={NAV_TAB_LABELS[activeTab] ?? activeTab} />
@@ -546,7 +622,7 @@ export default function App() {
         {activeTab === 'badges' && (
           <div className="w-full h-full overflow-y-auto pr-1">
             <BadgesView 
-              quizHistory={quizHistory}
+              quizHistory={effectiveQuizHistory}
               matchingHistory={matchingHistory}
               onStartQuiz={() => setActiveTab('quiz')}
               onStartMatching={() => setActiveTab('matching')}
@@ -557,7 +633,7 @@ export default function App() {
         {activeTab === 'statistics' && (
           <Statistics
             questions={allQuestions}
-            history={quizHistory}
+            history={effectiveQuizHistory}
             isLoading={quizHistoryLoading}
             onStartTopicQuiz={handleStartSubjectQuiz}
             onClearHistory={handleClearHistory}
