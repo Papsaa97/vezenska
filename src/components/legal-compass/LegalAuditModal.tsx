@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { Check, AlertTriangle, Info, CheckCircle2, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AuditReport } from '../../utils/legalIntegrity';
+import { useDialog } from '../../hooks/useDialog';
 
 interface LegalAuditModalProps {
   showIntegrityModal: boolean;
@@ -16,6 +17,13 @@ export default function LegalAuditModal({
 }: LegalAuditModalProps) {
   const isValid = auditReport.valid;
 
+  // Escape, past na fokus a jeho návrat — viz hooks/useDialog.
+  const titleId = useId();
+  const dialogRef = useDialog<HTMLDivElement>({
+    isOpen: showIntegrityModal,
+    onClose: () => setShowIntegrityModal(false),
+  });
+
   // Předpisy, u kterých je z počtu nadpisů § a rozsahu číselné řady zřejmé,
   // že jde o výběr ustanovení. Práh 60 % je stejný jako ve skriptu.
   const selections = (auditReport.regulationCoverage ?? []).filter(
@@ -26,6 +34,11 @@ export default function LegalAuditModal({
     <AnimatePresence>
       {showIntegrityModal && (
         <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          tabIndex={-1}
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-xs"
           onClick={(e) => { if (e.target === e.currentTarget) setShowIntegrityModal(false); }}
         >
@@ -47,7 +60,7 @@ export default function LegalAuditModal({
                   {isValid ? <CheckCircle2 className="w-5 h-5" /> : <ShieldAlert className="w-5 h-5" />}
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                  <h3 id={titleId} className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                     Kontrola tvaru dat předpisů a paragrafů
                   </h3>
                   <p className="text-xs text-slate-500">

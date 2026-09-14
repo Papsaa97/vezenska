@@ -565,8 +565,12 @@ export default function LegalRegistryView({
                     </button>
                   )}
 
+                  {/* Popisek je pod 640 px schovaný (`hidden sm:inline`), a co je
+                      display:none, to prohlížeč vyřadí i ze stromu přístupnosti —
+                      na telefonu by tak tlačítko zůstalo bez jména. Proto aria-label. */}
                   <button
                     onClick={() => handleCopy(`${currentArticle.section} – ${currentArticle.title}\n\n${currentArticle.exactText}\n\nVýklad:\n${currentArticle.explanation}`, currentArticle.id)}
+                    aria-label={copiedId === currentArticle.id ? 'Zkopírováno' : 'Zkopírovat znění a výklad'}
                     className="min-h-[44px] px-3 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
                   >
                     {copiedId === currentArticle.id ? (
