@@ -1,4 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
+import {
+  CAPTCHA_GLOBAL_NAME,
+  CAPTCHA_SCRIPT_URL,
+  currentCaptchaConfig,
+  isCaptchaConfigured,
+  type CaptchaProvider,
+} from '../constants/captcha';
+
 
 /**
  * Ochrana přihlašovacích formulářů proti robotům (Supabase Auth → CAPTCHA).
@@ -19,8 +27,6 @@ import React, { useEffect, useRef, useState } from 'react';
  * aplikace je pak přesně stejné jako před jejím zavedením.
  */
 
-type CaptchaProvider = 'hcaptcha' | 'turnstile';
-
 /** Společný průnik rozhraní hCaptcha a Cloudflare Turnstile. */
 interface CaptchaApi {
   render: (container: HTMLElement, options: Record<string, unknown>) => string;
@@ -28,52 +34,8 @@ interface CaptchaApi {
   remove?: (widgetId: string) => void;
 }
 
-const SCRIPT_URL: Record<CaptchaProvider, string> = {
-  hcaptcha: 'https://js.hcaptcha.com/1/api.js?render=explicit',
-  turnstile: 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit',
-};
-
-/** Jméno globální proměnné, pod kterou se skript poskytovatele zpřístupní. */
-const GLOBAL_NAME: Record<CaptchaProvider, string> = {
-  hcaptcha: 'hcaptcha',
-  turnstile: 'turnstile',
-};
-
-export interface CaptchaConfig {
-  provider: CaptchaProvider;
-  siteKey: string;
-}
-
-/**
- * Přečte nastavení z proměnných prostředí. Vrací null, pokud chybí nebo
- * nedávají smysl — pak se ověření nezobrazí a aplikace se chová jako dřív.
- *
- * Bere `env` jako parametr záměrně: `import.meta.env` existuje jen uvnitř
- * Vite, takže přímé čtení by tuhle rozhodovací logiku vyřadilo z testování.
- * Přitom právě ona ručí za to, že je změna bez nastavení neškodná.
- */
-export function resolveCaptchaConfig(env: Record<string, unknown> | undefined): CaptchaConfig | null {
-  const provider = String(env?.VITE_CAPTCHA_PROVIDER ?? '').trim().toLowerCase();
-  const siteKey = String(env?.VITE_CAPTCHA_SITEKEY ?? '').trim();
-  if (provider !== 'hcaptcha' && provider !== 'turnstile') return null;
-  if (!siteKey) return null;
-  return { provider, siteKey };
-}
-
-function currentConfig(): CaptchaConfig | null {
-  return resolveCaptchaConfig(import.meta.env as unknown as Record<string, unknown> | undefined);
-}
-
-/**
- * Je ochrana proti robotům v této sestavě nastavená?
- *
- * Volající se podle toho rozhoduje, jestli má na token čekat. Musí odpovídat
- * nastavení v Supabase: když je ochrana zapnutá tam a tady ne, server
- * přihlášení odmítne a uživatel neuvidí žádné vysvětlení.
- */
-export function isCaptchaConfigured(): boolean {
-  return currentConfig() !== null;
-}
+// Re-export, aby formuláře nemusely importovat ze dvou míst.
+export { isCaptchaConfigured };
 
 const loaders = new Map<CaptchaProvider, Promise<CaptchaApi>>();
 
@@ -83,7 +45,7 @@ function loadCaptchaScript(provider: CaptchaProvider): Promise<CaptchaApi> {
   if (cached) return cached;
 
   const pending = new Promise<CaptchaApi>((resolve, reject) => {
-    const globalName = GLOBAL_NAME[provider];
+    const globalName = CAPTCHA_GLOBAL_NAME[provider];
     const existing = (window as unknown as Record<string, CaptchaApi | undefined>)[globalName];
     if (existing) {
       resolve(existing);
@@ -91,7 +53,7 @@ function loadCaptchaScript(provider: CaptchaProvider): Promise<CaptchaApi> {
     }
 
     const script = document.createElement('script');
-    script.src = SCRIPT_URL[provider];
+    script.src = CAPTCHA_SCRIPT_URL[provider];
     script.async = true;
     script.defer = true;
     script.onload = () => {
@@ -153,7 +115,7 @@ const CaptchaWidget = React.forwardRef<CaptchaWidgetHandle, CaptchaWidgetProps>(
       },
     }));
 
-    const config = currentConfig();
+    const config = currentCaptchaConfig();
     const provider = config?.provider ?? null;
     const siteKey = config?.siteKey ?? '';
 
