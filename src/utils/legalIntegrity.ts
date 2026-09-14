@@ -7,6 +7,25 @@ export interface IntegrityIssue {
   message: string;
 }
 
+/**
+ * Naměřené pokrytí plného textu jednoho předpisu.
+ *
+ * POZOR NA VÝKLAD: tohle NENÍ míra úplnosti proti oficiální Sbírce. Kontrola
+ * nemá k dispozici závazné znění, se kterým by text porovnala, takže umí jen
+ * popsat, co v souboru je — počet nadpisů §, rozsah číselné řady a mezery v ní.
+ * Mezera navíc může být legitimní (zrušený paragraf), takže sama o sobě chybu
+ * neznamená. Slouží k tomu, aby bylo vidět, které předpisy jsou zjevně jen
+ * výběrem ustanovení, ne k vydávání verdiktu o úplnosti.
+ */
+export interface RegulationCoverage {
+  code: string;
+  title: string;
+  characters: number;
+  sectionHeadings: number;
+  highestSection: number;
+  missingFromSequence: number[];
+}
+
 export interface AuditReport {
   timestamp: string;
   totalArticles: number;
@@ -14,10 +33,64 @@ export interface AuditReport {
   totalCharacters: number;
   categories: Record<string, number>;
   issues: IntegrityIssue[];
+  /** Popis plných textů předpisů. Prázdné, pokud se audit spouští bez nich. */
+  regulationCoverage: RegulationCoverage[];
+  /**
+   * True, když kontrola nenašla žádnou vadu tvaru dat (viz issues).
+   *
+   * NEZNAMENÁ, že texty odpovídají platnému znění předpisů ani že jsou úplné —
+   * to tahle kontrola ověřit neumí. Viz komentář u RegulationCoverage.
+   */
   valid: boolean;
 }
 
-export function auditLegalDatabase(articles: LegalArticle[]): AuditReport {
+/**
+ * Rozpozná odkaz na jiný předpis, aby se nezapočítal jako nadpis paragrafu.
+ *
+ * Poznámky pod čarou mají tvar "§ 48 zákona č. 169/1999 Sb." nebo
+ * "§ 158b trestního řádu". Bez tohohle filtru by se do číselné řady dostala
+ * čísla paragrafů úplně jiných zákonů a měření by hlásilo neexistující mezery.
+ */
+function isCrossReference(rest: string): boolean {
+  return /záko|vyhlášk|nařízení|trestního řádu|Sb\./i.test(rest);
+}
+
+/**
+ * Spočítá nadpisy § v plném textu předpisu.
+ *
+ * Za nadpis se považuje řádek ZAČÍNAJÍCÍ "§ číslo" (případně s písmenem,
+ * např. § 25a). Za číslem smí následovat název ustanovení na témže řádku —
+ * některé soubory píší "§ 29 Nutná obrana", jiné dávají název na další řádek.
+ * Odkazy na jiné předpisy se vyřazují (viz isCrossReference).
+ */
+export function measureRegulationCoverage(code: string, title: string, fullText: string): RegulationCoverage {
+  const headings: string[] = [];
+  for (const line of fullText.split('\n')) {
+    const m = line.trim().match(/^§\s*(\d+[a-z]*)\b(.*)$/);
+    if (m && !isCrossReference(m[2])) headings.push(m[1]);
+  }
+
+  const baseNumbers = [...new Set(headings.map((h) => parseInt(h, 10)))].sort((a, b) => a - b);
+  const highest = baseNumbers.length ? baseNumbers[baseNumbers.length - 1] : 0;
+  const missing: number[] = [];
+  for (let i = 1; i <= highest; i++) {
+    if (!baseNumbers.includes(i)) missing.push(i);
+  }
+
+  return {
+    code,
+    title,
+    characters: fullText.length,
+    sectionHeadings: headings.length,
+    highestSection: highest,
+    missingFromSequence: missing,
+  };
+}
+
+export function auditLegalDatabase(
+  articles: LegalArticle[],
+  regulationCoverage: RegulationCoverage[] = []
+): AuditReport {
   const issues: IntegrityIssue[] = [];
   const seenIds = new Set<string>();
   const categories: Record<string, number> = {};
@@ -113,6 +186,7 @@ export function auditLegalDatabase(articles: LegalArticle[]): AuditReport {
     totalCharacters,
     categories,
     issues,
+    regulationCoverage,
     valid: issues.length === 0
   };
 }

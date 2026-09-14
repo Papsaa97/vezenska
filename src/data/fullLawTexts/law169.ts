@@ -1,5 +1,7 @@
 // =========================================================================
-// ZÁKON Č. 169/1999 SB. – KOMPLETNÍ DOSLOVNÉ ÚŘEDNÍ ZNĚNÍ Z E-SBÍRKY
+// ZÁKON Č. 169/1999 SB. – VÝBĚR USTANOVENÍ PODSTATNÝCH PRO ZOP A
+// POZOR: nejde o úplné znění. Soubor obsahuje 24 z 85 paragrafů (10 kB).
+// Úplné znění viz e-Sbírka.gov.cz — před zkouškou si ověřte tam.
 // Zákon ze dne 30. června 1999
 // o výkonu trestu odnětí svobody a o změně některých souvisejících zákonů
 // (ve znění účinném k 1. 1. 2026 dle e-Sbírka.gov.cz)
