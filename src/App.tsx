@@ -777,6 +777,7 @@ export default function App() {
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                  aria-label="Zavřít nabídku"
                 >
                   <X className="w-4 h-4" />
                 </button>

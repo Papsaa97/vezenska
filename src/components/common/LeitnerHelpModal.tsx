@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, HelpCircle, ArrowRight, RotateCcw, CheckCircle2, Trophy, Clock, Brain } from 'lucide-react';
+import { useDialog } from '../../hooks/useDialog';
 
 interface LeitnerHelpModalProps {
   isOpen: boolean;
@@ -8,20 +9,17 @@ interface LeitnerHelpModalProps {
 }
 
 export default function LeitnerHelpModal({ isOpen, onClose }: LeitnerHelpModalProps) {
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  // Vlastní obsluha Escape nahrazena sdíleným hookem — ten navíc drží fokus
+  // uvnitř dialogu a po zavření ho vrátí tam, odkud se otevíral.
+  const dialogRef = useDialog<HTMLDivElement>({ isOpen, onClose });
 
   return (
     <AnimatePresence>
       {isOpen && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs no-print overflow-y-auto"
+          ref={dialogRef}
+          tabIndex={-1}
           role="dialog"
           aria-modal="true"
           aria-labelledby="leitner-help-title"

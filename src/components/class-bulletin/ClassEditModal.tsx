@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { ClassBoardItem, ClassBoardInput, uploadScheduleImage } from '../../utils/classBoardService';
 import { fileToDataUrl } from '../../utils/fileUtils';
+import { useDialog } from '../../hooks/useDialog';
 
 interface ClassEditModalProps {
   item: ClassBoardItem | null;
@@ -108,8 +109,18 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
     }
   };
 
+  // Escape, past na fokus a jeho návrat po zavření — viz hooks/useDialog.
+  const dialogRef = useDialog<HTMLDivElement>({ isOpen: true, onClose });
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="class-edit-title"
+      tabIndex={-1}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -119,11 +130,12 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
         <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/60">
           <div className="flex items-center gap-2">
             <School className="w-5 h-5 text-blue-500" />
-            <h3 className="font-bold text-base text-slate-900 dark:text-white">
+            <h3 id="class-edit-title" className="font-bold text-base text-slate-900 dark:text-white">
               {item ? `Upravit třídu: ${item.className}` : 'Vytvořit novou třídu'}
             </h3>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-full text-slate-400 hover:text-white cursor-pointer">
+          <button onClick={onClose}
+            aria-label="Zavřít úpravu třídy" className="p-1.5 rounded-full text-slate-400 hover:text-white cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>

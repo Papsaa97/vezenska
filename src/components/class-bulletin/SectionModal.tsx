@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { X } from 'lucide-react';
 import { ClassBoardItem, ClassSection } from '../../utils/classBoardService';
+import { useDialog } from '../../hooks/useDialog';
 
 interface SectionModalProps {
   item: ClassBoardItem;
@@ -32,8 +33,22 @@ export default function SectionModal({ item, onClose, onSave }: SectionModalProp
     }
   };
 
+  // Escape, past na fokus a jeho návrat po zavření — viz hooks/useDialog.
+  const dialogRef = useDialog<HTMLDivElement>({
+    isOpen: true,
+    onClose,
+    closeOnEscape: !saving,
+  });
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="section-modal-title"
+      tabIndex={-1}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -41,10 +56,11 @@ export default function SectionModal({ item, onClose, onSave }: SectionModalProp
         className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-md shadow-2xl p-6 space-y-4"
       >
         <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-          <h3 className="font-bold text-base text-slate-900 dark:text-white">
+          <h3 id="section-modal-title" className="font-bold text-base text-slate-900 dark:text-white">
             Přidat sekci pro třídu {item.className}
           </h3>
-          <button onClick={onClose} className="p-1 rounded text-slate-400 hover:text-white">
+          <button onClick={onClose}
+            aria-label="Zavřít formulář sekce" className="p-1 rounded text-slate-400 hover:text-white">
             <X className="w-5 h-5" />
           </button>
         </div>

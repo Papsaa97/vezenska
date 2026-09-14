@@ -21,6 +21,7 @@ import { useAuth, useIsAdmin, UserRole, UserProfile } from '../context/AuthConte
 import { supabase } from '../lib/supabase';
 import { UserRank } from '../types';
 import { AVATAR_PRESETS, resolveAvatarDisplay, toPresetAvatarUrl } from '../utils/avatar';
+import { useDialog } from '../hooks/useDialog';
 
 const ROLE_LABELS: Record<UserRole, string> = {
   student: 'Kadet / Student',
@@ -149,6 +150,9 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     return name.slice(0, 2).toUpperCase() || 'VS';
   })();
+
+  // Escape, past na fokus a jeho návrat po zavření — viz hooks/useDialog.
+  const dialogRef = useDialog<HTMLDivElement>({ isOpen: true, onClose });
 
   const handleSaveName = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -292,6 +296,11 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
         className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 pointer-events-none"
       >
         <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Profil uživatele"
+          tabIndex={-1}
           className="pointer-events-auto w-full max-w-lg max-h-[92vh] overflow-y-auto bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl p-5 sm:p-8 relative"
           onClick={(e) => e.stopPropagation()}
         >
