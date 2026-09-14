@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useId } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   X,
@@ -88,6 +88,9 @@ function AvatarPreview({ avatarUrl, initials }: { avatarUrl: string | null | und
 }
 
 export default function UserProfileModal({ onClose, totalXp, currentRank }: UserProfileModalProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const { user, profile, updateProfile, updateRole, updatePassword } = useAuth();
   const isSystemAdmin = useIsAdmin();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -395,8 +398,9 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               <h3 className="text-sm font-bold">Osobní údaje & zařazení</h3>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Jméno a příjmení</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5" htmlFor={`${fieldIds}-0`}>Jméno a příjmení</label>
               <input
+                id={`${fieldIds}-0`}
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -405,8 +409,9 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Moje třída ZOP</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5" htmlFor={`${fieldIds}-1`}>Moje třída ZOP</label>
               <input
+                id={`${fieldIds}-1`}
                 type="text"
                 value={userClass}
                 onChange={(e) => setUserClass(e.target.value)}
@@ -417,7 +422,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
 
             {(isSystemAdmin || effectiveProfile?.role === 'admin') ? (
                 <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2">
-                <label className="block text-xs font-bold text-amber-400 flex items-center justify-between">
+                <label className="block text-xs font-bold text-amber-400 flex items-center justify-between" htmlFor={`${fieldIds}-2`}>
                   <span className="flex items-center gap-1.5">
                     <Shield className="w-3.5 h-3.5 text-amber-400" />
                     Role účtu (Správce systému)
@@ -427,6 +432,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                   </span>
                 </label>
                 <select
+                  id={`${fieldIds}-2`}
                   value={selectedRole}
                   onChange={(e) => setSelectedRole(e.target.value as UserRole)}
                   className="w-full bg-slate-800 border border-amber-500/50 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-amber-400 cursor-pointer"

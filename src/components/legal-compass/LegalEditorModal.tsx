@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { Edit3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { VscrRegulation } from '../../data/vscrRegulationsRegistry';
@@ -18,6 +18,9 @@ export default function LegalEditorModal({
   setEditingRegulation,
   handleSaveRegulation,
 }: LegalEditorModalProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   return (
     <AnimatePresence>
       {showEditorModal && editingRegulation && (
@@ -49,8 +52,9 @@ export default function LegalEditorModal({
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain [touch-action:pan-y] p-3 sm:p-6 space-y-4 text-xs sm:text-sm">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Číslo / Kód předpisu *</label>
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-0`}>Číslo / Kód předpisu *</label>
                   <input
+                    id={`${fieldIds}-0`}
                     type="text"
                     placeholder="např. NGŘ č. 33/2019 nebo Zákon č. 555/1992 Sb."
                     value={editingRegulation.code || ''}
@@ -60,8 +64,9 @@ export default function LegalEditorModal({
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Zkrácený název *</label>
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-1`}>Zkrácený název *</label>
                   <input
+                    id={`${fieldIds}-1`}
                     type="text"
                     placeholder="např. NGŘ o eskortách a střežení"
                     value={editingRegulation.shortTitle || ''}
@@ -72,8 +77,9 @@ export default function LegalEditorModal({
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Úplný oficiální název *</label>
+                <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-2`}>Úplný oficiální název *</label>
                 <input
+                  id={`${fieldIds}-2`}
                   type="text"
                   placeholder="Celý název předpisu..."
                   value={editingRegulation.title || ''}
@@ -84,8 +90,9 @@ export default function LegalEditorModal({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Typ předpisu</label>
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-3`}>Typ předpisu</label>
                   <select
+                    id={`${fieldIds}-3`}
                     value={editingRegulation.type || 'ngr'}
                     onChange={(e) => setEditingRegulation(prev => ({ ...prev, type: e.target.value as VscrRegulation['type'] }))}
                     className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
@@ -99,8 +106,9 @@ export default function LegalEditorModal({
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Vydavatel</label>
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-4`}>Vydavatel</label>
                   <input
+                    id={`${fieldIds}-4`}
                     type="text"
                     placeholder="např. Generální ředitelství VS ČR"
                     value={editingRegulation.authority || ''}
@@ -110,8 +118,9 @@ export default function LegalEditorModal({
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Důležitost pro ZOP</label>
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-5`}>Důležitost pro ZOP</label>
                   <select
+                    id={`${fieldIds}-5`}
                     value={editingRegulation.importanceForZOP || 'Vysoký'}
                     onChange={(e) => setEditingRegulation(prev => ({ ...prev, importanceForZOP: e.target.value as VscrRegulation['importanceForZOP'] }))}
                     className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
@@ -125,8 +134,9 @@ export default function LegalEditorModal({
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Oficiální URL odkaz (e-Sbírka / portál)</label>
+                <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-6`}>Oficiální URL odkaz (e-Sbírka / portál)</label>
                 <input
+                  id={`${fieldIds}-6`}
                   type="url"
                   placeholder="https://e-sbirka.gov.cz/sb/..."
                   value={editingRegulation.officialUrl || ''}
@@ -136,8 +146,9 @@ export default function LegalEditorModal({
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Stručná charakteristika &amp; rozsah úpravy</label>
+                <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-7`}>Stručná charakteristika &amp; rozsah úpravy</label>
                 <textarea
+                  id={`${fieldIds}-7`}
                   rows={2}
                   placeholder="Co tento předpis řeší v praxi..."
                   value={editingRegulation.scope || ''}
@@ -147,10 +158,11 @@ export default function LegalEditorModal({
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-8`}>
                   Plné znění předpisu (Text pro čtení a vyhledávání)
                 </label>
                 <textarea
+                  id={`${fieldIds}-8`}
                   rows={6}
                   placeholder="Zde vložte kompletní nebo výňatkové znění předpisu..."
                   value={editingRegulation.fullLegalText || ''}

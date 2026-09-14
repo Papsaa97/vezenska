@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import { motion } from 'motion/react';
 import { Building2, X } from 'lucide-react';
 import { ClassBoardItem, DutyRosterItem, DutyType } from '../../utils/classBoardService';
@@ -11,6 +11,9 @@ interface DutyModalProps {
 }
 
 export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const [type, setType] = useState<DutyType>('pankrac');
   const [title, setTitle] = useState('Výpomoc VV Praha - Pankrác');
   const [date, setDate] = useState('');
@@ -96,10 +99,15 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1.5">
+            {/* Popisuje skupinu tlačítek, ne jedno pole — proto <span> a
+                role="group", ne <label>. */}
+            <span
+              id={`${fieldIds}-typ`}
+              className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1.5"
+            >
               Typ mimořádné služby
-            </label>
-            <div className="grid grid-cols-3 gap-2">
+            </span>
+            <div className="grid grid-cols-3 gap-2" role="group" aria-labelledby={`${fieldIds}-typ`}>
               <button
                 type="button"
                 onClick={() => handleTypeChange('pankrac')}
@@ -137,10 +145,11 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
           </div>
 
           <div>
-            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-0`}>
               Název události *
             </label>
             <input
+              id={`${fieldIds}-0`}
               type="text"
               required
               value={title}
@@ -151,10 +160,11 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+              <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-1`}>
                 Datum služby *
               </label>
               <input
+                id={`${fieldIds}-1`}
                 type="text"
                 required
                 value={date}
@@ -164,10 +174,11 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
               />
             </div>
             <div>
-              <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+              <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-2`}>
                 Čas nástupu / směna
               </label>
               <input
+                id={`${fieldIds}-2`}
                 type="text"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
@@ -178,10 +189,11 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
           </div>
 
           <div>
-            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-3`}>
               Určení posluchači (jmenný seznam) *
             </label>
             <input
+              id={`${fieldIds}-3`}
               type="text"
               required
               value={attendees}
@@ -192,10 +204,11 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
           </div>
 
           <div>
-            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-4`}>
               Požadovaná výstroj a vybavení
             </label>
             <input
+              id={`${fieldIds}-4`}
               type="text"
               value={uniform}
               onChange={(e) => setUniform(e.target.value)}
@@ -204,10 +217,11 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
           </div>
 
           <div>
-            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-5`}>
               Místo a operativní pokyny
             </label>
             <input
+              id={`${fieldIds}-5`}
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

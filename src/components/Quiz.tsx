@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useId } from 'react';
 import { BookOpen, Clock, Play, CheckCircle2, XCircle, Star, RotateCcw, Volume2, Award, Flag, Printer, ArrowRight, ArrowLeft, ShieldAlert, Sparkles, Cloud, Database, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Question, QuizSessionRecord, QuestionAttempt } from '../types';
@@ -36,6 +36,9 @@ export default function Quiz({
   presetSubject,
   questionsSource = 'local'
 }: QuizProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const [gameState, setGameState] = useState<GameState>('setup');
   const [sessionStats, setSessionStats] = useState<SessionStats>({ correct: 0, incorrect: 0, total: 0, history: [] });
   
@@ -521,8 +524,9 @@ export default function Quiz({
             )}
 
             <div className={isMistakesMode ? 'opacity-50 pointer-events-none' : ''}>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Předmět</label>
-              <select 
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5" htmlFor={`${fieldIds}-0`}>Předmět</label>
+              <select
+                id={`${fieldIds}-0`} 
                 className="w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 dark:text-slate-200"
                 value={selectedSubjects[0]}
                 onChange={(e) => handleSubjectToggle(e.target.value)}
@@ -561,10 +565,11 @@ export default function Quiz({
             </div>
             
             <div className={isMistakesMode ? 'opacity-50 pointer-events-none' : ''}>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5" htmlFor={`${fieldIds}-1`}>
                 Počet otázek: {questionCount}
               </label>
-              <input 
+              <input
+                id={`${fieldIds}-1`} 
                 type="range" 
                 className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer" 
                 min="5" 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import { motion } from 'motion/react';
 import { X } from 'lucide-react';
 import { ClassBoardItem, ClassSection } from '../../utils/classBoardService';
@@ -11,6 +11,9 @@ interface SectionModalProps {
 }
 
 export default function SectionModal({ item, onClose, onSave }: SectionModalProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [badge, setBadge] = useState('OZNÁMENÍ');
@@ -67,10 +70,11 @@ export default function SectionModal({ item, onClose, onSave }: SectionModalProp
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-0`}>
               Nadpis sekce *
             </label>
             <input
+              id={`${fieldIds}-0`}
               type="text"
               required
               value={title}
@@ -81,10 +85,11 @@ export default function SectionModal({ item, onClose, onSave }: SectionModalProp
           </div>
 
           <div>
-            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-1`}>
               Štítek / Odznak
             </label>
             <input
+              id={`${fieldIds}-1`}
               type="text"
               value={badge}
               onChange={(e) => setBadge(e.target.value)}
@@ -94,10 +99,11 @@ export default function SectionModal({ item, onClose, onSave }: SectionModalProp
           </div>
 
           <div>
-            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+            <label className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1" htmlFor={`${fieldIds}-2`}>
               Obsah sekce *
             </label>
             <textarea
+              id={`${fieldIds}-2`}
               rows={4}
               required
               value={content}

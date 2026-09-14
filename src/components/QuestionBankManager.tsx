@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo, useId } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   HelpCircle,
@@ -141,6 +141,9 @@ interface QuestionBankManagerProps {
 }
 
 export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBankManagerProps = {}) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const { user, profile } = useAuth();
   const isLektorOrAdmin = profile?.role === 'lektor' || profile?.role === 'admin';
   const formRef = useRef<HTMLDivElement>(null);
@@ -606,10 +609,11 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Předmět */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5" htmlFor={`${fieldIds}-0`}>
               Předmět *
             </label>
             <select
+              id={`${fieldIds}-0`}
               value={formData.subject}
               onChange={(e) => setFormData((prev) => ({ ...prev, subject: e.target.value }))}
               className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
@@ -624,10 +628,11 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
 
           {/* Text otázky */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5" htmlFor={`${fieldIds}-1`}>
               Text otázky *
             </label>
             <textarea
+              id={`${fieldIds}-1`}
               value={formData.question}
               onChange={(e) => setFormData((prev) => ({ ...prev, question: e.target.value }))}
               rows={3}

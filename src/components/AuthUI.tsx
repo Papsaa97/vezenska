@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, LogIn, UserPlus, Eye, EyeOff, Loader2, ShieldCheck, AlertCircle, HelpCircle } from 'lucide-react';
 import { useAuth, UserRole } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
+import { MIN_PASSWORD_LENGTH, translateAuthError, weakPasswordNotice } from '../constants/auth';
 import {
   isBiometricsSupported,
   storeBrowserCredential,
@@ -33,6 +34,9 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ onClose }: AuthModalProps) {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const { signIn, signUp } = useAuth();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
@@ -45,6 +49,8 @@ export function AuthModal({ onClose }: AuthModalProps) {
   const [hasSavedCredentials, setHasSavedCredentials] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  /** Přihlášení prošlo, ale heslo nevyhovuje zpřísněným požadavkům serveru. */
+  const [weakPasswordMsg, setWeakPasswordMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -88,9 +94,13 @@ export function AuthModal({ onClose }: AuthModalProps) {
       if (cred?.email && cred?.password) {
         setEmail(cred.email);
         setPassword(cred.password);
-        const { error } = await signIn(cred.email, cred.password);
-        if (error) {
-          setErrorMsg(translateError(error.message));
+        const { error, signedIn } = await signIn(cred.email, cred.password);
+        if (error && !signedIn) {
+          setErrorMsg(translateAuthError(error));
+        } else if (error) {
+          // Přihlášení prošlo, jen heslo nevyhovuje. Dialog se záměrně nezavírá,
+          // aby si uživatel upozornění stihl přečíst.
+          setWeakPasswordMsg(weakPasswordNotice(error));
         } else {
           onClose();
         }
@@ -114,12 +124,18 @@ export function AuthModal({ onClose }: AuthModalProps) {
     setSuccessMsg(null);
 
     if (mode === 'signin') {
-      const { error } = await signIn(email, password);
-      if (error) {
-        setErrorMsg(translateError(error.message));
+      const { error, signedIn } = await signIn(email, password);
+      if (error && !signedIn) {
+        setErrorMsg(translateAuthError(error));
       } else {
         await storeBrowserCredential(email, password);
-        onClose();
+        if (error) {
+          // Přihlášení prošlo, jen heslo nevyhovuje. Dialog se záměrně nezavírá,
+          // aby si uživatel upozornění stihl přečíst.
+          setWeakPasswordMsg(weakPasswordNotice(error));
+        } else {
+          onClose();
+        }
       }
     } else {
       if (!fullName.trim()) {
@@ -134,7 +150,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
       }
       const { error } = await signUp(email, password, fullName);
       if (error) {
-        setErrorMsg(translateError(error.message));
+        setErrorMsg(translateAuthError(error));
       } else {
         await storeBrowserCredential(email, password);
         setSuccessMsg('Registrace proběhla. Zkontroluj e-mail pro potvrzení účtu.');
@@ -227,13 +243,13 @@ export function AuthModal({ onClose }: AuthModalProps) {
           <form onSubmit={handleSubmit} method="post" autoComplete="on" className="space-y-4">
             {mode === 'signup' && (
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5" htmlFor={`${fieldIds}-0`}>
                   Celé jméno *
                 </label>
                 <input
+                  id={`${fieldIds}-0`}
                   type="text"
                   name="name"
-                  id="name"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Jan Novák"
@@ -245,13 +261,13 @@ export function AuthModal({ onClose }: AuthModalProps) {
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5" htmlFor={`${fieldIds}-1`}>
                 E-mail *
               </label>
               <input
+                id={`${fieldIds}-1`}
                 type="email"
                 name="email"
-                id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Váš e-mail"
@@ -264,7 +280,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold text-slate-300">
+                <label className="block text-xs font-semibold text-slate-300" htmlFor={`${fieldIds}-3`}>
                   Heslo *
                 </label>
                 <button
@@ -284,7 +300,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
                     <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
                     Požadavky na heslo:
                   </div>
-                  <p className="text-[11px] text-slate-400">• Minimální délka je 6 znaků</p>
+                  <p className="text-[11px] text-slate-400">• Minimální délka je {MIN_PASSWORD_LENGTH} znaků</p>
                   <p className="text-[11px] text-slate-400">• Doporučujeme kombinaci velkých a malých písmen a číslic</p>
                   <p className="text-[11px] text-slate-300 font-medium">• Musí obsahovat alespoň jeden speciální znak (např. <span className="font-mono">!@#$%^&*</span>)</p>
                   <p className="text-[11px] text-slate-400">• Heslo je bezpečně šifrováno v Supabase Auth</p>
@@ -293,14 +309,14 @@ export function AuthModal({ onClose }: AuthModalProps) {
 
               <div className="relative">
                 <input
+                  id={`${fieldIds}-3`}
                   type={showPassword ? 'text' : 'password'}
                   name="password"
-                  id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  minLength={6}
+                  minLength={MIN_PASSWORD_LENGTH}
                   autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 pr-11 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
                 />
@@ -316,19 +332,19 @@ export function AuthModal({ onClose }: AuthModalProps) {
 
             {mode === 'signup' && (
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5" htmlFor={`${fieldIds}-2`}>
                   Potvrzení hesla *
                 </label>
                 <div className="relative">
                   <input
+                    id={`${fieldIds}-2`}
                     type={showPassword ? 'text' : 'password'}
                     name="confirm-password"
-                    id="confirm-password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Zadejte heslo znovu pro ověření"
                     required
-                    minLength={6}
+                    minLength={MIN_PASSWORD_LENGTH}
                     autoComplete="new-password"
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 pr-11 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
                   />
@@ -341,6 +357,16 @@ export function AuthModal({ onClose }: AuthModalProps) {
               <div className="flex items-start gap-2.5 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
                 <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
                 <p className="text-xs text-red-300 leading-snug">{errorMsg}</p>
+              </div>
+            )}
+            {weakPasswordMsg && (
+              <div
+                role="status"
+                aria-live="polite"
+                className="flex items-start gap-2.5 bg-amber-500/10 border border-amber-500/40 rounded-xl px-4 py-3"
+              >
+                <AlertCircle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+                <p className="text-xs text-amber-200 leading-snug">{weakPasswordMsg}</p>
               </div>
             )}
             {successMsg && (
@@ -461,11 +487,3 @@ export function UserBadge({ onLoginClick }: UserBadgeProps) {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function translateError(msg: string): string {
-  if (msg.includes('Invalid login credentials')) return 'Nesprávný e-mail nebo heslo.';
-  if (msg.includes('Email not confirmed')) return 'E-mail ještě nebyl ověřen. Zkontroluj schránku.';
-  if (msg.includes('User already registered')) return 'Účet s tímto e-mailem již existuje.';
-  if (msg.includes('Password should be at least')) return 'Heslo musí mít alespoň 6 znaků.';
-  if (msg.includes('rate limit')) return 'Příliš mnoho pokusů. Zkus to za chvíli.';
-  return msg;
-}

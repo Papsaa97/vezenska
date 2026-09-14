@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef, useId } from 'react';
 import {
   FileText,
   ShieldAlert,
@@ -271,6 +271,9 @@ function clearDraft(templateId: string) {
 }
 
 export default function PrisonAdministration() {
+  // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
+  const fieldIds = useId();
+
   const [activeSection, setActiveSection] = useState<AdminSection>('generator');
 
   // Generator state
@@ -634,10 +637,11 @@ export default function PrisonAdministration() {
                 <div className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-0`}>
                         Věznice & Adresa <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-0`}
                         type="text"
                         value={formData.prisonName || ''}
                         onChange={(e) => handleFieldChange('prisonName', e.target.value)}
@@ -692,10 +696,11 @@ export default function PrisonAdministration() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-1`}>
                         Zakročující příslušník (hodnost, jméno, sl. č., zařazení) <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-1`}
                         type="text"
                         value={formData.officer || ''}
                         onChange={(e) => handleFieldChange('officer', e.target.value)}
@@ -703,10 +708,11 @@ export default function PrisonAdministration() {
                       />
                     </div>
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-2`}>
                         Velen do služby rozkazem <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-2`}
                         type="text"
                         value={formData.dutyOrder || ''}
                         onChange={(e) => handleFieldChange('dutyOrder', e.target.value)}
@@ -717,10 +723,11 @@ export default function PrisonAdministration() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="sm:col-span-2">
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-3`}>
                         Použito proti komu (jméno, nar., postavení) <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-3`}
                         type="text"
                         value={formData.targetPerson || ''}
                         onChange={(e) => handleFieldChange('targetPerson', e.target.value)}
@@ -728,10 +735,11 @@ export default function PrisonAdministration() {
                       />
                     </div>
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-4`}>
                         Kód vězněné osoby <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-4`}
                         type="text"
                         value={formData.targetCode || ''}
                         onChange={(e) => handleFieldChange('targetCode', e.target.value)}
@@ -773,10 +781,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-5`}>
                       Datum, čas a přesné místo použití DP <span className="text-red-500">*</span>
                     </label>
                     <input
+                      id={`${fieldIds}-5`}
                       type="text"
                       value={formData.datetimePlace || ''}
                       onChange={(e) => handleFieldChange('datetimePlace', e.target.value)}
@@ -785,10 +794,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-6`}>
                       Co předcházelo použití DP <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                      id={`${fieldIds}-6`}
                       rows={2}
                       value={formData.precedingEvents || ''}
                       onChange={(e) => handleFieldChange('precedingEvents', e.target.value)}
@@ -797,10 +807,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-7`}>
                       Popis jednání příslušníka (domluva, zákonná výzva vč. doslovné citace) <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                      id={`${fieldIds}-7`}
                       rows={3}
                       value={formData.officerAction || ''}
                       onChange={(e) => handleFieldChange('officerAction', e.target.value)}
@@ -809,10 +820,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-8`}>
                       Popis jednání vězněné osoby (vč. doslovné citace vulgarismů a projevů) <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                      id={`${fieldIds}-8`}
                       rows={2}
                       value={formData.targetBehavior || ''}
                       onChange={(e) => handleFieldChange('targetBehavior', e.target.value)}
@@ -821,10 +833,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-9`}>
                       Důvod, jaký DP byl použit, kolikrát, jakým způsobem a na jakou část těla <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                      id={`${fieldIds}-9`}
                       rows={4}
                       value={formData.dpUsedDetails || ''}
                       onChange={(e) => handleFieldChange('dpUsedDetails', e.target.value)}
@@ -834,10 +847,11 @@ export default function PrisonAdministration() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-10`}>
                         Škoda a zranění (odsouzený vs. příslušníci) <span className="text-red-500">*</span>
                       </label>
                       <textarea
+                        id={`${fieldIds}-10`}
                         rows={2}
                         value={formData.injuryDamage || ''}
                         onChange={(e) => handleFieldChange('injuryDamage', e.target.value)}
@@ -845,10 +859,11 @@ export default function PrisonAdministration() {
                       />
                     </div>
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-11`}>
                         Poskytnutí první pomoci (kde a kým) <span className="text-red-500">*</span>
                       </label>
                       <textarea
+                        id={`${fieldIds}-11`}
                         rows={2}
                         value={formData.firstAid || ''}
                         onChange={(e) => handleFieldChange('firstAid', e.target.value)}
@@ -859,10 +874,11 @@ export default function PrisonAdministration() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-12`}>
                         Lékařské ošetření (ZZS, nemocnice) <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-12`}
                         type="text"
                         value={formData.medicalExam || ''}
                         onChange={(e) => handleFieldChange('medicalExam', e.target.value)}
@@ -870,10 +886,11 @@ export default function PrisonAdministration() {
                       />
                     </div>
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-13`}>
                         Informování nadřízeného dle § 20 odst. 2 <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-13`}
                         type="text"
                         value={formData.bossInformed || ''}
                         onChange={(e) => handleFieldChange('bossInformed', e.target.value)}
@@ -881,10 +898,11 @@ export default function PrisonAdministration() {
                       />
                     </div>
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-14`}>
                         Fotodokumentace (čas a kým) <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-14`}
                         type="text"
                         value={formData.photoDoc || ''}
                         onChange={(e) => handleFieldChange('photoDoc', e.target.value)}
@@ -894,10 +912,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-15`}>
                       Vlastní vyhodnocení zakročujícího příslušníka (umístění po zákroku) <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                      id={`${fieldIds}-15`}
                       rows={2}
                       value={formData.evaluation || ''}
                       onChange={(e) => handleFieldChange('evaluation', e.target.value)}
@@ -915,10 +934,11 @@ export default function PrisonAdministration() {
                     </div>
 
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-16`}>
                         Stanovisko vedoucího oddělení <span className="text-red-500">*</span>
                       </label>
                       <textarea
+                        id={`${fieldIds}-16`}
                         rows={2}
                         value={formData.departmentHeadOpinion || ''}
                         onChange={(e) => handleFieldChange('departmentHeadOpinion', e.target.value)}
@@ -927,10 +947,11 @@ export default function PrisonAdministration() {
                     </div>
 
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-17`}>
                         Zpráva o prošetření okolností a důvodů (1. ZŘV) <span className="text-red-500">*</span>
                       </label>
                       <textarea
+                        id={`${fieldIds}-17`}
                         rows={2}
                         value={formData.zrvReport || ''}
                         onChange={(e) => handleFieldChange('zrvReport', e.target.value)}
@@ -939,10 +960,11 @@ export default function PrisonAdministration() {
                     </div>
 
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-18`}>
                         Rozhodnutí ředitele věznice o oprávněnosti a přiměřenosti <span className="text-red-500">*</span>
                       </label>
                       <textarea
+                        id={`${fieldIds}-18`}
                         rows={2}
                         value={formData.directorDecision || ''}
                         onChange={(e) => handleFieldChange('directorDecision', e.target.value)}
@@ -958,10 +980,11 @@ export default function PrisonAdministration() {
                 <div className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-19`}>
                         Jméno a příjmení odsouzeného <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-19`}
                         type="text"
                         value={formData.targetPerson || ''}
                         onChange={(e) => handleFieldChange('targetPerson', e.target.value)}
@@ -969,10 +992,11 @@ export default function PrisonAdministration() {
                       />
                     </div>
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-20`}>
                         Datum narození <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-20`}
                         type="text"
                         value={formData.targetBirth || ''}
                         onChange={(e) => handleFieldChange('targetBirth', e.target.value)}
@@ -980,10 +1004,11 @@ export default function PrisonAdministration() {
                       />
                     </div>
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-21`}>
                         Typ věznice / stupeň zabezpečení <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-21`}
                         type="text"
                         value={formData.prisonType || ''}
                         onChange={(e) => handleFieldChange('prisonType', e.target.value)}
@@ -993,10 +1018,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-22`}>
                       Popis skutku (přesný čas, místo, způsob spáchání, porušení § 28 z. 169/1999 Sb. + VŘV) <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                      id={`${fieldIds}-22`}
                       rows={6}
                       value={formData.actDescription || ''}
                       onChange={(e) => handleFieldChange('actDescription', e.target.value)}
@@ -1005,10 +1031,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-23`}>
                       Vyjádření podezřelého ze spáchání KP (v přímé řeči doslovně) <span className="text-red-500">*</span>
                     </label>
                     <input
+                      id={`${fieldIds}-23`}
                       type="text"
                       value={formData.targetStatement || ''}
                       onChange={(e) => handleFieldChange('targetStatement', e.target.value)}
@@ -1017,10 +1044,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-24`}>
                       Další důkazní prostředky (svědci, záznam o odnětí věci, kamery) <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                      id={`${fieldIds}-24`}
                       rows={3}
                       value={formData.evidenceList || ''}
                       onChange={(e) => handleFieldChange('evidenceList', e.target.value)}
@@ -1034,10 +1062,11 @@ export default function PrisonAdministration() {
               {selectedTemplateId === 'sz' && (
                 <div className="space-y-4 text-xs">
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-25`}>
                       Název záznamu <span className="text-red-500">*</span>
                     </label>
                     <input
+                      id={`${fieldIds}-25`}
                       type="text"
                       value={formData.docTitle || ''}
                       onChange={(e) => handleFieldChange('docTitle', e.target.value)}
@@ -1046,10 +1075,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-26`}>
                       Velení do služby (datum, číslo rozkazu VO VS, stanoviště) <span className="text-red-500">*</span>
                     </label>
                     <input
+                      id={`${fieldIds}-26`}
                       type="text"
                       value={formData.dutyOrder || ''}
                       onChange={(e) => handleFieldChange('dutyOrder', e.target.value)}
@@ -1058,10 +1088,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-27`}>
                       Popis děje a zjištěné skutečnosti (Kdy, Kde, Kdo, Co, Jak, Proč) <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                      id={`${fieldIds}-27`}
                       rows={5}
                       value={formData.eventStory || ''}
                       onChange={(e) => handleFieldChange('eventStory', e.target.value)}
@@ -1070,10 +1101,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-28`}>
                       Provedená opatření v časovém sledu (ISS, VISS, VOVS, lékař) <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                      id={`${fieldIds}-28`}
                       rows={3}
                       value={formData.actionsTimeline || ''}
                       onChange={(e) => handleFieldChange('actionsTimeline', e.target.value)}
@@ -1088,10 +1120,11 @@ export default function PrisonAdministration() {
                 <div className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-29`}>
                         Datum a čas odnětí věci <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-29`}
                         type="text"
                         value={formData.datetime || ''}
                         onChange={(e) => handleFieldChange('datetime', e.target.value)}
@@ -1099,10 +1132,11 @@ export default function PrisonAdministration() {
                       />
                     </div>
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-30`}>
                         Vězněná osoba (jméno, nar., typ věznice) <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-30`}
                         type="text"
                         value={formData.targetPerson || ''}
                         onChange={(e) => handleFieldChange('targetPerson', e.target.value)}
@@ -1112,10 +1146,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-31`}>
                       Přesný soupis odňatých věcí (výrobní čísla, značka, rozměry, barva, série) <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                      id={`${fieldIds}-31`}
                       rows={5}
                       value={formData.itemsList || ''}
                       onChange={(e) => handleFieldChange('itemsList', e.target.value)}
@@ -1124,10 +1159,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-32`}>
                       Důvod odnětí věcí (okolnosti nálezu dle § 12 zákona č. 555/1992 Sb.) <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                      id={`${fieldIds}-32`}
                       rows={3}
                       value={formData.seizureReason || ''}
                       onChange={(e) => handleFieldChange('seizureReason', e.target.value)}
@@ -1142,10 +1178,11 @@ export default function PrisonAdministration() {
                 <div className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-33`}>
                         Jméno napadeného odsouzeného <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-33`}
                         type="text"
                         value={formData.targetPerson || ''}
                         onChange={(e) => handleFieldChange('targetPerson', e.target.value)}
@@ -1153,10 +1190,11 @@ export default function PrisonAdministration() {
                       />
                     </div>
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-34`}>
                         Identifikační kód <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-34`}
                         type="text"
                         value={formData.targetCode || ''}
                         onChange={(e) => handleFieldChange('targetCode', e.target.value)}
@@ -1164,10 +1202,11 @@ export default function PrisonAdministration() {
                       />
                     </div>
                     <div>
-                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-35`}>
                         Ubytování (oddíl, cela) <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id={`${fieldIds}-35`}
                         type="text"
                         value={formData.housingCell || ''}
                         onChange={(e) => handleFieldChange('housingCell', e.target.value)}
@@ -1177,10 +1216,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-36`}>
                       Popis okolností zjištěného případu & prohlídka těla <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                      id={`${fieldIds}-36`}
                       rows={5}
                       value={formData.eventStory || ''}
                       onChange={(e) => handleFieldChange('eventStory', e.target.value)}
@@ -1189,10 +1229,11 @@ export default function PrisonAdministration() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-37`}>
                       Opatření, informování IDS a VISS & lékařská prohlídka na ZS <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                      id={`${fieldIds}-37`}
                       rows={3}
                       value={formData.officerReport || ''}
                       onChange={(e) => handleFieldChange('officerReport', e.target.value)}
@@ -1205,10 +1246,11 @@ export default function PrisonAdministration() {
               {/* Common Signature Footer */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200 dark:border-slate-800 text-xs">
                 <div>
-                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-38`}>
                     Místo a datum podpisu <span className="text-red-500">*</span>
                   </label>
                   <input
+                    id={`${fieldIds}-38`}
                     type="text"
                     value={formData.signatureDate || ''}
                     onChange={(e) => handleFieldChange('signatureDate', e.target.value)}
@@ -1216,10 +1258,11 @@ export default function PrisonAdministration() {
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-39`}>
                     Kompletní podpisová doložka příslušníka <span className="text-red-500">*</span>
                   </label>
                   <input
+                    id={`${fieldIds}-39`}
                     type="text"
                     value={formData.officerSignature || ''}
                     onChange={(e) => handleFieldChange('officerSignature', e.target.value)}

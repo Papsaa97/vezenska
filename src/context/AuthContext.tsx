@@ -57,7 +57,7 @@ interface AuthContextValue {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null; signedIn: boolean }>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   updateProfile: (data: UpdateProfileInput) => Promise<ProfileUpdateResult>;
@@ -251,8 +251,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(
     async (email: string, password: string) => {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      return { error };
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      // Session se vrací spolu s chybou schválně. U slabého hesla může Supabase
+      // přihlášení povolit a chybu vrátit jen jako upozornění; bez session by
+      // volající nepoznal, jestli se uživatel dostal dovnitř, nebo ne.
+      return { error, signedIn: data?.session != null };
     },
     []
   );
