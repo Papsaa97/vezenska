@@ -27,7 +27,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     options: [
               `Přidělit spis zpracovateli přes záložku „Přiděleno“ (nebo volbou při zakládání), protože bez určeného zpracovatele vidí spis všichni uživatelé organizační jednotky`,
               `Přiřadit spisu skartační znak „A“ a lhůtu 50 let v záložce „Skartace“, aby byl spis chráněn proti neoprávněnému smazání jinými referenty`,
-              `Okamžitě zaškrtnout volbu „ZAMKNOUT“, protože bez uzamčení nemůže podatelna dokument doručit do centrální evidence Generálního ředitelství`,
+              `Okamžitě zaškrtnout volbu „ZAMKNOUT“, protože bez uzamčení nemůže podatelna dokument doručit do centrální evidence Generálního ředitelství; přidělení zpracovatele lze provést až po uzamčení spisu`,
               `Odeslat spis ke schválení do schvalovacího workflow vedoucímu oddělení, protože do schválení nelze do spisu vložit žádný vložený dokument`
             ],
     correctOption: 0,
@@ -95,7 +95,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     options: [
               `Zpracovatel spisu má oprávnění sám dokumenty se znakem „V“ skartovat přímým smazáním ze systému bez nutnosti vyhotovení skartačního návrhu`,
               `Systém uživatele upozorní, že před výběrem dokumentů se znakem „S“ (stoupa/skartace) musí nejprve přehodnotit skupinu dokumentů se znakem „V“ (výběr na trvalé uložení nebo skartaci)`,
-              `Dokumenty se znakem „V“ se automaticky při spuštění skartačního modulu převedou do kategorie „S“ a bez posouzení komisí se vymažou ze serveru`,
+              `Dokumenty se znakem „V“ se automaticky při spuštění skartačního modulu převedou do kategorie „S“ a bez posouzení komisí se vymažou ze serveru, přičemž systém na tuto změnu uživatele nijak neupozorňuje`,
               `Skartační znak „V“ označuje dokumenty trvalé hodnoty (Věčný archiv), které se bez výběrového řízení ihned fyzicky předávají Národnímu archivu`
             ],
     correctOption: 1,
@@ -110,7 +110,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     question: 'Kdo podle § 16 NGŘ č. 41/2024 může zpracovat záznam o kázeňském přestupku vězněné osoby a v jaké lhůtě?',
     answer: 'Kterýkoliv zaměstnanec VS ČR (i jiná osoba podílející se na plnění úkolů), zpravidla v den spáchání nebo v den, kdy se o něm dozvěděl',
     options: [
-              `Výhradně speciální pedagog nebo vychovatel oddílu po předchozím projednání s psychologem věznice, nejpozději do 5 pracovních dnů`,
+              `Výhradně speciální pedagog nebo vychovatel oddílu po předchozím projednání s psychologem věznice, nejpozději do 5 pracovních dnů od zjištění skutku; jiný zaměstnanec VS ČR záznam zpracovat nesmí`,
               `Výhradně příslušník vězeňské stráže ve směnném provozu, a to nejpozději do 24 hodin od ukončení mimořádné události`,
               `Pouze ředitel věznice nebo jím písemně pověřený vedoucí oddělení výkonu vazby a trestu ve lhůtě do 30 dnů od zjištění skutku`,
               `Kterýkoliv zaměstnanec VS ČR (i jiná osoba podílející se na plnění úkolů), zpravidla v den spáchání nebo v den, kdy se o něm dozvěděl`
@@ -130,7 +130,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
               `Právní kvalifikaci dle trestního zákoníku, podpis státního zástupce, výpis z rejstříku trestů a otisky prstů podezřelého odsouzeného`,
               `Subjektivní hodnocení chování odsouzeného za celé období výkonu trestu, stanovisko psychologa oddělení a souhlas dozorčího orgánu`,
               `Přesné určení času a místa, způsob spáchání, vylíčení průběhu s uvedením porušené zákonné povinnosti (§ 28 zákona č. 169/1999 Sb.) a seznam svědků`,
-              `Rámcové časové období, obecné konstatování porušení vnitřního řádu bez citace zákona a návrh konkrétního kázeňského trestu zpracovatelem`
+              `Rámcové časové období, obecné konstatování porušení vnitřního řádu bez citace zákona a návrh konkrétního kázeňského trestu zpracovatelem; seznam svědků ani přesné místo skutku se neuvádějí`
             ],
     correctOption: 2,
     rationale: 'Dle NGŘ č. 41/2024 musí popis skutku obsahovat přesný čas, přesné místo, způsob spáchání, vylíčení průběhu s konkrétním porušením zákonné povinnosti (např. § 28 odst. 1, 2, 3 z. č. 169/1999 Sb.), popř. VŘV, a seznam svědků.',
@@ -180,7 +180,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     options: [
               `Číslo jednací spisu ETŘ, seznam všech přítomných vězněných osob na oddíle a záznam o provedené dechové zkoušce na alkohol`,
               `Všeobecný popis incidentu, podpis zakročujícího příslušníka, stanovisko psychologa a návrh na náhradu způsobené škody na majetku VS ČR`,
-              `Pouze datum a čas zákroku, jméno velitele směny, typ použitého donucovacího prostředku a konečné rozhodnutí ředitele věznice o oprávněnosti`,
+              `Pouze datum a čas zákroku, jméno velitele směny, typ použitého donucovacího prostředku a konečné rozhodnutí ředitele věznice o oprávněnosti; popis předcházející výzvy, vzniklá zranění, poskytnutí první pomoci ani grafické vyznačení zasažených míst se do první části záznamu neuvádějí`,
               `Č. rozkazu k velení do služby, datum, čas a místo, co předcházelo (domluva, výzva vč. citace), jednání vězněného, přesný popis použitého DP, zranění/škoda, první pomoc, lékařské ošetření, fotodokumentace a grafické vyznačení zasažených míst`
             ],
     correctOption: 3,
@@ -198,7 +198,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
               `Stanovisko i konečné rozhodnutí zpracovává samostatně zakročující příslušník společně s velitelem směny bez účasti vedení věznice`,
               `Stanovisko zpracovává vedoucí oddělení, zprávu o prošetření zpracovává 1. ZŘV a konečné rozhodnutí o oprávněnosti a přiměřenosti vydává ředitel věznice`,
               `Druhou část zpracovává výhradně dozorující státní zástupce Krajského státního zastupitelství ve spolupráci s vyšetřovatelem GIBS`,
-              `Stanovisko vydává bezpečnostní technik věznice a konečné schválení podléhá výhradně souhlasu ošetřujícího lékaře zdravotnického střediska`
+              `Stanovisko vydává bezpečnostní technik věznice a konečné schválení podléhá výhradně souhlasu ošetřujícího lékaře zdravotnického střediska; ředitel věznice ani 1. zástupce ředitele se na prošetření nepodílejí`
             ],
     correctOption: 1,
     rationale: 'Část druhá obsahuje stanovisko vedoucího oddělení zakročujícího příslušníka, zprávu o prošetření okolností a důvodů 1. zástupcem ředitele věznice (1. ZŘV) a závazné rozhodnutí ředitele věznice o oprávněnosti a přiměřenosti zákroku.',
@@ -230,7 +230,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     answer: 'Lustraci lze podat pouze žadateli z OČTŘ, který sdělí platné bezpečnostní heslo vydané odborem správním GŘ VS ČR (platnost hesla je zpravidla 3 měsíce)',
     options: [
               `Lustraci lze podat pouze žadateli z OČTŘ, který sdělí platné bezpečnostní heslo vydané odborem správním GŘ VS ČR (platnost hesla je zpravidla 3 měsíce)`,
-              `Telefonické lustrace jsou ze zákona přísně zakázány a veškeré dotazy OČTŘ musí být zasílány výhradně poštou na formuláři s kolkem`,
+              `Telefonické lustrace jsou ze zákona přísně zakázány a veškeré dotazy OČTŘ musí být zasílány výhradně poštou na formuláři s kolkem v hodnotě 100 Kč; bezpečnostní hesla odbor správní GŘ VS ČR nevydává`,
               `Informace lze podat kterémukoliv policistovi po sdělení čísla služebního průkazu a jednorázového denního hesla velitele směny`,
               `Lustraci lze sdělit advokátovi nebo osobě blízké, pokud uvedou přesné rodné číslo vězněné osoby a číslo trestního spisu soudu`
             ],
@@ -247,7 +247,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     answer: 'Orgánům činným v trestním řízení a státním orgánům k výkonu správy, a dále osobám blízkým, věřitelům či zaměstnavatelům, pokud osvědčí právní zájem',
     options: [
               `Pouze Veřejnému ochránci práv a zástupcům Českého červeného kříže v rámci pravidelných monitorovacích návštěv věznice`,
-              `Jakékoliv fyzické nebo právnické osobě na základě žádosti podle zákona č. 106/1999 Sb. o svobodném přístupu k informacím bez omezení`,
+              `Jakékoliv fyzické nebo právnické osobě na základě žádosti podle zákona č. 106/1999 Sb. o svobodném přístupu k informacím bez omezení; osvědčení právního zájmu se v tomto případě nevyžaduje`,
               `Výhradně a výhradně obhájci vězněné osoby, ostatním subjektům včetně OČTŘ nelze údaj bez písemného souhlasu vězně poskytnout`,
               `Orgánům činným v trestním řízení a státním orgánům k výkonu správy, a dále osobám blízkým, věřitelům či zaměstnavatelům, pokud osvědčí právní zájem`
             ],
@@ -283,7 +283,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
               `Dle § 28 zákona o výkonu trestu, přičemž záznam se povinně vystavuje výhradně u předmětů s odhadní hodnotou přesahující částku 10 000 Kč`,
               `Dle § 12 odst. 1 zákona č. 555/1992 Sb., s přesným a nezaměnitelným popisem věci (výrobní čísla, značka, barva, rozměry, tvar a počet tablet, nominální hodnoty a série bankovek) a uvedením důvodu odnětí`,
               `Dle zákona o odpovědnosti za přestupky s hromadným paušálním popisem bez nutnosti uvádět výrobní čísla elektroniky nebo nominální hodnoty bankovek`,
-              `Dle § 78 trestního řádu jako vydání věci, přičemž věci se výhradně orientačně zváží v celkovém balíku bez individuální specifikace rozměrů a značek`
+              `Dle § 78 trestního řádu jako vydání věci, přičemž věci se výhradně orientačně zváží v celkovém balíku bez individuální specifikace rozměrů a značek; důvod odnětí se do záznamu neuvádí, protože vyplývá ze samotné povahy vydané věci`
             ],
     correctOption: 1,
     rationale: 'Dle § 12 odst. 1 z. č. 555/1992 Sb. je příslušník oprávněn odebrat věc, kterou vězněná osoba nesmí mít u sebe. V záznamu musí být věci přesně a nezaměnitelně popsány (např. výrobní číslo telefonu, rozměry čepele nože, série bankovek).',
@@ -299,7 +299,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     options: [
               `Sepsat záznam (příloha č. 1), provést prohlídku těla, neprodleně informovat IDS a VISS, zajistit lékařskou prohlídku na ZS a vyžádat odborná stanoviska (psycholog, prevence a stížnosti)`,
               `Vyřešit incident na místě ústní domluvou mezi odsouzenými, útočníka přemístit na jinou celu bez lékařské prohlídky a věc neevidovat`,
-              `Postoupit případ přímo okresnímu soudu k občanskoprávnímu řízení bez provedení osobní prohlídky těla a bez vyrozumění orgánů věznice`,
+              `Postoupit případ přímo okresnímu soudu k občanskoprávnímu řízení bez provedení osobní prohlídky těla a bez vyrozumění orgánů věznice; stanoviska psychologa ani oddělení prevence a stížností se nevyžadují a lékařská prohlídka se neprovádí`,
               `Zapsat událost výhradně do střídací knihy dozorce oddílu a vyčkat na pravidelné měsíční hlášení bezpečnostní komisi věznice`
             ],
     correctOption: 0,
@@ -314,7 +314,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     question: 'Jaké prvky tvoří kompletní podpisovou doložku příslušníka VS ČR v úředním záznamu?',
     answer: 'Vlastnoruční podpis, hodnostní označení zkratkou, služební hodnost, akademický titul, jméno, příjmení, služební číslo a služební zařazení (např. v. ref. strm. Bc. Jan Novák, DiS., sl. č. 12345, strážný)',
     options: [
-              `Elektronická adresa, telefonní linka na stanoviště a civilní pracovní zařazení bez uvedení služební hodnosti a hodnostního označení`,
+              `Elektronická adresa, telefonní linka na stanoviště a civilní pracovní zařazení bez uvedení služební hodnosti a hodnostního označení, přičemž akademický titul, služební číslo ani vlastnoruční podpis se v doložce neuvádějí`,
               `Pouze služební číslo a kryptonym útvaru z důvodu utajení identity příslušníka před vězněnými osobami a jejich obhájci`,
               `Pouze vlastnoruční podpis, kulaté úřední razítko věznice a datum podpisu bez uvedení hodnosti, jména a služebního čísla`,
               `Vlastnoruční podpis, hodnostní označení zkratkou, služební hodnost, akademický titul, jméno, příjmení, služební číslo a služební zařazení (např. v. ref. strm. Bc. Jan Novák, DiS., sl. č. 12345, strážný)`
@@ -331,7 +331,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     question: 'Co stanoví metodika ETŘ ohledně políčka „ZAMKNOUT“ při editaci popisu spisu?',
     answer: 'Při běžné editaci se na políčko „ZAMKNOUT“ NIKDY nekliká, protože uzamčení spisu omezí přístup pouze na zpracovatele a jeho přímé vedení a vyžaduje odůvodněný deliktní režim',
     options: [
-              `Na políčko „ZAMKNOUT“ je povinnost kliknout po každé dílčí editaci, aby se zabránilo souběžnému zápisu jiných referentů a aktivoval se podpisový certifikát`,
+              `Na políčko „ZAMKNOUT“ je povinnost kliknout po každé dílčí editaci, aby se zabránilo souběžnému zápisu jiných referentů a aktivoval se podpisový certifikát; bez uzamčení nelze popis spisu vůbec uložit a změny se po odhlášení uživatele ztratí`,
               `Kliknutím na políčko „ZAMKNOUT“ se spis trvale převede do skartačního řízení a odešle k archivaci do Národního archivu`,
               `Políčko „ZAMKNOUT“ slouží k automatickému odeslání dokumentu prostřednictvím informačního systému datových schránek (ISDS)`,
               `Při běžné editaci se na políčko „ZAMKNOUT“ NIKDY nekliká, protože uzamčení spisu omezí přístup pouze na zpracovatele a jeho přímé vedení a vyžaduje odůvodněný deliktní režim`

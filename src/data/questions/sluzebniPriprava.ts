@@ -9,7 +9,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "answer": "K zajištění pořádku a bezpečnosti, k ochraně osob a majetku a proti maření účelu vazby/výkonu trestu; musí předcházet výzva „Jménem zákona!“ s výstrahou, ledaže je bezprostředně ohrožen život/zdraví a zákrok nesnese odkladu.",
     "options": [
       "Při jakémkoliv verbálním neuposlechnutí pokynu dozorce, přičemž výzva „Jménem zákona!“ postačí až po dokončení donucovacího zákroku.",
-      "K překonání jakéhokoli odporu odsouzeného; výzva s výstrahou je povinná vždy a zákon z ní nepřipouští žádnou výjimku ani při přímém ohrožení života.",
+      "K překonání jakéhokoli odporu odsouzeného bez ohledu na jeho intenzitu; výzva s výstrahou je povinná vždy a zákon z ní nepřipouští žádnou výjimku ani tehdy, je-li bezprostředně ohrožen život nebo zdraví a zákrok nesnese odkladu.",
       "Výhradně k odvrácení fyzického útoku na příslušníka; použití DP musí předem písemně schválit velitel směny nebo dozorující státní zástupce.",
       "K zajištění pořádku a bezpečnosti, k ochraně osob a majetku a proti maření účelu vazby/výkonu trestu; musí předcházet výzva „Jménem zákona!“ s výstrahou, ledaže je bezprostředně ohrožen život/zdraví a zákrok nesnese odkladu."
     ],
@@ -26,7 +26,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "answer": "a) nutná obrana (život/zdraví), b) překonání odporu mařícího zákrok ohrožujícího životy, c) zamezení útěku vězněné osoby ze střeženého objektu/eskorty, d) odvrácení nebezpečného útoku na objekt po marné výzvě, e) zneškodnění nebezpečného zvířete.",
     "options": [
       "a) nutná obrana majetku věznice, b) zastavení neuposlechnuvšího vozidla, c) varování před vstupem do věznice, d) vynucení poslušnosti při sčítání, e) zneškodnění dronu nad věznicí.",
-      "a) odvrácení jakéhokoli útoku na dozorce, b) zamezení svévolného odchodu z nestřeženého pracoviště, c) usmrcení toulavého psa v okolí, d) vynucení otevření cely, e) při zásahu proti neozbrojené stávce.",
+      "a) odvrácení jakéhokoli útoku na dozorce bez ohledu na jeho intenzitu, b) zamezení svévolného odchodu odsouzeného z nestřeženého pracoviště, c) usmrcení toulavého psa v okolí věznice, d) vynucení otevření cely po marné výzvě, e) při zásahu proti neozbrojené hromadné stávce odsouzených.",
       "a) nutná obrana (život/zdraví), b) překonání odporu mařícího zákrok ohrožujícího životy, c) zamezení útěku vězněné osoby ze střeženého objektu/eskorty, d) odvrácení nebezpečného útoku na objekt po marné výzvě, e) zneškodnění nebezpečného zvířete.",
       "a) krajní nouze při požáru, b) zamezení vstupu nepovolaných osob na parkoviště soudu, c) zastavení prchajícího svědka, d) donucení k podrobení se osobní prohlídce, e) likvidace nebezpečného nákladu."
     ],
@@ -42,7 +42,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Které donucovací prostředky jsou taxativně vyjmenovány v § 17 zákona č. 555/1992 Sb.?",
     "answer": "Hmaty, chvaty, údery a kopy sebeobrany, předváděcí řetízky, pouta, poutací popruhy, pouta s poutacím opaskem, slzotvorný/elektrický prostředek, obušek, služební pes, vodní stříkač, zásahová výbuška, expanzní zbraně, úder zbraní, hrozba zbraní, varovný výstřel, vytlačování štítem/vozidlem a prostředek k zamezení prostorové orientace.",
     "options": [
-      "Hmaty, údery a kopy sebeobrany, služební teleskopický obušek, pouta s řetízkem, paralyzér Taser, hypodermická uspávací puška a akustické dělo (LRAD).",
+      "Hmaty, údery a kopy sebeobrany, služební teleskopický obušek, pouta s řetízkem, paralyzér Taser, hypodermická uspávací puška, akustické dělo (LRAD), přenosný vrhač sítě, zastavovací hřeby, oslepující granát, chemická znehybňující pěna, vodní dělo, mechanická svěrací kazajka se zádovým popruhem a dálkově ovládaný elektrický obojek s GPS modulem.",
       "Hmaty a chvaty, gumový obušek, pouta, služební pes, přenosný vrhač sítě, paralyzující plyn a automatická palná zbraň s tlumičem.",
       "Hmaty, chvaty, údery a kopy sebeobrany, předváděcí řetízky, pouta, poutací popruhy, pouta s poutacím opaskem, slzotvorný/elektrický prostředek, obušek, služební pes, vodní stříkač, zásahová výbuška, expanzní zbraně, úder zbraní, hrozba zbraní, varovný výstřel, vytlačování štítem/vozidlem a prostředek k zamezení prostorové orientace.",
       "Pouta, předváděcí páky, elektrický obušek, slzotvorný granát s fragmentací, zastavovací hřeby a mechanická svěrací kazajka."
@@ -61,7 +61,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "options": [
       "Vůči obviněným ve výkonu vazby a osobám s psychiatrickou diagnózou (povolena výhradně hrozba namířenou střelnou zbraní a varovný výstřel).",
       "Vůči těhotným ženám, osobám vysokého věku, osobám se zjevným tělesným postižením a dětem mladším 15 let (smí použít pouze hmaty a chvaty, neohrožují-li bezprostředně život).",
-      "Vůči mladistvým do 18 let, osobám zbaveným svéprávnosti, cizím státním příslušníkům a osobám v ústavním léčení (nesmí se použít žádné DP včetně hmatů a chvatů).",
+      "Vůči mladistvým do 18 let, osobám zbaveným svéprávnosti, cizím státním příslušníkům a osobám v ústavním léčení, vůči nimž nesmí být použit žádný donucovací prostředek včetně hmatů a chvatů, a to ani tehdy, je-li bezprostředně ohrožen život příslušníka.",
       "Vůči ženám obecně, osobám starším 60 let a prvotrestaným odsouzeným (lze použít výhradně slzotvorný sprej a pouta, nikoli obušek a psa)."
     ],
     "correctOption": 1,
@@ -76,7 +76,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaký je stanovený postup bezpečné kontroly zbraně (vybití zbraně) u lapače střel?",
     "answer": "1. Zbraň směřuje do lapače střel (úhel 45°), 2. Vyjmout zásobník, 3. Zkontrolovat nábojovou komoru (zrakem a hmatem), 4. Vypustit závěr, 5. Rána jistoty do lapače, 6. Zajistit/zasunout do pouzdra.",
     "options": [
-      "1. Zbraň směřuje do lapače střel, 2. Vyjmout zásobník, 3. Dvakrát promáčknout spoušť naprázdno, 4. Natáhnout závěr do zadní polohy a zajistit manuální pojistkou.",
+      "1. Zbraň směřuje do lapače střel, 2. Vyjmout zásobník, 3. Dvakrát promáčknout spoušť naprázdno, 4. Natáhnout závěr do zadní polohy a zajistit manuální pojistkou, 5. Nábojovou komoru kontrolovat pouze zrakem, hmatová kontrola se u služebních pistolí neprovádí.",
       "1. Zbraň směřuje do lapače střel (úhel 45°), 2. Vyjmout zásobník, 3. Zkontrolovat nábojovou komoru (zrakem a hmatem), 4. Vypustit závěr, 5. Rána jistoty do lapače, 6. Zajistit/zasunout do pouzdra.",
       "1. Zbraň směřuje do země, 2. Vyjmout zásobník, 3. Stisknout spoušť bez natažení závěru, 4. Vizuálně zkontrolovat výhozní okénko, 5. Zasunout zbraň do pouzdra.",
       "1. Zbraň směřuje do lapače, 2. Natáhnout závěr vzad a vypustit ránu jistoty, 3. Vyjmout zásobník, 4. Zkontrolovat komoru, 5. Zasunout do pouzdra."
@@ -110,7 +110,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaký je správný a okamžitý postup při masivním tepenném krvácení z končetiny (např. po bodném poranění)?",
     "answer": "Okamžitě naložit turniket (škrtidlo) 5–7 cm nad ránu (mimo kloub), utáhnout vratidlo do úplného zastavení krvácení, zajistit a poznamenat přesný čas naložení na pásek/čelo zraněného.",
     "options": [
-      "Naložit turniket co nejníže pod ránu směrem k prstům, vratidlo utáhnout výhradně mírně pro zachování hmatného tepu na periferii a ránu vypláchnout peroxidem vodíku.",
+      "Naložit turniket co nejníže pod ránu směrem k prstům, vratidlo utáhnout výhradně mírně pro zachování hmatného tepu na periferii, ránu vypláchnout peroxidem vodíku a čas naložení nikam nezaznamenávat.",
       "Přiložit sterilní gázu na ránu, končetinu svěsit dolů pod úroveň srdce a škrtidlo naložit přímo přes kloubní spojení s povolením každých 10 minut.",
       "Provést dezinfekci rány jodovým roztokem, naložit tlakový obvaz s obráceným škrtidlem a končetinu fixovat dlahou bez záznamu času aplikace.",
       "Okamžitě naložit turniket (škrtidlo) 5–7 cm nad ránu (mimo kloub), utáhnout vratidlo do úplného zastavení krvácení, zajistit a poznamenat přesný čas naložení na pásek/čelo zraněného."
@@ -127,10 +127,10 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaký je správný poměr stlačování hrudníku a umělých vdechů při základní resuscitaci dospělého a jaká je frekvence dle ERC Guidelines?",
     "answer": "Poměr 30 stlačení : 2 vdechy, frekvence 100–120 stlačení za minutu, hloubka 5–6 cm uprostřed hrudníku na tvrdé podložce; co nejrychleji připojit AED.",
     "options": [
-      "Pouze nepřetržité umělé dýchání bez masáže hrudníku frekvencí 20 vdechů za minutu až do příjezdu záchranné služby.",
+      "Pouze nepřetržité umělé dýchání bez masáže hrudníku frekvencí 20 vdechů za minutu až do příjezdu záchranné služby. Automatizovaný externí defibrilátor se u dospělých nepoužívá.",
       "Poměr 30 stlačení : 5 vdechů, frekvence 140–160 stlačení za minutu, hloubka 8–10 cm v oblasti žaludku; defibrilátor aplikovat výhradně při přítomnosti lékaře.",
       "Poměr 30 stlačení : 2 vdechy, frekvence 100–120 stlačení za minutu, hloubka 5–6 cm uprostřed hrudníku na tvrdé podložce; co nejrychleji připojit AED.",
-      "Poměr 15 stlačení : 2 vdechy, frekvence 80 stlačení za minutu, hloubka 2–3 cm na boku postiženého; AED připojit až po 10 minutách manuální KPR."
+      "Poměr 15 stlačení : 2 vdechy, frekvence 80 stlačení za minutu, hloubka 2–3 cm na boku postiženého; AED připojit až po 10 minutách manuální KPR. Podložka pod hrudníkem musí být měkká, aby nedošlo ke zlomení žeber."
     ],
     "correctOption": 2,
     "rationale": "Dle mezinárodních doporučení ERC (European Resuscitation Council) je standardem pro dospělé KPR v poměru 30:2 s frekvencí 100-120/min, minimálním přerušováním a včasnou defibrilací pomocí AED.",
@@ -144,9 +144,9 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaké povinnosti má příslušník VS ČR bezprostředně po použití donucovacích prostředků nebo zbraně dle § 20 zákona č. 555/1992 Sb.?",
     "answer": "Poskytnout první pomoc a zajistit lékařské ošetření zraněných, zabezpečit místo činu/stopy, ihned událost ohlásit nadřízenému a sepsat písemnou zprávu (úřední záznam).",
     "options": [
-      "Předat zasaženou osobu na celu bez lékařského ošetření, provést očistu výstroje a zprávu o použití DP sepsat až po skončení víkendu.",
-      "Ověřit totožnost svědků z řad odsouzených, podat telefonické hlášení dozorujícímu soudci a vyčkat s poskytnutím první pomoci na příjezd výjezdové skupiny GIBS.",
-      "Ihned zajistit střelivo do skladu zbraní, vyhotovit fotodokumentaci na soukromý mobilní telefon a ústně informovat předsedu odborové organizace.",
+      "Předat zasaženou osobu na celu bez lékařského ošetření, provést očistu výstroje a zprávu o použití DP sepsat až po skončení víkendu. Nadřízený se o události vyrozumí až spolu s odevzdáním zprávy.",
+      "Ověřit totožnost svědků z řad odsouzených, podat telefonické hlášení dozorujícímu soudci a vyčkat s poskytnutím první pomoci na příjezd výjezdové skupiny GIBS, která jako jediná smí se zraněným manipulovat a zajistit místo zákroku.",
+      "Ihned zajistit střelivo do skladu zbraní, vyhotovit fotodokumentaci na soukromý mobilní telefon a ústně informovat předsedu odborové organizace. Místo zákroku se nezajišťuje a stopy se uklidí spolu s běžným úklidem oddílu.",
       "Poskytnout první pomoc a zajistit lékařské ošetření zraněných, zabezpečit místo činu/stopy, ihned událost ohlásit nadřízenému a sepsat písemnou zprávu (úřední záznam)."
     ],
     "correctOption": 3,
@@ -161,9 +161,9 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaká jsou bezpečnostní pravidla a omezení při použití elektrického paralyzéru (Taser / kontaktní paralyzér)?",
     "answer": "Nesmí se cílit na hlavu, krk a oblast srdce; nesmí se použít v prostředí s rizikem výbuchu (hořlavé plyny, benzín) ani na osobách na vyvýšených místech s hrozbou pádu z výšky.",
     "options": [
-      "Primárním cílem zásahu sondami je vždy obličejová část a krk k okamžitému vyřazení zraku; v prostředí s hořlavými parami lze taser použít bez omezení.",
-      "Sondy se aplikují výhradně do oblasti hrudní kosti z důvodu maximálního účinku na srdeční rytmus; aplikace musí trvat nepřetržitě minimálně 30 sekund.",
-      "Taser je povolen výhradně jako kontaktní paralyzér bez vystřelení sond; jeho použití je zakázáno v celách s betonovou podlahou pro riziko probíjení.",
+      "Primárním cílem zásahu sondami je vždy obličejová část a krk k okamžitému vyřazení zraku; v prostředí s hořlavými parami i na osobách stojících na vyvýšeném místě lze paralyzér použít bez jakéhokoli omezení.",
+      "Sondy se aplikují výhradně do oblasti hrudní kosti z důvodu maximálního účinku na srdeční rytmus; aplikace musí trvat nepřetržitě minimálně 30 sekund. Riziko pádu zasažené osoby z výšky se nezohledňuje.",
+      "Taser je povolen výhradně jako kontaktní paralyzér bez vystřelení sond; jeho použití je zakázáno v celách s betonovou podlahou pro riziko probíjení. V prostředí s hořlavými plyny je naopak jeho použití bez omezení.",
       "Nesmí se cílit na hlavu, krk a oblast srdce; nesmí se použít v prostředí s rizikem výbuchu (hořlavé plyny, benzín) ani na osobách na vyvýšených místech s hrozbou pádu z výšky."
     ],
     "correctOption": 3,
@@ -181,7 +181,7 @@ export const sluzebniPripravaQuestions: Question[] = [
       "Aplikovat ledové obklady s ledem přímo na ránu po dobu alespoň 60 minut a ránu ponechat zcela otevřenou na vzduchu bez krytí.",
       "Okamžitě chladit čistou studenou vodou (cca 10–20 minut), nestrhávat přiškvařený oděv, nepropichovat puchýře, sterilně překrýt popáleninovým krytím.",
       "Puchýře sterilně propíchnout k vypuštění tekutiny, aplikovat mastný krém nebo zásyp a pevně obvázat elastickým obinadlem.",
-      "Strhnout přiškvařené zbytky oděvu z popáleného místa pinzetou, ránu dezinfikovat koncentrovaným lihem a přiložit suchý froté ručník."
+      "Strhnout přiškvařené zbytky oděvu z popáleného místa pinzetou, ránu dezinfikovat koncentrovaným lihem, přiložit suchý froté ručník a chlazení vodou zásadně neprovádět."
     ],
     "correctOption": 1,
     "rationale": "Při popáleninách je prioritou šetrné chlazení vodou o teplotě cca 15 °C k zastavení tepelné destrukce tkáně a prevence infekce sterilním nepřilnavým krytím bez nanášení mastí.",
@@ -196,7 +196,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "answer": "Zákrok provádí minimálně 3–4 vystrojení příslušníci s balistickými a úderovými štíty, zásahovými přilbami, předem určenými rolemi (štít, fixace rukou, poutání, jištění) a pod vedením velitele.",
     "options": [
       "Zákrok provádí minimálně 3–4 vystrojení příslušníci s balistickými a úderovými štíty, zásahovými přilbami, předem určenými rolemi (štít, fixace rukou, poutání, jištění) a pod vedením velitele.",
-      "Zákrok provádí dvojice dozorců bez ochranných pomůcek, přičemž první dozorce ihned použije střelnou zbraň a druhý provádí videozáznam na tablet.",
+      "Zákrok provádí dvojice dozorců bez ochranných pomůcek a bez rozdělení rolí, přičemž první dozorce ihned po otevření dveří použije střelnou zbraň a druhý pořizuje videozáznam na služební tablet pro potřeby následného řízení.",
       "Do cely vstupují současně všichni volní příslušníci směny bez stanovení konkrétních rolí a agresora vytlačují holýma rukama k oknu cely.",
       "Vstup do cely zahajuje samostatně velitel směny bez štítu za účelem vyjednávání, zatímco ostatní příslušníci čekají na chodbě u mříže."
     ],
@@ -212,7 +212,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jak se v taktické první pomoci (TCCC) ošetřuje otevřené poranění hrudníku (nasávající rána hrudníku)?",
     "answer": "Aplikací hrudního chlopňového krytí (Chest Seal s ventilem), které brání nasávání vzduchu do pohrudniční dutiny, ale umožňuje únik krve a vzduchu ven.",
     "options": [
-      "Ránu hermeticky uzavřít neprodyšnou náplastí ze všech 4 stran bez ventilu a zraněného uložit na záda se zvednutými dolními končetinami.",
+      "Ránu hermeticky uzavřít neprodyšnou náplastí ze všech 4 stran bez jakéhokoli ventilu a zraněného uložit na záda se zvednutými dolními končetinami a hlavou v hlubokém záklonu.",
       "Aplikací hrudního chlopňového krytí (Chest Seal s ventilem), které brání nasávání vzduchu do pohrudniční dutiny, ale umožňuje únik krve a vzduchu ven.",
       "Provést okamžitý výplach rány fyziologickým roztokem, zavést škrtidlo přes hrudník a nutit zraněného k hlubokému usilovnému dýchání.",
       "Přiložit suchý savý obvaz, zraněného položit na zdravý bok a provádět nepřetržitou masáž hrudníku i při zachovaném vědomí."
@@ -229,7 +229,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaké jsou zásady správného nasazení služebních pout na ruce osoby za zády?",
     "answer": "Pouta nasadit na zápěstí klíčovými dírkami směrem k tělu (nahoru/k tělu), dotáhnout na vůli cca jednoho prstu (nesmí škrtit oběh) a VŽDY uzamknout pojistku proti samovolnému dotažení.",
     "options": [
-      "Pouta nasadit klíčovými dírkami směrem od těla k prstům, utáhnout na doraz bez vůle a pojistku ponechat neuzamčenou pro rychlé sejmutí v případě potřeby.",
+      "Pouta nasadit klíčovými dírkami směrem od těla k prstům, utáhnout vždy na doraz bez jakékoli vůle a pojistku proti dotažení ponechat neuzamčenou, aby bylo možné pouta v případě potřeby rychle sejmout i bez klíče.",
       "Pouta nasadit na předloktí nad loketní kloub, přičemž dlaně spoutané osoby musí směřovat od sebe a pojistka se aktivuje výhradně při transportu vozidlem.",
       "Poutat vždy pouze jednu ruku k pevné konstrukci cely nebo nábytku, aby měl odsouzený volnou ruku pro manipulaci s osobními věcmi.",
       "Pouta nasadit na zápěstí klíčovými dírkami směrem k tělu (nahoru/k tělu), dotáhnout na vůli cca jednoho prstu (nesmí škrtit oběh) a VŽDY uzamknout pojistku proti samovolnému dotažení."
@@ -246,9 +246,9 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaký je okamžitý střelecký drill při selhání výstřelu (tzv. zádržka zbraně / Tap-Rack-Bang)?",
     "answer": "1. Dorazit zásobník zespodu dlaní (TAP), 2. Prudce natáhnout závěr vzad a vyhodit vadný náboj (RACK), 3. Zamířit a pokračovat ve střelbě (BANG).",
     "options": [
-      "1. Vypustit zásobník na zem, 2. Stisknout spoušť naprázdno třikrát za sebou, 3. Znovu vložit vystřelený náboj do komory výhozním okénkem.",
-      "1. Natáhnout kohout do zadní polohy palcem, 2. Vyčkat 60 sekund pro případ opožděného zážehu, 3. Zbraň odložit do pouzdra s nábojem v komoře.",
-      "1. Zajistit zbraň manuální pojistkou, 2. Vyjmout hlaveň a vratnou pružinu, 3. Zkontrolovat úderník a pokračovat v míření.",
+      "1. Vypustit zásobník na zem, 2. Stisknout spoušť naprázdno třikrát za sebou, 3. Znovu vložit vystřelený náboj do komory výhozním okénkem. Zásobník se poté ponechá ležet na zemi až do konce střelby.",
+      "1. Natáhnout kohout do zadní polohy palcem, 2. Vyčkat 60 sekund pro případ opožděného zážehu, 3. Zbraň odložit do pouzdra s nábojem v komoře a závadu hlásit až po skončení střeleckého dne.",
+      "1. Zajistit zbraň manuální pojistkou, 2. Vyjmout hlaveň a vratnou pružinu, 3. Zkontrolovat úderník a pokračovat v míření. Vadný náboj se z komory nevyhazuje, protože po zajištění zbraně nehrozí jeho zážeh.",
       "1. Dorazit zásobník zespodu dlaní (TAP), 2. Prudce natáhnout závěr vzad a vyhodit vadný náboj (RACK), 3. Zamířit a pokračovat ve střelbě (BANG)."
     ],
     "correctOption": 3,
@@ -263,7 +263,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaká látka a typ trysky se standardně využívá u služebních obranných sprejů ve výzbroji VS ČR a jak se aplikují?",
     "answer": "Látka OC (Oleoresin Capsicum - výtažek z kajenského pepře), tryska typu JET (tekutá střela/pěna) s dosahem 3–5 m, aplikace krátkými dávkami do oblasti očí a dýchacích cest.",
     "options": [
-      "Látka CN (chloracetofenon) v provedení FOG (široký aerosolový mrak) s dosahem 10 metrů, aplikace souvislým vystříkáním celé nádobky do středu místnosti.",
+      "Látka CN (chloracetofenon) v provedení FOG (široký aerosolový mrak) s dosahem 10 metrů, aplikace souvislým vystříkáním celé nádobky do středu místnosti bez ohledu na polohu zasahujících příslušníků a přítomnost dalších osob.",
       "Syntetický nervově paralytický roztok s tryskou typu CONE, aplikace nepřetržitým proudem do oblasti uší a temene hlavy.",
       "Látka CS (ortho-chlorbenzylidenmalononitril) v práškové formě, aplikace rozprášením na oděv a končetiny útočníka ze vzdálenosti minimálně 7 metrů.",
       "Látka OC (Oleoresin Capsicum - výtažek z kajenského pepře), tryska typu JET (tekutá střela/pěna) s dosahem 3–5 m, aplikace krátkými dávkami do oblasti očí a dýchacích cest."
@@ -280,10 +280,10 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaké jsou příznaky a první pomoc při těžké alergické reakci (anafylaxi) s otokem dýchacích cest?",
     "answer": "Dušnost, otok jazyka a hrdla, kopřivka, pokles tlaku; okamžitě aplikovat autoinjektor s adrenalinem (EpiPen) do zevní strany stehna a volat ZZS.",
     "options": [
-      "Svalový třes a hyperventilace; podat uklidňující sedativa, zraněného posadit k otevřenému oknu a vyčkat bez volání ZZS.",
-      "Krvácení z nosu a ztuhlost šíje; aplikovat autoinjektor s inzulínem přímo do břišní stěny a postiženého nutit k intenzivní chůzi.",
+      "Svalový třes a hyperventilace; podat uklidňující sedativa, zraněného posadit k otevřenému oknu a vyčkat bez volání ZZS. Adrenalinový autoinjektor se u alergické reakce nikdy nepoužívá.",
+      "Krvácení z nosu a ztuhlost šíje; aplikovat autoinjektor s inzulínem přímo do břišní stěny a postiženého nutit k intenzivní chůzi. Otok jazyka a hrdla mezi příznaky anafylaxe nepatří.",
       "Dušnost, otok jazyka a hrdla, kopřivka, pokles tlaku; okamžitě aplikovat autoinjektor s adrenalinem (EpiPen) do zevní strany stehna a volat ZZS.",
-      "Zvýšená teplota a křeče v břiše; podat perorálně tabletu aspirinu, zapít velkým množstvím studené vody a uložit postiženého do polohy na břiše."
+      "Zvýšená teplota a křeče v břiše; podat perorálně tabletu aspirinu, zapít velkým množstvím studené vody, uložit postiženého do polohy na břiše a záchrannou službu volat až při ztrátě vědomí."
     ],
     "correctOption": 2,
     "rationale": "Anafylaxe bezprostředně ohrožuje život udušením a oběhovým selháním. Jediným kauzálním lékem první volby je intramuskulární podání adrenalinu do stehna.",
@@ -299,8 +299,8 @@ export const sluzebniPripravaQuestions: Question[] = [
     "options": [
       "Hlava, krk, oblast hrtanu, oblast ledvin, páteř a rozkrok (tyto údery jsou přípustné pouze v podmínkách nutné obrany při přímém ohrožení života).",
       "Zakázanou zónou jsou výhradně chodidla a uši; veškeré ostatní části těla včetně krční páteře jsou standardními cílovými plochami pro vedení úderu.",
-      "Zákaz úderů platí výhradně pro prsty na rukou a holenní kosti; údery na hlavu a krk jsou povoleny při jakémkoli neuposlechnutí výzvy.",
-      "Stehna, ramena, paže a hýžďové svalstvo; povoleny jsou výhradně údery vedené naplocho na břicho a hrudní koš."
+      "Zákaz úderů platí výhradně pro prsty na rukou a holenní kosti; údery na hlavu a krk jsou povoleny při jakémkoli neuposlechnutí výzvy. Oblast ledvin a páteře se za rizikovou nepovažuje.",
+      "Stehna, ramena, paže a hýžďové svalstvo; povoleny jsou výhradně údery vedené naplocho na břicho a hrudní koš. Údery do hlavy a rozkroku zákon výslovně připouští i mimo nutnou obranu."
     ],
     "correctOption": 0,
     "rationale": "Údery obuškem směřují do velkých svalových partií (stehna, hýždě, paže) k vyřazení motoriky. Údery na hlavu a páteř mohou způsobit smrt nebo trvalé ochrnutí.",
@@ -314,7 +314,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaká je správná první pomoc při záchvatu křečí s bezvědomím (epileptický záchvat typu Grand Mal)?",
     "answer": "Zabránit poranění hlavy (podložit měkkým předmětem), odstranit nebezpečné věci z okolí, nevkládat nic do úst, nebránit křečím násilím, po odeznění zajistit dýchací cesty a sledovat stav.",
     "options": [
-      "Vložit mezi zuby roubík nebo dřevěný kolík proti překousnutí jazyka, zalehnout končetiny vší silou k zastavení křečí a podat tekutiny.",
+      "Vložit mezi zuby roubík nebo dřevěný kolík proti překousnutí jazyka, zalehnout končetiny vší silou k zastavení křečí, podat tekutiny a po odeznění záchvatu nechat postiženého ihned samostatně odejít.",
       "Zabránit poranění hlavy (podložit měkkým předmětem), odstranit nebezpečné věci z okolí, nevkládat nic do úst, nebránit křečím násilím, po odeznění zajistit dýchací cesty a sledovat stav.",
       "Otočit postiženého okamžitě na břicho, vytáhnout jazyk pinzetou a zahájit nepřímou masáž srdce bez ohledu na probíhající křeče.",
       "Aplikovat studené obklady na hrudník, provést masáž krčních tepen a po celou dobu záchvatu držet hlavu v záklonu v sedě na židli."
@@ -332,7 +332,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "answer": "K násilnému zastavení motorového vozidla, jehož řidič odmítá zastavit na výzvu a bezprostředně ohrožuje bezpečnost; nesmí se použít proti jednostopým vozidlům (motocykly, jízdní kola).",
     "options": [
       "K násilnému zastavení motorového vozidla, jehož řidič odmítá zastavit na výzvu a bezprostředně ohrožuje bezpečnost; nesmí se použít proti jednostopým vozidlům (motocykly, jízdní kola).",
-      "K zastavení jakéhokoli podezřelého dopravního prostředku včetně motocyklů a jízdních kol, pás se hází přímo pod přední kola jedoucího vozidla ze vzdálenosti do 1 metru.",
+      "K zastavení jakéhokoli podezřelého dopravního prostředku včetně motocyklů a jízdních kol, přičemž pás se hází přímo pod přední kola jedoucího vozidla ze vzdálenosti do 1 metru a bez předchozí výzvy řidiči k zastavení.",
       "Výhradně při plánovaných dopravně-bezpečnostních kontrolách před vjezdem do věznice jako preventivní zpomalovací prvek pro všechna vozidla.",
       "Pouze se souhlasem dozorujícího státního zástupce a za podmínky, že rychlost ujíždějícího vozidla nepřesahuje 30 km/h."
     ],
@@ -349,7 +349,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "answer": "Znehybnit přes dva sousední klouby (kloub nad i pod zlomeninou), u otevřených zlomenin sterilně krýt ránu bez zatlačování kostních úlomků, chladit a zajistit transport.",
     "options": [
       "Znehybnit výhradně místo zlomeniny přiložením krátké dlahy přímo na lomnou linii bez fixace sousedních kloubů a končetinu prohřívat.",
-      "Vyčnívající kostní úlomky zatlačit sterilním tamponem zpět do rány, končetinu pevně stáhnout elastickým obinadlem a narovnat tahem v ose.",
+      "Vyčnívající kostní úlomky zatlačit sterilním tamponem zpět do rány, končetinu pevně stáhnout elastickým obinadlem, narovnat tahem v ose a znehybnit pouze v místě lomu bez fixace sousedních kloubů.",
       "Znehybnit přes dva sousední klouby (kloub nad i pod zlomeninou), u otevřených zlomenin sterilně krýt ránu bez zatlačování kostních úlomků, chladit a zajistit transport.",
       "Provést repozici kosti krouživým pohybem, naložit turniket nad zlomeninu k prevenci otoku a končetinu ponechat volně viset dolů."
     ],
@@ -365,7 +365,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaký je rozdíl mezi taktickým přebitím (přebití s uschováním) a nouzovým přebitím zbraně?",
     "answer": "Nouzové přebití se provádí při prázdné zbrani na záchytu závěru co nejrychleji s odhozením zásobníku; taktické přebití probíhá v krytu při náboji v komoře s uschováním částečně plného zásobníku.",
     "options": [
-      "Nouzové přebití probíhá vždy v krytu s pečlivým uschováním prázdného zásobníku do sumky; taktické přebití se provádí v otevřeném prostoru za stálého odhazování plných zásobníků.",
+      "Nouzové přebití probíhá vždy v krytu s pečlivým uschováním prázdného zásobníku do sumky; taktické přebití se naopak provádí v otevřeném prostoru za stálého odhazování částečně plných zásobníků na zem, protože rychlost je zde důležitější než hospodaření se střelivem.",
       "Nouzové přebití se provádí při prázdné zbrani na záchytu závěru co nejrychleji s odhozením zásobníku; taktické přebití probíhá v krytu při náboji v komoře s uschováním částečně plného zásobníku.",
       "Taktické přebití vyžaduje okamžité vybití náboje z komory na zem a vložení nového zásobníku; nouzové přebití se provádí pouhým doplňováním nábojů do vloženého zásobníku páskem.",
       "Nouzové přebití se provádí výhradně u samopalu s natažením závěru přes lapač střel; taktické přebití se týká výhradně krátkých zbraní při střelbě z kleku."
@@ -383,9 +383,9 @@ export const sluzebniPripravaQuestions: Question[] = [
     "answer": "Je-li pod vlivem léků/látek snižujících schopnost jednání, není-li k provedení odborně vyškolen/vycvičen, nebo brání-li tomu důležitý zájem služby (je však povinen vyrozumět nadřízeného).",
     "options": [
       "Je-li pod vlivem léků/látek snižujících schopnost jednání, není-li k provedení odborně vyškolen/vycvičen, nebo brání-li tomu důležitý zájem služby (je však povinen vyrozumět nadřízeného).",
-      "Pouze tehdy, pokud je v bezprostřední blízkosti přítomen příslušník Policie ČR, který přebírá velení, nebo pokud by došlo k poškození uniformy.",
-      "Pokud zákrok probíhá mimo střežený objekt věznice, útočník je ozbrojen střelnou zbraní, nebo pokud příslušník nemá u sebe služební průkaz.",
-      "Jestliže odsouzený podal proti zákroku předem stížnost k soudu, nebo pokud příslušník vykonává službu déle než 8 hodin v kuse."
+      "Pouze tehdy, je-li v bezprostřední blízkosti přítomen příslušník Policie ČR, který přebírá velení zákroku, nebo hrozí-li při zákroku poškození služebního stejnokroje; zdravotní stav ani chybějící odborný výcvik příslušníka zákon mezi důvody neuvádí.",
+      "Pokud zákrok probíhá mimo střežený objekt věznice, útočník je ozbrojen střelnou zbraní, nebo pokud příslušník nemá u sebe služební průkaz. Zdravotní stav ani chybějící odborná průprava příslušníka roli nehrají.",
+      "Jestliže odsouzený podal proti zákroku předem stížnost k soudu, nebo pokud příslušník vykonává službu déle než 8 hodin v kuse. Vyrozumění nadřízeného se v takovém případě nevyžaduje, zákrok se pouze zapíše do střídací knihy."
     ],
     "correctOption": 0,
     "rationale": "Zákon č. 555/1992 Sb. v § 7 odst. 2 taxativně stanoví tři důvody zproštění povinnosti provést služební zákrok. Příslušník však musí učinit jiná opatření k zajištění zákroku (např. ihned volat nadřízeného).",
@@ -402,7 +402,7 @@ export const sluzebniPripravaQuestions: Question[] = [
       "Služebním průkazem nebo služebním stejnokrojem s identifikačním číslem, v místech VV/VTOS též identifikačním štítkem a ve výjimečných situacích ústním prohlášením „Vězeňská služba“.",
       "Předložením občanského průkazu spolu se zbrojním průkazem skupiny D a ústním prohlášením „Ostraha věznice“.",
       "Pouze písemným pověřením ředitele věznice s kulatým razítkem a jmenným seznamem členů zásahové jednotky.",
-      "Výhradně předložením služebního odznaku kriminální služby s reliéfním státním znakem; stejnokroj ani ústní prohlášení zákon neuznává."
+      "Výhradně předložením služebního odznaku kriminální služby s reliéfním státním znakem a přiděleným evidenčním číslem; služební stejnokroj, identifikační štítek ani ústní prohlášení zákon jako způsob prokázání příslušnosti neuznává."
     ],
     "correctOption": 0,
     "rationale": "Dle § 8 zákona č. 555/1992 Sb. prokazuje příslušník příslušnost průkazem nebo stejnokrojem s ID číslem. Ústní prohlášení „Vězeňská služba“ je vyhrazeno pro naléhavé zákroky, kde to okolnosti neumožňují.",
@@ -417,7 +417,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "answer": "Odvrací se přímo hrozící nebo trvající útok na zájem chráněný trestním zákonem; obrana nesmí být zcela zjevně nepřiměřená způsobu útoku.",
     "options": [
       "Lze ji uplatnit výhradně tehdy, byl-li útok předem nahlášen veliteli směny a útočník byl vyzván zákonnou formulí k zanechání protiprávního jednání.",
-      "Obrana musí být zcela přiměřená a nesmí svou intenzitou ani použitým prostředkem v žádném případě převýšit intenzitu útoku.",
+      "Obrana musí být zcela přiměřená a nesmí svou intenzitou ani použitým prostředkem v žádném případě převýšit intenzitu útoku. Obránce má navíc vždy povinnost nejprve ustoupit z místa střetu.",
       "Odvrací se nebezpečí vyvolané živelní událostí; způsobený následek musí být vždy menší než hrozící škoda a obránce nesměl mít možnost ústupu.",
       "Odvrací se přímo hrozící nebo trvající útok na zájem chráněný trestním zákonem; obrana nesmí být zcela zjevně nepřiměřená způsobu útoku."
     ],
@@ -433,7 +433,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "V čem spočívá základní rozdíl mezi nutnou obranou (§ 29 TZ) a krajní nouzí (§ 28 TZ)?",
     "answer": "Krajní nouze odvrací nebezpečí (např. živelní pohromu, zvíře, požár), platí u ní přísná subsidiarita (nebezpečí nešlo odvrátit jinak) a proporcionalita (následek nesmí být stejně závažný ani závažnější).",
     "options": [
-      "U krajní nouze se odvrací přímo hrozící útok člověka a obrana smí být intenzivnější; u nutné obrany se odvrací přírodní živel a platí subsidiarita.",
+      "U krajní nouze se odvrací přímo hrozící útok člověka a obrana smí být zcela zjevně intenzivnější než způsob útoku; u nutné obrany se naopak odvrací přírodní živel nebo zvíře a platí u ní přísná subsidiarita i proporcionalita.",
       "Krajní nouze umožňuje způsobit škodu větší, než jaká hrozila, pokud jedná příslušník ozbrojeného sboru ve výkonu služby na rozkaz nadřízeného.",
       "Krajní nouze odvrací nebezpečí (např. živelní pohromu, zvíře, požár), platí u ní přísná subsidiarita (nebezpečí nešlo odvrátit jinak) a proporcionalita (následek nesmí být stejně závažný ani závažnější).",
       "Nutná obrana vyžaduje povinnost ustoupit z místa konfliktu a vyhnout se střetu; krajní nouze zakazuje jakýkoli ústup a nařizuje přímý zásah."
@@ -450,7 +450,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "U kterých ústavních činitelů a funkcionářů se při vstupu do věznice NEPROVÁDÍ kontrola ani prohlídka zavazadla (§ 80 odst. 2 písm. c NGŘ č. 33/2019)?",
     "answer": "Prezident ČR, předseda vlády, předsedové PS a Senátu, ministr spravedlnosti a náměstci, členové vlády, generální ředitel VS ČR a náměstci, soudci, státní zástupci, ředitel GIBS a ombudsman.",
     "options": [
-      "Pouze u ředitele příslušné věznice a dozorujícího státního zástupce; všichni ostatní ústavní činitelé včetně prezidenta podléhají kompletní osobní prohlídce.",
+      "Pouze u ředitele příslušné věznice a dozorujícího státního zástupce; všichni ostatní ústavní činitelé včetně prezidenta republiky a předsedy vlády podléhají kompletní osobní prohlídce i kontrole zavazadla.",
       "U primátorů statutárních měst, ředitelů krajských úřadů, diplomatických zástupců cizích států a civilních lékařů rychlé záchranné služby.",
       "Prezident ČR, předseda vlády, předsedové PS a Senátu, ministr spravedlnosti a náměstci, členové vlády, generální ředitel VS ČR a náměstci, soudci, státní zástupci, ředitel GIBS a ombudsman.",
       "U všech poslanců a senátorů Parlamentu ČR, advokátů obhajoby, akreditovaných novinářů a příslušníků Policie ČR ve služebním stejnokroji."
@@ -467,7 +467,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Na jaké doklady mohou osoby vstupovat do střežených objektů VS ČR dle § 103 NGŘ č. 33/2019?",
     "answer": "Služební průkaz VS ČR / PČR / GIBS / BIS / CS / AČR / VP, občanský průkaz, cestovní/diplomatický pas, zvláštní povolení, průkaz ombudsmana a průkaz CPT.",
     "options": [
-      "Výhradně na biometrický cestovní pas nebo zaměstnaneckou čipovou kartu VS ČR; občanský průkaz ani služební průkazy jiných sborů nejsou uznávány.",
+      "Výhradně na biometrický cestovní pas nebo zaměstnaneckou čipovou kartu VS ČR; občanský průkaz, služební průkazy jiných bezpečnostních sborů ani průkaz veřejného ochránce práv nejsou uznávány.",
       "Na služební odznak bez průkazu, novinářský průkaz Syndikátu novinářů ČR nebo plnou moc vystavenou advokátem odsouzeného.",
       "Služební průkaz VS ČR / PČR / GIBS / BIS / CS / AČR / VP, občanský průkaz, cestovní/diplomatický pas, zvláštní povolení, průkaz ombudsmana a průkaz CPT.",
       "Na řidičský průkaz, zbrojní průkaz, kartu pojištěnce VZP, studentský průkaz ISIC nebo písemné čestné prohlášení o totožnosti se dvěma svědky."
@@ -484,7 +484,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaký je správný postup strážného na vchodu při kontrole osoby s implantovaným kardiostimulátorem?",
     "answer": "Osoba neprochází rámem bez zastavení, nepřejíždí se opakovaně ručním detektorem přes přístroj; po předložení identifikační karty přístroje se provede alternativní ruční osobní prohlídka.",
     "options": [
-      "Osoba projde rámem běžným způsobem a strážný provede detailní kontrolu hrudníku opakovaným těsným přikládáním ručního detektoru kovů přímo na implantát.",
+      "Osoba projde rámem běžným způsobem a strážný provede detailní kontrolu hrudníku opakovaným těsným přikládáním ručního detektoru kovů přímo na implantát; identifikační karta přístroje se nevyžaduje.",
       "Osoba neprochází rámem bez zastavení, nepřejíždí se opakovaně ručním detektorem přes přístroj; po předložení identifikační karty přístroje se provede alternativní ruční osobní prohlídka.",
       "Osobu nechat projít stacionárním rámem se sníženou citlivostí a následně provést kontrolu celotělovým rentgenovým skenerem zavazadel.",
       "Vstup osobě zcela odepřít do doby, než předloží písemné povolení od vězeňského lékaře a posudek primáře kardiologického oddělení ne starší 24 hodin."
@@ -587,7 +587,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "answer": "Při provádění zákroku nebo úkonu, při řízení vozidla/obsluze stroje, při obsluze spojovacích a EZS prostředků na OS, při záchranných pracích, na stanovišti se zbraní v ponosu a při jídle/hygieně.",
     "options": [
       "Při provádění zákroku nebo úkonu, při řízení vozidla/obsluze stroje, při obsluze spojovacích a EZS prostředků na OS, při záchranných pracích, na stanovišti se zbraní v ponosu a při jídle/hygieně.",
-      "Při provádění sčítací prověrky na oddíle, při eskortě odsouzeného po chodbě věznice a při vstupu do kanceláře ředitele věznice.",
+      "Při provádění sčítací prověrky na oddíle, při eskortě odsouzeného po chodbě věznice, při vstupu do kanceláře ředitele věznice a při každém styku s civilními zaměstnanci; naopak při řízení služebního vozidla a při obsluze zbraně se zdraví i hlášení podává vždy.",
       "Pouze v době nočního klidu od 22:00 do 06:00 a při kontaktu s příslušníky jiné bezpečnostní složky na veřejnosti.",
       "Výhradně při pobytu v mimopracovní době v civilním oděvu a při účasti na poradě vedení věznice."
     ],
@@ -603,7 +603,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jaké úkony musí provést velitel eskorty v případě úmrtí eskortované osoby během přepravy (§ 73)?",
     "answer": "Přivolat RZS k ohledání lékařem (koronerem), převzít protokol o prohlídce zemřelého, zajistit předání do márnice, vyhotovit záznam o osobních věcech a ihned informovat ředitele vysílající věznice a Policii ČR.",
     "options": [
-      "Pokračovat v eskortě do cílové věznice bez zastavení, tělo předat na příjmovém oddělení a úmrtí nechat konstatovat až služebním lékařem cílového zařízení.",
+      "Pokračovat v eskortě do cílové věznice bez zastavení, tělo předat na příjmovém oddělení a úmrtí nechat konstatovat až služebním lékařem cílového zařízení; přivolání zdravotnické záchranné služby ani vyrozumění Policie ČR se v průběhu eskorty neprovádí.",
       "Předat tělo nejbližší hlídce městské policie, sepsat zjednodušený úřední záznam a eskortu se zbývajícími vězni dokončit podle původního plánu.",
       "Vrátit se neprodleně do odesílající věznice, tělo uložit do cely dočasného umístění a vyčkat na zahájení vyšetřování dozorujícím státním zástupcem.",
       "Přivolat RZS k ohledání lékařem (koronerem), převzít protokol o prohlídce zemřelého, zajistit předání do márnice, vyhotovit záznam o osobních věcech a ihned informovat ředitele vysílající věznice a Policii ČR."
@@ -621,9 +621,9 @@ export const sluzebniPripravaQuestions: Question[] = [
     "answer": "Výhradně ŘEDITEL VĚZNICE, který své rozhodnutí písemně odůvodní a originál se zakládá do osobního spisu vězně.",
     "options": [
       "Vedoucí oddělení výkonu vazby a trestu (VOVT) na návrh psychologa po provedení vstupního diagnostického vyšetření.",
-      "Odborná komise složená z vychovatele, speciálního pedagoga a sociálního pracovníka prostou většinou hlasů.",
+      "Odborná komise složená z vychovatele, speciálního pedagoga a sociálního pracovníka prostou většinou hlasů. Ředitel věznice rozhodnutí komise pouze bere na vědomí.",
       "Výhradně ŘEDITEL VĚZNICE, který své rozhodnutí písemně odůvodní a originál se zakládá do osobního spisu vězně.",
-      "Dozorující státní zástupce na základě žádosti Policie ČR nebo Generální inspekce bezpečnostních sborů (GIBS)."
+      "Dozorující státní zástupce na základě žádosti Policie ČR nebo Generální inspekce bezpečnostních sborů (GIBS). Písemné odůvodnění se do osobního spisu vězně nezakládá."
     ],
     "correctOption": 2,
     "rationale": "Zatímco STH určuje lékař, NMU psycholog a MON/MPN schvaluje VOVT, o kategoriích DVO (medializované kauzy) a DVO-P (bývalí příslušníci ozbrojených sborů) rozhoduje výhradně ředitel věznice.",
@@ -690,8 +690,8 @@ export const sluzebniPripravaQuestions: Question[] = [
     "options": [
       "U všech cizích státních příslušníků, diplomatů a dalších osob požívajících diplomatické imunity podle mezinárodního práva.",
       "U zjevně těhotných žen, osob zjevně vysokého věku, osob se zjevnou tělesnou vadou (invalidů) a dětí mladších 15 let.",
-      "Zákon nedefinuje žádné chráněné kategorie, donucovací prostředky lze použít bez omezení vůči každému.",
-      "U osob, které jsou ve výkonu vazby déle než 1 rok bez pravomocného rozsudku."
+      "Zákon nedefinuje žádné chráněné kategorie, donucovací prostředky lze použít bez omezení vůči každému. Těhotné ženy ani děti mladší patnácti let zvláštní ochranu nepožívají.",
+      "U osob, které jsou ve výkonu vazby déle než 1 rok bez pravomocného rozsudku. Věk, tělesná vada ani těhotenství na použití donucovacích prostředků vliv nemají."
     ],
     "correctOption": 1,
     "rationale": "Zákon jasně chrání vybrané zranitelné skupiny. Výjimka pro použití DP vůči nim platí POUZE tehdy, pokud útok těchto osob bezprostředně ohrožuje život nebo zdraví jiných a nelze jej odvrátit jinak (§ 21 zákona č. 555/1992 Sb.).",
@@ -705,7 +705,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Jak zní první a nejdůležitější pravidlo bezpečné manipulace se střelnou zbraní?",
     "answer": "S každou zbraní je třeba vždy zacházet tak, jako by byla nabitá a připravená k výstřelu.",
     "options": [
-      "Při předání zbraně je nutné se podívat do hlavně zepředu a ověřit, že je prázdná.",
+      "Při předání zbraně je nutné se podívat do hlavně zepředu a ověřit, že je prázdná. Vizuální kontrola z ústí hlavně je přitom považována za nejspolehlivější.",
       "S každou zbraní je třeba vždy zacházet tak, jako by byla nabitá a připravená k výstřelu.",
       "Zbraň musí být vždy uzamčena v trezoru a vydává se výhradně proti podpisu velitele směny oddělení.",
       "Před výstřelem je třeba zbraň namazat olejem a zkontrolovat průchodnost hlavně pohledem zepředu."
@@ -756,7 +756,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "question": "Který prostor se při manipulaci se střelnou zbraní (vybíjení, nabíjení, rána jistoty) považuje za bezpečný prostor?",
     "answer": "Prostor určený provozním řádem (např. vybíjecí zařízení/lapač střel), kde při případném nechtěném výstřelu nemůže dojít k ohrožení života, zdraví ani vzniku majetkové škody.",
     "options": [
-      "Libovolný směr do podlahy nebo do rohu místnosti bez ohledu na materiál podlahy.",
+      "Libovolný směr do podlahy nebo do rohu místnosti bez ohledu na materiál podlahy a na to, kdo se nachází v sousedních prostorách; za bezpečný se považuje každý směr mimo osu těla střelce.",
       "Prostor určený provozním řádem (např. vybíjecí zařízení/lapač střel), kde při případném nechtěném výstřelu nemůže dojít k ohrožení života, zdraví ani vzniku majetkové škody.",
       "Směr do okna vedoucího do uzavřeného dvora věznice.",
       "Směrem do otevřených dveří zbrojnice."
@@ -774,7 +774,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "answer": "Vyzvat osobu, proti které zakročuje, aby upustila od protiprávního jednání, s výstrahou, že bude použito zbraně, a užít výstražného výstřelu.",
     "options": [
       "Vyzvat osobu, proti které zakročuje, aby upustila od protiprávního jednání, s výstrahou, že bude použito zbraně, a užít výstražného výstřelu.",
-      "Okamžitě zahájit mířenou palbu na dolní končetiny bez jakéhokoliv předchozího varování.",
+      "Okamžitě zahájit mířenou palbu na dolní končetiny bez jakéhokoliv předchozího varování; výzva ani výstražný výstřel se podle zákona nevyžadují, postačí následné hlášení nadřízenému.",
       "Vyžádat si vždy předchozí písemný souhlas ředitele věznice nebo státního zástupce.",
       "Nejprve použít slzotvorný prostředek a pouta a teprve poté tasit střelnou zbraň."
     ],
@@ -826,7 +826,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "options": [
       "Nábojnice, zápalka (zápalková slož), prachová náplň (bezdýmný prach) a střela.",
       "Hlaveň, závěr, úderník a nábojový rámeček.",
-      "Plášť střely, olověné jádro, výmetná nálož a stabilizační křidélka.",
+      "Plášť střely, olověné jádro, výmetná nálož, stabilizační křidélka a zpožďovací zápalná šňůra.",
       "Pouzdro náboje, zápalná šňůra, třaskavina a wolframové penetrační jádro."
     ],
     "correctOption": 0,
