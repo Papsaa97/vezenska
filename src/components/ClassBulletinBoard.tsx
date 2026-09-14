@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { AnimatePresence } from 'motion/react';
 import {
+  AlertTriangle,
   Bookmark,
   Calendar,
   Check,
+  CloudOff,
   ChevronDown,
   Clock,
   Edit2,
@@ -18,6 +20,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import type { DeleteResult, PersistResult } from '../utils/classBoardService';
 import {
   ClassBoardItem,
   ClassBoardInput,
@@ -60,6 +63,15 @@ export default function ClassBulletinBoard() {
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
+  /**
+   * Upozornění, že se obsah nástěnky nesešel se serverem.
+   *
+   * Nástěnka je sdílená — rozvrh, služby a ústrojová kázeň píše velitel třídy
+   * pro ostatní. Když zápis neprojde, data zůstanou jen v tomto prohlížeči
+   * a ostatní je nikdy neuvidí. Dřív o tom uživatel nevěděl vůbec nic.
+   */
+  const [syncNotice, setSyncNotice] = useState<string | null>(null);
+
   // Preference zobrazení
   const [selectedMyClass, setSelectedMyClassState] = useState<string>(getMyClass);
   const [hiddenClassIds, setHiddenClassIds] = useState<string[]>(getHiddenClassIds);
@@ -99,17 +111,45 @@ export default function ClassBulletinBoard() {
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [classData, announcementData] = await Promise.all([
+      const [classResult, announcementResult] = await Promise.all([
         fetchClassBoards(),
         fetchGlobalAnnouncements(),
       ]);
-      setClasses(classData);
-      setGlobalAnnouncements(announcementData);
+      setClasses(classResult.items);
+      setGlobalAnnouncements(announcementResult.items);
+
+      // Když server odpoví chybou, zobrazí se záložní kopie ze zařízení. To samo
+      // o sobě není špatně, ale uživatel musí vědět, že nemusí být aktuální —
+      // dřív se chyba jen zapsala do konzole a nástěnka vypadala normálně.
+      const loadError = classResult.error ?? announcementResult.error;
+      setSyncNotice(
+        loadError
+          ? `${loadError} Zobrazuje se poslední uložená kopie z tohoto zařízení, nemusí být aktuální.`
+          : null
+      );
     } catch (err) {
-      console.error('[ClassBulletinBoard] Chyba při načítání dat:', err);
+      setSyncNotice(
+        `Nástěnku se nepodařilo načíst (${err instanceof Error ? err.message : String(err)}). Zkuste to prosím znovu.`
+      );
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  /**
+   * Zkontroluje výsledek zápisu a při neúspěchu na to upozorní.
+   *
+   * Vrací true při úspěchu, aby volající mohl rozhodnout, jestli pokračovat.
+   */
+  const reportWrite = useCallback((result: PersistResult<unknown> | DeleteResult): boolean => {
+    if (result.persisted) {
+      setSyncNotice(null);
+      return true;
+    }
+    setSyncNotice(
+      `${result.error ?? 'Změnu se nepodařilo uložit na server.'} Změna je zatím jen v tomto zařízení — ostatní ji neuvidí. Zkontrolujte připojení a uložte ji prosím znovu.`
+    );
+    return false;
   }, []);
 
   useEffect(() => {
@@ -214,7 +254,9 @@ export default function ClassBulletinBoard() {
   // Uložení třídy
   const handleSaveItem = async (input: ClassBoardInput) => {
     try {
-      const saved = await saveClassBoard(input, user?.email);
+      const result = await saveClassBoard(input, user?.email);
+      reportWrite(result);
+      const saved = result.item;
       setClasses((prev) => {
         const idx = prev.findIndex((c) => c.id === saved.id);
         if (idx !== -1) {
@@ -237,7 +279,7 @@ export default function ClassBulletinBoard() {
     if (!deleteConfirmItem) return;
     setIsDeleting(true);
     try {
-      await deleteClassBoard(deleteConfirmItem.id);
+      reportWrite(await deleteClassBoard(deleteConfirmItem.id));
       setClasses((prev) => prev.filter((c) => c.id !== deleteConfirmItem.id));
       setDeleteConfirmItem(null);
     } catch (err) {
@@ -255,7 +297,7 @@ export default function ClassBulletinBoard() {
       uniformGuidance: guidance,
       updatedAt: new Date().toISOString(),
     };
-    await saveClassBoard(updated, user?.email);
+    reportWrite(await saveClassBoard(updated, user?.email));
     setClasses((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
     setUniformModalItem(null);
   };
@@ -277,7 +319,7 @@ export default function ClassBulletinBoard() {
       dutyRoster: nextDuties,
       updatedAt: new Date().toISOString(),
     };
-    await saveClassBoard(updated, user?.email);
+    reportWrite(await saveClassBoard(updated, user?.email));
     setClasses((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
     setDutyModalItem(null);
   };
@@ -289,7 +331,7 @@ export default function ClassBulletinBoard() {
       dutyRoster: nextDuties,
       updatedAt: new Date().toISOString(),
     };
-    await saveClassBoard(updated, user?.email);
+    reportWrite(await saveClassBoard(updated, user?.email));
     setClasses((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
   };
 
@@ -310,7 +352,7 @@ export default function ClassBulletinBoard() {
       sections: nextSections,
       updatedAt: new Date().toISOString(),
     };
-    await saveClassBoard(updated, user?.email);
+    reportWrite(await saveClassBoard(updated, user?.email));
     setClasses((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
     setSectionModalItem(null);
   };
@@ -322,13 +364,15 @@ export default function ClassBulletinBoard() {
       sections: nextSections,
       updatedAt: new Date().toISOString(),
     };
-    await saveClassBoard(updated, user?.email);
+    reportWrite(await saveClassBoard(updated, user?.email));
     setClasses((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
   };
 
   // Celoškolní hlášení – uložení
   const handleSaveGlobalAnnouncement = async (item: Omit<GlobalAnnouncement, 'id' | 'updatedAt'> & { id?: string }) => {
-    const saved = await saveGlobalAnnouncement(item);
+    const result = await saveGlobalAnnouncement(item);
+    reportWrite(result);
+    const saved = result.item;
     setGlobalAnnouncements((prev) => {
       const idx = prev.findIndex((x) => x.id === saved.id);
       if (idx !== -1) {
@@ -344,7 +388,7 @@ export default function ClassBulletinBoard() {
 
   const handleDeleteGlobalAnnouncement = async (id: string) => {
     if (!confirm('Opravdu chcete smazat toto celoškolní hlášení?')) return;
-    await deleteGlobalAnnouncement(id);
+    reportWrite(await deleteGlobalAnnouncement(id));
     setGlobalAnnouncements((prev) => prev.filter((x) => x.id !== id));
   };
 
@@ -413,6 +457,42 @@ export default function ClassBulletinBoard() {
               <div className="whitespace-pre-line leading-relaxed">{printingItem.infoText}</div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ─── Upozornění na nesesynchronizovaný obsah ──────────────────────── */}
+      {syncNotice && (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="no-print flex items-start gap-3 bg-amber-50 dark:bg-amber-900/25 border border-amber-300 dark:border-amber-700/70 rounded-2xl px-4 py-3.5"
+        >
+          <div className="w-8 h-8 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
+            <CloudOff className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 text-sm font-bold text-amber-900 dark:text-amber-200">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+              Nástěnka není sesynchronizovaná se serverem
+            </div>
+            <p className="text-xs text-amber-800 dark:text-amber-300/90 mt-1 leading-snug">{syncNotice}</p>
+            <button
+              type="button"
+              onClick={() => loadData()}
+              className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-colors cursor-pointer"
+            >
+              <RefreshCw className="w-3 h-3" />
+              Zkusit načíst znovu
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSyncNotice(null)}
+            aria-label="Skrýt upozornění"
+            className="p-1.5 rounded-lg text-amber-700 dark:text-amber-400 hover:bg-amber-500/15 transition-colors cursor-pointer shrink-0"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 

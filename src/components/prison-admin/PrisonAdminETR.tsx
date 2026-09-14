@@ -23,15 +23,20 @@ export default function PrisonAdminETR() {
   const [cjOrgCode, setCjOrgCode] = useState('801345');
   const [cjCustomExt, setCjCustomExt] = useState('LOG/02');
   const [cjCopied, setCjCopied] = useState(false);
+  const [cjCopyFailed, setCjCopyFailed] = useState(false);
 
   const fullGeneratedCj = `${cjOrg}-${cjSpisNumber}-${cjDocNumber}/${cjSpisType}-${cjYear}-${cjOrgCode}${cjCustomExt ? '-' + cjCustomExt : ''}`;
 
   const handleCopyCj = () => {
     navigator.clipboard.writeText(fullGeneratedCj).then(() => {
+      setCjCopyFailed(false);
       setCjCopied(true);
       setTimeout(() => setCjCopied(false), 2000);
     }).catch(() => {
-      // Clipboard API unavailable — silently ignore
+      // Schránka bývá nedostupná bez HTTPS nebo bez svolení uživatele. Dřív se
+      // po kliknutí nestalo vůbec nic a nešlo poznat, jestli se zkopírovalo.
+      setCjCopyFailed(true);
+      setTimeout(() => setCjCopyFailed(false), 4000);
     });
   };
 
@@ -68,10 +73,21 @@ export default function PrisonAdminETR() {
               onClick={handleCopyCj}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-semibold transition-colors cursor-pointer"
             >
-              {cjCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{cjCopied ? 'Zkopírováno!' : 'Kopírovat ČJ'}</span>
+              {cjCopyFailed ? (
+                <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+              ) : cjCopied ? (
+                <Check className="w-3.5 h-3.5" />
+              ) : (
+                <Copy className="w-3.5 h-3.5" />
+              )}
+              <span>{cjCopyFailed ? 'Kopírování selhalo' : cjCopied ? 'Zkopírováno!' : 'Kopírovat ČJ'}</span>
             </button>
           </div>
+          {cjCopyFailed && (
+            <div role="alert" className="text-[11px] font-semibold text-red-400">
+              Schránka není dostupná — označte ČJ výše a zkopírujte ho ručně.
+            </div>
+          )}
           <div className="text-[11px] text-slate-400">
             V systému ETŘ vidí všichni oprávnění uživatelé vždy ČJ a název věci!
           </div>
