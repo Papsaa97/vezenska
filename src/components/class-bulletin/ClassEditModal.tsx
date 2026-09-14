@@ -169,13 +169,17 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
           {/* Termín kurzu (pro odpočet) */}
           <div className="p-4 rounded-2xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/60 dark:border-blue-800/40 space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+              {/* Popisuje dvojici polí (od–do), ne jedno pole. */}
+              <span
+                id={`${fieldIds}-termin`}
+                className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 flex items-center gap-1.5"
+              >
                 <Calendar className="w-4 h-4 text-blue-500" />
                 <span>Termín kurzu (zahájení a ukončení)</span>
-              </label>
+              </span>
               <span className="text-[10px] text-slate-500 dark:text-slate-400">Pro odpočet do konce kurzu</span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="group" aria-labelledby={`${fieldIds}-termin`}>
               <div>
                 <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block mb-1" htmlFor={`${fieldIds}-1`}>
                   Datum zahájení kurzu
@@ -208,7 +212,7 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300" htmlFor={`${fieldIds}-rozvrh`}>
                 Obrázek rozvrhu (JPG, PNG, WebP)
               </label>
               {previewUrl && (
@@ -222,12 +226,16 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
               )}
             </div>
 
+            {/* sr-only místo hidden: display:none vyřadí pole z přístupnostního
+                stromu, takže by na něj popisek neměl na co ukázat a klávesnicí
+                by se k výběru souboru nedalo dostat. Vizuálně beze změny. */}
             <input
               type="file"
+              id={`${fieldIds}-rozvrh`}
               ref={fileInputRef}
               onChange={handleFileChange}
               accept="image/jpeg,image/png,image/webp"
-              className="hidden"
+              className="sr-only"
             />
 
             {previewUrl ? (
@@ -259,12 +267,13 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300" htmlFor={`${fieldIds}-info`}>
                 Denní informace, změny a pokyny
               </label>
               <span className="text-[11px] text-slate-500">Podporuje odrážky (•)</span>
             </div>
             <textarea
+              id={`${fieldIds}-info`}
               rows={5}
               value={infoText}
               onChange={(e) => setInfoText(e.target.value)}

@@ -7,7 +7,7 @@
  * si požadovanou délku přečte přímo z chybové hlášky, takže po zpřísnění
  * nastavení sedí hláška i bez nasazení nové verze aplikace.
  */
-export const MIN_PASSWORD_LENGTH = 6;
+export const MIN_PASSWORD_LENGTH = 12;
 
 /** Tvar chyby, se kterou pracuje překlad hlášek. */
 export interface TranslatableAuthError {

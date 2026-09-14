@@ -99,8 +99,8 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            {/* Popisuje skupinu tlačítek, ne jedno pole — proto <span> a
-                role="group", ne <label>. */}
+            {/* Popisuje skupinu tlačítek, ne jedno pole. Proto span
+                s role="group", nikoli popisek formulářového pole. */}
             <span
               id={`${fieldIds}-typ`}
               className="block font-bold text-slate-600 dark:text-slate-300 uppercase mb-1.5"

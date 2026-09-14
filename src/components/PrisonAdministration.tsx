@@ -650,7 +650,7 @@ export default function PrisonAdministration() {
                     </div>
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="font-bold text-slate-700 dark:text-slate-300">
+                        <label className="font-bold text-slate-700 dark:text-slate-300" htmlFor={`${fieldIds}-40`}>
                           Číslo jednací (Č.j.) <span className="text-red-500">*</span>
                         </label>
                         <div className="flex items-center gap-1">
@@ -685,6 +685,7 @@ export default function PrisonAdministration() {
                         </div>
                       </div>
                       <input
+                        id={`${fieldIds}-40`}
                         type="text"
                         value={formData.refNumber || ''}
                         onChange={(e) => handleFieldChange('refNumber', e.target.value)}
@@ -751,15 +752,19 @@ export default function PrisonAdministration() {
                   {/* Body Part Marker Interactive Widget */}
                   <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                      {/* Popisuje skupinu přepínatelných zón, ne jedno pole. */}
+                      <span
+                        id={`${fieldIds}-zony`}
+                        className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5"
+                      >
                         <ShieldAlert className="w-4 h-4 text-red-500" />
                         <span>Grafické znázornění zasažených míst těla:</span>
-                      </label>
+                      </span>
                       <span className="text-[11px] text-slate-500">
                         {selectedBodyParts.length} označených zón
                       </span>
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1.5" role="group" aria-labelledby={`${fieldIds}-zony`}>
                       {BODY_PARTS.map(part => {
                         const isMarked = selectedBodyParts.includes(part.id);
                         return (

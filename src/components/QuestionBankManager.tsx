@@ -645,15 +645,19 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
           {/* 4 Varianty odpovědí */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200">
+              {/* Popisuje skupinu čtyř variant, ne jedno pole. */}
+              <span
+                id={`${fieldIds}-moznosti`}
+                className="block text-xs font-semibold text-slate-700 dark:text-slate-200"
+              >
                 Možnosti odpovědi (A, B, C, D) *
-              </label>
+              </span>
               <span className="text-xs text-slate-400">
                 Přepínačem vlevo označte <span className="text-emerald-600 dark:text-emerald-400 font-semibold">správnou variantu</span>
               </span>
             </div>
 
-            <div className="grid grid-cols-1 gap-2.5">
+            <div className="grid grid-cols-1 gap-2.5" role="group" aria-labelledby={`${fieldIds}-moznosti`}>
               {formData.options.map((optionValue, idx) => {
                 const isSelected = formData.correctOption === idx;
                 const label = OPTION_LABELS[idx];
@@ -720,12 +724,13 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
           {/* Volitelné vysvětlení */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200" htmlFor={`${fieldIds}-2`}>
                 Vysvětlení správné odpovědi
               </label>
               <span className="text-xs text-slate-400">Volitelné (proč je daná možnost správná)</span>
             </div>
             <textarea
+              id={`${fieldIds}-2`}
               value={formData.rationale}
               onChange={(e) => setFormData((prev) => ({ ...prev, rationale: e.target.value }))}
               rows={2}
