@@ -1,17 +1,17 @@
 {
   "popis": "Referenční stav kvality banky otázek. Kontrola check:questions hlídá, že počet otázek s délkovým tellem nevzroste. Po zlepšení obsahu přepiš tento soubor příkazem \"npm run check:questions -- --update-baseline\" a commitni ho.",
-  "vytvoreno": "2026-09-13T16:10:42.576Z",
+  "vytvoreno": "2026-09-14T14:09:59.305Z",
   "cil": {
     "longestIsCorrectPct": 40
   },
   "global": {
     "questions": 377,
-    "longestIsCorrect": 240,
-    "longestIsCorrectPct": 63.7,
-    "shortestIsCorrect": 54,
-    "shortestIsCorrectPct": 14.3,
+    "longestIsCorrect": 209,
+    "longestIsCorrectPct": 55.4,
+    "shortestIsCorrect": 64,
+    "shortestIsCorrectPct": 17,
     "avgCorrectLen": 218,
-    "avgDistractorLen": 180
+    "avgDistractorLen": 190
   },
   "predmety": {
     "Bezpečnostní služba": {
@@ -51,10 +51,10 @@
     },
     "Psychologie": {
       "questions": 42,
-      "longestIsCorrect": 41,
-      "longestIsCorrectPct": 97.6,
-      "shortestIsCorrect": 1,
-      "shortestIsCorrectPct": 2.4
+      "longestIsCorrect": 10,
+      "longestIsCorrectPct": 23.8,
+      "shortestIsCorrect": 11,
+      "shortestIsCorrectPct": 26.2
     },
     "Služební příprava": {
       "questions": 17,

@@ -8,10 +8,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Co je to psychologie, jaký má cíl a z jakého vědního oboru se vyvinula?',
     answer: 'Psychologie (z řec. psyché = duše, logos = slovo/věda) je věda o duševním životě člověka. Cílem je porozumět chování, jednání a prožívání lidí, předvídat je a pomoci je formovat. Vyvinula se z filozofie (v novověku přispěl k osamostatnění Wilhelm Wundt založením 1. psychologické laboratoře v Lipsku roku 1879).',
     options: [
-              `Aplikovaná přírodní věda zkoumající výhradně biochemické procesy v mozkové kůře a periferním nervovém systému za účelem medikamentózní léčby poruch, která se vyvinula z neurologie a animální fyziologie v polovině 19. století.`,
-              `Normativní společenská disciplína zaměřená na zkoumání sociální stratifikace a institucionální represe v trestní justici, která se vyvinula z kriminologie a trestního práva hmotného na počátku 20. století.`,
+              `Aplikovaná přírodní věda zkoumající výhradně biochemické procesy v mozkové kůře a periferním nervovém systému za účelem medikamentózní léčby poruch, která se vyvinula z neurologie a animální fyziologie v polovině 19. století. Cílem je stanovit dávkování léků, nikoli porozumět prožívání. Wilhelm Wundt byl fyziolog bez vztahu k psychologii.`,
+              `Normativní společenská disciplína zaměřená na zkoumání sociální stratifikace a institucionální represe v trestní justici, která se vyvinula z kriminologie a trestního práva hmotného na počátku 20. století. Cílem je navrhovat trestní politiku státu, nikoli porozumět chování jedince. První laboratoř vznikla v Praze až roku 1920.`,
               `Psychologie (z řec. psyché = duše, logos = slovo/věda) je věda o duševním životě člověka. Cílem je porozumět chování, jednání a prožívání lidí, předvídat je a pomoci je formovat. Vyvinula se z filozofie (v novověku přispěl k osamostatnění Wilhelm Wundt založením 1. psychologické laboratoře v Lipsku roku 1879).`,
-              `Empirická nauka zabývající se výhradně měřením psychomotorického tempa a somatických reakcí organismu na stresové podněty, která se osamostatnila z obecné antropologie a soudního lékařství.`
+              `Empirická nauka zabývající se výhradně měřením psychomotorického tempa a somatických reakcí organismu na stresové podněty, která se osamostatnila z obecné antropologie a soudního lékařství. Duševní život člověka do jejího předmětu nespadá, protože jej nelze objektivně změřit. Slovo psyché znamená v řečtině tělesnou schránku.`
             ],
     correctOption: 2,
     rationale: 'Psychologie se řadí mezi společenské vědy. Zkoumá člověka ze dvou hledisek: vnitřního (prožívání – uvědomované sebepozorováním) a vnějšího (chování a jednání – navenek pozorovatelná a měřitelná aktivita).',
@@ -25,9 +25,9 @@ export const psychologieQuestions: Question[] = [
     question: 'Jaké jsou hlavní skupiny psychických jevů osobnosti?',
     answer: '1. Psychické vlastnosti (temperament, charakter, schopnosti), 2. Psychické procesy (poznávací, paměťové, motivační – citové a volní), 3. Psychické stavy (stavy pozornosti, citové stavy, aktivační hladina), dále vědomosti, dovednosti, návyky, zájmy a postoje.',
     options: [
-              `1. Reaktivní stavy (akutní reakce na stres, frustrační napětí), 2. Osobnostní dimenze (extroverze, neuroticismus, psychoticismus), 3. Intelektové dispozice (fluidní a krystalická inteligence), dále sociální postoje a role.`,
-              `1. Kognitivní funkce (vnímání, pozornost, myšlení), 2. Somatické reflexy (podmíněné a nepodmíněné), 3. Patologické projevy (neurózy, psychopatie, psychózy), dále intelektový kvocient a typy vyšší nervové činnosti.`,
-              `1. Psychické struktury (Id, Ego, Superego), 2. Psychodynamické obranné mechanismy (projekce, regrese, sublimace), 3. Afektivní reakce (panika, zlost, agrese), dále typologie temperamentu a behaviorální schémata.`,
+              `1. Reaktivní stavy (akutní reakce na stres, frustrační napětí), 2. Osobnostní dimenze (extroverze, neuroticismus, psychoticismus), 3. Intelektové dispozice (fluidní a krystalická inteligence), dále sociální postoje a role. Psychické procesy ani psychické stavy se mezi ně neřadí.`,
+              `1. Kognitivní funkce (vnímání, pozornost, myšlení), 2. Somatické reflexy (podmíněné a nepodmíněné), 3. Patologické projevy (neurózy, psychopatie, psychózy), dále intelektový kvocient a typy vyšší nervové činnosti. Temperament ani charakter mezi psychické jevy osobnosti nepatří.`,
+              `1. Psychické struktury (Id, Ego, Superego), 2. Psychodynamické obranné mechanismy (projekce, regrese, sublimace), 3. Afektivní reakce (panika, zlost, agrese), dále typologie temperamentu a behaviorální schémata. Vědomosti, dovednosti, návyky ani zájmy se mezi ně neřadí.`,
               `1. Psychické vlastnosti (temperament, charakter, schopnosti), 2. Psychické procesy (poznávací, paměťové, motivační – citové a volní), 3. Psychické stavy (stavy pozornosti, citové stavy, aktivační hladina), dále vědomosti, dovednosti, návyky, zájmy a postoje.`
             ],
     correctOption: 3,
@@ -59,9 +59,9 @@ export const psychologieQuestions: Question[] = [
     question: 'Co je to biologická determinace a co sociální determinace osobnosti?',
     answer: 'Biologická determinace je podmíněnost vrozeným uspořádáním organismu, nervové soustavy a dědičností. Sociální determinace je vliv lidské kultury, sociálního okolí (rodiny), výchovy, vzdělávacích institucí a socializace („Bez společnosti lidí se člověk člověkem nestane“).',
     options: [
-              `Biologická determinace je utváření charakteru a volních vlastností v průběhu ontogeneze. Sociální determinace je vrozená typologie vyšší nervové činnosti a biologické dispozice k agresivnímu chování.`,
-              `Biologická determinace označuje osvojení sociálních rolí a norem prostřednictvím nápodoby. Sociální determinace představuje genetický přenos temperamentových rysů a psychických dispozic z rodičů na potomky.`,
-              `Biologická determinace je výhradně vliv prenatálního vývoje a somatotypu jedince. Sociální determinace představuje výhradně formální sankční působení právního řádu a penitenciárních institucí na dospělého pachatele.`,
+              `Biologická determinace je utváření charakteru a volních vlastností v průběhu ontogeneze. Sociální determinace je vrozená typologie vyšší nervové činnosti a biologické dispozice k agresivnímu chování. Dědičnost ani výchova v tomto pojetí roli nehrají.`,
+              `Biologická determinace označuje osvojení sociálních rolí a norem prostřednictvím nápodoby. Sociální determinace představuje genetický přenos temperamentových rysů a psychických dispozic z rodičů na potomky. Oba pojmy mají tedy přesně opačný obsah.`,
+              `Biologická determinace je výhradně vliv prenatálního vývoje a somatotypu jedince. Sociální determinace představuje výhradně formální sankční působení právního řádu a penitenciárních institucí na dospělého pachatele. Rodina ani výchova sem nepatří.`,
               `Biologická determinace je podmíněnost vrozeným uspořádáním organismu, nervové soustavy a dědičností. Sociální determinace je vliv lidské kultury, sociálního okolí (rodiny), výchovy, vzdělávacích institucí a socializace („Bez společnosti lidí se člověk člověkem nestane“).`
             ],
     correctOption: 3,
@@ -77,9 +77,9 @@ export const psychologieQuestions: Question[] = [
     answer: 'Socializace je proces přeměny biologické bytosti v bytost společenskou (interiorizace norem a exteriorizace chování). Mechanismy: 1. Sociální činnosti (hra, učení, práce), 2. Nápodoba/imitace (automatická a uvědomělá), 3. Identifikace/ztotožnění (obranná, emoční, projekce, racionalizace), 4. Sugesce.',
     options: [
               `Socializace je proces přeměny biologické bytosti v bytost společenskou (interiorizace norem a exteriorizace chování). Mechanismy: 1. Sociální činnosti (hra, učení, práce), 2. Nápodoba/imitace (automatická a uvědomělá), 3. Identifikace/ztotožnění (obranná, emoční, projekce, racionalizace), 4. Sugesce.`,
-              `Socializace je proces biologického zrání centrální nervové soustavy v ontogenezi. Mechanismy: 1. Podmiňování (klasické a operantní), 2. Senzomotorická habituace, 3. Kognitivní diferenciace, 4. Fyziologická regenerace.`,
-              `Socializace je formování intelektových schopností v edukačním procesu. Mechanismy: 1. Asimilace vědomostí, 2. Deduktivní usuzování, 3. Mnemotechnické operace, 4. Verbální komunikace a metakomplementární interakce.`,
-              `Socializace je proces institucionální adaptace jedince na podmínky totální instituce. Mechanismy: 1. Desocializace a ztráta identity, 2. Prizonizace, 3. Přijetí neformálního vězeňského kodexu, 4. Regrese chování.`
+              `Socializace je proces biologického zrání centrální nervové soustavy v ontogenezi jedince. Mechanismy: 1. Podmiňování (klasické a operantní), 2. Senzomotorická habituace na podněty, 3. Kognitivní diferenciace funkcí, 4. Fyziologická regenerace tkání, 5. Myelinizace nervových vláken.`,
+              `Socializace je formování intelektových schopností v edukačním procesu ve škole. Mechanismy: 1. Asimilace vědomostí a dovedností, 2. Deduktivní usuzování, 3. Mnemotechnické operace, 4. Verbální komunikace a metakomplementární interakce, 5. Zpětná vazba učitele (hodnocení a klasifikace).`,
+              `Socializace je proces institucionální adaptace jedince na podmínky totální instituce. Mechanismy: 1. Desocializace a ztráta osobní identity, 2. Prizonizace (přijetí druhého života), 3. Přijetí neformálního vězeňského kodexu, 4. Regrese chování k dřívějším vzorcům.`
             ],
     correctOption: 0,
     rationale: 'Socializace je celoživotní proces sociálního učení a je nutnou podmínkou individualizace osobnosti. Klíčovými institucemi socializace jsou rodina, škola, vrstevníci a pracovní kolektiv.',
@@ -94,9 +94,9 @@ export const psychologieQuestions: Question[] = [
     answer: 'Sociální adaptace je aktivní a dynamické přizpůsobování se i přizpůsobování si společenského prostředí. Techniky: 1. Uspokojení (přímé dosažení cíle), 2. Obejití překážky (stanovení náhradního cíle při frustraci), 3. Agrese (snaha překážku rozbít), 4. Rezignace (vzdání se cíle).',
     options: [
               `Sociální adaptace je aktivní a dynamické přizpůsobování se i přizpůsobování si společenského prostředí. Techniky: 1. Uspokojení (přímé dosažení cíle), 2. Obejití překážky (stanovení náhradního cíle při frustraci), 3. Agrese (snaha překážku rozbít), 4. Rezignace (vzdání se cíle).`,
-              `Sociální adaptace je homeostatické vyrovnávání neurofyziologického napětí v organismu. Techniky: 1. Boj (aktivní obranná reakce), 2. Útěk (stažení ze situace), 3. Ztuhnutí (freezing reflex), 4. Somatizace tenze.`,
-              `Sociální adaptace je osvojování penitenciárních vzorců jednání ve výkonu trestu. Techniky: 1. Užívání argotu, 2. Vytváření zájmových koalic, 3. Účelová simulace obtíží, 4. Racionální manipulace personálem.`,
-              `Sociální adaptace je pasivní podřízení se skupinovému konformismu a vnějším normám. Techniky: 1. Konformita (přijetí cílů i prostředků), 2. Inovace, 3. Ritualismus (lpění na pravidlech), 4. Rebelie (snaha změnit systém dle Mertona).`
+              `Sociální adaptace je homeostatické vyrovnávání neurofyziologického napětí v organismu. Techniky: 1. Boj (aktivní obranná reakce), 2. Útěk (stažení ze situace), 3. Ztuhnutí (freezing reflex), 4. Somatizace tenze do tělesných obtíží. Uspokojení ani obejití překážky se mezi tyto techniky neřadí.`,
+              `Sociální adaptace je osvojování penitenciárních vzorců jednání ve výkonu trestu. Techniky: 1. Užívání argotu, 2. Vytváření zájmových koalic, 3. Účelová simulace obtíží, 4. Racionální manipulace personálem. Přizpůsobovat si prostředí nelze, adaptace je vždy pasivní.`,
+              `Sociální adaptace je pasivní podřízení se skupinovému konformismu a vnějším normám. Techniky: 1. Konformita (přijetí cílů i prostředků), 2. Inovace, 3. Ritualismus (lpění na pravidlech), 4. Rebelie (snaha změnit systém dle Mertona). Agrese ani rezignace sem nepatří.`
             ],
     correctOption: 0,
     rationale: 'Dobře adaptovaný člověk je citově zralý, reálně hodnotí své možnosti, ovládá své afekty a identifikuje se se sociálními rolemi odpovídajícími věku a postavení.',
@@ -110,9 +110,9 @@ export const psychologieQuestions: Question[] = [
     question: 'Co je výsledkem dobré socializace a co je výsledkem špatné socializace (maladaptace)?',
     answer: 'Výsledkem dobré socializace je sociální adaptace (zralá, integrovaná osobnost dodržující společenské normy). Výsledkem špatné socializace je sociální maladaptace podle vzorce „idealismus → frustrace → demoralizace“, projevující se poruchami chování, neurózami, psychopatiemi a delikvencí.',
     options: [
-              `Výsledkem dobré socializace je asimilace do sekundárních institucionálních struktur. Výsledkem špatné socializace je vývoj akutní psychotické poruchy s bludy a halucinacemi v zátěžové situaci.`,
-              `Výsledkem dobré socializace je vytvoření obranných mechanismů sublimace a vytěsnění. Výsledkem špatné socializace je výhradně somatické onemocnění v důsledku chronického distresu a syndromu vyhoření.`,
-              `Výsledkem dobré socializace je úplná konformita a nekritické podřízení se autoritě. Výsledkem špatné socializace je rozvoj organického psychosyndromu a výrazný pokles fluidní inteligence.`,
+              `Výsledkem dobré socializace je asimilace do sekundárních institucionálních struktur. Výsledkem špatné socializace je vývoj akutní psychotické poruchy s bludy a halucinacemi v zátěžové situaci. Vzorec idealismus, frustrace a demoralizace se v odborné literatuře nepoužívá, protože maladaptace nastupuje skokově.`,
+              `Výsledkem dobré socializace je vytvoření obranných mechanismů sublimace a vytěsnění. Výsledkem špatné socializace je výhradně somatické onemocnění v důsledku chronického distresu a syndromu vyhoření. Poruchy chování, neurózy ani delikvence s kvalitou socializace nesouvisejí, jde výhradně o vrozené dispozice jedince.`,
+              `Výsledkem dobré socializace je úplná konformita a nekritické podřízení se autoritě. Výsledkem špatné socializace je rozvoj organického psychosyndromu a výrazný pokles fluidní inteligence. Sociální adaptace ani maladaptace nejsou výsledkem socializace, ale její příčinou.`,
               `Výsledkem dobré socializace je sociální adaptace (zralá, integrovaná osobnost dodržující společenské normy). Výsledkem špatné socializace je sociální maladaptace podle vzorce „idealismus → frustrace → demoralizace“, projevující se poruchami chování, neurózami, psychopatiemi a delikvencí.`
             ],
     correctOption: 3,
@@ -127,10 +127,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Co je to sociální skupina a jaké 4 základní znaky mají všechny skupiny společné?',
     answer: 'Skupina je sdružení dvou nebo více osob integrujících se při dosahování cílů se vzájemnou závislostí rolí a norem. Každá skupina má: 1. Společné cíle, 2. Určitou velikost, 3. Normy, kterými se řídí, 4. Sankce za porušení norem.',
     options: [
-              `Skupina je výhradně formální organizační složka zřízená zákonným předpisem. Společné znaky: 1. Písemný jednací řád, 2. Stanovená hierarchie hodností, 3. Finanční odměňování, 4. Právní odpovědnost.`,
-              `Skupina je agregát osob propojených výhradně emoční nákazou a sugescí. Společné znaky: 1. Úbytek inteligence, 2. Anonymita jednání, 3. Přítomnost charismatického vůdce, 4. Zvýšená agresivita.`,
+              `Skupina je výhradně formální organizační složka zřízená zákonným předpisem nebo nařízením. Společné znaky: 1. Písemný jednací řád, 2. Stanovená hierarchie hodností, 3. Finanční odměňování, 4. Právní odpovědnost vedoucího.`,
+              `Skupina je agregát osob propojených výhradně emoční nákazou a vzájemnou sugescí. Společné znaky: 1. Úbytek inteligence, 2. Anonymita jednání, 3. Přítomnost charismatického vůdce, 4. Zvýšená agresivita vůči okolí.`,
               `Skupina je sdružení dvou nebo více osob integrujících se při dosahování cílů se vzájemnou závislostí rolí a norem. Každá skupina má: 1. Společné cíle, 2. Určitou velikost, 3. Normy, kterými se řídí, 4. Sankce za porušení norem.`,
-              `Skupina je prostorový shluk jedinců na jednom místě bez vzájemné interakce a cílů. Společné znaky: 1. Fyzická blízkost, 2. Shodná demografická kategorie, 3. Stejný věk členů, 4. Jednotný vnější vzhled.`
+              `Skupina je prostorový shluk jedinců na jednom místě bez vzájemné interakce a cílů. Společné znaky: 1. Fyzická blízkost osob, 2. Shodná demografická kategorie, 3. Stejný věk členů, 4. Jednotný vnější vzhled a oblečení.`
             ],
     correctOption: 2,
     rationale: 'Dále skupiny vykazují vnitřní dynamiku (vůdčí osoby, klima, kontakty) a rysy jako intimita, organizace, propustnost, disciplína a soudržnost.',
@@ -145,9 +145,9 @@ export const psychologieQuestions: Question[] = [
     answer: 'Rodina je malá (do 30–40 osob), primární (silné citové a intimní vazby), neformální a neprostupná skupina s pevnými vazbami, která je základní institucí socializace jedince.',
     options: [
               `Rodina je malá, sekundární, referenční a formální instituce, jejímž jediným cílem je institucionální dohled a uplatňování právních sankcí vůči nedospělým členům.`,
-              `Rodina je velká, sekundární, formální a plně prostupná skupina, která plní výhradně ekonomickou a materiálně zabezpečovací funkci v tržní společnosti.`,
+              `Rodina je velká, sekundární, formální a plně prostupná skupina, která plní výhradně ekonomickou a materiálně zabezpečovací funkci v moderní tržní společnosti.`,
               `Rodina je malá (do 30–40 osob), primární (silné citové a intimní vazby), neformální a neprostupná skupina s pevnými vazbami, která je základní institucí socializace jedince.`,
-              `Rodina je středně velká, terciární, zájmová a přechodná skupina fungující na principu dobrovolného smluvního členství bez hlubších emocionálních vazeb.`
+              `Rodina je středně velká, terciární, zájmová a přechodná skupina fungující na principu dobrovolného smluvního členství bez hlubších emocionálních vazeb mezi členy.`
             ],
     correctOption: 2,
     rationale: 'Člověk se v rodině ocitá bez své vůle, přesto je pro něj po celý život nepostradatelným prostředím. Narušení vztahů v rodině mívá těžké následky na psychiku a vývoj.',
@@ -161,10 +161,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Co je to komunikace a jaké 3 úrovně rozlišujeme u verbální komunikace?',
     answer: 'Komunikace je přenos myšlenek, emocí, postojů a jednání mezi lidmi. Úrovně verbální komunikace: 1. Suplementární (rovnováha, přítel-přítel), 2. Komplementární (dominantní x podřízený, např. nadřízený-podřízený), 3. Metakomplementární (dominantní úmyslně přenechává prostor druhému, např. terapeut-pacient).',
     options: [
-              `Komunikace je předávání služebních pokynů v bezpečnostním sboru. Úrovně verbální komunikace: 1. Direktorní (rozkazovací), 2. Informativní (hlášení stavu), 3. Sankční (uložení kázeňského trestu).`,
+              `Komunikace je předávání služebních pokynů v bezpečnostním sboru podle stupně podřízenosti. Úrovně verbální komunikace: 1. Direktorní (rozkazovací, shora dolů), 2. Informativní (hlášení stavu nadřízenému), 3. Sankční (uložení kázeňského trestu odsouzenému), 4. Konzultační (porada služebních funkcionářů věznice).`,
               `Komunikace je přenos myšlenek, emocí, postojů a jednání mezi lidmi. Úrovně verbální komunikace: 1. Suplementární (rovnováha, přítel-přítel), 2. Komplementární (dominantní x podřízený, např. nadřízený-podřízený), 3. Metakomplementární (dominantní úmyslně přenechává prostor druhému, např. terapeut-pacient).`,
-              `Komunikace je proces výměny kódovaných informací. Úrovně verbální komunikace: 1. Monologická (jednosměrný tok), 2. Dialogická (obousměrná interakce), 3. Polylogická (skupinová panelová diskuse).`,
-              `Komunikace je neurofyziologický přenos signálů. Úrovně verbální komunikace: 1. Senzorická (příjem sluchem a zrakem), 2. Kognitivní (zpracování v kůře), 3. Motorická (artikulace mluvidel).`
+              `Komunikace je proces výměny kódovaných informací mezi vysílajícím a příjemcem sdělení. Úrovně verbální komunikace: 1. Monologická (jednosměrný tok informací bez zpětné vazby), 2. Dialogická (obousměrná interakce dvou osob), 3. Polylogická (skupinová panelová diskuse více účastníků najednou).`,
+              `Komunikace je neurofyziologický přenos signálů mezi neurony nervové soustavy. Úrovně verbální komunikace: 1. Senzorická (příjem sluchem, zrakem a hmatem), 2. Kognitivní (zpracování v mozkové kůře), 3. Motorická (artikulace mluvidel a hlasivek), 4. Vegetativní (mimovolní reakce vegetativního nervstva).`
             ],
     correctOption: 1,
     rationale: 'Komunikace probíhá v rovině věcné (obsah sdělení) a rovině vztahové (vztah mezi komunikujícími). Záměna rovin nebo „čtení myšlenek“ vede k poruchám komunikace.',
@@ -178,9 +178,9 @@ export const psychologieQuestions: Question[] = [
     question: 'Z čeho se skládá neverbální komunikace a kolik procent celkového procesu komunikace tvoří?',
     answer: 'Tvoří 90–94 % celkového procesu komunikace. Zahrnuje mimiku (obličej), kineziku a gesta (pohyby těla a rukou), oční kontakt, paralingvistiku (tón, hlasitost, tempo, pauzy), proxemiku (vzdálenost), haptiku (doteky) a celkové držení těla.',
     options: [
-              `Tvoří přibližně 50–55 % celkového procesu komunikace. Zahrnuje výhradně artikulační rychlost, slovní zásobu, syntaktickou stavbu vět a fonetické zabarvení hlasu mluvčího.`,
-              `Tvoří 70–75 % celkového procesu komunikace. Zahrnuje výhradně grafologické znaky rukopisu, styl oblékání, nošení doplňků a úpravu služebního stejnokroje.`,
-              `Tvoří zanedbatelných 10–15 % komunikace. Zahrnuje výhradně fyziologické vegetativní reakce organismu, jako je tepová frekvence, pocení dlaní a kožní galvanický reflex.`,
+              `Tvoří přibližně 50–55 % celkového procesu komunikace. Zahrnuje výhradně artikulační rychlost, slovní zásobu, syntaktickou stavbu vět a fonetické zabarvení hlasu mluvčího. Mimika, gesta ani proxemika do neverbální komunikace nepatří, jde o složky řeči.`,
+              `Tvoří 70–75 % celkového procesu komunikace. Zahrnuje výhradně grafologické znaky rukopisu, styl oblékání, nošení doplňků a úpravu služebního stejnokroje. Oční kontakt ani haptika se mezi neverbální projevy neřadí, protože jde o přímý fyzický kontakt osob.`,
+              `Tvoří zanedbatelných 10–15 % komunikace. Zahrnuje výhradně fyziologické vegetativní reakce organismu, jako je tepová frekvence, pocení dlaní a kožní galvanický reflex. Paralingvistika je součástí verbální řeči.`,
               `Tvoří 90–94 % celkového procesu komunikace. Zahrnuje mimiku (obličej), kineziku a gesta (pohyby těla a rukou), oční kontakt, paralingvistiku (tón, hlasitost, tempo, pauzy), proxemiku (vzdálenost), haptiku (doteky) a celkové držení těla.`
             ],
     correctOption: 3,
@@ -195,9 +195,9 @@ export const psychologieQuestions: Question[] = [
     question: 'Jak působí na komunikaci styčná plocha a jak komunikační bariéra? Uveďte příklady.',
     answer: 'Styčná plocha je společný základ (znalost jazyka, společné zájmy, porozumění), který komunikaci umožňuje a zefektivňuje. Komunikační bariéra komunikaci znesnadňuje či blokuje (např. bariéra jazyková, národnostní, sociální, věková, intelektová nebo charakterová).',
     options: [
-              `Styčná plocha je asertivní technika hledání kompromisu při vyjednávání, zatímco komunikační bariéra je agresivní chování vyvolané abstinenčním syndromem u toxikomana.`,
-              `Styčná plocha je neverbální složka komunikace tvořící přes 90 % přenosu, zatímco komunikační bariéra je specifická fatická porucha způsobená organickou lézí řečových center mozku.`,
-              `Styčná plocha představuje formální služební předpis sjednocující terminologii, zatímco komunikační bariéra je výhradně stavebně-technická zábrana a mříž v návštěvní místnosti věznice.`,
+              `Styčná plocha je asertivní technika hledání kompromisu při vyjednávání, zatímco komunikační bariéra je agresivní chování vyvolané abstinenčním syndromem u toxikomana. Znalost jazyka ani společné zájmy styčnou plochu netvoří, protože jde o techniku, nikoli o společný základ komunikace.`,
+              `Styčná plocha je neverbální složka komunikace tvořící přes 90 % přenosu, zatímco komunikační bariéra je specifická fatická porucha způsobená organickou lézí řečových center mozku. Jazyková, sociální ani věková bariéra mezi komunikační bariéry nepatří, jde o sociologické pojmy.`,
+              `Styčná plocha představuje formální služební předpis sjednocující terminologii, zatímco komunikační bariéra je výhradně stavebně-technická zábrana a mříž v návštěvní místnosti věznice. Porozumění mezi lidmi na styčné ploše vůbec nezávisí.`,
               `Styčná plocha je společný základ (znalost jazyka, společné zájmy, porozumění), který komunikaci umožňuje a zefektivňuje. Komunikační bariéra komunikaci znesnadňuje či blokuje (např. bariéra jazyková, národnostní, sociální, věková, intelektová nebo charakterová).`
             ],
     correctOption: 3,
@@ -212,10 +212,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Co je to sociální percepce, k čemu slouží a jaké jsou 3 typické chyby v sociální percepci?',
     answer: 'Sociální percepce je sociálně podmíněné vnímání sebe a druhých lidí, slouží k odhadu partnera a volbě strategie chování. Chyby: 1. Haló efekt (zobecnění podle jednoho nápadného znaku), 2. Golemovský efekt (podhodnocování podřízených), 3. Teorie atribuce (vlastní neúspěch svádím na okolí, cizí neúspěch na jeho neschopnost).',
     options: [
-              `Sociální percepce je proces utváření sociálních rolí ve vězeňské komunitě. Chyby: 1. Prizonizace odsouzených, 2. Deprivace základních potřeb, 3. Maladaptace na podmínky izolace.`,
-              `Sociální percepce je schopnost smyslového vnímání fyzických objektů v prostoru. Chyby: 1. Optická iluze, 2. Sluchová nedoslýchavost, 3. Taktilní hypestézie v důsledku periferní neuropatie.`,
+              `Sociální percepce je proces utváření sociálních rolí ve vězeňské komunitě a jejich upevňování. Chyby: 1. Prizonizace odsouzených (převzetí norem druhého života), 2. Deprivace základních potřeb (nedostatek podnětů a kontaktu), 3. Maladaptace na podmínky izolace (selhání adaptace na režim), 4. Institucionalizace (ztráta schopnosti žít na svobodě).`,
+              `Sociální percepce je schopnost smyslového vnímání fyzických objektů v prostoru a čase. Chyby: 1. Optická iluze (zkreslení tvaru a velikosti předmětu), 2. Sluchová nedoslýchavost (snížený práh vnímání zvuku), 3. Taktilní hypestézie v důsledku periferní neuropatie, 4. Porucha prostorové orientace (chybný odhad vzdálenosti a hloubky).`,
               `Sociální percepce je sociálně podmíněné vnímání sebe a druhých lidí, slouží k odhadu partnera a volbě strategie chování. Chyby: 1. Haló efekt (zobecnění podle jednoho nápadného znaku), 2. Golemovský efekt (podhodnocování podřízených), 3. Teorie atribuce (vlastní neúspěch svádím na okolí, cizí neúspěch na jeho neschopnost).`,
-              `Sociální percepce je standardizovaná diagnostická metoda měření emoční inteligence. Chyby: 1. Ebbinghausova křivka zapomínání, 2. Yerkes-Dodsonův zákon aktivace, 3. Weber-Fechnerův psychofyzikální zákon.`
+              `Sociální percepce je standardizovaná diagnostická metoda měření emoční inteligence dotazníkem. Chyby: 1. Ebbinghausova křivka zapomínání (ztráta údajů v čase), 2. Yerkes-Dodsonův zákon aktivace (optimální hladina napětí), 3. Weber-Fechnerův psychofyzikální zákon (logaritmický vztah podnětu a počitku), 4. Chyba střední tendence v odpovědích.`
             ],
     correctOption: 2,
     rationale: 'Mezi další chyby patří: chyba prostředí (figura a pozadí), efekt setrvačnosti, první dojem, estetický stereotyp a soukromá teorie osobnosti.',
@@ -229,10 +229,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Co je to asertivita a jaké známe základní asertivní techniky?',
     answer: 'Asertivita je zdravé, přiměřené sebeprosazení (jednání ani pasivní, ani agresivní). Techniky: Pokažená gramofonová deska, Otevřené dveře, Sebeotevření, Volné informace, Přijatý kompromis, Selektivní ignorování, Negativní aserce a Negativní dotazování („A co ti ještě vadí?“).',
     options: [
-              `Asertivita je nátlakový autoritativní styl komunikace založený na demonstraci síly. Techniky: Zastrašování, Manipulativní lichocení, Ultimátum, Racionální vyčerpání a Argumentace ad hominem.`,
+              `Asertivita je nátlakový autoritativní styl komunikace založený na demonstraci síly. Techniky: Zastrašování, Manipulativní lichocení, Ultimátum, Racionální vyčerpání a Argumentace ad hominem. Pasivní ani agresivní jednání se od asertivity nijak nerozlišuje.`,
               `Asertivita je zdravé, přiměřené sebeprosazení (jednání ani pasivní, ani agresivní). Techniky: Pokažená gramofonová deska, Otevřené dveře, Sebeotevření, Volné informace, Přijatý kompromis, Selektivní ignorování, Negativní aserce a Negativní dotazování („A co ti ještě vadí?“).`,
-              `Asertivita je nevědomý obranný mechanismus ega sloužící k redukci tenze. Techniky: Projekce viny, Regrese do dětství, Racionalizace selhání, Reaktivní výtvor a Vytěsnění do podvědomí.`,
-              `Asertivita je psychoterapeutická metoda zaměřená na eliminaci úzkostných stavů. Techniky: Autogenní trénink, Progresivní svalová relaxace, Systematická desenzibilizace a Kognitivní restrukturalizace.`
+              `Asertivita je nevědomý obranný mechanismus ega sloužící k redukci tenze. Techniky: Projekce viny, Regrese do dětství, Racionalizace selhání, Reaktivní výtvor a Vytěsnění do podvědomí. Pokažená gramofonová deska je technikou psychoanalýzy, nikoli asertivity.`,
+              `Asertivita je psychoterapeutická metoda zaměřená na eliminaci úzkostných stavů. Techniky: Autogenní trénink, Progresivní svalová relaxace, Systematická desenzibilizace a Kognitivní restrukturalizace. Sebeprosazení není jejím cílem, naopak jej tlumí.`
             ],
     correctOption: 1,
     rationale: 'Asertivita chrání příslušníka před manipulací, pocity viny a pomáhá řešit drobné konflikty bez citového zainteresování a bez narušení lidské důstojnosti.',
@@ -246,10 +246,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Co je to dav, jaké má 4 základní znaky a jak se dělí?',
     answer: 'Dav je shromáždění značného počtu osob okolo středu společného zájmu. Znaky: anonymita, vláda citu (emocí), úbytek inteligence, úbytek osobní odpovědnosti. Dělí se na shluky (agresivní, výtržnické, únikové, přírůstkové/akvizitní, výrazové/expanzivní) a publika (záměrná, nahodilá).',
     options: [
-              `Dav je skupina osob trpících sdílenou duševní poruchou s bludy. Znaky: paranoidní ladění, halucinace, katatonické projevy, bradypsychismus. Dělí se na chronické psychotické shluky a neurotické skupiny.`,
+              `Dav je skupina osob trpících sdílenou duševní poruchou s bludy. Znaky: paranoidní ladění, halucinace, katatonické projevy, bradypsychismus. Dělí se na chronické psychotické shluky a neurotické skupiny. Anonymita ani úbytek osobní odpovědnosti se mezi znaky davu neřadí, protože dav je vždy tvořen identifikovanými jedinci.`,
               `Dav je shromáždění značného počtu osob okolo středu společného zájmu. Znaky: anonymita, vláda citu (emocí), úbytek inteligence, úbytek osobní odpovědnosti. Dělí se na shluky (agresivní, výtržnické, únikové, přírůstkové/akvizitní, výrazové/expanzivní) a publika (záměrná, nahodilá).`,
-              `Dav je primární skupina propojená hlubokými intimními vazbami. Znaky: empatie, altruismus, vysoká koheze, vzájemná tolerance. Dělí se na rodinné klany, profesní týmy a přátelské komunity.`,
-              `Dav je organizovaná formální skupina s pevnou strukturou rolí. Znaky: racionální uvažování, vysoká sebekontrola, stálost cílů, individuální odpovědnost. Dělí se na jednotky pořádkové, zásahové a eskortní.`
+              `Dav je primární skupina propojená hlubokými intimními vazbami. Znaky: empatie, altruismus, vysoká koheze, vzájemná tolerance. Dělí se na rodinné klany, profesní týmy a přátelské komunity. Vláda citu ani úbytek inteligence v davu nenastávají, naopak se rozhodování zkvalitňuje sdílením názorů.`,
+              `Dav je organizovaná formální skupina s pevnou strukturou rolí. Znaky: racionální uvažování, vysoká sebekontrola, stálost cílů, individuální odpovědnost. Dělí se na jednotky pořádkové, zásahové a eskortní. Shluky ani publika mezi druhy davu nepatří, jde o pojmy ze sociologie malých skupin.`
             ],
     correctOption: 1,
     rationale: 'Akce davu se vyznačuje psychickou nákazou (davová psychóza), sugescí a nápodobou. Fáze davu: 1. Formování (roste počet a emoce), 2. Vzrůst emocionality (přesvědčení o všemocnosti a beztrestnosti).',
@@ -263,10 +263,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Jaké role mohou zastávat jednotlivci v davu a koho je nutné izolovat jako prvního?',
     answer: '1. Startéři (vůdci, iniciátoři, provokatéři – staví se do čela, podbízejí k akci; je nutné je vytipovat a izolovat jako první!), 2. Aktivní účastníci (snadno vznětliví, sugestibilní, rvou se), 3. Pomáhající účastníci (souhlasí, hecují, dodávají davu legitimitu), 4. Odporující účastníci (nestrhnou se, mohou akci zvrátit).',
     options: [
-              `1. Pasivní pozorovatelé (stojí na okraji a situaci sledují; nutno izolovat jako první), 2. Vyjednavači (tlumí emoce), 3. Evakuační asistenti (pomáhají zraněným), 4. Tiskoví mluvčí (informují veřejnost).`,
-              `1. Formální velitelé (řídí postup podle plánu), 2. Spojovací personál (zajišťuje radiokomunikaci), 3. Záložní síly (čekají na povel k zákroku), 4. Dokumentační skupina (pořizuje videozáznam; je nutné ji izolovat jako první).`,
+              `1. Pasivní pozorovatelé (stojí na okraji a situaci jen sledují; je nutné je izolovat jako první), 2. Vyjednavači (tlumí emoce a hledají kompromis), 3. Evakuační asistenti (pomáhají zraněným z místa), 4. Tiskoví mluvčí (informují veřejnost a novináře), 5. Zdravotníci (ošetřují na místě), 6. Techničtí pracovníci (odstraňují překážky z komunikace).`,
+              `1. Formální velitelé (řídí postup podle schváleného plánu), 2. Spojovací personál (zajišťuje radiokomunikaci mezi skupinami), 3. Záložní síly (čekají v úkrytu na povel k zákroku), 4. Dokumentační skupina (pořizuje videozáznam; je nutné ji izolovat jako první), 5. Styční důstojníci (spolupráce s policií).`,
               `1. Startéři (vůdci, iniciátoři, provokatéři – staví se do čela, podbízejí k akci; je nutné je vytipovat a izolovat jako první!), 2. Aktivní účastníci (snadno vznětliví, sugestibilní, rvou se), 3. Pomáhající účastníci (souhlasí, hecují, dodávají davu legitimitu), 4. Odporující účastníci (nestrhnou se, mohou akci zvrátit).`,
-              `1. Dominantní alfa jedinci (určují hierarchii), 2. Submisivní beta jedinci (přijímají sankce), 3. Marginalizovaní gama jedinci (stojí mimo dění), 4. Omega jedinci (obětní beránci; nutno izolovat jako první).`
+              `1. Dominantní alfa jedinci (určují hierarchii ve skupině), 2. Submisivní beta jedinci (bez odporu přijímají sankce), 3. Marginalizovaní gama jedinci (stojí mimo dění a nezasahují), 4. Omega jedinci (obětní beránci; nutno izolovat jako první), 5. Neutrální jedinci (nepřiklánějí se k žádné straně).`
             ],
     correctOption: 2,
     rationale: 'Startéři mívají nízkou úroveň právního vědomí a deformovaný hodnotový systém. Jejich včasná eliminace a izolace zamezí eskalaci nepokojů a vzniku davové psychózy.',
@@ -280,10 +280,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Co je to droga a jak se drogy dělí podle účinku a podle původu?',
     answer: 'Droga je jakákoliv látka ovlivňující psychiku a prožívání, která může vyvolat závislost. Dělení dle účinku: Opiáty, Konopné látky, Tlumivé látky, Stimulancia, Halucinogeny, Těkavé látky. Dělení dle vzniku: přírodní, syntetické a polosyntetické.',
     options: [
-              `Droga je psychoaktivní substance způsobující výhradně psychickou závislost bez somatických projevů. Dělení dle účinku: Sedativa, Hypnotika, Nootropika, Analeptika. Dělení dle vzniku: laboratorní a potravinářské.`,
-              `Droga je jakákoli jedovatá látka způsobující okamžitou zástavu dechu. Dělení dle účinku: Neurotoxiny, Hemotoxiny, Cytotoxiny, Karcinogeny. Dělení dle vzniku: anorganické plyny, organické roztoky a krystalické sloučeniny.`,
+              `Droga je psychoaktivní substance způsobující výhradně psychickou závislost bez somatických projevů. Dělení dle účinku: Sedativa, Hypnotika, Nootropika, Analeptika. Dělení dle vzniku: laboratorní a potravinářské. Opiáty ani halucinogeny se mezi drogy neřadí, jde o léčiva.`,
+              `Droga je jakákoli jedovatá látka způsobující okamžitou zástavu dechu a oběhu. Dělení dle účinku: Neurotoxiny, Hemotoxiny, Cytotoxiny, Karcinogeny. Dělení dle vzniku: anorganické plyny, organické roztoky a krystalické sloučeniny kovů.`,
               `Droga je jakákoliv látka ovlivňující psychiku a prožívání, která může vyvolat závislost. Dělení dle účinku: Opiáty, Konopné látky, Tlumivé látky, Stimulancia, Halucinogeny, Těkavé látky. Dělení dle vzniku: přírodní, syntetické a polosyntetické.`,
-              `Droga je výhradně chemicky syntetizované léčivo podléhající lékařskému předpisu. Dělení dle účinku: Analgetika, Antibiotika, Antidepresiva, Antipsychotika, Anestetika. Dělení dle vzniku: rostlinné a minerální.`
+              `Droga je výhradně chemicky syntetizované léčivo podléhající lékařskému předpisu. Dělení dle účinku: Analgetika, Antibiotika, Antidepresiva, Antipsychotika, Anestetika. Dělení dle vzniku: rostlinné a minerální. Konopí sem nepatří.`
             ],
     correctOption: 2,
     rationale: 'Rozvoj závislosti probíhá v řetězci: 1. První kontakt → 2. Pokus (experiment) → 3. Zneužití (abúzus) → 4. Závislost. Na vzniku se podílí typ drogy, osobnost, sociální prostředí a spouštěcí podnět.',
@@ -297,10 +297,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Jak se projevuje užití jednotlivých skupin drog na zornicích (zúžení vs. rozšíření)?',
     answer: 'Opiáty (morfin, heroin, braun, kodein) způsobují extrémní zúžení zornic (tzv. „špendlíková hlavička“). Naopak stimulancia (pervitin, kokain), halucinogeny (LSD, extáze), konopí a těkavé látky způsobují rozšíření zornic (mydriázu).',
     options: [
-              `Opiáty a tlumivé látky vyvolávají výraznou mydriázu (rozšíření zornic nereagující na světlo), zatímco stimulancia (pervitin, kokain) a kanabinoidy vedou k extrémní mióze (zúžení zornic na špendlíkovou hlavičku).`,
+              `Opiáty a tlumivé látky vyvolávají výraznou mydriázu (rozšíření zornic nereagující na světlo), zatímco stimulancia (pervitin, kokain) a kanabinoidy vedou k extrémní mióze (zúžení zornic na špendlíkovou hlavičku). Halucinogeny zornice vůbec neovlivňují.`,
               `Opiáty (morfin, heroin, braun, kodein) způsobují extrémní zúžení zornic (tzv. „špendlíková hlavička“). Naopak stimulancia (pervitin, kokain), halucinogeny (LSD, extáze), konopí a těkavé látky způsobují rozšíření zornic (mydriázu).`,
-              `Všechny skupiny návykových látek způsobují patologickou anizokorii (nerovnoměrnou šíři zornic), kdy jedna zornice zůstává trvale zúžená a druhá rozšířená bez ohledu na aplikovanou substanci.`,
-              `Stimulancia a halucinogeny způsobují úplné vymizení zornicového reflexu se zúžením na 1 mm, zatímco opiáty a barbituráty vedou k přechodnému rozšíření zornic výhradně při akomodaci na dálku.`
+              `Všechny skupiny návykových látek způsobují patologickou anizokorii (nerovnoměrnou šíři zornic), kdy jedna zornice zůstává trvale zúžená a druhá rozšířená bez ohledu na aplikovanou substanci. Rozlišit opiáty a stimulancia podle zornic proto nelze ani orientačně.`,
+              `Stimulancia a halucinogeny způsobují úplné vymizení zornicového reflexu se zúžením na 1 mm, zatímco opiáty a barbituráty vedou k přechodnému rozšíření zornic výhradně při akomodaci na dálku. Špendlíková hlavička je proto typickým projevem pervitinu.`
             ],
     correctOption: 1,
     rationale: 'Zkouška reakce zornic na světlo a jejich šířka je základním orientačním znakem pro příslušníka při podezření na intoxikaci vězněné osoby.',
@@ -314,10 +314,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Který způsob aplikace drog je z hlediska aktuálního ohrožení života nejnebezpečnější a proč?',
     answer: 'Vdechování (čichání výparů těkavých látek), protože nelze odhadnout množství ani koncentraci výparů v plicích a může dojít k okamžitému předávkování, ochrnutí dýchacího centra a udušení.',
     options: [
-              `Transdermální aplikace (přes kůži náplastmi), protože látka prochází kožní bariérou nekontrolovanou rychlostí a způsobuje nevratnou nekrózu periferních nervových vláken.`,
+              `Transdermální aplikace (přes kůži náplastmi), protože látka prochází kožní bariérou nekontrolovanou rychlostí a způsobuje nevratnou nekrózu periferních nervových vláken po celém těle uživatele drogy.`,
               `Vdechování (čichání výparů těkavých látek), protože nelze odhadnout množství ani koncentraci výparů v plicích a může dojít k okamžitému předávkování, ochrnutí dýchacího centra a udušení.`,
-              `Perorální aplikace (polykání tablet), protože v trávicím traktu dochází k okamžitému vstřebání celé dávky do krevního oběhu bez metabolické filtrace játry, což vyvolává rupturu žaludku.`,
-              `Sublinguální aplikace (pod jazyk), protože sliznice dutiny ústní blokuje transport kyslíku a vyvolává akutní anafylaktoidní šok s uzávěrem dýchacích cest u většiny uživatelů.`
+              `Perorální aplikace (polykání tablet), protože v trávicím traktu dochází k okamžitému vstřebání celé dávky do krevního oběhu bez metabolické filtrace játry, což vyvolává rupturu žaludku a tenkého střeva.`,
+              `Sublinguální aplikace (pod jazyk), protože sliznice dutiny ústní blokuje transport kyslíku a vyvolává akutní anafylaktoidní šok s uzávěrem dýchacích cest u většiny uživatelů návykových látek již při první dávce.`
             ],
     correctOption: 1,
     rationale: 'Uživatelé těkavých látek (toluen, ředidla) navíc často inhalují v uzavřeném prostoru (pod dekou, s igelitovým sáčkem na hlavě), což riziko asfyxie ještě násobí.',
@@ -332,9 +332,9 @@ export const psychologieQuestions: Question[] = [
     answer: 'Závislost je silná, přemáhající touha užívat látku. Fyzická závislost = látka je zahrnuta do metabolismu, vysazení vyvolá tělesný abstinenční syndrom (třes, křeče, zvracení, pocení). Psychická závislost = neodolatelné nutkání a touha bez tělesných křečí po vysazení.',
     options: [
               `Závislost je silná, přemáhající touha užívat látku. Fyzická závislost = látka je zahrnuta do metabolismu, vysazení vyvolá tělesný abstinenční syndrom (třes, křeče, zvracení, pocení). Psychická závislost = neodolatelné nutkání a touha bez tělesných křečí po vysazení.`,
-              `Závislost je krátkodobý návyk vznikající výhradně u jedinců s lehkou mentální retardací. Fyzická i psychická složka mají identický průběh spočívající výhradně v přechodném poklesu kognitivních funkcí.`,
-              `Závislost je přechodný stav zvýšené tolerance na běžná léčiva. Fyzická závislost se projevuje výhradně změnou nálady a nespavostí, psychická závislost vyvolává těžké klonicko-tonické křeče a kolaps oběhu.`,
-              `Závislost je geneticky podmíněná neschopnost odbourávat alkohol v játrech. Fyzická složka představuje vyhledávání komunity uživatelů, psychická složka je výhradně enzymatický jaterní deficit.`
+              `Závislost je krátkodobý návyk vznikající výhradně u jedinců s lehkou mentální retardací. Fyzická i psychická složka mají identický průběh spočívající výhradně v přechodném poklesu kognitivních funkcí. Abstinenční syndrom po vysazení látky se nedostavuje, protože látka se do metabolismu nezapojuje.`,
+              `Závislost je přechodný stav zvýšené tolerance na běžná léčiva. Fyzická závislost se projevuje výhradně změnou nálady a nespavostí, psychická závislost vyvolává těžké klonicko-tonické křeče a kolaps oběhu. Neodolatelné nutkání užít látku není znakem závislosti, jde o projev slabé vůle.`,
+              `Závislost je geneticky podmíněná neschopnost odbourávat alkohol v játrech. Fyzická složka představuje vyhledávání komunity uživatelů, psychická složka je výhradně enzymatický jaterní deficit. Třes, křeče ani pocení po vysazení se u závislosti nevyskytují, jde o příznaky otravy.`
             ],
     correctOption: 0,
     rationale: 'Závislost vede k degradaci osobnosti, ztrátě zájmů, rozpadu sociálních vazeb a kriminálnímu jednání za účelem obstarání drogy.',
@@ -348,10 +348,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Co jsou to nelátkové (behaviorální) závislosti a jaké jsou jejich příklady?',
     answer: 'Závislosti na procesech a činnostech, které přinášejí příjemný prožitek, bez užívání chemických substancí. Příklady: patologické hráčství (gambling), závislost na internetu/sociálních sítích, workoholismus, oniomanie (nakupování), hypersexualita, závislost na jídle.',
     options: [
-              `Psychotické poruchy s bludnou produkcí a halucinacemi vznikající bez přítomnosti závislostního chování. Příklady: paranoidní schizofrenie, bipolární afektivní porucha a schizoafektivní psychóza.`,
+              `Psychotické poruchy s bludnou produkcí a halucinacemi vznikající bez přítomnosti závislostního chování. Příklady: paranoidní schizofrenie, bipolární afektivní porucha a schizoafektivní psychóza. Gambling ani závislost na internetu se mezi ně neřadí, bez chemické látky závislost nevzniká.`,
               `Závislosti na procesech a činnostech, které přinášejí příjemný prožitek, bez užívání chemických substancí. Příklady: patologické hráčství (gambling), závislost na internetu/sociálních sítích, workoholismus, oniomanie (nakupování), hypersexualita, závislost na jídle.`,
-              `Závislosti vznikající abúzem syntetických designer drugs a stimulancií bez obsahu přírodních alkaloidů. Příklady: užívání mefedronu, syntetických kanabinoidů, fentanylu a čichání toluenu.`,
-              `Vrozené poruchy osobnosti charakterizované trvale sníženou frustrační tolerancí a impulzivitou. Příklady: emočně nestabilní, disociální, histriónská a narcistická porucha osobnosti.`
+              `Závislosti vznikající abúzem syntetických designer drugs a stimulancií bez obsahu přírodních alkaloidů. Příklady: užívání mefedronu, syntetických kanabinoidů, fentanylu a čichání toluenu. Workoholismus ani oniomanie se mezi závislosti neřadí, jde o zvyky.`,
+              `Vrozené poruchy osobnosti charakterizované trvale sníženou frustrační tolerancí a impulzivitou. Příklady: emočně nestabilní, disociální, histriónská a narcistická porucha osobnosti. Příjemný prožitek z činnosti není znakem závislosti, ale zdravé motivace.`
             ],
     correctOption: 1,
     rationale: 'Nelátkové závislosti vykazují stejné znaky jako látkové (význačnost, změny nálady, růst tolerance, abstinenční tenze, konflikty a relapsy).',
@@ -365,9 +365,9 @@ export const psychologieQuestions: Question[] = [
     question: 'Jaká jsou 4 vývojová stadia alkoholismu (podle Jellineka)?',
     answer: '1. Počáteční stadium (příležitostné pití pro euforii, roste tolerance), 2. Varovné stadium (alkohol jako droga, občasná opilost, paměťová okénka), 3. Rozhodující stadium (ztráta kontroly v pití, racionalizace, podřízení života alkoholu), 4. Konečné stadium (vícedenní tahy, pokles tolerance, tělesná a duševní deteriorace, debakl).',
     options: [
-              `1. Prodromální stadium (abúzus nízkoalkoholických nápojů), 2. Kompenzované stadium (zachování pracovní schopnosti), 3. Dekompenzované stadium (ztráta zaměstnání), 4. Terminální stadium (ochranné ústavní léčení).`,
-              `1. Latentní stadium (bez zjevných symptomů), 2. Neurotické stadium (úzkosti a deprese), 3. Psychotické stadium (delirium tremens a alkoholická halucinóza), 4. Somatické stadium (cirhóza jater bez psychických změn).`,
-              `1. Experimentální stadium (ochutnávání alkoholu), 2. Sociální stadium (pití ve skupině), 3. Habituální stadium (pravidelné večerní dávky), 4. Remisní stadium (spontánní abstinence a obnova jaterních funkcí).`,
+              `1. Prodromální stadium (abúzus nízkoalkoholických nápojů ve společnosti přátel), 2. Kompenzované stadium (zachování pracovní schopnosti i rodinného zázemí), 3. Dekompenzované stadium (ztráta zaměstnání a postupný rozpad rodinných vztahů), 4. Terminální stadium (ochranné ústavní léčení nařízené soudem po odsouzení).`,
+              `1. Latentní stadium (bez zjevných symptomů, bez růstu tolerance a bez sociálních dopadů), 2. Neurotické stadium (úzkosti, deprese a poruchy spánku), 3. Psychotické stadium (delirium tremens a alkoholická halucinóza s bludy), 4. Somatické stadium (cirhóza jater a polyneuropatie bez psychických změn).`,
+              `1. Experimentální stadium (první ochutnávání alkoholu v dospívání), 2. Sociální stadium (pití ve skupině vrstevníků při oslavách), 3. Habituální stadium (pravidelné večerní dávky pro usnutí), 4. Remisní stadium (spontánní abstinence a obnova jaterních funkcí bez léčby), 5. Stadium uzdravení bez rizika návratu.`,
               `1. Počáteční stadium (příležitostné pití pro euforii, roste tolerance), 2. Varovné stadium (alkohol jako droga, občasná opilost, paměťová okénka), 3. Rozhodující stadium (ztráta kontroly v pití, racionalizace, podřízení života alkoholu), 4. Konečné stadium (vícedenní tahy, pokles tolerance, tělesná a duševní deteriorace, debakl).`
             ],
     correctOption: 3,
@@ -383,9 +383,9 @@ export const psychologieQuestions: Question[] = [
     answer: 'Fáze: 1. Fáze výher (počáteční náhodná výhra, nárůst tempa hry), 2. Fáze proher (zadlužování, tajení pravdy, ztráta hodnoty peněz, lži), 3. Fáze zoufalství (trestná činnost, rozpad rodiny, panika, sebevražedné pokusy). Na rozdíl od toxikomana si gambler dlouho zachovává šarm a dbá o zevnějšek, aby si mohl půjčovat peníze.',
     options: [
               `Fáze: 1. Fáze výher (počáteční náhodná výhra, nárůst tempa hry), 2. Fáze proher (zadlužování, tajení pravdy, ztráta hodnoty peněz, lži), 3. Fáze zoufalství (trestná činnost, rozpad rodiny, panika, sebevražedné pokusy). Na rozdíl od toxikomana si gambler dlouho zachovává šarm a dbá o zevnějšek, aby si mohl půjčovat peníze.`,
-              `Fáze: 1. Fáze kompenzace (kontrolované sázení), 2. Fáze dekompenzace (ztráta rodinného zázemí), 3. Fáze terminální (úmrtí na předávkování). Gambler na rozdíl od toxikomana nikdy nepáchá majetkovou kriminalitu.`,
-              `Fáze: 1. Fáze euforie (radost ze sázení), 2. Fáze agrese (fyzické útoky na automaty), 3. Fáze apatie (naprostý nezájem o finanční prostředky). Gambler se od toxikomana neliší, oba vykazují stejné toxické poškození CNS.`,
-              `Fáze: 1. Fáze experimentu (sázení malých částek), 2. Fáze závislosti (každodenní hra), 3. Fáze abstinence (ambulantní léčba). Gambler vykazuje okamžitý somatický úpadek, tremor rukou a zanedbaný vzhled již v počátku.`
+              `Fáze: 1. Fáze kompenzace (kontrolované sázení malých částek), 2. Fáze dekompenzace (ztráta rodinného zázemí i zaměstnání), 3. Fáze terminální (úmrtí na předávkování). Gambler na rozdíl od toxikomana nikdy nepáchá majetkovou kriminalitu a o svůj zevnějšek přestává dbát hned v počáteční fázi hraní. Trestná činnost se u něj neobjevuje.`,
+              `Fáze: 1. Fáze euforie (radost ze sázení), 2. Fáze agrese (fyzické útoky na automaty), 3. Fáze apatie (naprostý nezájem o finanční prostředky). Gambler se od toxikomana neliší, oba vykazují stejné toxické poškození CNS. Zadlužování ani tajení pravdy před rodinou se u gamblera nevyskytuje.`,
+              `Fáze: 1. Fáze experimentu (sázení malých částek), 2. Fáze závislosti (každodenní hra), 3. Fáze abstinence (ambulantní léčba). Gambler vykazuje okamžitý somatický úpadek, tremor rukou a zanedbaný vzhled již v počátku. Sebevražedné pokusy ani rozpad rodiny mezi projevy gamblingu nepatří.`
             ],
     correctOption: 0,
     rationale: 'Patologický hráč splňuje 6 znaků: význačnost, změny nálady, růst tolerance, abstinenční příznaky (neklid mizí zahájením hry), konflikty a relapsy.',
@@ -400,9 +400,9 @@ export const psychologieQuestions: Question[] = [
     answer: 'Typy situací: I. Konflikt rozhodování (volba mezi motivy/cíli), II. Frustrace (překážka na cestě k cíli), III. Deprivace (chronické neuspokojování potřeb – biologická, psychická, sociální, existenční), IV. Stres (přetížení adaptace – eustres vs. distres). Konflikty: vnější, vnitřní a vnějšně-vnitřní.',
     options: [
               `Typy situací: I. Konflikt rozhodování (volba mezi motivy/cíli), II. Frustrace (překážka na cestě k cíli), III. Deprivace (chronické neuspokojování potřeb – biologická, psychická, sociální, existenční), IV. Stres (přetížení adaptace – eustres vs. distres). Konflikty: vnější, vnitřní a vnějšně-vnitřní.`,
-              `Typy situací: I. Kognitivní disonance, II. Emoční labilita, III. Morální selhání, IV. Psychická deteriorace. Druhy konfliktů: vědomé, podvědomé, nevědomé a transcendentální.`,
-              `Typy situací: I. Agrese (fyzický útok), II. Panika (hromadný děs), III. Fobie (specifický strach), IV. Šok (cirkulační kolaps). Druhy konfliktů: verbální, fyzické, ozbrojené a mezinárodní.`,
-              `Typy situací: I. Akutní intoxikace, II. Abstinenční syndrom, III. Prizonizační maladaptace, IV. Katatonický stupor. Druhy konfliktů: primární, sekundární a institucionální.`
+              `Typy situací: I. Kognitivní disonance (rozpor mezi postoji a jednáním), II. Emoční labilita (rychlé střídání nálad), III. Morální selhání (porušení vlastních zásad), IV. Psychická deteriorace (postupný úpadek funkcí). Druhy konfliktů: vědomé, podvědomé, nevědomé a transcendentální podle hloubky prožívání.`,
+              `Typy situací: I. Agrese (fyzický útok na osobu nebo věc), II. Panika (hromadný děs bez vedení a bez plánu úniku), III. Fobie (specifický iracionální strach), IV. Šok (cirkulační kolaps organismu). Druhy konfliktů: verbální, fyzické, ozbrojené a mezinárodní podle použitých prostředků a podle počtu stran.`,
+              `Typy situací: I. Akutní intoxikace (otrava návykovou látkou), II. Abstinenční syndrom (odvykací stav po vysazení), III. Prizonizační maladaptace (selhání adaptace na věznici), IV. Katatonický stupor (strnulost bez reakce). Druhy konfliktů: primární, sekundární a institucionální podle místa vzniku a závažnosti.`
             ],
     correctOption: 0,
     rationale: 'Při frustraci nastupují obranné mechanismy: vytěsnění, potlačení, projekce, agrese, racionalizace, kompenzace, regrese (návrat do dětského chování) a fantazie.',
@@ -416,10 +416,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Kým a čím se zabývá forenzní psychologie a jak se dělí na další podobory?',
     answer: 'Zabývá se chováním a prožíváním lidí v situacích uplatňování práva (pachatelé, oběti, svědci, soudci, policisté, příslušníci VS). Dělí se na: 1. Kriminalistickou PS (typologie pachatelů, motivace), 2. Soudní PS (soudní líčení, výslech, svědectví), 3. Penitenciární PS (vězeňská psychologie – VV a VTOS), 4. Postpenitenciární PS (reintegrace po propuštění).',
     options: [
-              `Zabývá se výhradně laboratorní analýzou stop DNA a biologického materiálu na místě činu. Dělí se na: 1. Forenzní genetiku, 2. Forenzní toxikologii, 3. Forenzní balistiku, 4. Daktyloskopickou psychologii.`,
-              `Zabývá se psychoterapií hospitalizovaných pacientů v civilních psychiatrických léčebnách. Dělí se na: 1. Psychoanalýzu, 2. Kognitivně-behaviorální terapii, 3. Gestalt psychologii, 4. Existenciální logoterapii.`,
+              `Zabývá se výhradně laboratorní analýzou stop DNA a biologického materiálu na místě činu a v laboratoři. Dělí se na: 1. Forenzní genetiku (profilace DNA z biologických stop), 2. Forenzní toxikologii (rozbory krve a moči na návykové látky), 3. Forenzní balistiku (identifikace zbraní a střel), 4. Daktyloskopickou psychologii (hodnocení otisků prstů pachatele).`,
+              `Zabývá se psychoterapií hospitalizovaných pacientů v civilních psychiatrických léčebnách a ambulancích. Dělí se na: 1. Psychoanalýzu (práce s nevědomím a vytěsněnými obsahy podle Freuda), 2. Kognitivně-behaviorální terapii (změna myšlenkových schémat), 3. Gestalt psychologii (práce s celostním prožitkem tady a teď), 4. Existenciální logoterapii (hledání smyslu podle Frankla).`,
               `Zabývá se chováním a prožíváním lidí v situacích uplatňování práva (pachatelé, oběti, svědci, soudci, policisté, příslušníci VS). Dělí se na: 1. Kriminalistickou PS (typologie pachatelů, motivace), 2. Soudní PS (soudní líčení, výslech, svědectví), 3. Penitenciární PS (vězeňská psychologie – VV a VTOS), 4. Postpenitenciární PS (reintegrace po propuštění).`,
-              `Zabývá se statistickým zkoumáním recidivy a tvorbou zákonných trestních sazeb. Dělí se na: 1. Penologii, 2. Kriminologii, 3. Viktimologii, 4. Trestní právo procesní.`
+              `Zabývá se statistickým zkoumáním recidivy a tvorbou zákonných trestních sazeb pro zákonodárce. Dělí se na: 1. Penologii (nauka o trestech, jejich výkonu a účincích), 2. Kriminologii (zkoumání příčin a rozsahu kriminality), 3. Viktimologii (postavení a ochrana obětí trestných činů), 4. Trestní právo procesní (průběh trestního řízení před soudem a orgány činnými v řízení).`
             ],
     correctOption: 2,
     rationale: 'Forenzní psychologie aplikuje psychologické poznatky do všech fází trestního řízení, výkonu vazby, výkonu trestu i následné péče.',
@@ -433,10 +433,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Jak lze dělit pachatele trestné činnosti z pohledu forenzní psychologie?',
     answer: '1. Socializovaný (normální) typ (epizodický čin, zachované svědomí, lítost), 2. Deviantně socializovaný typ (gangy, organizovaný zločin, normy party), 3. Neurotický typ (mladistvý protest, z pocitu viny, z potřeby uznání, kleptomanie), 4. Psychopatický typ (porucha osobnosti, bezcitnost), 5. Mentálně nedostačivý typ (nízké IQ, primitivní), 6. Psychotický typ (duševní choroba, bludy, nepříčetnost).',
     options: [
-              `1. Sangvinický typ (páchá trestné činy z lehkomyslnosti), 2. Cholerický typ (páchá násilí v afektu), 3. Flegmatický typ (plánuje promyšlené podvody), 4. Melancholický typ (páchá majetkovou kriminalitu ze zoufalství).`,
+              `1. Sangvinický typ (páchá trestné činy z lehkomyslnosti a povrchnosti), 2. Cholerický typ (páchá násilí v afektu, výbušné reakce na podnět), 3. Flegmatický typ (plánuje promyšlené podvody a zpronevěry), 4. Melancholický typ (páchá majetkovou kriminalitu ze zoufalství a závisti), 5. Smíšený typ (kombinuje vlastnosti dvou i více temperamentů), 6. Labilní typ (mění způsob páchání podle okamžité nálady a situace).`,
               `1. Socializovaný (normální) typ (epizodický čin, zachované svědomí, lítost), 2. Deviantně socializovaný typ (gangy, organizovaný zločin, normy party), 3. Neurotický typ (mladistvý protest, z pocitu viny, z potřeby uznání, kleptomanie), 4. Psychopatický typ (porucha osobnosti, bezcitnost), 5. Mentálně nedostačivý typ (nízké IQ, primitivní), 6. Psychotický typ (duševní choroba, bludy, nepříčetnost).`,
-              `1. Prvopachatelé (trest do 1 roku), 2. Recidivisté (trest od 1 do 5 let), 3. Zvlášť nebezpeční recidivisté (trest nad 10 let), 4. Mladiství delikventi (věk 15 až 18 let).`,
-              `1. Introvertní pachatelé (odmítají vypovídat), 2. Extrovertní pachatelé (doznávají se k činu), 3. Ambivertní pachatelé (spolupracují jako svědci), 4. Neurotičtí pachatelé (vykazují kverulační tendence).`
+              `1. Prvopachatelé (trest do 1 roku, dosud netrestaní), 2. Recidivisté (trest od 1 do 5 let, opakované odsouzení), 3. Zvlášť nebezpeční recidivisté (trest nad 10 let, zvlášť závažné zločiny), 4. Mladiství delikventi (věk 15 až 18 let, provinění podle ZSM), 5. Dětští delikventi (do 15 let, činy jinak trestné), 6. Doživotně odsouzení (nejtěžší kategorie bez možnosti nápravy).`,
+              `1. Introvertní pachatelé (odmítají vypovídat, uzavírají se do sebe), 2. Extrovertní pachatelé (doznávají se k činu, hledají publikum), 3. Ambivertní pachatelé (spolupracují jako svědci proti spolupachatelům), 4. Neurotičtí pachatelé (vykazují kverulační tendence a podávají stížnosti), 5. Stabilní pachatelé (jednají chladně a plánovitě), 6. Labilní pachatelé (jednají impulzivně pod tlakem).`
             ],
     correctOption: 1,
     rationale: 'Znalost typologie umožňuje personálu volit odpovídající přístup při zacházení a bezpečnostních opatřeních.',
@@ -450,10 +450,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Jak se dělí příčiny páchání trestné činnosti (patogenní činitelé vnitřní a vnější)?',
     answer: 'Vnitřní (endogenní): dědičné vlivy, typ nervové soustavy, snížené rozumové schopnosti, nekompenzované defekty, ADHD/LMD, psychopatie, psychózy. Vnější (exogenní): rozvrácená rodina a alkoholismus rodičů, selhání školy, negativní party, drastická média a násilí ve filmech, vliv závislostí.',
     options: [
-              `Vnitřní činitelé: absence fyzických bezpečnostních bariér a mříží. Vnější činitelé: nedostatečná kontrolní činnost orgánů činných v trestním řízení a nízké trestní sazby.`,
+              `Vnitřní činitelé: absence fyzických bezpečnostních bariér, mříží a kamerových systémů. Vnější činitelé: nedostatečná kontrolní činnost orgánů činných v trestním řízení, nízké trestní sazby a zdlouhavost soudního projednání věci. Dědičné vlivy ani typ nervové soustavy se mezi příčiny kriminality neřadí.`,
               `Vnitřní (endogenní): dědičné vlivy, typ nervové soustavy, snížené rozumové schopnosti, nekompenzované defekty, ADHD/LMD, psychopatie, psychózy. Vnější (exogenní): rozvrácená rodina a alkoholismus rodičů, selhání školy, negativní party, drastická média a násilí ve filmech, vliv závislostí.`,
-              `Vnitřní činitelé: vliv kriminální subkultury a delikventní party. Vnější činitelé: genetické chromozomální anomálie (syndrom XYY) a vrozené organické poškození mozkové tkáně.`,
-              `Vnitřní činitelé: výhradně úroveň měsíčního příjmu a formální vzdělání. Vnější činitelé: makroekonomická situace, roční období, geografická poloha a hustota zalidnění v regionu.`
+              `Vnitřní činitelé: vliv kriminální subkultury a delikventní party v okolí bydliště. Vnější činitelé: genetické chromozomální anomálie (syndrom XYY), vrozené organické poškození mozkové tkáně a snížené rozumové schopnosti pachatele. Rodinné prostředí ani vliv médií se mezi činitele kriminality neřadí.`,
+              `Vnitřní činitelé: výhradně úroveň měsíčního příjmu a formální vzdělání. Vnější činitelé: makroekonomická situace, roční období, geografická poloha a hustota zalidnění v regionu. Psychopatie, psychózy ani ADHD nemají na páchání trestné činnosti prokazatelný vliv podle výzkumů.`
             ],
     correctOption: 1,
     rationale: 'Kriminalita je výsledkem multidisciplinárního působení biologických, psychologických i sociálních faktorů.',
@@ -467,10 +467,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Jaké jsou 3 nejčastější typy reakcí obviněných na zátěžovou situaci vazby?',
     answer: '1. Reakce trestající navenek (agrese proti personálu – útok, stížnosti/kverulace; šikana spoluvězňů), 2. Reakce trestající dovnitř (sebeobviňování, sebepoškozování/pořezání k redukci tenze, hladovky, pokusy o suicidium), 3. Reakce netrestající / úniky (fyzický útěk, přiznání i nespáchaného, sebeizolace, únik do fantazie, vazební psychóza).',
     options: [
-              `1. Reakce fázická (cyklické střídání nálad), 2. Reakce strukturální (přijetí hierarchie vězeňské subkultury), 3. Reakce kompenzační (podávání žádostí o přemístění do jiné vazební věznice).`,
+              `1. Reakce fázická (cyklické střídání nálad podle délky vazby), 2. Reakce strukturální (přijetí hierarchie vězeňské subkultury a jejích norem), 3. Reakce kompenzační (podávání žádostí o přemístění do jiné vazební věznice), 4. Reakce adaptační (srovnání se s režimem oddělení), 5. Reakce rezignační (ztráta zájmu o trestní věc).`,
               `1. Reakce trestající navenek (agrese proti personálu – útok, stížnosti/kverulace; šikana spoluvězňů), 2. Reakce trestající dovnitř (sebeobviňování, sebepoškozování/pořezání k redukci tenze, hladovky, pokusy o suicidium), 3. Reakce netrestající / úniky (fyzický útěk, přiznání i nespáchaného, sebeizolace, únik do fantazie, vazební psychóza).`,
-              `1. Reakce asertivní (věcná komunikace s vychovatelem), 2. Reakce kooperativní (okamžité plnění režimových povinností), 3. Reakce relaxační (využití volného času ke studiu a autogennímu tréninku).`,
-              `1. Reakce manická (zvýšená aktivita a psychomotorické tempo), 2. Reakce hysterická (teatrální záchvaty), 3. Reakce obsedantní (kompulzivní úklid cely a počítání mříží).`
+              `1. Reakce asertivní (věcná komunikace s vychovatelem), 2. Reakce kooperativní (okamžité plnění režimových povinností), 3. Reakce relaxační (využití volného času ke studiu a autogennímu tréninku), 4. Reakce edukační (zapojení do vzdělávacích programů věznice), 5. Reakce sportovní (cvičení na vycházkovém dvoře).`,
+              `1. Reakce manická (zvýšená aktivita a psychomotorické tempo), 2. Reakce hysterická (teatrální záchvaty před personálem), 3. Reakce obsedantní (kompulzivní úklid cely a počítání mříží), 4. Reakce hypochondrická (opakované žádosti o lékařské vyšetření), 5. Reakce apatická (celodenní ležení bez zájmu).`
             ],
     correctOption: 1,
     rationale: 'S délkou pobytu ve vazbě klesá věrohodnost výpovědi obviněného (nárůst obranných mechanismů racionalizace a projekce). Pozitivně působí volná vazba, kontakt s obhájcem a krizová intervence.',
@@ -485,9 +485,9 @@ export const psychologieQuestions: Question[] = [
     answer: '1. Realistické přizpůsobení (zralý, odolný, motivace ke změně a podmíněnému propuštění), 2. Agresivně nepřátelské („proti všem“, napadání, ironie), 3. Přizpůsobení nepřiměřenou kompenzací (hraje „velkého zločince“), 4. Přizpůsobení nepřiměřenou projekcí (obviňuje druhé, popírá vinu), 5. Přizpůsobení únikem (denní snění, alkohol, drogy).',
     options: [
               `1. Realistické přizpůsobení (zralý, odolný, motivace ke změně a podmíněnému propuštění), 2. Agresivně nepřátelské („proti všem“, napadání, ironie), 3. Přizpůsobení nepřiměřenou kompenzací (hraje „velkého zločince“), 4. Přizpůsobení nepřiměřenou projekcí (obviňuje druhé, popírá vinu), 5. Přizpůsobení únikem (denní snění, alkohol, drogy).`,
-              `1. Primární adaptace (počáteční fáze trestu), 2. Sekundární adaptace (střední fáze trestu), 3. Prizonizační adaptace (úplné osvojení subkultury), 4. Předvýstupní adaptace (příprava na svobodu), 5. Postpenitenciární integrace.`,
-              `1. Konformní přizpůsobení (přijetí trestního rozsudku), 2. Inovativní (hledání nelegálních výhod), 3. Ritualistické (mechanické plnění řádu), 4. Únikové (stažení do sebe), 5. Rebelské (otevřená vzpoura dle Mertona).`,
-              `1. Sangvinické (optimistický postoj k trestu), 2. Cholerické (výbuchy hněvu při kontrolách), 3. Flegmatické (naprostá netečnost k výchovnému působení), 4. Melancholické (stálá skleslost a pláč), 5. Smíšené přizpůsobení.`
+              `1. Primární adaptace (počáteční fáze trestu v nástupním oddělení), 2. Sekundární adaptace (střední fáze trestu na kmenovém oddělení), 3. Prizonizační adaptace (úplné osvojení subkultury), 4. Předvýstupní adaptace (příprava na svobodu ve výstupním oddělení), 5. Postpenitenciární integrace (návrat do společnosti).`,
+              `1. Konformní přizpůsobení (přijetí trestního rozsudku i režimu věznice bez výhrad), 2. Inovativní (hledání nelegálních výhod a obchodů), 3. Ritualistické (mechanické plnění řádu bez vnitřního přijetí), 4. Únikové (stažení do sebe a izolace od ostatních), 5. Rebelské (otevřená vzpoura dle Mertona).`,
+              `1. Sangvinické (optimistický postoj k trestu i k personálu), 2. Cholerické (výbuchy hněvu při kontrolách a prohlídkách), 3. Flegmatické (naprostá netečnost k výchovnému působení), 4. Melancholické (stálá skleslost, pláč a pocity beznaděje), 5. Smíšené přizpůsobení (kombinace dvou i více typů temperamentu).`
             ],
     correctOption: 0,
     rationale: 'Jiří Čepelák (významný odborník VÚPen) zdůraznil nutnost odborné diferenciace a zacházení; neodborné vedení vede k prohloubení patologických rysů osobnosti.',
@@ -501,9 +501,9 @@ export const psychologieQuestions: Question[] = [
     question: 'Jakých 5 stádií má typický průběh krize z uvěznění („šok z izolace“)?',
     answer: '1. Propuknutí krize (protestní křik, pláč, apatie, dezorientace), 2. Popírání krize (utlumenost, pozérství na siláka a ostříleného hocha), 3. Zajetí krizí / intruze (vtíravé negativní myšlenky), 4. Vyrovnání se s krizí (hledání adaptace, pokusy o náhradní uspokojení), 5. Odeznění krize (smíření se situací, schopnost myslet i na jiné věci).',
     options: [
-              `1. Fáze poplachové reakce (sympatikotonie), 2. Fáze rezistence (mobilizace adaptačních zdrojů), 3. Fáze vyčerpání (selhání adaptace a somatický kolaps organismu dle Hanse Selyeho).`,
-              `1. Akutní vazební šok (prvních 24 hodin), 2. Subakutní stadium (vyšetřovací fáze), 3. Chronické stadium (hlavní líčení), 4. Rozsudkové stadium (reakce na výši trestu), 5. Eskortní stadium (převoz do věznice).`,
-              `1. Stadium popření reality, 2. Stadium hněvu a agrese vůči personálu, 3. Stadium smlouvání se soudem, 4. Stadium reaktivní deprese, 5. Stadium terminální akceptace (podle modelu Kübler-Rossové).`,
+              `1. Fáze poplachové reakce (sympatikotonie, vyplavení adrenalinu a kortizolu), 2. Fáze rezistence (mobilizace adaptačních zdrojů a hormonální kompenzace), 3. Fáze vyčerpání (selhání adaptace a somatický kolaps organismu dle Hanse Selyeho), 4. Fáze zotavení (postupný návrat fyziologických funkcí k normě), 5. Fáze imunity (trvalá odolnost vůči dalšímu stresoru téhož druhu).`,
+              `1. Akutní vazební šok (prvních 24 hodin po dodání do vazby), 2. Subakutní stadium (vyšetřovací fáze a opakované výslechy), 3. Chronické stadium (hlavní líčení před soudem), 4. Rozsudkové stadium (reakce na výši uloženého trestu), 5. Eskortní stadium (převoz do věznice k výkonu trestu), 6. Nástupní stadium (zařazení do nástupního oddělení a prvotní adaptace).`,
+              `1. Stadium popření reality a odmítání rozsudku, 2. Stadium hněvu a agrese vůči personálu i spoluvězňům, 3. Stadium smlouvání se soudem o zmírnění trestu, 4. Stadium reaktivní deprese a ztráty zájmu, 5. Stadium terminální akceptace (podle modelu Kübler-Rossové o umírání), 6. Stadium rezignace na budoucnost po propuštění.`,
               `1. Propuknutí krize (protestní křik, pláč, apatie, dezorientace), 2. Popírání krize (utlumenost, pozérství na siláka a ostříleného hocha), 3. Zajetí krizí / intruze (vtíravé negativní myšlenky), 4. Vyrovnání se s krizí (hledání adaptace, pokusy o náhradní uspokojení), 5. Odeznění krize (smíření se situací, schopnost myslet i na jiné věci).`
             ],
     correctOption: 3,
@@ -518,10 +518,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Co je to šikana a jak se dělí na skrytou a zjevnou v prostředí věznice?',
     answer: 'Šikana je cílené a opakované užití násilí vůči jedinci/skupině, která se nemůže účinně bránit. Šikana skrytá = sociální izolace oběti, nálepkování (bonzák, koště, buk, neandrtálec/pako). Šikana zjevná = fyzické násilí (bití), psychické ponižování/vydírání (nucení k posluze, úsluhám) a ničení majetku oběti.',
     options: [
-              `Šikana je psychologický proces desocializace vyvolaný vězeňským řádem. Šikana skrytá = odmítání účasti na programech zacházení. Šikana zjevná = nedodržování zásad osobní hygieny a nepořádek na cele.`,
+              `Šikana je psychologický proces desocializace vyvolaný vězeňským řádem. Šikana skrytá = odmítání účasti na programech zacházení. Šikana zjevná = nedodržování zásad osobní hygieny a nepořádek na cele. Násilí vůči spoluvězni se za šikanu nepovažuje, jde o kázeňský přestupek proti vnitřnímu řádu.`,
               `Šikana je cílené a opakované užití násilí vůči jedinci/skupině, která se nemůže účinně bránit. Šikana skrytá = sociální izolace oběti, nálepkování (bonzák, koště, buk, neandrtálec/pako). Šikana zjevná = fyzické násilí (bití), psychické ponižování/vydírání (nucení k posluze, úsluhám) a ničení majetku oběti.`,
-              `Šikana je jednorázový otevřený konflikt mezi rovnocennými vězni o vedoucí postavení na cele. Šikana skrytá = podávání stížností na personál. Šikana zjevná = hlasité hádky během vycházky na dvoře.`,
-              `Šikana je výhradně trestný čin vydírání páchaný organizovanou kriminální skupinou. Šikana skrytá = nelegální držení mobilního telefonu. Šikana zjevná = pokus o násilný útěk z výkonu trestu.`
+              `Šikana je jednorázový otevřený konflikt mezi rovnocennými vězni o vedoucí postavení na cele. Šikana skrytá = podávání stížností na personál. Šikana zjevná = hlasité hádky během vycházky na dvoře. Opakovanost ani nerovnováha sil nejsou znakem šikany, rozhoduje pouze hlasitost a veřejnost projevu.`,
+              `Šikana je výhradně trestný čin vydírání páchaný organizovanou kriminální skupinou. Šikana skrytá = nelegální držení mobilního telefonu. Šikana zjevná = pokus o násilný útěk z výkonu trestu. Nálepkování ani sociální izolace oběti mezi projevy šikany nepatří, protože nejsou trestné podle zákona.`
             ],
     correctOption: 1,
     rationale: 'Šikana má vysokou latenci, oběti se bojí označení za „bonzáka“. VS ČR provádí preventivní zrakové prohlídky, lékařské kontroly a čtvrtletní vyhodnocování komisí za účasti vedení.',
@@ -535,10 +535,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Čím se zabývá penitenciární psychologie a jaká je role vězeňského psychologa?',
     answer: 'Zabývá se psychologickými otázkami výkonu vazby a trestu (včetně alternativních trestů), osobností vězňů, interakcemi s personálem, vnitřní diferenciací, prevencí negativních jevů druhého života a psychologickou péčí o zaměstnance VS ČR. Vězeňský psycholog provádí diagnostiku, krizovou intervenci a ovlivňuje zařazování do cel a programů zacházení.',
     options: [
-              `Zabývá se výhradně dokazováním viny u soudu a zpracováním znaleckých posudků o příčetnosti pachatele. Role psychologa spočívá ve vyšetřování trestných činů a rozhodování o propuštění vězňů.`,
-              `Zabývá se farmakologickou léčbou psychóz a předepisováním anxiolytik a antipsychotik vězněným osobám. Role psychologa spočívá v provádění lékařských vizit a řízení vězeňské nemocnice.`,
+              `Zabývá se výhradně dokazováním viny u soudu a zpracováním znaleckých posudků o příčetnosti pachatele. Role psychologa spočívá ve vyšetřování trestných činů a rozhodování o propuštění vězňů. Do její působnosti nespadá výkon vazby ani výkon trestu, protože tam pracuje výhradně vychovatel. Vězeňský psycholog nesmí provádět krizovou intervenci ani diagnostiku.`,
+              `Zabývá se farmakologickou léčbou psychóz a předepisováním anxiolytik a antipsychotik vězněným osobám. Role psychologa spočívá v provádění lékařských vizit a řízení vězeňské nemocnice. Druhý život odsouzených ani vnitřní diferenciace do jejího předmětu nepatří, těmi se zabývá penologie. Psychologická péče o zaměstnance VS ČR se poskytuje výhradně externě.`,
               `Zabývá se psychologickými otázkami výkonu vazby a trestu (včetně alternativních trestů), osobností vězňů, interakcemi s personálem, vnitřní diferenciací, prevencí negativních jevů druhého života a psychologickou péčí o zaměstnance VS ČR. Vězeňský psycholog provádí diagnostiku, krizovou intervenci a ovlivňuje zařazování do cel a programů zacházení.`,
-              `Zabývá se fyzickou ostrahou věznice a taktikou služebních zákroků proti vzbouřeným odsouzeným. Role psychologa spočívá ve velení pořádkové jednotce a organizaci eskort do soudních budov.`
+              `Zabývá se fyzickou ostrahou věznice a taktikou služebních zákroků proti vzbouřeným odsouzeným. Role psychologa spočívá ve velení pořádkové jednotce a organizaci eskort do soudních budov. Alternativní tresty a postpenitenciární péče do jejího záběru nespadají. Diagnostiku osobnosti vězně provádí lékař věznice, nikoli psycholog.`
             ],
     correctOption: 2,
     rationale: 'Historicky významnou roli sehrál Výzkumný ústav penologický v Praze (VÚPen). Dnes jsou psychologové civilními specialisty působícími ve všech věznicích a vazebních věznicích.',
@@ -553,9 +553,9 @@ export const psychologieQuestions: Question[] = [
     answer: 'Oba jsou poruchy jednání proti integritě organismu. Automutilace (sebepoškozování) nesměřuje k sebezničení/smrti, je účelová (redukce tenze, únik do nemocnice, nátlak na personál). Suicidium (sebevražedné jednání) směřuje k definitivnímu ukončení života (nejčastěji strangulací/oběšením, léky, pořezáním).',
     options: [
               `Oba jsou poruchy jednání proti integritě organismu. Automutilace (sebepoškozování) nesměřuje k sebezničení/smrti, je účelová (redukce tenze, únik do nemocnice, nátlak na personál). Suicidium (sebevražedné jednání) směřuje k definitivnímu ukončení života (nejčastěji strangulací/oběšením, léky, pořezáním).`,
-              `Automutilace je somatické onemocnění projevující se samovolnou nekrózou tkání, zatímco suicidium je geneticky podmíněný typ temperamentu se zvýšeným prahem bolesti.`,
-              `Automutilace označuje agresivní napadení jiné vězněné osoby na cele s následkem těžkého ublížení na zdraví, zatímco suicidium je trestný čin neposkytnutí pomoci spoluvězni v bezvědomí.`,
-              `Automutilace je úmyslné usmrcení sebe sama pod vlivem akutní psychotické poruchy, zatímco suicidium představuje demonstrativní povrchové škrábnutí bez úmyslu zemřít, motivované snahou získat úlevu z práce.`
+              `Automutilace je somatické onemocnění projevující se samovolnou nekrózou tkání, zatímco suicidium je geneticky podmíněný typ temperamentu se zvýšeným prahem bolesti. Ani jedno z nich není poruchou jednání, obojí se léčí výhradně na chirurgickém oddělení vězeňské nemocnice bez účasti psychiatra věznice.`,
+              `Automutilace označuje agresivní napadení jiné vězněné osoby na cele s následkem těžkého ublížení na zdraví, zatímco suicidium je trestný čin neposkytnutí pomoci spoluvězni v bezvědomí. Obojí směřuje proti integritě jiné osoby, nikoli proti vlastnímu organismu, a řeší se výhradně v trestním řízení před soudem prvního stupně.`,
+              `Automutilace je úmyslné usmrcení sebe sama pod vlivem akutní psychotické poruchy, zatímco suicidium představuje demonstrativní povrchové škrábnutí bez úmyslu zemřít, motivované snahou získat úlevu z práce. Strangulace i otrava léky se řadí k automutilaci, protože zpravidla nevedou k okamžité smrti postiženého vězně.`
             ],
     correctOption: 0,
     rationale: 'Rizikové faktory suicidia: pokusy v anamnéze či rodině, beznaděj, chronická nemoc, abúzus alkoholu/drog, osamělost, věk nad 40 let a mužské pohlaví.',
@@ -569,9 +569,9 @@ export const psychologieQuestions: Question[] = [
     question: 'Jaké mohou být základní způsoby řešení konfliktů a jaký je správný postup řešení?',
     answer: 'Příklady řešení: 1. Tvrdé vyjednávání (vítěz x poražený), 2. Měkké vyjednávání / kompromis (dohoda 50:50, oboustranný ústupek), 3. Neřešení (únik, oddalování problému). Správný postup: 1. Nepřipustit afektivní reakci (potlačit citový tlak, zapojit myšlení), 2. Racionalizace konfliktu, 3. Změna citového postoje k cílům.',
     options: [
-              `Příklady řešení: 1. Kognitivní restrukturalizace, 2. Transakční analýza, 3. Desenzibilizace podnětů. Správný postup: 1. Okamžitá konfrontace před ostatními vězni, 2. Prosazení vlastního řešení bez diskuse, 3. Formální zápis do knihy služeb.`,
-              `Příklady řešení: 1. Agresivní konfrontace (prosazení dominance silou), 2. Submisivní kapitulace (přijetí všech podmínek oponenta), 3. Manipulace. Správný postup: 1. Emoční ventilace křikem, 2. Polarizace stran, 3. Zesílení sankcí.`,
-              `Příklady řešení: 1. Autoritativní represe (okamžité použití donucovacích prostředků), 2. Ignorování (přehlížení incidentu), 3. Arbitrážní řízení. Správný postup: 1. Vyčkání bez zásahu, 2. Podání trestního oznámení, 3. Izolace celé ubytovny.`,
+              `Příklady řešení: 1. Kognitivní restrukturalizace myšlenek, 2. Transakční analýza rolí, 3. Desenzibilizace podnětů. Správný postup: 1. Okamžitá konfrontace před ostatními vězni, 2. Prosazení vlastního řešení bez diskuse, 3. Formální zápis do knihy služeb a hlášení nadřízenému. Vyjednávání ani kompromis se ve věznici nepřipouštějí.`,
+              `Příklady řešení: 1. Agresivní konfrontace (prosazení dominance silou), 2. Submisivní kapitulace (přijetí všech podmínek oponenta), 3. Manipulace protistrany. Správný postup: 1. Emoční ventilace křikem a gestikulací, 2. Polarizace stran konfliktu, 3. Zesílení sankcí vůči oběma stranám. Afekt se nepotlačuje.`,
+              `Příklady řešení: 1. Autoritativní represe (okamžité použití donucovacích prostředků), 2. Ignorování (přehlížení incidentu bez reakce), 3. Arbitrážní řízení. Správný postup: 1. Vyčkání bez zásahu, 2. Podání trestního oznámení na oba účastníky, 3. Izolace celé ubytovny na 24 hodin. Změna postoje se nevyžaduje.`,
               `Příklady řešení: 1. Tvrdé vyjednávání (vítěz x poražený), 2. Měkké vyjednávání / kompromis (dohoda 50:50, oboustranný ústupek), 3. Neřešení (únik, oddalování problému). Správný postup: 1. Nepřipustit afektivní reakci (potlačit citový tlak, zapojit myšlení), 2. Racionalizace konfliktu, 3. Změna citového postoje k cílům.`
             ],
     correctOption: 3,
@@ -586,9 +586,9 @@ export const psychologieQuestions: Question[] = [
     question: 'Které poruchy osobnosti (psychopatie) se mohou nejčastěji projevovat agresivním a násilným chováním?',
     answer: 'Disociální porucha osobnosti (nerespektuje normy, egoismus, nízká frustrační tolerance, afektivní výbuchy násilí, slabé svědomí), Emočně nestabilní porucha osobnosti (impulzivní jednání, neovladatelný hněv a násilí bez plánování) a Paranoidní porucha osobnosti (vztahovačnost, nepřátelství, pocit ohrožení a domnělá příkoří).',
     options: [
-              `Anankastická porucha osobnosti (nadměrný sklon k pořádku a perfekcionismus), Vyhýbavá porucha osobnosti (sociální plachost a strach z kritiky) a Závislá porucha osobnosti (neschopnost samostatného rozhodování).`,
-              `Schizoidní porucha osobnosti (citový chlad, uzavřenost a nezájem o mezilidské vztahy), Histriónská porucha osobnosti (teatrálnost a dramatizace) a Narcistická porucha osobnosti bez agresivních rysů.`,
-              `Výhradně organická mozková léze s demencí v pokročilém stádiu, mentální retardace lehkého stupně a obsedantně-kompulzivní neurotická porucha spojená s rituály.`,
+              `Anankastická porucha osobnosti (nadměrný sklon k pořádku a perfekcionismus), Vyhýbavá porucha osobnosti (sociální plachost a strach z kritiky) a Závislá porucha osobnosti (neschopnost samostatného rozhodování). Právě tyto tři poruchy jsou v penitenciární praxi hlavním zdrojem fyzického násilí na spoluvězních i na personálu věznice.`,
+              `Schizoidní porucha osobnosti (citový chlad, uzavřenost a nezájem o mezilidské vztahy), Histriónská porucha osobnosti (teatrálnost a dramatizace) a Narcistická porucha osobnosti bez agresivních rysů. Disociální ani emočně nestabilní porucha osobnosti se s agresivitou nespojuje, protože u nich převládá útlum jednání.`,
+              `Výhradně organická mozková léze s demencí v pokročilém stádiu, mentální retardace lehkého stupně a obsedantně-kompulzivní neurotická porucha spojená s rituály. Poruchy osobnosti podle MKN mezi příčiny agresivního jednání nepatří, protože jde o neurotické, nikoli osobnostní odchylky diagnostikované psychiatrem.`,
               `Disociální porucha osobnosti (nerespektuje normy, egoismus, nízká frustrační tolerance, afektivní výbuchy násilí, slabé svědomí), Emočně nestabilní porucha osobnosti (impulzivní jednání, neovladatelný hněv a násilí bez plánování) a Paranoidní porucha osobnosti (vztahovačnost, nepřátelství, pocit ohrožení a domnělá příkoří).`
             ],
     correctOption: 3,
@@ -605,9 +605,9 @@ export const psychologieQuestions: Question[] = [
     question: 'Co je hlavním cílem verbální deeskalace při jednání s agresivním nebo afektivním vězněm?',
     answer: 'Snížit úroveň emočního napětí a agresivity, navázat kontakt, získat čas a zabránit fyzickému útoku bez nutnosti okamžitého použití donucovacích prostředků (pokud to bezpečnostní situace dovoluje).',
     options: [
-              `Okamžitě křičet hlasitěji než vězeň, aby se ukázala dominance.`,
-              `Ignorovat vězně, odejít a zamknout ho, dokud se sám neuklidní.`,
-              `Slibovat vězni cokoliv, co chce, jen aby přestal křičet.`,
+              `Okamžitě křičet hlasitěji než vězeň, aby se ukázala dominance personálu. Cílem krizové komunikace je co nejrychleji zlomit odpor a přimět vězně k poslušnosti, proto se hned pohrozí donucovacími prostředky.`,
+              `Ignorovat vězně, odejít a zamknout ho, dokud se sám neuklidní. Navázání kontaktu situaci jen prodlužuje a vězni dává prostor k manipulaci, proto se s ním v afektu vůbec nemluví.`,
+              `Slibovat vězni cokoliv, co chce, jen aby přestal křičet. Získání času nemá v krizové komunikaci žádný význam, rozhodující je okamžité ukončení incidentu za jakoukoliv cenu.`,
               `Snížit úroveň emočního napětí a agresivity, navázat kontakt, získat čas a zabránit fyzickému útoku bez nutnosti okamžitého použití donucovacích prostředků (pokud to bezpečnostní situace dovoluje).`
             ],
     correctOption: 3,
@@ -624,9 +624,9 @@ export const psychologieQuestions: Question[] = [
     answer: 'Specifická emoční reakce (obranný mechanismus), při níž si oběť (rukojmí) vytváří paradoxní pozitivní emoční vazbu nebo sympatie k pachateli (únosci) jako podvědomou strategii přežití.',
     options: [
               `Specifická emoční reakce (obranný mechanismus), při níž si oběť (rukojmí) vytváří paradoxní pozitivní emoční vazbu nebo sympatie k pachateli (únosci) jako podvědomou strategii přežití.`,
-              `Syndrom absolutní paniky a ztráty paměti u oběti trestného činu.`,
-              `Extrémní agresivita oběti, která se snaží pachatele okamžitě fyzicky zlikvidovat.`,
-              `Odmítnutí oběti spolupracovat s vyjednavači a policií z důvodu jazykové bariéry.`
+              `Syndrom absolutní paniky a ztráty paměti u oběti trestného činu. Oběť si k pachateli nikdy nevytvoří pozitivní vazbu, protože strach o život jakoukoliv sympatii spolehlivě vylučuje už v prvních minutách.`,
+              `Extrémní agresivita oběti, která se snaží pachatele okamžitě fyzicky zlikvidovat. Jde o obranný mechanismus popsaný u rukojmí, jejichž strategií přežití je protiútok, nikoli sblížení s únoscem.`,
+              `Odmítnutí oběti spolupracovat s vyjednavači a policií z důvodu jazykové bariéry. Emoční vazba na únosce se u rukojmí nevyskytuje, jde o mýtus z filmů.`
             ],
     correctOption: 0,
     rationale: 'Tato reakce komplikuje záchranné operace, protože oběť může chránit únosce nebo odmítat pomoc policie. Vzniká z prožitého ohrožení života a následné "vděčnosti", že ji pachatel nezabil.',
@@ -641,10 +641,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Která z následujících technik je považována za efektivní součást psychohygieny pro prevenci syndromu vyhoření u příslušníků bezpečnostních sborů?',
     answer: 'Oddělování pracovního a osobního života, pravidelný odpočinek, fyzická aktivita, supervize/debriefing s kolegy nebo psychologem po náročných zákrocích a pěstování zájmů nesouvisejících se službou.',
     options: [
-              `Práce přesčas a přijímání co nejvíce služeb k dosažení rychlého povýšení.`,
+              `Práce přesčas a přijímání co nejvíce služeb k dosažení rychlého povýšení. Oddělovat pracovní a osobní život není u příslušníka žádoucí, protože ztrácí přehled o dění na oddělení a o chování odsouzených.`,
               `Oddělování pracovního a osobního života, pravidelný odpočinek, fyzická aktivita, supervize/debriefing s kolegy nebo psychologem po náročných zákrocích a pěstování zájmů nesouvisejících se službou.`,
-              `Potlačování emocí a přesvědčení, že profesionál nesmí nikdy cítit strach nebo stres.`,
-              `Pravidelná konzumace alkoholu po noční směně k uvolnění napětí.`
+              `Potlačování emocí a přesvědčení, že profesionál nesmí nikdy cítit strach nebo stres. Supervize ani debriefing po náročném zákroku se nedoporučují, protože opakované vracení se k události napětí jen prohlubuje.`,
+              `Pravidelná konzumace alkoholu po noční směně k uvolnění napětí. Zájmy mimo službu jsou spíše na škodu, protože odvádějí pozornost od služebních povinností a snižují připravenost okamžitě zasáhnout při mimořádné události.`
             ],
     correctOption: 1,
     rationale: 'Syndrom vyhoření (Burnout) hrozí u pomáhajících a bezpečnostních profesí. Aktivní psychohygiena a schopnost zpracovat zátěž (debriefing) jsou klíčové pro dlouhodobé duševní zdraví.',
@@ -660,9 +660,9 @@ export const psychologieQuestions: Question[] = [
     answer: 'Lichocení, zdůrazňování vzájemných sympatií, hraní na soucit, vyvolávání pocitu viny u dozorce, postupné testování hranic (drobné laskavosti) nebo naopak skryté zastrašování a vydírání.',
     options: [
               `Lichocení, zdůrazňování vzájemných sympatií, hraní na soucit, vyvolávání pocitu viny u dozorce, postupné testování hranic (drobné laskavosti) nebo naopak skryté zastrašování a vydírání.`,
-              `Odmítání stravy a protestní hladovky za účelem zvýšení platu personálu.`,
-              `Vždy výhradně otevřené fyzické napadení bez předchozí komunikace.`,
-              `Podávání písemných žádostí prostřednictvím advokáta.`
+              `Odmítání stravy a protestní hladovky za účelem zvýšení platu personálu. Manipulace vždy probíhá otevřeným nátlakem na celou směnu, nikdy skrytě vůči jednotlivému příslušníkovi, protože k němu vězeň nemá přístup.`,
+              `Vždy výhradně otevřené fyzické napadení bez předchozí komunikace. Vězeň o navázání vztahu s dozorcem neusiluje a lichocení ani hraní na soucit se ve výkonu trestu vůbec nevyskytují jako forma nátlaku.`,
+              `Podávání písemných žádostí prostřednictvím advokáta. Testování hranic drobnými laskavostmi je legální postup, který vnitřní řád věznice příslušníkům výslovně připouští.`
             ],
     correctOption: 0,
     rationale: 'Manipulace je účelové jednání (často u psychopatických rysů osobnosti vězňů). Vězeň se snaží narušit profesionální odstup dozorce ("my versus oni") a zatáhnout ho do neformálního vztahu.',
@@ -677,10 +677,10 @@ export const psychologieQuestions: Question[] = [
     question: 'Které tři složky tvoří Ringelův presuicidální syndrom (varovné signály před sebevraždou)?',
     answer: '1. Zúžení (zúžení vnímání možností, ztráta zájmů, izolace), 2. Zadržovaná agresivita (obrácená vůči sobě), 3. Suicidiální fantazie (časté myšlenky nebo mluvení o smrti a sebevraždě).',
     options: [
-              `1. Agresivita k okolí, 2. Plánování útěku, 3. Odmítání komunikace s policií.`,
-              `1. Nadměrná radost, 2. Rozdávání majetku, 3. Zvýšený apetit.`,
+              `1. Agresivita namířená vůči okolí a spoluvězňům, 2. Plánování útěku z výkonu trestu, 3. Odmítání komunikace s policií a vyšetřovatelem. Zúžení vnímání ani mluvení o smrti varovným signálem nejsou.`,
+              `1. Nadměrná radost a euforie bez příčiny, 2. Rozdávání osobního majetku spoluvězňům, 3. Zvýšený apetit a přibývání na váze. Zadržovaná agresivita obrácená vůči sobě se mezi signály neřadí.`,
               `1. Zúžení (zúžení vnímání možností, ztráta zájmů, izolace), 2. Zadržovaná agresivita (obrácená vůči sobě), 3. Suicidiální fantazie (časté myšlenky nebo mluvení o smrti a sebevraždě).`,
-              `Tento syndrom v psychologii neexistuje. (tento postup platí výhradně pro mírnější režim nebo dle uvážení velitele směny, jinak viz ust. § 12)`
+              `1. Zvýšená aktivita při sportu, 2. Pravidelné psaní dopisů rodině, 3. Zájem o zapojení do programů zacházení. Presuicidiální syndrom v psychologii neexistuje.`
             ],
     correctOption: 2,
     rationale: 'Rozpoznání těchto tří signálů (uvedených Erwinem Ringelem) u vězně může personálu VS ČR pomoci včas odhalit riziko sebevraždy a zajistit psychologickou či psychiatrickou pomoc.',
@@ -695,9 +695,9 @@ export const psychologieQuestions: Question[] = [
         answer: 'Okamžitě zajistit bezpečí vězně (přerušit pokus o sebevraždu), neponechat osobu o samotě, informovat dozorčího/lékaře a předat vězně do odborné péče vězeňského psychologa.',
         options: [
             'Okamžitě zajistit bezpečí vězně (přerušit pokus o sebevraždu), neponechat osobu o samotě, informovat dozorčího/lékaře a předat vězně do odborné péče vězeňského psychologa.',
-            'Vězně uzamknout na samotku a počkat do ranní vizity praktického lékaře.',
-            'Uložit vězni ihned kázeňský trest za poškozování vězeňského majetku.',
-            'Ponechat vězně o samotě s poučením, aby situaci v klidu zvážil.'
+            `Vězně uzamknout na samotku a počkat do ranní vizity praktického lékaře, protože odborná péče psychologa se poskytuje jen v pracovní dny v dopoledních hodinách.`,
+            `Uložit vězni ihned kázeňský trest za poškozování vězeňského majetku a zdraví, protože sebepoškozování je podle vnitřního řádu kázeňským přestupkem.`,
+            `Ponechat vězně o samotě s poučením, aby situaci v klidu zvážil, protože přítomnost jiné osoby jeho rozrušení jen zbytečně prohlubuje.`
         ],
         correctOption: 0,
         rationale: 'Při akutním suicidiálním riziku je prioritou ochrana života, nepřetržitý dohled nad osobou a neodkladná krizová intervence odborníkem (psychologem/psychiatrem).',
@@ -711,10 +711,10 @@ export const psychologieQuestions: Question[] = [
         question: 'Který komunikační přístup je nejúčinnější při verbální deeskalaci agresivního a rozrušeného vězně?',
         answer: 'Klidný a věcný tón hlasu, aktivní naslouchání, udržování bezpečného odstupu a vyhýbání se sarkasmu či výhrůžkám.',
         options: [
-            'Zvýšení hlasu a okamžitá hrozba použitím donucovacích prostředků k demonstraci dominance.',
+            `Zvýšení hlasu a okamžitá hrozba použitím donucovacích prostředků k rychlé demonstraci dominance nad odsouzeným na cele i na chodbě.`,
             'Klidný a věcný tón hlasu, aktivní naslouchání, udržování bezpečného odstupu a vyhýbání se sarkasmu či výhrůžkám.',
-            'Úplné ignorování vězně a odchod z místnosti bez zajištění prostoru.',
-            'Fyzické přiblížení se k vězni a vstup do jeho intimní zóny pro vyvolání respektu.'
+            `Úplné ignorování vězně a odchod z místnosti bez zajištění prostoru a bez přivolání posily z jiného oddělení věznice nebo směny.`,
+            `Fyzické přiblížení se k vězni a vstup do jeho intimní zóny pro rychlé vyvolání respektu a podřízení.`
         ],
         correctOption: 1,
         rationale: 'Verbální deeskalace vyžaduje profesionální klid, neeskalující neverbální projev a aktivní naslouchání, což snižuje afekt agresora a předchází nutnosti fyzického zákroku.',
