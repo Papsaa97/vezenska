@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useId } from 'react';
 import { 
   Award, 
   ShieldCheck, 
@@ -38,6 +38,7 @@ import {
   loadStreakInfo, 
   getTierColor 
 } from '../utils/gamification';
+import { useDialog } from '../hooks/useDialog';
 
 interface BadgesViewProps {
   quizHistory: QuizSessionRecord[];
@@ -152,6 +153,13 @@ export default function BadgesView({
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'unlocked' | 'locked'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showRanksModal, setShowRanksModal] = useState<boolean>(false);
+
+  // Escape, past na fokus a jeho návrat — viz hooks/useDialog.
+  const ranksTitleId = useId();
+  const ranksDialogRef = useDialog<HTMLDivElement>({
+    isOpen: showRanksModal,
+    onClose: () => setShowRanksModal(false),
+  });
 
   const streakInfo = useMemo(() => loadStreakInfo(), []);
   const baseXp = useMemo(() => calculateBaseXp(quizHistory, matchingHistory), [quizHistory, matchingHistory]);
@@ -492,7 +500,14 @@ export default function BadgesView({
 
       {/* 5. MODAL: FULL VS ČR RANKS ROADMAP */}
       {showRanksModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div
+          ref={ranksDialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={ranksTitleId}
+          tabIndex={-1}
+          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
+        >
           <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col">
             <div className="p-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2.5">
@@ -500,15 +515,16 @@ export default function BadgesView({
                   <Award className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base text-slate-800 dark:text-white">Kariérní hodnosti Vězeňské služby ČR</h3>
+                  <h3 id={ranksTitleId} className="font-bold text-base text-slate-800 dark:text-white">Kariérní hodnosti Vězeňské služby ČR</h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400">Postupujte v hodnostech sbíráním zkušeností (XP)</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowRanksModal(false)}
+                aria-label="Zavřít přehled hodností"
                 className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white flex items-center justify-center text-sm font-bold"
               >
-                ✕
+                <span aria-hidden="true">✕</span>
               </button>
             </div>
 

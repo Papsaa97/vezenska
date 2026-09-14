@@ -2,6 +2,7 @@ import React, { useId } from 'react';
 import { Edit3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { VscrRegulation } from '../../data/vscrRegulationsRegistry';
+import { useDialog } from '../../hooks/useDialog';
 
 interface LegalEditorModalProps {
   showEditorModal: boolean;
@@ -21,10 +22,21 @@ export default function LegalEditorModal({
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
   const fieldIds = useId();
 
+  // Escape, past na fokus a jeho návrat — viz hooks/useDialog.
+  const dialogRef = useDialog<HTMLDivElement>({
+    isOpen: showEditorModal && editingRegulation !== null,
+    onClose: () => setShowEditorModal(false),
+  });
+
   return (
     <AnimatePresence>
       {showEditorModal && editingRegulation && (
         <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={`${fieldIds}-title`}
+          tabIndex={-1}
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-6 bg-black/70 backdrop-blur-xs"
           onClick={(e) => { if (e.target === e.currentTarget) setShowEditorModal(false); }}
         >
@@ -37,7 +49,7 @@ export default function LegalEditorModal({
             <div className="p-3 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950 shrink-0">
               <div className="flex items-center gap-2">
                 <Edit3 className="w-5 h-5 text-indigo-600" />
-                <h3 className="text-base sm:text-lg font-bold">
+                <h3 id={`${fieldIds}-title`} className="text-base sm:text-lg font-bold">
                   {editingRegulation.code ? `Úprava předpisu: ${editingRegulation.code}` : 'Přidat nový předpis / směrnici'}
                 </h3>
               </div>

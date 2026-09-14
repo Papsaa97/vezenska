@@ -42,6 +42,7 @@ import {
   deleteCustomExam, 
   SavedCustomExam 
 } from '../utils/geminiAnalyzer';
+import { useDialog } from '../hooks/useDialog';
 
 interface CaptainExamAssistantProps {
   onStartCustomQuiz: (questions: Question[]) => void;
@@ -64,6 +65,12 @@ export default function CaptainExamAssistant({
   const [apiKey, setApiKey] = useState<string>(() => getSavedApiKey());
   const [showKeyModal, setShowKeyModal] = useState<boolean>(false);
   const [tempKey, setTempKey] = useState<string>('');
+
+  // Escape, past na fokus a jeho návrat — viz hooks/useDialog.
+  const keyDialogRef = useDialog<HTMLDivElement>({
+    isOpen: showKeyModal,
+    onClose: () => setShowKeyModal(false),
+  });
 
   const [inputMode, setInputMode] = useState<'text' | 'image'>('text');
   const [textInput, setTextInput] = useState<string>('');
@@ -729,14 +736,21 @@ export default function CaptainExamAssistant({
 
       {/* API Key Modal */}
       {showKeyModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div
+          ref={keyDialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={`${fieldIds}-key-modal-title`}
+          tabIndex={-1}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        >
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600">
                 <Key className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-bold text-base text-slate-900 dark:text-white">Nastavení Gemini API klíče</h3>
+                <h3 id={`${fieldIds}-key-modal-title`} className="font-bold text-base text-slate-900 dark:text-white">Nastavení Gemini API klíče</h3>
                 <p className="text-xs text-slate-500">Klíč se uloží pouze do vašeho prohlížeče.</p>
               </div>
             </div>
@@ -758,6 +772,8 @@ export default function CaptainExamAssistant({
               value={tempKey}
               onChange={(e) => setTempKey(e.target.value)}
               placeholder="AIzaSy..."
+              aria-label="Gemini API klíč"
+              autoComplete="off"
               className="w-full p-3 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-snug flex items-start gap-1.5 pt-0.5">

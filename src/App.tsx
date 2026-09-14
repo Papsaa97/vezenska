@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useId, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Header, { NavTab } from './components/Header';
 import OfflineBanner from './components/OfflineBanner';
@@ -24,6 +24,7 @@ const Statistics           = lazy(() => import('./components/Statistics'));
 const MaterialLibrary      = lazy(() => import('./components/MaterialLibrary'));
 const ContentManager       = lazy(() => import('./components/ContentManager'));
 import { matchingCategories } from './data/initialData';
+import { useDialog } from './hooks/useDialog';
 import { academyQuestions } from './data/questionsData';
 import { tacticalScenarios } from './data/scenariosData';
 import { 
@@ -141,7 +142,16 @@ export default function App() {
   const [flashcardPresetSubject, setFlashcardPresetSubject] = useState<string | undefined>(undefined);
   const [customQuestions, setCustomQuestions] = useState<Question[] | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  
+
+  // Escape, past na fokus a jeho návrat — viz hooks/useDialog. Ref patří na
+  // samotný panel, ne na ztmavené pozadí: past se má týkat jen ovládacích
+  // prvků nabídky.
+  const mobileMenuTitleId = useId();
+  const mobileMenuRef = useDialog<HTMLDivElement>({
+    isOpen: isMobileMenuOpen,
+    onClose: () => setIsMobileMenuOpen(false),
+  });
+
   // Otázky: primárně načtené ze Supabase tabulky quiz_questions, s fallbackem na lokální sadu
   const [allQuestions, setAllQuestions] = useState<Question[]>(academyQuestions);
   const [questionsSource, setQuestionsSource] = useState<'supabase' | 'local'>('local');
@@ -760,6 +770,11 @@ export default function App() {
 
             {/* Sheet Container */}
             <motion.div
+              ref={mobileMenuRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={mobileMenuTitleId}
+              tabIndex={-1}
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
@@ -770,7 +785,7 @@ export default function App() {
               <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                  <h3 className="font-bold text-sm text-slate-900 dark:text-white uppercase tracking-wider">
+                  <h3 id={mobileMenuTitleId} className="font-bold text-sm text-slate-900 dark:text-white uppercase tracking-wider">
                     Všechny moduly Akademie VS ČR
                   </h3>
                 </div>

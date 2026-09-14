@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import {
   Search, Check, Volume2, FileText, Copy, ExternalLink,
   Edit3, RotateCcw, Sparkles, Type, Printer,
@@ -8,6 +8,7 @@ import { VscrRegulation } from '../../data/vscrRegulationsRegistry';
 import { saveRegulationToStorage } from '../../utils/regulationsStorage';
 import { isSpeechSupported } from '../../utils/speech';
 import PrintHeader from '../common/PrintHeader';
+import { useDialog } from '../../hooks/useDialog';
 
 interface LegalReaderModalProps {
   activeModalRegulation: VscrRegulation | null;
@@ -60,10 +61,23 @@ export default function LegalReaderModal({
     }
   };
 
+  // Escape, past na fokus a jeho návrat — viz hooks/useDialog. Zavírá se přes
+  // closeReader, aby Escape zároveň umlčel předčítání jako křížek.
+  const titleId = useId();
+  const dialogRef = useDialog<HTMLDivElement>({
+    isOpen: activeModalRegulation !== null,
+    onClose: closeReader,
+  });
+
   return (
     <AnimatePresence>
       {activeModalRegulation && (
         <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          tabIndex={-1}
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 md:p-6 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200 print:relative print:inset-auto print:bg-white print:p-0 print:block"
           onClick={(e) => {
             if (e.target === e.currentTarget) closeReader();
@@ -98,7 +112,7 @@ export default function LegalReaderModal({
                     </span>
                   </div>
 
-                  <h2 className="text-sm sm:text-lg md:text-xl font-extrabold text-slate-900 dark:text-white leading-snug line-clamp-2">
+                  <h2 id={titleId} className="text-sm sm:text-lg md:text-xl font-extrabold text-slate-900 dark:text-white leading-snug line-clamp-2">
                     {activeModalRegulation.shortTitle}
                   </h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1 hidden sm:block">

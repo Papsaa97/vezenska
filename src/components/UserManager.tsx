@@ -774,8 +774,18 @@ function SendMessageModal({ target, recipientCount, onClose, onSend }: SendMessa
     }
   };
 
+  // Escape (ne během odesílání), past na fokus a jeho návrat — viz hooks/useDialog.
+  const dialogRef = useDialog<HTMLDivElement>({ isOpen: true, onClose, closeOnEscape: !sending });
+
   return (
-    <div className="no-print fixed inset-0 z-[60] flex items-center justify-center p-4">
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={isBulk ? 'Hromadná zpráva všem' : 'Zaslat zprávu uživateli'}
+      tabIndex={-1}
+      className="no-print fixed inset-0 z-[60] flex items-center justify-center p-4"
+    >
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

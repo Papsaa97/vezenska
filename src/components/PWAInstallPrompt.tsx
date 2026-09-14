@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Download, X, Share, PlusSquare, Zap, WifiOff, Maximize2, Smartphone } from 'lucide-react';
+import { useDialog } from '../hooks/useDialog';
 
 const STORAGE_KEY_FIRST_VISIT_SEEN = 'vscr_pwa_first_visit_seen';
 const STORAGE_KEY_DISMISSED = 'vscr_pwa_dismissed';
@@ -109,13 +110,29 @@ export default function PWAInstallPrompt() {
     }
   }, [deferredPrompt, isIOS, markSeen]);
 
-  if (isStandalone || installed) return null;
-
+  // Podmínky se počítají před předčasným návratem, protože useDialog níže je
+  // hook — nesmí se přeskočit, jinak by se při zmizení nabídky rozpadlo pořadí
+  // hooků. Vlastní `return null` proto přijde až za nimi.
   const canInstall = !!deferredPrompt || isIOS;
-  if (!canInstall) return null;
+  const visible = !isStandalone && !installed && canInstall;
 
-  const showFirstVisitModal = readyToShow && !hasSeenPrompt && !showIOSGuide;
-  const showFab = hasSeenPrompt && !showIOSGuide;
+  const showFirstVisitModal = visible && readyToShow && !hasSeenPrompt && !showIOSGuide;
+  const showFab = visible && hasSeenPrompt && !showIOSGuide;
+  const showIOSModal = visible && showIOSGuide;
+
+  const closeIOSGuide = () => setShowIOSGuide(false);
+
+  // Escape, past na fokus a jeho návrat — viz hooks/useDialog.
+  const firstVisitDialogRef = useDialog<HTMLDivElement>({
+    isOpen: showFirstVisitModal,
+    onClose: dismiss,
+  });
+  const iosGuideDialogRef = useDialog<HTMLDivElement>({
+    isOpen: showIOSModal,
+    onClose: closeIOSGuide,
+  });
+
+  if (!visible) return null;
 
   return (
     <>
@@ -126,10 +143,12 @@ export default function PWAInstallPrompt() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            ref={firstVisitDialogRef}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm"
             role="dialog"
             aria-modal="true"
             aria-labelledby="pwa-install-title"
+            tabIndex={-1}
           >
             <motion.div
               initial={{ opacity: 0, y: 24, scale: 0.96 }}
@@ -223,15 +242,18 @@ export default function PWAInstallPrompt() {
 
       {/* iOS instructions modal, reachable from the corner FAB */}
       <AnimatePresence>
-        {showIOSGuide && (
+        {showIOSModal && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            ref={iosGuideDialogRef}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm"
             role="dialog"
             aria-modal="true"
-            onClick={() => setShowIOSGuide(false)}
+            aria-labelledby="pwa-ios-guide-title"
+            tabIndex={-1}
+            onClick={closeIOSGuide}
           >
             <motion.div
               initial={{ opacity: 0, y: 16, scale: 0.97 }}
@@ -241,13 +263,13 @@ export default function PWAInstallPrompt() {
               className="relative w-full max-w-xs rounded-3xl border border-white/10 bg-white dark:bg-slate-900 shadow-2xl p-5"
             >
               <button
-                onClick={() => setShowIOSGuide(false)}
+                onClick={closeIOSGuide}
                 aria-label="Zavřít"
                 className="absolute top-3 right-3 p-1.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
-              <p className="text-sm font-black text-slate-900 dark:text-white mb-3 pr-6">Instalace na iPhone/iPad</p>
+              <p id="pwa-ios-guide-title" className="text-sm font-black text-slate-900 dark:text-white mb-3 pr-6">Instalace na iPhone/iPad</p>
               <ol className="space-y-2 text-xs text-slate-600 dark:text-slate-300">
                 <li className="flex items-center gap-2">
                   <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-[10px]">1</span>
