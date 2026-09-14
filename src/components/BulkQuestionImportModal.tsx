@@ -243,17 +243,22 @@ export default function BulkQuestionImportModal({
     }
   };
 
+  // Escape (ne během importu), past na fokus a jeho návrat — viz hooks/useDialog.
+  // MUSÍ být nad `return null` níže. Dokud byl hook až za ním, přeskočil se
+  // při zavřeném dialogu a po otevření se počet zavolaných hooků změnil —
+  // React na to v prohlížeči hlásil „Internal React error: Expected static
+  // flag was missing". Zachytil to až ESLint (react-hooks/rules-of-hooks);
+  // typová kontrola takovou vadu nevidí.
+  const dialogRef = useDialog<HTMLDivElement>({
+    isOpen,
+    onClose,
+    closeOnEscape: !isExecuting,
+  });
+
   if (!isOpen) return null;
 
   const totalErrors = parseResult.errors.length;
   const totalValid = parseResult.validQuestions.length;
-
-  // Escape (ne během importu), past na fokus a jeho návrat — viz hooks/useDialog.
-  const dialogRef = useDialog<HTMLDivElement>({
-    isOpen: true,
-    onClose,
-    closeOnEscape: !isExecuting,
-  });
 
   return (
     <div

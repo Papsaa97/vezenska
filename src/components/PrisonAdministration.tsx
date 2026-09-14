@@ -498,7 +498,6 @@ export default function PrisonAdministration() {
         `${formData.signatureDate || ''}\n` +
         `${formData.officerSignature || ''}`;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTemplateId, formData, selectedBodyParts]);
 
   return (

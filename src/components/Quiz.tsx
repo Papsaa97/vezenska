@@ -515,7 +515,7 @@ export default function Quiz({
                 </div>
                 <input 
                   type="checkbox" 
-                  className="hidden"
+                  className="sr-only"
                   checked={isMistakesMode}
                   onChange={(e) => setIsMistakesMode(e.target.checked)}
                   disabled={gameState === 'playing'}

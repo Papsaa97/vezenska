@@ -19,7 +19,8 @@ Technologický stack: React, Vite, TypeScript, Tailwind CSS.
 
 * **Žádné destruktivní změny:** Nikdy nemaž ani nepřepisuj existující otázky nebo komponenty bez výslovného pokynu uživatele.
 * **Zachování typů:** Nepoužívej typ `any`. Všechny nové stavy a vlastnosti musí mít explicitní TypeScript definice.
-* **Integrita build procesu:** Před dokončením úkolu vždy spusť `npm test` (typová kontrola + integrita předpisů + kvalita banky otázek) a `npm run build`. Totéž běží v CI na každý pull request a na push do `main` (`.github/workflows/ci.yml`), takže neověřená změna shodí build.
+* **Přístupnost JSX (vynuceno v CI):** `npm run lint` spouští vedle `tsc --noEmit` i `eslint` s pluginem `jsx-a11y`. Nové prvky musí mít dostupné jméno (ikonové tlačítko `aria-label`, popisek svázaný se vstupem), obrázky `alt` a dialogy `role="dialog"` + `aria-modal`. Klikací `<div>` bez klávesové obsluhy je zděděný dluh držený **ráčnou**: `lint:a11y` běží s `--max-warnings`, takže počet varování nesmí vzrůst — nové porušení shodí build, i když to stávající zatím neshazuje. Opravíš-li část dluhu, sniž číslo v `--max-warnings` v `package.json`. Pravidla a důvody jejich nastavení jsou okomentované v `eslint.config.js`.
+* **Integrita build procesu:** Před dokončením úkolu vždy spusť `npm test` (lint + typová kontrola + integrita předpisů + kvalita banky otázek) a `npm run build`. Totéž běží v CI na každý pull request a na push do `main` (`.github/workflows/ci.yml`), takže neověřená změna shodí build.
 
 ## 3. Autonoma testovací data (`src/autonoma/`)
 
