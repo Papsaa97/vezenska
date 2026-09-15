@@ -16,7 +16,7 @@
     "deploy": "vercel",
     "deploy:prod": "vercel --prod",
     "lint:types": "tsc --noEmit",
-    "lint:a11y": "eslint . --max-warnings 44"
+    "lint:a11y": "eslint . --max-warnings 28"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

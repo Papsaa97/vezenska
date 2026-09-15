@@ -375,24 +375,34 @@ export default function BulkQuestionImportModal({
             </div>
           </div>
 
-          {/* Tab 1: Drag & Drop Zone */}
+          {/* Tab 1: Drag & Drop Zone.
+              Zóna je <label> pole výše: klik otevře výběr souboru nativně,
+              bez obsluhy onClick a bez druhé zastávky tabulátoru. Přetažení
+              myší je navíc a klávesovou obdobu nemá, proto je kontrola na
+              těchto obsluhách vypnutá adresně — klávesová cesta vede přes
+              samotné pole. */}
           {activeTab === 'upload' && (
-            <div
+            // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+            <label
+              htmlFor="bulk-import-file"
               onDragOver={(e) => {
                 e.preventDefault();
                 setIsDragging(true);
               }}
               onDragLeave={() => setIsDragging(false)}
               onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
               className={`p-6 sm:p-8 rounded-2xl border-2 border-dashed transition-all cursor-pointer text-center flex flex-col items-center justify-center gap-3 ${
                 isDragging
                   ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-950/30'
                   : 'border-slate-300 dark:border-slate-700 hover:border-blue-400 bg-slate-50/60 dark:bg-slate-800/40'
               }`}
             >
+              {/* sr-only, ne hidden: display:none vyřadí pole ze stromu
+                  přístupnosti i z pořadí tabulátoru, takže výběr souboru by
+                  z klávesnice nešel vyvolat vůbec. */}
               <input
                 ref={fileInputRef}
+                id="bulk-import-file"
                 type="file"
                 accept=".txt,.csv"
                 onChange={(e) => {
@@ -400,7 +410,7 @@ export default function BulkQuestionImportModal({
                     handleFile(e.target.files[0]);
                   }
                 }}
-                className="hidden"
+                className="sr-only"
               />
               <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-xs">
                 <UploadCloud className="w-6 h-6" />
@@ -425,7 +435,7 @@ export default function BulkQuestionImportModal({
                   )}
                 </div>
               )}
-            </div>
+            </label>
           )}
 
           {/* Tab 2: Direct Textarea */}
