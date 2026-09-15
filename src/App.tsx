@@ -255,10 +255,27 @@ export default function App() {
 
   /** Odešle vše, co čeká ve frontě, a promítne výsledek do stavu. */
   const flushQueue = useCallback(async (userId: string) => {
+    const ulozene: QuizSessionRecord[] = [];
+
     const outcome = await flushPendingResults(userId, async (pending) => {
       const res = await saveQuizResult(pending.userId, pending.result, pending.id);
+      if (res.stored) ulozene.push(res.stored);
       return { error: res.error, alreadyStored: res.alreadyStored };
     });
+
+    // Odeslaná položka z fronty zmizí, takže bez tohohle kroku by test z přehledu
+    // vypadl až do dalšího načtení stránky — `quizHistory` se stahuje jen při změně
+    // uživatele. Zároveň se tím do historie dostanou čísla, jak je spočítal server
+    // (viz saveQuizResult), ne jak je odhadl prohlížeč.
+    if (ulozene.length > 0) {
+      setQuizHistory((prev) => {
+        const zname = new Set(prev.map((h) => h.id));
+        const prirustek = ulozene.filter((r) => !zname.has(r.id));
+        if (prirustek.length === 0) return prev;
+        return [...prev, ...prirustek].sort((a, b) => a.timestamp - b.timestamp);
+      });
+    }
+
     setPendingResults(pendingResultsForUser(userId));
     return outcome;
   }, []);

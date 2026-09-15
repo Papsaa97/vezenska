@@ -33,7 +33,10 @@ export interface UserProfileItem {
   full_name: string | null;
   role: UserRole;
   created_at: string;
+  /** XP jen z testů, které vyhodnotil server (quiz_results.overeno). */
   totalXp: number;
+  /** Kolik testů uživatele se do XP nezapočítalo, protože je nevyhodnotil server. */
+  neoverenychTestu: number;
 }
 
 /** Přesný tvar záznamu z tabulky public.user_notifications. */
@@ -62,6 +65,7 @@ interface QuizResultXpRow {
   total_questions: number;
   correct_answers: number;
   accuracy: number;
+  overeno: boolean | null;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -87,7 +91,7 @@ function formatDate(iso: string): string {
 }
 
 /**
- * Odhad XP pouze z historie testů uloženej v Supabase (quiz_results).
+ * Odhad XP z testů, které vyhodnotil server (quiz_results s overeno = true).
  * Nepoužívá se sdílená calculateBaseXp() z utils/gamification.ts, protože ta
  * pro bonusové XP (scénáře, střelecké nácviky) čte localStorage AKTUÁLNÍHO
  * prohlížeče – v kontextu admin konzole by tak omylem přičetla data
@@ -159,11 +163,24 @@ function UserManagerInner() {
       // dotaz selže na RLS a XP se pro všechny zobrazí jako 0 (neblokuje zbytek konzole).
       const { data: resultRows } = await supabase
         .from('quiz_results')
-        .select('user_id, total_questions, correct_answers, accuracy');
+        .select('user_id, total_questions, correct_answers, accuracy, overeno');
 
+      // Do XP se počítají jen testy s razítkem overeno, tedy ty, u kterých skóre
+      // spočítala funkce vyhodnotit_kviz() z banky otázek (migrace 021). Čísla
+      // poslaná rovnou z prohlížeče se sem nedostanou — tenhle přehled je jediné
+      // místo, kde by podvržený výsledek mohl někoho obelhat.
+      //
+      // Vedlejší efekt při nasazení: testy dokončené ve starší verzi aplikace
+      // razítko nemají, takže XP u nich klesne na 0. Kolik jich je, ukazuje
+      // `neoverenychTestu` v řádku uživatele, ať to nevypadá jako ztráta dat.
       const xpByUser = new Map<string, number>();
+      const neovereneByUser = new Map<string, number>();
       ((resultRows ?? []) as QuizResultXpRow[]).forEach((row) => {
-        xpByUser.set(row.user_id, (xpByUser.get(row.user_id) ?? 0) + calculateQuizXpForResult(row));
+        if (row.overeno === true) {
+          xpByUser.set(row.user_id, (xpByUser.get(row.user_id) ?? 0) + calculateQuizXpForResult(row));
+        } else {
+          neovereneByUser.set(row.user_id, (neovereneByUser.get(row.user_id) ?? 0) + 1);
+        }
       });
 
       const items: UserProfileItem[] = (profileRows as ProfileRow[]).map((row) => ({
@@ -173,6 +190,7 @@ function UserManagerInner() {
         role: row.role,
         created_at: row.created_at,
         totalXp: xpByUser.get(row.id) ?? 0,
+        neoverenychTestu: neovereneByUser.get(row.id) ?? 0,
       }));
 
       setUsers(items);
@@ -494,9 +512,17 @@ function UserTableRow({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, 
       <td className="px-4 py-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">{formatDate(item.created_at)}</td>
       <td
         className="px-4 py-3 text-slate-600 dark:text-slate-300 whitespace-nowrap"
-        title="Odhad na základě uložené historie testů"
+        title="Odhad z testů vyhodnocených serverem"
       >
         {currentRank.shortTitle} <span className="text-slate-400">· {item.totalXp.toLocaleString('cs-CZ')} XP</span>
+        {item.neoverenychTestu > 0 && (
+          <span
+            className="ml-1.5 text-[10px] font-bold text-amber-600 dark:text-amber-400"
+            title={`${item.neoverenychTestu} test(ů) se do XP nepočítá — skóre u nich nevyhodnotil server.`}
+          >
+            +{item.neoverenychTestu} neověř.
+          </span>
+        )}
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-2">
@@ -538,8 +564,16 @@ function UserCard({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, onMe
         <span className="flex items-center gap-1.5">
           <CalendarDays className="w-3.5 h-3.5" /> {formatDate(item.created_at)}
         </span>
-        <span className="flex items-center gap-1.5" title="Odhad na základě uložené historie testů">
+        <span className="flex items-center gap-1.5" title="Odhad z testů vyhodnocených serverem">
           <Award className="w-3.5 h-3.5" /> {currentRank.shortTitle} · {item.totalXp.toLocaleString('cs-CZ')} XP
+          {item.neoverenychTestu > 0 && (
+            <span
+              className="text-[10px] font-bold text-amber-600 dark:text-amber-400"
+              title={`${item.neoverenychTestu} test(ů) se do XP nepočítá — skóre u nich nevyhodnotil server.`}
+            >
+              +{item.neoverenychTestu} neověř.
+            </span>
+          )}
         </span>
       </div>
 

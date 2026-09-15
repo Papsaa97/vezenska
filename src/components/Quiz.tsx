@@ -359,6 +359,11 @@ export default function Quiz({
         isCorrect,
         selectedOption: selected,
         correctOption: q.correctOption ?? 0,
+        // Text odpovědi je to jediné, podle čeho umí test vyhodnotit server:
+        // `selected` je index do pole promíchaného v shuffleQuestionOptions(),
+        // takže mimo tenhle prohlížeč nic neznamená. Prázdný řetězec znamená
+        // „nevybráno" a server ho vyhodnotí jako chybu — stejně jako klient níže.
+        selectedText: selected >= 0 ? (q.options?.[selected] ?? '') : '',
         confidence: confidences[q.id] || 'know',
         timedOut: wasTimedOut
       };

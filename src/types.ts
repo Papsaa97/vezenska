@@ -57,6 +57,19 @@ export interface QuestionAttempt {
   isCorrect: boolean;
   selectedOption: number;
   correctOption: number;
+  /**
+   * Text zvolené odpovědi, prázdný řetězec když uživatel nevybral nic.
+   *
+   * Podle něj vyhodnocuje test server (funkce vyhodnotit_kviz, migrace 021).
+   * Posílat index nejde: Quiz.tsx pořadí možností před zobrazením promíchá, takže
+   * `selectedOption` je index do promíchaného pole a s `correct_index` v databázi
+   * nemá nic společného. Text promíchání přežije.
+   *
+   * Nepovinný kvůli výsledkům, které uvízly ve frontě neodeslaných testů ještě
+   * ve starší verzi aplikace — ty se serverově vyhodnotit nedají a ukládají se
+   * jako neověřené.
+   */
+  selectedText?: string;
   confidence?: 'know' | 'guess' | 'dont_know';
   timedOut?: boolean;
 }
