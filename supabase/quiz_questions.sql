@@ -36,11 +36,26 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_quiz_questions_question_unique ON public.q
 -- Zapnutí Row Level Security (RLS)
 ALTER TABLE public.quiz_questions ENABLE ROW LEVEL SECURITY;
 
--- 1. Politika pro čtení otázek (veřejné pro všechny studenty i nepřihlášené návštěvníky)
+-- 1. Politika pro čtení otázek
+--
+-- Banku čte každý PŘIHLÁŠENÝ uživatel celou, včetně sloupce correct_index. Zní
+-- to velkoryse, ale utažení by nic neutajilo: všech 377 výchozích otázek i se
+-- správnými odpověďmi je součástí veřejného klientského bundlu, protože App.tsx
+-- importuje academyQuestions. Viz README, sekce „Co zatím utažené není".
+--
+-- Klauzule TO authenticated tu ale být MUSÍ. Bez ní politika platí pro PUBLIC,
+-- tedy i pro roli anon, a banku by si stáhl kdokoli bez přihlášení.
+--
+-- Dřív tu stála politika "Povolit čtení otázek pro všechny" bez klauzule TO,
+-- zatímco nasazená databáze má quiz_questions_select omezenou na authenticated.
+-- Repozitář se tím rozcházel s produkcí a čistá instalace by vyšla VOLNĚJŠÍ než
+-- ostrý provoz. Starý název se proto shazuje níže.
 DROP POLICY IF EXISTS "Povolit čtení otázek pro všechny" ON public.quiz_questions;
-CREATE POLICY "Povolit čtení otázek pro všechny"
+DROP POLICY IF EXISTS "quiz_questions_select" ON public.quiz_questions;
+CREATE POLICY "quiz_questions_select"
   ON public.quiz_questions
   FOR SELECT
+  TO authenticated
   USING (true);
 
 -- 2. Politika pro vkládání nových otázek (pouze pro přihlášené lektory a administrátory)
