@@ -19,6 +19,7 @@ import {
   Save,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { writeFailure } from '../utils/supabaseWrite';
 import { useAuth, useIsAdmin, UserRole } from '../context/AuthContext';
 import { getUserRank } from '../utils/gamification';
 import { useDialog } from '../hooks/useDialog';
@@ -575,10 +576,18 @@ function EditNameDialog({ targetUser, onClose, onSaved }: EditNameDialogProps) {
     }
     setSaving(true);
     setError(null);
-    const { error: updateError } = await supabase.from('profiles').update({ full_name: trimmed }).eq('id', targetUser.id);
+    // .select() je tu nutnost: cizí profil smí přejmenovat jen správce a RLS to
+    // zamítne tím, že UPDATE nezasáhne žádný řádek — bez chyby. Bez kontroly se
+    // dialog zavřel, jméno se v seznamu přepsalo a v databázi zůstalo staré.
+    const res = await supabase
+      .from('profiles')
+      .update({ full_name: trimmed })
+      .eq('id', targetUser.id)
+      .select('id');
     setSaving(false);
-    if (updateError) {
-      setError(updateError.message);
+    const failure = writeFailure('Jméno uživatele', res);
+    if (failure) {
+      setError(failure);
     } else {
       onSaved(trimmed);
     }

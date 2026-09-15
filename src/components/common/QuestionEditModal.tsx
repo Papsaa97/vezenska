@@ -91,9 +91,14 @@ export default function QuestionEditModal({
     try {
       // Uložení do Supabase + localStorage
       const result = await updateQuestionInSupabase(updated);
-      if (!result.success && result.error) {
-        // I když Supabase vrátí varování/chybu, v lokálním stavu změnu uplatníme
-        console.warn('[QuestionEditModal] Ukládání do databáze selhalo:', result.error);
+      if (!result.success) {
+        // Dřív se selhání jen zalogovalo do konzole, změna se uplatnila v React
+        // stavu a dialog se zavřel — úprava tedy vypadala uložená a po obnovení
+        // stránky byla pryč. Otázky jsou sdílený obsah: neuloží-li se na server,
+        // neuvidí je nikdo další, takže to musí uživatel vědět hned.
+        console.error('[QuestionEditModal] Ukládání do databáze selhalo:', result.error);
+        setErrorMsg(result.error ?? 'Otázku se nepodařilo uložit do databáze.');
+        return;
       }
 
       // Okamžitá aktualizace lokálního React stavu

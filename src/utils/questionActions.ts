@@ -1,5 +1,6 @@
 import { Question } from '../types';
 import { supabase } from '../lib/supabase';
+import { writeFailure } from './supabaseWrite';
 
 const HIDDEN_QUESTIONS_KEY = 'vscr_hidden_questions';
 
@@ -90,14 +91,20 @@ export async function updateQuestionInSupabase(
 
   try {
     let queryError: { message?: string; code?: string } | null = null;
+    // Zamítnutí RLS u UPDATE není chyba, ale nula zasažených řádků — proto je
+    // každý UPDATE zakončený .select() a výsledek se počítá. Bez toho se
+    // úprava otázky tvářila jako uložená a po znovunačtení banky byla pryč.
+    let rejection: string | null = null;
 
     // Pokud je ID platné UUID, zkusíme update podle ID
     if (UUID_REGEX.test(updatedQuestion.id)) {
-      const { error } = await supabase
+      const res = await supabase
         .from('quiz_questions')
         .update(fullPayload)
-        .eq('id', updatedQuestion.id);
-      queryError = error;
+        .eq('id', updatedQuestion.id)
+        .select('id');
+      queryError = res.error;
+      if (!queryError) rejection = writeFailure('Otázku', res);
     } else {
       // Jinak zkusíme update podle textu otázky nebo upsert
       const { data: existing } = await supabase
@@ -107,11 +114,13 @@ export async function updateQuestionInSupabase(
         .maybeSingle();
 
       if (existing?.id) {
-        const { error } = await supabase
+        const res = await supabase
           .from('quiz_questions')
           .update(fullPayload)
-          .eq('id', existing.id);
-        queryError = error;
+          .eq('id', existing.id)
+          .select('id');
+        queryError = res.error;
+        if (!queryError) rejection = writeFailure('Otázku', res);
       } else {
         const { error } = await supabase
           .from('quiz_questions')
@@ -133,17 +142,25 @@ export async function updateQuestionInSupabase(
       };
 
       if (UUID_REGEX.test(updatedQuestion.id)) {
-        const { error: fbErr } = await supabase
+        const res = await supabase
           .from('quiz_questions')
           .update(fallbackPayload)
-          .eq('id', updatedQuestion.id);
-        queryError = fbErr;
+          .eq('id', updatedQuestion.id)
+          .select('id');
+        queryError = res.error;
+        rejection = queryError ? null : writeFailure('Otázku', res);
       } else {
         const { error: fbErr } = await supabase
           .from('quiz_questions')
           .upsert(fallbackPayload, { onConflict: 'question' });
         queryError = fbErr;
+        rejection = null;
       }
+    }
+
+    if (rejection) {
+      console.error('[questionActions] Zápis otázky neovlivnil žádný řádek (zamítla RLS).');
+      return { success: false, error: rejection };
     }
 
     if (queryError) {

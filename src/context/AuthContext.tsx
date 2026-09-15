@@ -52,11 +52,53 @@ interface ProfileDatabaseRow {
   user_class: string | null;
 }
 
+/**
+ * Sestaví vysvětlení, proč databáze odmítne zápisy — nebo `null`, je-li vše
+ * v pořádku.
+ *
+ * Oprávnění vynucuje RLS podle `public.profiles.role`, ne rozhraní. Rozejde-li
+ * se role, kterou ukazuje aplikace, s rolí v databázi, tlačítka zůstanou
+ * viditelná, ale žádné uložení neprojde. Zamítnutý UPDATE navíc není chyba —
+ * jen nula zasažených řádků — takže se to bez téhle hlášky nijak neprojeví.
+ */
+function describeRoleMismatch(input: {
+  isSystemAdmin: boolean;
+  /** Role, kterou má účet v databázi. `null`, když se ji nepodařilo zjistit. */
+  dbRole: UserRole | null;
+  loadFailure: string | null;
+}): string | null {
+  const { isSystemAdmin, dbRole, loadFailure } = input;
+
+  if (!dbRole) {
+    const detail = loadFailure ? ` Databáze hlásí: ${loadFailure}` : '';
+    return (
+      'Váš profil se nepodařilo načíst z tabulky public.profiles ani ho tam ' +
+      'založit, takže vás aplikace považuje za studenta a databáze odmítne ' +
+      `každý pokus o uložení otázek, uživatelů i nástěnky.${detail} ` +
+      'Diagnostiku i opravu má supabase/016_diagnostika_zapisu.sql.'
+    );
+  }
+
+  if (isSystemAdmin && dbRole !== 'admin') {
+    return (
+      'Správcovské rozhraní vidíte jen díky VITE_ADMIN_EMAILS — v databázi má ' +
+      `váš účet roli „${dbRole}“. O oprávnění rozhoduje výhradně sloupec ` +
+      'public.profiles.role, takže uložení otázek, uživatelů ani nástěnky ' +
+      'neprojde. Spusťte supabase/016_diagnostika_zapisu.sql, který roli ' +
+      'správce v databázi doplní.'
+    );
+  }
+
+  return null;
+}
+
 interface AuthContextValue {
   session: Session | null;
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
+  /** Proč databáze odmítne zápisy, nebo `null`, je-li role v pořádku. */
+  roleSyncWarning: string | null;
   signIn: (email: string, password: string, captchaToken?: string) => Promise<{ error: AuthError | null; signedIn: boolean }>;
   signUp: (email: string, password: string, fullName: string, captchaToken?: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
@@ -76,18 +118,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [roleSyncWarning, setRoleSyncWarning] = useState<string | null>(null);
 
   /**
    * Načte profil uživatele z tabulky public.profiles.
    *
-   * 1. Podporuje avatar_url s fallbackem na query bez avatar_url.
+   * 1. Volitelné sloupce (avatar_url, user_class) umí postupně vypustit, takže
+   *    neproběhlá migrace 010 nebo profiles_avatar.sql dotaz neshodí.
    * 2. Pokud profil v tabulce profiles dosud neexistuje (např. nebyl spuštěn trigger),
-   *    nezpůsobí pád do null – automaticky jej upsertne a inicializuje profil v paměti.
+   *    nezpůsobí pád do null – automaticky jej založí a inicializuje profil v paměti.
    * 3. Role se bere výhradně z databáze. Nepodaří-li se profil načíst, zůstává
    *    'student' — nikdy se nedoplňuje z localStorage.
-   *
-   * POZOR: vyžaduje sloupec profiles.user_class (migrace 010). Bez něj selže dotaz
-   * i jeho záložní varianta a každý uživatel skončí jako 'student'.
+   * 4. Rozejde-li se role v rozhraní s rolí v databázi, nastaví `roleSyncWarning`.
+   *    Bez něj se rozpor projeví jen tak, že žádné uložení neprojde a nikdo neví proč.
    *
    * `authUser` je povinný a musí pocházet z právě obsloužené session, ne ze stavu
    * komponenty. Dřív byl volitelný a chybějící hodnota se brala z `user` z uzávěry —
@@ -105,27 +148,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const userEmail = authUser.email || '';
 
     let profileData: ProfileDatabaseRow | null = null;
+    let loadFailure: string | null = null;
 
-    // 1. Zkusíme načíst kompletní profil z tabulky profiles
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id, email, full_name, role, created_at, avatar_url, user_class')
-      .eq('id', userId)
-      .single();
+    // Postupně ubíráme volitelné sloupce, dokud dotaz neprojde.
+    //
+    // Dřív tu byly dvě varianty a ta „záložní“ vypouštěla jen avatar_url —
+    // user_class si nechávala. Jenže chybějící user_class (neproběhlá migrace
+    // 010) je přesně ten případ, na který byla záloha myšlená: shodil oba
+    // dotazy, profileData zůstalo null a KAŽDÝ uživatel se načetl jako
+    // 'student', tedy i lektoři a správci. Poslední stupeň proto vystačí se
+    // sloupci, které zakládá samotný profiles.sql.
+    const COLUMN_SETS = [
+      'id, email, full_name, role, created_at, avatar_url, user_class',
+      'id, email, full_name, role, created_at, user_class',
+      'id, email, full_name, role, created_at, avatar_url',
+      'id, email, full_name, role, created_at',
+    ];
 
-    if (!error && data) {
-      profileData = data as ProfileDatabaseRow;
-    } else {
-      // 2. Záložní dotaz bez avatar_url (pokud chybí sloupec na Supabase)
-      const { data: fallbackData, error: fallbackError } = await supabase
+    for (const columns of COLUMN_SETS) {
+      // maybeSingle(), ne single(): chybějící řádek je pro nás legitimní stav
+      // (profil se pak založí níže), ne chyba, kterou bychom měli hlásit.
+      const { data, error } = await supabase
         .from('profiles')
-        .select('id, email, full_name, role, created_at, user_class')
+        .select(columns)
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
-      if (!fallbackError && fallbackData) {
-        profileData = { ...(fallbackData as Omit<ProfileDatabaseRow, 'avatar_url'>), avatar_url: null };
+      if (!error && data) {
+        profileData = {
+          avatar_url: null,
+          user_class: null,
+          ...(data as unknown as Partial<ProfileDatabaseRow>),
+        } as ProfileDatabaseRow;
+        loadFailure = null;
+        break;
       }
+
+      loadFailure = error
+        ? `${error.message}${error.code ? ` (${error.code})` : ''}`
+        : 'Účet nemá v tabulce public.profiles žádný řádek.';
+
+      // Užší výběr sloupců má smysl zkusit jen u chybějícího sloupce (42703).
+      // Zamítnutí RLS ani výpadek sítě se vypuštěním sloupce nespraví.
+      if (error?.code !== '42703') break;
     }
 
     // Role pochází VÝHRADNĚ z databáze.
@@ -170,24 +235,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setProfile(resolvedProfile);
 
-    // Pokud v databázi řádek chyběl nebo role byla student pro admina, pokusíme se tiše synchronizovat
-    if (!profileData || (isSystemAdmin && profileData.role !== 'admin')) {
-      try {
-        await supabase.from('profiles').upsert(
-          {
-            id: userId,
-            email: userEmail,
-            full_name: effectiveFullName,
-            role: effectiveRole,
-            user_class: resolvedProfile.user_class || 'ZOP A11',
-            ...(resolvedProfile.avatar_url ? { avatar_url: resolvedProfile.avatar_url } : {}),
-          },
-          { onConflict: 'id' }
-        );
-      } catch (upsertErr) {
-        console.warn('[Auth] Automatická synchronizace profilu do Supabase selhala:', upsertErr);
+    // Chybí-li řádek v databázi, založíme ho.
+    //
+    // `role` se sem ZÁMĚRNĚ neposílá. RLS politiky nad public.profiles dovolují
+    // vložit jen roli 'student' (tu doplní výchozí hodnota sloupce) a upravit
+    // vlastní řádek jen beze změny role. Upsert s `role: 'admin'` proto vždy
+    // skončil na 42501 — a protože klient Supabase chyby nevyhazuje, ale vrací
+    // je v `error`, spolkl ji try/catch, který se nikdy nespustil. Padl s ním
+    // i zápis jména a třídy, přestože ten projít mohl.
+    let createdRole: UserRole | null = null;
+    if (!profileData) {
+      const { error: upsertError } = await supabase.from('profiles').upsert(
+        {
+          id: userId,
+          email: userEmail,
+          full_name: effectiveFullName,
+          user_class: resolvedProfile.user_class || 'ZOP A11',
+          ...(resolvedProfile.avatar_url ? { avatar_url: resolvedProfile.avatar_url } : {}),
+        },
+        { onConflict: 'id' }
+      );
+      if (upsertError) {
+        console.warn('[Auth] Založení profilu v Supabase selhalo:', upsertError.message);
+      } else {
+        // Politika „Povolit vytvoření vlastního profilu“ pustí jen roli
+        // 'student' a tu doplní výchozí hodnota sloupce. Nově založený profil
+        // je tedy vždy student — pro účet z VITE_ADMIN_EMAILS to znamená, že
+        // upozornění níže platí dál, dokud roli nenastaví správce v databázi.
+        createdRole = 'student';
       }
     }
+
+    // Diagnostika pro případ, kdy rozhraní ukazuje víc, než databáze dovolí.
+    //
+    // O oprávnění rozhoduje výhradně public.profiles.role. Ukazuje-li rozhraní
+    // správcovské nástroje na základě VITE_ADMIN_EMAILS, ale databáze má u účtu
+    // jinou roli, odmítne RLS každý zápis — a to bez jediné chybové hlášky,
+    // protože zamítnutý UPDATE není chyba, jen nula zasažených řádků. Přesně
+    // tak vypadá „nejde mi aktualizovat nic z databáze“. Řekneme to nahlas.
+    setRoleSyncWarning(
+      describeRoleMismatch({ isSystemAdmin, dbRole: profileData?.role ?? createdRole, loadFailure })
+    );
   }, []);
 
   // Inicializace session + listener na změny
@@ -226,6 +314,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
       } else {
         setProfile(null);
+        setRoleSyncWarning(null);
         setLoading(false);
       }
     }).catch((err) => {
@@ -244,6 +333,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         fetchProfile(currentUser.id, currentUser);
       } else {
         setProfile(null);
+        setRoleSyncWarning(null);
       }
       setLoading(false);
     });
@@ -309,6 +399,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(null);
       setUser(null);
       setProfile(null);
+      setRoleSyncWarning(null);
     }
   }, []);
 
@@ -445,7 +536,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ session, user, profile, loading, signIn, signUp, signOut, updateProfile, updateRole, updatePassword }}
+      value={{ session, user, profile, loading, roleSyncWarning, signIn, signUp, signOut, updateProfile, updateRole, updatePassword }}
     >
       {children}
     </AuthContext.Provider>

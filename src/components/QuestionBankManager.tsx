@@ -23,6 +23,7 @@ import {
   FileSpreadsheet,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { writeFailure } from '../utils/supabaseWrite';
 import { useAuth } from '../context/AuthContext';
 import PrintHeader from './common/PrintHeader';
 import BulkQuestionImportModal from './BulkQuestionImportModal';
@@ -278,12 +279,22 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
     try {
       let error = null;
 
+      // .select() je u UPDATE povinné: zamítnutí RLS se nevrací jako chyba, ale
+      // jako nula zasažených řádků. Bez něj by se níže ohlásilo „úspěšně
+      // aktualizována“ i ve chvíli, kdy se do databáze nezapsalo nic — a otázka
+      // by se po fetchQuestions() vrátila do původní podoby bez vysvětlení.
+      let rejection: string | null = null;
+
       if (editingId) {
         const res = await supabase
           .from('quiz_questions')
           .update(payload)
-          .eq('id', editingId);
+          .eq('id', editingId)
+          .select('id');
         error = res.error;
+        if (!error) {
+          rejection = writeFailure('Otázku', res);
+        }
       } else {
         const res = await supabase
           .from('quiz_questions')
@@ -291,7 +302,9 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
         error = res.error;
       }
 
-      if (error) {
+      if (rejection) {
+        setFormMsg({ type: 'error', text: rejection });
+      } else if (error) {
         if (error.code === '42P01' || error.message.includes('does not exist')) {
           setTableMissing(true);
           setFormMsg({
