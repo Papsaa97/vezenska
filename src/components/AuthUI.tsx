@@ -209,10 +209,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
         tabIndex={-1}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
       >
-        <div
-          className="pointer-events-auto w-full max-w-md bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl p-6 sm:p-8 relative"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="pointer-events-auto w-full max-w-md bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl p-6 sm:p-8 relative">
           {/* Close */}
           <button
             onClick={onClose}

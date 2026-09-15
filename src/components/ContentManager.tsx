@@ -286,7 +286,7 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
     if (file) pickFile(file);
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
@@ -471,11 +471,18 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
             <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5" htmlFor={`${fieldIds}-soubor`}>
               Soubor * <span className="font-normal text-slate-400">({ALLOWED_EXT_LABEL})</span>
             </label>
-            <div
+            {/* Zóna je <label> pro pole níže: klik na ni otevře výběr souboru
+                nativně, bez obsluhy onClick a bez druhé zastávky tabulátoru.
+                Přetažení myší je navíc — klávesovou cestou zůstává samotné
+                pole, které je sr-only (tedy zaměřitelné) a má popisek výše.
+                Pro přetahování žádná klávesová obdoba neexistuje, proto je
+                kontrola na těchto třech obsluhách vypnutá adresně. */}
+            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+            <label
+              htmlFor={`${fieldIds}-soubor`}
               onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
               onDragLeave={() => setIsDragging(false)}
               onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
               className={`relative flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border-2 border-dashed cursor-pointer transition-all ${
                 isDragging
                   ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
@@ -516,7 +523,7 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
                   </div>
                 </>
               )}
-            </div>
+            </label>
           </div>
 
           {/* Upload message */}

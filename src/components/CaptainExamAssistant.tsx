@@ -117,7 +117,7 @@ export default function CaptainExamAssistant({
     }
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
@@ -377,20 +377,29 @@ export default function CaptainExamAssistant({
             {/* Image Mode */}
             {inputMode === 'image' && (
               <div className="space-y-4">
+                {/* sr-only, ne hidden: display:none vyřadí pole ze stromu
+                    přístupnosti i z pořadí tabulátoru, takže výběr fotky by
+                    z klávesnice nešel vyvolat vůbec. */}
                 <input
                   type="file"
+                  id={`${fieldIds}-foto`}
                   ref={fileInputRef}
                   onChange={handleImageChange}
                   accept="image/*"
-                  className="hidden"
+                  className="sr-only"
                 />
 
                 {!selectedImage ? (
-                  <div
+                  /* Zóna je <label> pole výše: klik otevře výběr fotky nativně,
+                     bez obsluhy onClick a bez druhé zastávky tabulátoru.
+                     Přetažení myší je navíc a klávesovou obdobu nemá, proto je
+                     kontrola na té obsluze vypnutá adresně. */
+                  // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+                  <label
+                    htmlFor={`${fieldIds}-foto`}
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={handleDrop}
-                    onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 rounded-2xl p-8 text-center cursor-pointer transition-colors bg-slate-50/50 dark:bg-slate-800/30 space-y-3"
+                    className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 rounded-2xl p-8 text-center cursor-pointer transition-colors bg-slate-50/50 dark:bg-slate-800/30 space-y-3 block"
                   >
                     <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto shadow-sm">
                       <Upload className="w-6 h-6" />
@@ -403,7 +412,7 @@ export default function CaptainExamAssistant({
                         Podporuje JPG, PNG, WEBP nebo přímé vyfocení mobilem
                       </p>
                     </div>
-                  </div>
+                  </label>
                 ) : (
                   <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-950 p-2 flex flex-col items-center">
                     <img

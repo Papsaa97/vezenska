@@ -241,17 +241,19 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
             {previewUrl ? (
               <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 max-h-48 bg-slate-950 flex items-center justify-center group">
                 <img src={previewUrl} alt="Náhled rozvrhu" className="w-full h-48 object-contain" />
-                <div
-                  onClick={() => fileInputRef.current?.click()}
+                {/* <label> místo klikacího divu: výběr souboru otevře nativně,
+                    bez obsluhy onClick a bez další zastávky tabulátoru. */}
+                <label
+                  htmlFor={`${fieldIds}-rozvrh`}
                   className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-bold cursor-pointer"
                 >
                   <UploadCloud className="w-4 h-4" />
                   <span>Kliknutím vyměnit obrázek</span>
-                </div>
+                </label>
               </div>
             ) : (
-              <div
-                onClick={() => fileInputRef.current?.click()}
+              <label
+                htmlFor={`${fieldIds}-rozvrh`}
                 className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors bg-slate-50/50 dark:bg-slate-800/30"
               >
                 <UploadCloud className="w-8 h-8 text-blue-500 mb-2" />
@@ -261,7 +263,7 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
                 <span className="text-[10px] text-slate-500 mt-0.5">
                   Uloženo do Supabase Storage bucketu studijni-materialy/rozvrhy/
                 </span>
-              </div>
+              </label>
             )}
           </div>
 

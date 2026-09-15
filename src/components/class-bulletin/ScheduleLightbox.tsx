@@ -107,13 +107,17 @@ export default function ScheduleLightbox({
         </div>
       </div>
 
-      <div
-        onClick={onClose}
-        className="flex-1 overflow-auto flex items-center justify-center p-4 select-none cursor-zoom-out"
-      >
+      <div className="relative flex-1 overflow-auto flex items-center justify-center p-4 select-none">
+        {/* Prázdná plocha kolem rozvrhu zavírá kliknutím. Je to dekorace pod
+            obrázkem: pro odečítač neexistuje a klávesnice má Escape (useDialog).
+            Obrázek leží nad ní, takže klik na něj lightbox nezavře. */}
         <div
-          onClick={(e) => e.stopPropagation()}
-          className="transition-transform duration-200 cursor-default"
+          aria-hidden="true"
+          onClick={onClose}
+          className="absolute inset-0 cursor-zoom-out"
+        />
+        <div
+          className="relative transition-transform duration-200 cursor-default"
           style={{ transform: `scale(${zoom})` }}
         >
           {item.scheduleUrl && (
