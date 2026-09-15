@@ -42,6 +42,95 @@
 }
 
 /* ==========================================================================
+   NÁHLED DOKUMENTU V APLIKACI (prohlížeč .docx)
+   --------------------------------------------------------------------------
+   Převedený Word nenese vlastní styly a Tailwind výchozí vzhled značek ruší,
+   takže bez těchto pravidel by z dokumentu byl jeden slitý odstavec bez
+   nadpisů, odrážek a tabulek. Platí jen uvnitř .document-preview, aby se
+   nerozlévala do zbytku aplikace.
+   ========================================================================== */
+.document-preview {
+  line-height: 1.65;
+  font-size: 0.95rem;
+}
+
+.document-preview p {
+  margin-bottom: 0.85rem;
+}
+
+.document-preview h1,
+.document-preview h2,
+.document-preview h3,
+.document-preview h4 {
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: 1.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.document-preview h1 { font-size: 1.5rem; }
+.document-preview h2 { font-size: 1.25rem; }
+.document-preview h3 { font-size: 1.1rem; }
+.document-preview h4 { font-size: 1rem; }
+
+.document-preview ul,
+.document-preview ol {
+  margin: 0 0 0.85rem 1.35rem;
+}
+
+.document-preview ul { list-style: disc; }
+.document-preview ol { list-style: decimal; }
+.document-preview li { margin-bottom: 0.3rem; }
+
+.document-preview a {
+  color: #4f46e5;
+  text-decoration: underline;
+}
+
+.document-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.document-preview th,
+.document-preview td {
+  border: 1px solid #cbd5e1;
+  padding: 0.4rem 0.55rem;
+  vertical-align: top;
+}
+
+.document-preview th {
+  background: #f1f5f9;
+  font-weight: 700;
+  text-align: left;
+}
+
+.dark .document-preview th,
+.dark .document-preview td {
+  border-color: #334155;
+}
+
+.dark .document-preview th {
+  background: #1e293b;
+}
+
+.document-preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.document-preview blockquote {
+  border-left: 3px solid #cbd5e1;
+  padding-left: 0.85rem;
+  color: #475569;
+  margin-bottom: 0.85rem;
+}
+
+/* ==========================================================================
    OFFICIAL VS ČR ACADEMY PRINT SYSTEM (A4 PORTRAIT)
    ========================================================================== */
 @media print {

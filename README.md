@@ -2,7 +2,8 @@
 
 Vzdělávací aplikace pro příslušníky a zaměstnance Vězeňské služby ČR: banka
 testových otázek, kartičkový dril metodou Leitner, plná znění předpisů, taktické
-scénáře, zbraňové trenažéry, administrativa a ETŘ, nástěnky tříd ZOP.
+scénáře, zbraňové trenažéry, administrativa a ETŘ, nástěnky tříd ZOP a knihovna
+studijních souborů s prohlížečem přímo v aplikaci.
 
 **Stack:** React 19 · Vite 6 · TypeScript 5.8 · Tailwind CSS 4 · Supabase · PWA
 
@@ -67,6 +68,42 @@ Po zlepšení obsahu přepiš referenční stav:
 ```bash
 npm run check:questions -- --update-baseline   # a commitni baseline
 ```
+
+## Obsah, který spravuje lektor
+
+Předměty, poznávačky i modelové situace jsou v repozitáři jako výchozí data,
+ale lektor a správce je může měnit přímo v aplikaci — přidat blok, upravit ho,
+skrýt studentům nebo odebrat. Úprava se ukládá jako **překryv** nad výchozími
+daty (tabulka `content_blocks`, migrace `027`), takže se kdykoli dá vrátit
+k původní podobě: stačí u položky zvolit obnovení.
+
+| Záložka | Co jde spravovat |
+|---|---|
+| Předměty | bloky předmětů včetně popisu, pramenů práva, okruhů a požadavků ke zkoušce |
+| Poznávačka | kategorie i jednotlivé dvojice, u diagramů popisky a souřadnice částí |
+| Modelovky | situace, jejich kroky, volby, zpětná vazba a zákonný podklad |
+| Banka otázek | otázky ke všem předmětům včetně nově založených |
+
+## Soubory: štítky, předměty a třídy
+
+O zařazení souboru nerozhoduje složka, ve které leží, ale **štítky** (tabulka
+`material_tags`, migrace `027`). Jeden soubor tak může patřit k několika
+předmětům a zároveň k několika třídám:
+
+- Štítky se nastavují při nahrávání (i u několika souborů najednou) a dají se
+  kdykoli změnit — u jednoho souboru i hromadně u celého výběru.
+- Nově založená třída je ve správci souborů k dispozici hned, nic se nenastavuje.
+- Podle štítků se soubory samy objeví v detailu předmětu a na nástěnce třídy.
+- Starší soubory ve složkách podle předmětu se čtou dál; bez štítků se zařadí
+  podle své složky, takže se nic neztratilo a nic není potřeba přesouvat.
+
+Soubory jdou otevřít přímo v aplikaci: PDF a obrázky vykreslí prohlížeč, Word se
+převede knihovnou [mammoth](https://github.com/mwilliamson/mammoth.js)
+a prezentace se rozeberou přes [JSZip](https://stuk.github.io/jszip/) na text
+a obrázky jednotlivých snímků. Převod běží **celý v zařízení uživatele** —
+interní materiály VS ČR se kvůli náhledu neposílají do žádné cizí online
+prohlížečky dokumentů. Obě knihovny se stahují až při prvním otevření dokumentu,
+takže hlavní balík aplikace nezvětšují.
 
 ## Proměnné prostředí
 
