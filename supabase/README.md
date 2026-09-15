@@ -30,10 +30,50 @@ projektu spusťte v tomto pořadí:
 | 16 | `avatars_storage.sql` | Bucket `avatars` |
 | 17 | `set_admin_miichalpapi.sql` | Prvotní nastavení správce — **uprav si e-mail** |
 | 18 | `016_diagnostika_zapisu.sql` | Diagnostika a oprava, když nejde nic uložit — **uprav si e-mail** |
+| 19 | `017_oprava_rekurze_politik.sql` | Oprava „infinite recursion … for relation profiles" (42P17) |
 
 > Kroky 13 a 14 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 13 na sobě nezávisí. Spustíte-li
 > 012 před 013, stačí 012 spustit ještě jednou.
+
+## Chyba „infinite recursion detected in policy for relation profiles" (42P17)
+
+Hlásí-li aplikace tohle — v červeném pruhu nahoře nebo u nenačtené nástěnky —
+spusť **`017_oprava_rekurze_politik.sql`**. Nic jiného nepomůže: profil se
+nenačte, uživatel se tváří jako student a neuloží se vůbec nic.
+
+Příčinou je politika nad `public.profiles`, která sama čte `public.profiles`:
+
+```sql
+USING (EXISTS (SELECT 1 FROM public.profiles p
+               WHERE p.id = auth.uid() AND p.role = 'admin'))
+```
+
+Politika se odkazuje na tabulku, na které je definovaná, takže Postgres skončí
+chybou. A protože se PERMISSIVE politiky slučují přes **OR**, stačí jedna taková
+— shodí i všechny správné politiky vedle sebe. Typicky vznikne ručním založením
+v dashboardu.
+
+`017` je hledá **podle definice, ne podle názvu** (dotazem nad `pg_policies`),
+takže najde i politiku pojmenovanou jakkoli. Zároveň převede politiky nad
+`quiz_questions` z inline dotazu na `public.is_staff()`, aby úpravy otázek na
+stavu politik nad `profiles` vůbec nezávisely.
+
+> ⚠️ **`fix_admin_rls_recursion.sql` už nespouštěj.** Řeší totéž, ale jen pro
+> politiky se známými názvy, a navíc přepíše `admin_delete_user()` a `is_admin()`
+> zpět na verze bez pojistek z migrace `015`. Nahradila ho `017`.
+
+### Proč to nenajde `016`
+
+Diagnostika v `016` běží v SQL Editoru jako role `postgres`, která **RLS
+obchází**. Rekurzivní politika se tam vůbec nespustí, takže `016` vypíše
+„✅ smí spravovat otázky" i nad úplně rozbitou databází. `016` proto dnes na
+rekurzi aspoň upozorní a odkáže na `017`; skutečné ověření dělá krok 5 v `017`,
+který se přepne do role `authenticated` a podstrčí `auth.uid()` stejně jako
+PostgREST — tedy vidí přesně to, co uvidí aplikace.
+
+**Obecné pravidlo:** cokoli ověřuješ v SQL Editoru jako `postgres`, neověřuješ
+z pohledu aplikace. RLS se tam neaplikuje.
 
 ## Nejde uložit vůbec nic? Spusť `016_diagnostika_zapisu.sql`
 
@@ -53,6 +93,10 @@ proto musí založit SQL.
 vypíše výsledek. Řeší čtyři příčiny: chybějící roli správce, chybějící řádek
 v `profiles`, chybějící sloupec `user_class` (migrace 010) a chybějící roli
 `velitel_tridy` v omezení `CHECK` (migrace 011). Je idempotentní a nic nemaže.
+
+Pátou příčinu — rekurzivní politiku (42P17) — `016` jen ohlásí; opravuje ji
+`017_oprava_rekurze_politik.sql` (viz výše). Když si nejste jistí, spusťte oba
+v pořadí 016 → 017.
 
 > **Po opravě se v aplikaci odhlas a znovu přihlas.** Role se čte při načtení
 > profilu, takže stará session ukazuje pořád stará oprávnění.

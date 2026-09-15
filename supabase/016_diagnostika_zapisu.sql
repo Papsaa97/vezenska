@@ -51,6 +51,29 @@ FROM auth.users u
 LEFT JOIN public.profiles p ON p.id = u.id
 ORDER BY u.created_at;
 
+-- PŘÍČINA E: rekurzivní politika nad profiles
+--
+-- Tenhle dotaz musí vrátit PRÁZDNÝ výsledek. Cokoli vrátí, znamená, že nad
+-- profiles je politika, která sama čte profiles — aplikace pak dostane
+-- „infinite recursion detected in policy for relation profiles" (42P17)
+-- a neuloží nic, ať už jsou role nastavené sebelíp.
+--
+-- ⚠️ Zbytek TÉHLE migrace to NEOPRAVÍ a ani nepozná: všechno tady běží jako
+-- role postgres, která RLS obchází, takže závěrečný výpis v kroku 8 vypíše
+-- „✅ smí spravovat otázky" i nad úplně rozbitou databází. Vrátí-li tenhle
+-- dotaz cokoli, spusťte supabase/017_oprava_rekurze_politik.sql — ten hledá
+-- takové politiky podle definice a ověřuje výsledek v roli authenticated.
+
+SELECT
+  tablename,
+  cmd,
+  policyname,
+  '❌ REKURZE — spusťte 017_oprava_rekurze_politik.sql' AS zaver
+FROM pg_policies
+WHERE schemaname = 'public' AND tablename = 'profiles'
+  AND (coalesce(qual, '') || ' ' || coalesce(with_check, '')) ~ '\mprofiles\M'
+ORDER BY policyname;
+
 -- Chybějící sloupce a omezení (příčiny C a D)
 SELECT
   EXISTS (
@@ -188,6 +211,14 @@ SELECT
 FROM auth.users u
 LEFT JOIN public.profiles p ON p.id = u.id
 ORDER BY u.created_at;
+
+-- ─── ⚠️ Co výpis výše NEOVĚŘUJE ──────────────────────────────────────────────
+--
+-- Krok 8 čte role jako postgres, tedy s obejitou RLS. Říká tedy jen „role je
+-- v databázi nastavená správně" — NE „aplikace to tak uvidí". Rekurzivní
+-- politika (příčina E), odebraná práva k funkcím nebo chybějící politika pro
+-- SELECT se sem nepromítnou. Skutečné ověření v roli authenticated dělá krok 5
+-- v supabase/017_oprava_rekurze_politik.sql; ten spusťte jako druhý.
 
 -- ─── Co dělat, když správce v kroku 8 pořád není 'admin' ─────────────────────
 --

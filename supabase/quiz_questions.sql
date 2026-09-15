@@ -25,6 +25,14 @@ CREATE INDEX IF NOT EXISTS idx_quiz_questions_created_at ON public.quiz_question
 -- odpovědí), místo aby vznikaly duplicity nebo se změna ignorovala.
 CREATE UNIQUE INDEX IF NOT EXISTS idx_quiz_questions_question_unique ON public.quiz_questions(question);
 
+-- Role se ověřuje přes public.is_staff() z profiles.sql, ne přes
+-- "EXISTS (SELECT ... FROM public.profiles ...)" uvnitř politiky.
+--
+-- Inline dotaz tu dřív byl a podléhal RLS nad profiles: jakákoli chyba
+-- v politikách profiles (třeba rekurzivní politika, viz migrace 017) shodila
+-- i úpravy otázek. is_staff() je SECURITY DEFINER, RLS obchází a je na stavu
+-- politik nad profiles nezávislá.
+
 -- Zapnutí Row Level Security (RLS)
 ALTER TABLE public.quiz_questions ENABLE ROW LEVEL SECURITY;
 
@@ -43,11 +51,7 @@ CREATE POLICY "Povolit vkládání pro lektory a administrátory"
   FOR INSERT
   TO authenticated
   WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid()
-        AND p.role IN ('lektor', 'admin')
-    )
+    public.is_staff()
   );
 
 -- 3. Politika pro úpravu otázek (pouze pro přihlášené lektory a administrátory)
@@ -58,18 +62,10 @@ CREATE POLICY "Povolit úpravy pro lektory a administrátory"
   FOR UPDATE
   TO authenticated
   USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid()
-        AND p.role IN ('lektor', 'admin')
-    )
+    public.is_staff()
   )
   WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid()
-        AND p.role IN ('lektor', 'admin')
-    )
+    public.is_staff()
   );
 
 -- 4. Politika pro mazání otázek (pouze pro přihlášené lektory a administrátory)
@@ -80,9 +76,5 @@ CREATE POLICY "Povolit mazání pro lektory a administrátory"
   FOR DELETE
   TO authenticated
   USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid()
-        AND p.role IN ('lektor', 'admin')
-    )
+    public.is_staff()
   );
