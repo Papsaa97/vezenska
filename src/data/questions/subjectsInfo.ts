@@ -95,22 +95,24 @@ export const subjectsMeta: Record<string, SubjectInfo> = {
     iconName: 'Crosshair',
     badgeColor: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800',
     accentColor: 'amber',
-    description: 'Zákonné podmínky a taktika použití donucovacích prostředků a zbraně. Střelecká a zbraňová příprava (pistole CZ 75 B / CZ P-10 C, samopal Scorpion EVO 3A1) a taktická sebeobrana.',
+    description: 'Výkon služby v praxi: strážní, dozorčí a eskortní služba, služba justiční stráže, prohlídky a vstupy do objektů, zákonné podmínky a taktika použití donucovacích prostředků a zbraně, taktická sebeobrana.',
     legalFramework: [
-      '§ 17 až § 23 zákona č. 555/1992 Sb. (DP a použití zbraně)',
-      'Předpis pro střeleckou přípravu a bezpečnost manipulace se zbraněmi',
+      '§ 6 odst. 3 zákona č. 555/1992 Sb. (výzva „jménem zákona“ před zákrokem)',
+      '§ 17 až § 20 zákona č. 555/1992 Sb. (DP, použití zbraně, omezení, povinnosti po zákroku)',
+      '§ 22 zákona č. 555/1992 Sb. (oprávnění justiční stráže)',
       'Metodika taktické sebeobrany Akademie VS ČR',
       'Bezpečnostní směrnice pro manipulaci se zbraněmi na stanovišti'
     ],
     keyTopics: [
       'Katalog donucovacích prostředků (§ 17 z. 555/1992 Sb.) a jejich subsidiarita',
-      'Zákonná omezení použití DP a zbraně (§ 21 – těhotné, staří, děti <15 let)',
-      'Použití zbraně (§ 19, § 20) a povinnosti po střelbě (§ 22)',
-      'Konstrukce a manipulace: CZ 75 B, CZ P-10 C, CZ Scorpion EVO 3A1, lapač střel',
-      'Zbraňová bezpečnost: rána jistoty, kontrola komory, rozborka a sborka',
+      'Zákonná omezení použití DP a zbraně (§ 19 – těhotné, vysoký věk, zdravotní postižení, osoby zjevně mladší 15 let)',
+      'Použití střelné zbraně (§ 18) a povinnosti příslušníka po zákroku (§ 20)',
+      'Strážní a dozorčí služba: převzetí stanoviště, sčítací prověrky, mimořádné události',
+      'Eskortní služba a justiční stráž: poutací technika, doprovody, jednací síň',
+      'Prohlídky, vstupy do objektů a technické vyhledávací prostředky',
       'Hmaty, chvaty, údery a kopy, obrana proti noži a úderným zbraním'
     ],
-    examRequirements: 'Praktická střelba, bezpečná manipulace na čas, předvedení hmatů, chvatů a modelového zákroku s DP.'
+    examRequirements: 'Modelový zákrok s DP, předvedení hmatů a chvatů, znalost postupů strážní, dozorčí a eskortní služby a zákonných mezí použití síly.'
   },
   'Psychologie': {
     id: 'psychologie',

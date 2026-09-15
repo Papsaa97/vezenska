@@ -357,7 +357,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
             ],
     correctOption: 2,
     rationale: 'Zákon č. 555/1992 Sb. a navazující metodické listy jasně stanoví povinnost ohlásit a formálně zdokumentovat každé použití DP. Záznam musí obsahovat zákonné náležitosti (důvod, předchozí výzva, výsledek).',
-    source: '§ 22 zákona č. 555/1992 Sb. a Metodický list č. 5/2014',
+    source: '§ 20 odst. 1 zákona č. 555/1992 Sb. a Metodický list č. 5/2014',
       explanation: `Zákon č. 555/1992 Sb. a navazující metodické listy jasně stanoví povinnost ohlásit a formálně zdokumentovat každé použití DP. Záznam musí obsahovat zákonné náležitosti (důvod, předchozí výzva, výsledek). (Právní úprava: § 22 zákona č. 555/1992 Sb. a Metodický list č. 5/2014)`
 },
   // 18. Archivnictví a spisová služba

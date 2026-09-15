@@ -445,7 +445,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-27",
-    "subject": "Bezpečnostní služba",
+    "subject": "Služební příprava",
     "topic": "Vstupy do objektů – Výjimky z prohlídek",
     "question": "U kterých ústavních činitelů a funkcionářů se při vstupu do věznice NEPROVÁDÍ kontrola ani prohlídka zavazadla (§ 80 odst. 2 písm. c NGŘ č. 33/2019)?",
     "answer": "Prezident ČR, předseda vlády, předsedové PS a Senátu, ministr spravedlnosti a náměstci, členové vlády, generální ředitel VS ČR a náměstci, soudci, státní zástupci, ředitel GIBS a ombudsman.",
@@ -462,7 +462,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-28",
-    "subject": "Bezpečnostní služba",
+    "subject": "Služební příprava",
     "topic": "Vstupy do objektů – Vstupní doklady",
     "question": "Na jaké doklady mohou osoby vstupovat do střežených objektů VS ČR dle § 103 NGŘ č. 33/2019?",
     "answer": "Služební průkaz VS ČR / PČR / GIBS / BIS / CS / AČR / VP, občanský průkaz, cestovní/diplomatický pas, zvláštní povolení, průkaz ombudsmana a průkaz CPT.",
@@ -479,7 +479,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-29",
-    "subject": "Bezpečnostní služba",
+    "subject": "Služební příprava",
     "topic": "Technická kontrola osob – Kardiostimulátor",
     "question": "Jaký je správný postup strážného na vchodu při kontrole osoby s implantovaným kardiostimulátorem?",
     "answer": "Osoba neprochází rámem bez zastavení, nepřejíždí se opakovaně ručním detektorem přes přístroj; po předložení identifikační karty přístroje se provede alternativní ruční osobní prohlídka.",
@@ -496,7 +496,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-30",
-    "subject": "Bezpečnostní služba",
+    "subject": "Služební příprava",
     "topic": "Kontrola vozidel – Detektor tepové frekvence",
     "question": "Jaké úkony se musí provést před spuštěním detektoru tepové frekvence (Heartbeat detector) u vozidla?",
     "answer": "Řidič vypne motor, zavře všechna okna a dveře, všechny osoby vystoupí mimo vozidlo a seismické senzory se umístí na přední a zadní rám vozidla + zemní senzor.",
@@ -513,7 +513,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-31",
-    "subject": "Bezpečnostní služba",
+    "subject": "Služební příprava",
     "topic": "Justiční stráž – Přeprava cenin a peněz",
     "question": "Jaká striktní zásada platí pro nesení zavazadla s peněžní hotovostí při přepravě Justiční stráží dle § 144?",
     "answer": "Zavazadlo s finanční hotovostí nese VÝHRADNĚ zaměstnanec soudu/SZ/ministerstva, NIKDY příslušník justiční stráže; příslušníci zajišťují pouze ozbrojené krytí.",
@@ -530,7 +530,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-32",
-    "subject": "Bezpečnostní služba",
+    "subject": "Služební příprava",
     "topic": "Justiční stráž – Asistence při odnětí dítěte",
     "question": "Jaké jsou povinnosti příslušníka Justiční stráže při doprovodu soudního vykonavatele k odebrání nezletilého dítěte (§ 143)?",
     "answer": "Zajišťuje bezpečnost a ochranu zaměstnance soudu před fyzickými útoky, do objektu nevstupuje první, nepodílí se na samotném odebírání dítěte ani stěhování věcí a při ohrožení zajistí bezpečný odchod.",
@@ -695,7 +695,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     ],
     "correctOption": 1,
     "rationale": "Zákon jasně chrání vybrané zranitelné skupiny. Výjimka pro použití DP vůči nim platí POUZE tehdy, pokud útok těchto osob bezprostředně ohrožuje život nebo zdraví jiných a nelze jej odvrátit jinak (§ 21 zákona č. 555/1992 Sb.).",
-    "source": "§ 21 zákona č. 555/1992 Sb., o VS a JS ČR",
+    "source": "§ 19 odst. 1 zákona č. 555/1992 Sb., o VS a JS ČR",
     "explanation": "Zákon jasně chrání vybrané zranitelné skupiny. Výjimka pro použití DP vůči nim platí POUZE tehdy, pokud útok těchto osob bezprostředně ohrožuje život nebo zdraví jiných a nelze jej odvrátit jinak (§ 21 zákona č. 555/1992 Sb.). (Právní úprava: § 21 zákona č. 555/1992 Sb., o VS a JS ČR)"
   },
   {

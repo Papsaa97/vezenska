@@ -3,7 +3,7 @@ import { Question } from '../../types';
 export const bezpecnostniSluzbaQuestions: Question[] = [
   {
     id: 'bs-01',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Strážní služba u vchodu',
     question: 'Jaké jsou hlavní povinnosti a zákazy pro strážného u hlavního vchodu do věznice?',
     answer: 'Převzít službu (PPZZ), kontrolovat totožnost a oprávnění ke vstupu, nepustit podnapilé osoby a děti <15 let bez doprovodu >18 let, neotevírat současně vnitřní a vnější vrata/dveře.',
@@ -20,7 +20,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-02',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Prohlídky',
     question: 'Jaká je četnost a charakteristika dílčích a technických prohlídek ve věznici?',
     answer: 'Dílčí prohlídka: zkontrolovat všechny prostory věznice za 90 dní (přítomen vychovatel a 1 vězeň u osobních věcí). Technická prohlídka: sběrná střediska 2× týdně, eskortní místnosti soudů 1× měsíčně (bez vězňů).',
@@ -37,7 +37,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-03',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Justiční stráž',
     question: 'Jaký je postup příslušníka Justiční stráže při převzetí střelné zbraně do úschovy od veřejnosti u vstupu do budovy soudu?',
     answer: 'Vyplní Protokol o uschování (odebrání) a vrácení zakázané věci ve dvou výtiscích (jeden pro osobu, jeden k uložení), zbraň bezpečně uzamkne do trezoru; při odchodu ji vrátí proti předložení protokolu a dokladu totožnosti a oba výtisky zlikviduje.',
@@ -54,7 +54,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-04',
-    subject: 'Bezpečnostní služba',
+    subject: 'Vězeňská administrativa',
     topic: 'Justiční stráž – doručování',
     question: 'Jaký je rozdíl mezi doručováním písemností soudu typu I (zelený pruh) a typu II (červený pruh)?',
     answer: 'Typ I (zelený pruh) umožňuje náhradní doručení (po 10 dnech vyvěšení/výzvy se vhodí do schránky s fikcí doručení). Typ II (červený pruh) je striktně do vlastních rukou bez vhození do schránky (pokud nevyzvedne, vrací se odesílateli bez fikce vhozením).',
@@ -71,7 +71,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-05',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Eskortní služba',
     question: 'Kdo nese zavazadlo s penězi a ceninami při pěším doprovodu pokladní soudu příslušníky Justiční stráže?',
     answer: 'Zavazadlo s finanční hotovostí nese VŽDY zaměstnanec soudu (pokladní), NIKDY příslušník Justiční stráže.',
@@ -88,7 +88,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-06',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Strážní služba – strážní věž',
     question: 'Jaký je stanovený postup strážného na strážní věži, pokud odsouzený vnikne do vnitřního zakázaného pásma a překonává ohradní zeď?',
     answer: 'Okamžitě vyhlásit poplach na OS, dát zákonnou výzvu s výstrahou, provést varovný výstřel do bezpečného prostoru, a pokud vězeň neuposlechne a útěk nelze zmařit jinak, použít střelnou zbraň k zamezení útěku.',
@@ -105,7 +105,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-07',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Zdravotní eskorta',
     question: 'Jaká bezpečnostní pravidla platí pro eskortu vězněné osoby při vyšetření na magnetické rezonanci (MR) v civilní nemocnici?',
     answer: 'Před vstupem do vyšetřovací místnosti s magnetickým polem musí příslušník odložit zbraň a kovové předměty do trezoru nebo je předat kolegovi vně zóny; střežení probíhá přes prosklený průhled.',
@@ -122,7 +122,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-08',
-    subject: 'Bezpečnostní služba',
+    subject: 'Penologie',
     topic: 'Kontrola balíčků',
     question: 'Jaký je hmotnostní limit pro balíček s potravinami a věcmi osobní potřeby zasílaný vězněné osobě a jak se provádí jeho kontrola?',
     answer: 'Hmotnost nesmí přesáhnout 5 kg včetně obalu; balíček projde kontrolou na RTG, fyzickou kontrolou obsahu a kontrolou na přítomnost OPL a nepovolených předmětů za přítomnosti vězně.',
@@ -139,7 +139,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-09',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Důkladná osobní prohlídka',
     question: 'Kdo a za jakých podmínek smí provádět důkladnou osobní prohlídku vězněné osoby spojenou se svlečením?',
     answer: 'Vždy pouze příslušník stejného pohlaví, v oddělené místnosti bez přítomnosti neoprávněných osob. Prohlídku tělních dutin smí provádět výhradně lékař.',
@@ -151,12 +151,12 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
             ],
     correctOption: 1,
     rationale: 'Důkladná osobní prohlídka musí respektovat lidskou důstojnost: provádí ji zásadně příslušník stejného pohlaví v soukromí. Příslušník provádí kontrolu těla pohledem a kontrolu oděvu; invazivní prohlídku tělesných dutin je oprávněn provádět pouze lékař.',
-    source: '§ 10 zákona č. 555/1992 Sb. a Směrnice pro provádění prohlídek',
+    source: '§ 11 zákona č. 555/1992 Sb. a Směrnice pro provádění prohlídek',
       explanation: `Důkladná osobní prohlídka musí respektovat lidskou důstojnost: provádí ji zásadně příslušník stejného pohlaví v soukromí. Příslušník provádí kontrolu těla pohledem a kontrolu oděvu; invazivní prohlídku tělesných dutin je oprávněn provádět pouze lékař. (Právní úprava: § 10 zákona č. 555/1992 Sb. a Směrnice pro provádění prohlídek)`
 },
   {
     id: 'bs-10',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Dozorčí služba – mimořádná událost',
     question: 'Jaký je bezprostřední postup dozorce při nálezu oběšeného odsouzeného na okenní mříži v cele?',
     answer: 'Okamžitě tělo nadzvednout a odříznout/uvolnit škrtidlo, položit na záda na pevnou podlahu, zkontrolovat životní funkce, zahájit KPR, současně rádiem/hlásičem vyhlásit poplach a přivolat lékaře a VIDS.',
@@ -173,7 +173,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-11',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Nestřežené pracoviště',
     question: 'Jak postupuje dozorce na vnějším nestřeženém pracovišti při zjištění svévolného odchodu odsouzeného?',
     answer: 'Zkontroluje prostor pracoviště k vyloučení úrazu, ihned uvědomí operační středisko a VIDS s popisem osoby a směrem odchodu, zabezpečí zbývající odsouzené na pracovišti a vyčká pokynů.',
@@ -190,7 +190,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-12',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Kontrola vozidel',
     question: 'Jaké úkony provádí strážný při kontrole nákladního vozidla vyjíždějícího ze střeženého objektu věznice?',
     answer: 'Kontrolu podvozku a dutin (inspekční zrcadlo/kamera), kontrolu nákladového prostoru (fyzicky, detektorem či propichovací sondou u sypkých materiálů), kabiny řidiče a ověření totožnosti osádky.',
@@ -207,7 +207,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-13',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Strážní služba – převzetí stanoviště',
     question: 'Co znamená zkratka PPZZ a v jakých situacích ji příslušník VS ČR aplikuje?',
     answer: 'Přezkoušet, Převzít, Zapsat, Zahlásit – standardní postup při střídání a nástupu do výkonu strážní a dozorčí služby.',
@@ -224,7 +224,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-14',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Justiční stráž – jednací síň',
     question: 'Jaká oprávnění má příslušník Justiční stráže v jednací síni soudu během hlavního líčení?',
     answer: 'Dbá pokynů předsedy senátu (soudce), zajišťuje nerušený průběh jednání, může vyvést neukázněné osoby a střeží obžalovaného.',
@@ -241,7 +241,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-15',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Dozorčí služba – sčítací prověrka',
     question: 'Jakým způsobem a v jakých intervalech se provádí sčítací prověrka vězněných osob na ubytovně?',
     answer: 'Minimálně 2× denně (ranní a večerní sčíták) vizuální kontrolou každého vězně podle jmenného seznamu; při pochybnostech se nařídí mimořádná sčítací prověrka.',
@@ -258,7 +258,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-16',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Eskortní služba – eskorta do nemocnice',
     question: 'Jaký je minimální počet příslušníků eskortní hlídky při předvádění nebezpečné vězněné osoby do civilního zdravotnického zařízení?',
     answer: 'Minimálně 2 ozbrojení příslušníci (velitel eskorty a strážný); u mimořádně nebezpečných osob posiluje hlídku operativní skupina nebo psovod.',
@@ -275,7 +275,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-17',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Zakázané předměty',
     question: 'Které předměty jsou striktně zakázány vnášet do střeženého objektu věznice nepovolaným osobám?',
     answer: 'Zbraně a střelivo, alkohol a jiné návykové látky (OPL), mobilní telefony a záznamová zařízení, finanční hotovost nad povolený limit a předměty umožňující útěk.',
@@ -292,7 +292,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-18',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Strážní služba – signálně bezpečnostní technika',
     question: 'Jak reaguje operační středisko (OS) při aktivaci perimetrického čidla v zakázaném pásmu věznice?',
     answer: 'Okamžitě ověří situaci na kamerovém systému (CCTV), vyhlásí poplach pro zásahovou hlídku/výjezdovou skupinu a navede ji na konkrétní sektor narušení.',
@@ -309,7 +309,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-19',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Kynologie VS ČR',
     question: 'K jakým účelům se ve Vězeňské službě ČR využívají služební psi a jak se dělí podle specializace?',
     answer: 'Dělí se na psy všestranné (hlídkové, obranáře pro eskorty a zákroky) a psy speciální (vyhledávání drog/OPL, výbušnin a mobilních telefonů).',
@@ -326,7 +326,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-20',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Návštěvní místnost',
     question: 'Jaká jsou pravidla dozoru během přímého kontaktu vězněné osoby s návštěvou v návštěvní místnosti?',
     answer: 'Dozorce provádí nepřetržitý zrakový dohled, sleduje předávání nedovolených předmětů a při hrubém porušení pořádku nebo pokusu o předání OPL návštěvu ihned ukončí.',
@@ -343,7 +343,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-21',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Eskortní služba – poutací technika',
     question: 'V jakých případech je velitel eskorty povinen nařídit použití pout a poutacích řemenů (kombinované poutání)?',
     answer: 'U osob nebezpečných, násilných, podezřelých z plánování útěku nebo eskortovaných k soudním jednáním u závažných trestných činů na základě bezpečnostního vyhodnocení.',
@@ -360,7 +360,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-22',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Mimořádné události – požár',
     question: 'Jaký je prvotní postup dozorce při zjištění kouře a požáru na ubytovně vězněných osob?',
     answer: 'Okamžitě ohlásit požár na operační středisko (vyhlásit požární poplach), zahájit evakuaci osob do bezpečného sektoru a zahájit hašení dostupnými hasicími přístroji/hydrantem.',
@@ -377,7 +377,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-23',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Technické vyhledávací prostředky',
     question: 'K jakému účelu slouží ve Vězeňské službě ČR detektor nelineárních přechodů (NLJD)?',
     answer: 'K vyhledávání skrytých polovodičových součástek – zejména vypnutých mobilních telefonů, SIM karet, diktafonů a elektroniky ukryté ve zdech, matracích nebo nábytku.',
@@ -394,7 +394,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-24',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Metodika bezpečnostních prohlídek',
     question: 'Jaká jsou přísná zákonná a metodická pravidla pro provádění důkladné osobní prohlídky (se svlečením do naha)?',
     answer: 'Musí ji provádět VÝHRADNĚ osoba stejného pohlaví jako prohlížený, v oddělené místnosti bez přítomnosti nepovolaných osob a způsobem zachovávajícím lidskou důstojnost.',
@@ -411,7 +411,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
 },
   {
     id: 'bs-25',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Eskortní služba a rizikové osoby',
     question: 'Co v praxi VS ČR znamená označení eskortní karty vězněné osoby červeným pruhem?',
     answer: 'Označuje zvlášť nebezpečnou osobu (vysoké riziko útěku nebo násilí), což vyžaduje posílenou eskortu, trvalé použití donucovacích prostředků (vč. poutacího pásu) a zvýšená taktická opatření.',
@@ -430,7 +430,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
   // 17. Zásada dvojic
   {
     id: 'bs-26',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Zásady bezpečnosti',
     question: 'Co znamená "zásada dvojic" při výkonu služby ve věznici?',
     answer: 'Příslušníci nesmí provádět otevírání cel nebo zasahovat na ubytovnách o samotě. Úkony, při nichž hrozí napadení (např. řešení konfliktů, prohlídky, předvádění agresivních vězňů, vstup do cely v noční době), se provádějí vždy za přítomnosti minimálně dvou příslušníků (jeden koná, druhý jistí).',
@@ -448,7 +448,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
   // 18. Povinnosti dozorce po nástupu
   {
     id: 'bs-27',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Dozorčí služba',
     question: 'Jaké jsou bezprostřední povinnosti dozorce po převzetí služby na ubytovně?',
     answer: 'Dozorce provede kontrolu početního stavu (přepočítání), prohlídku mříží, zámků, oken, osvětlení a celkového pořádku. O převzetí úseku, stavu vězněných osob a případných závadách provede záznam do staniční knihy.',
@@ -466,7 +466,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
   // 19. Propustkový režim
   {
     id: 'bs-28',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Strážní služba u vchodu',
     question: 'Jaká jsou základní pravidla pro propustkový režim do střeženého objektu?',
     answer: 'Vstup do objektu je možný jen na základě platného průkazu totožnosti (služební průkaz, OP) a pověření nebo jednorázové propustky po evidenci návštěvy. Strážný kontroluje oprávněnost vstupu, zavazadla a využívá rámový detektor kovů.',
@@ -514,11 +514,11 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
             ],
     correctOption: 1,
     rationale: 'Zákonná výzva („Jménem zákona, upusťte od...“) je obligatorní podmínkou použití DP, pokud to situace umožňuje. Dále platí zásada subsidiarity (využít mírnější prostředky) a proporcionality (intenzita nesmí zjevně převýšit hrozbu).',
-    source: '§ 17 a § 21 zákona č. 555/1992 Sb., o VS a JS ČR',
+    source: '§ 6 odst. 3 a § 17 zákona č. 555/1992 Sb., o VS a JS ČR',
   },
   {
     id: 'bs-31',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Eskortní služba',
     question: 'Jaké jsou povinnosti velitele eskorty při přepravě vězněných osob k soudnímu jednání?',
     answer: 'Seznámit členy eskorty s úkolem, provést kontrolu výzbroje a spojení, zkontrolovat totožnost eskortovaných a bezpečné upevnění poutacích prostředků, a řídit činnost hlídky po celou dobu eskorty.',
@@ -535,7 +535,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
   },
   {
     id: 'bs-32',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Technická ochrana a režim věznice',
     question: 'Co je účelem a základním principem bezpečnostního propusťového systému (komory) při vjezdu vozidel do věznice?',
     answer: 'Zajistit, aby nebyla nikdy současně otevřena vnější a vnitřní vrata, a provést důkladnou technickou kontrolu vozidla včetně podvozku a nákladového prostoru.',
