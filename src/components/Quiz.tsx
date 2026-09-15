@@ -73,6 +73,13 @@ export default function Quiz({
 
   const timerRef = useRef<number | null>(null);
   const examTimerRef = useRef<number | null>(null);
+
+  // Ukazatel na vždy aktuální finishExam, aby ho odpočet mohl zavolat, aniž by ho
+  // musel mít v závislostech. Jako závislost se nehodí: finishExam čte spoustu stavu
+  // (otázky, odpovědi, jistoty, čas startu), takže by se odpočet zakládal znovu po
+  // každé zodpovězené otázce. Nespraví to ani useCallback — onSaveQuizResult přichází
+  // z App jako nememoizovaná funkce, takže by se identita měnila každý render.
+  const finishExamRef = useRef<() => void>(() => {});
   
   const subjects = useMemo(
     () => Array.from(new Set((questions || []).map(q => q?.subject).filter((s): s is string => Boolean(s)))),
@@ -217,23 +224,37 @@ export default function Quiz({
     }
   };
 
-  // Exam global 45m countdown timer
+  // Odpočet 45 minut u závěrečné zkoušky — jen tiká.
+  //
+  // Interval se zakládá jednou na začátku zkoušky. Dřív měl v závislostech
+  // examGlobalTimeLeft, takže se každou vteřinu rušil a zakládal znovu, pokaždé
+  // znovu od plné vteřiny; za 45 minut se ta prodleva nasčítala. Updater si vystačí
+  // s předchozí hodnotou, takže stav v závislostech vůbec být nemusí.
   useEffect(() => {
-    if (gameState === 'playing' && isExamMode && examGlobalTimeLeft > 0) {
-      examTimerRef.current = window.setInterval(() => {
-        setExamGlobalTimeLeft(prev => {
-          if (prev <= 1) {
-            clearInterval(examTimerRef.current!);
-            finishExam();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
+    if (gameState !== 'playing' || !isExamMode) return;
+
+    const id = window.setInterval(() => {
+      setExamGlobalTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    examTimerRef.current = id;
+
     return () => {
-      if (examTimerRef.current) clearInterval(examTimerRef.current);
+      clearInterval(id);
+      examTimerRef.current = null;
     };
+  }, [gameState, isExamMode]);
+
+  // Vypršení času je schválně oddělené od tikání.
+  //
+  // Dřív se finishExam() volalo přímo uvnitř updateru setExamGlobalTimeLeft. Updater
+  // ale musí být čistá funkce a StrictMode ho ve vývojovém režimu spouští dvakrát,
+  // takže se zkouška uzavřela a uložila dvakrát. Změřeno na samostatném pokusu:
+  // vývojový build se StrictMode 2 volání, bez StrictMode 1, produkční build 1 —
+  // šlo tedy o vadu viditelnou jen ve vývoji, ne u uživatelů.
+  useEffect(() => {
+    if (gameState === 'playing' && isExamMode && examGlobalTimeLeft === 0) {
+      finishExamRef.current();
+    }
   }, [gameState, isExamMode, examGlobalTimeLeft]);
 
   // Question timer logic (in practice mode)
@@ -374,6 +395,13 @@ export default function Quiz({
 
     setGameState('results');
   };
+
+  // Ref se přepisuje v efektu, ne při renderu — zápis do refu během renderu React
+  // zakazuje. Efekt bez pole závislostí běží po každém renderu, tedy vždycky dřív,
+  // než stihne tiknout interval odpočtu.
+  useEffect(() => {
+    finishExamRef.current = finishExam;
+  });
 
   const nextQuestion = () => {
     if (currentIndex < quizQuestions.length - 1) {

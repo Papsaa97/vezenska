@@ -88,14 +88,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    *
    * POZOR: vyžaduje sloupec profiles.user_class (migrace 010). Bez něj selže dotaz
    * i jeho záložní varianta a každý uživatel skončí jako 'student'.
+   *
+   * `authUser` je povinný a musí pocházet z právě obsloužené session, ne ze stavu
+   * komponenty. Dřív byl volitelný a chybějící hodnota se brala z `user` z uzávěry —
+   * jenže useCallback má prázdné pole závislostí, takže `user` v něm navždy zůstával
+   * `null` z prvního renderu. Doplnit `user` mezi závislosti nejde: efekt níže má
+   * v závislostech `fetchProfile` a sám volá `setUser()`, takže by se odběr
+   * onAuthStateChange rušil a zakládal dokola. Parametr je proto povinný — TypeScript
+   * teď ohlídá, že se sem uživatel opravdu vždy předá.
    */
-  const fetchProfile = useCallback(async (userId: string, overrideUser?: User | null) => {
+  const fetchProfile = useCallback(async (userId: string, authUser: User) => {
     const localClass = typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') : null;
     const localName = typeof window !== 'undefined' ? localStorage.getItem('vscr_user_full_name') : null;
     const localAvatar = typeof window !== 'undefined' ? localStorage.getItem('vscr_user_avatar') : null;
 
-    const effectiveUser = overrideUser || user;
-    const userEmail = effectiveUser?.email || '';
+    const userEmail = authUser.email || '';
 
     let profileData: ProfileDatabaseRow | null = null;
 
@@ -148,7 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const effectiveFullName =
       profileData?.full_name?.trim() ||
       localName?.trim() ||
-      effectiveUser?.user_metadata?.full_name ||
+      authUser.user_metadata?.full_name ||
       (userEmail ? userEmail.split('@')[0] : 'Uživatel');
 
     const resolvedProfile: UserProfile = {
@@ -156,7 +163,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email: userEmail || profileData?.email || '',
       full_name: effectiveFullName,
       role: effectiveRole,
-      created_at: profileData?.created_at || effectiveUser?.created_at || new Date().toISOString(),
+      created_at: profileData?.created_at || authUser.created_at || new Date().toISOString(),
       avatar_url: profileData?.avatar_url || localAvatar || null,
       user_class: effectiveClass,
     };
