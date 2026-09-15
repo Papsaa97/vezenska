@@ -44,6 +44,9 @@ export const questionsBySubject: Record<string, Question[]> = {
   // paralyzér, sebeobrana, taktika zákroku) je služební příprava a je pod ní.
   // Karta zůstává v subjectsMeta pro případ, že sem taktické otázky přibydou —
   // prázdné okruhy se v Předmětech skrývají samy.
+  // Taktika, ZOP i Bezpečnostní služba vycházejí prázdné: jejich obsah je služební
+  // příprava a je pod ní. Karty zůstávají v subjectsMeta pro případ, že by do nich
+  // otázky přibyly — prázdné okruhy se v Předmětech skrývají samy.
   'Zbraně': podlePredmetu('Zbraně'),
   'Taktika': podlePredmetu('Taktika'),
   'ZOP': podlePredmetu('ZOP'),

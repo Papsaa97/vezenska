@@ -69,24 +69,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     source: 'Zákon č. 99/1963 Sb., občanský soudní řád (OSŘ) a kancelářský řád',
       explanation: `Dle občanského soudního řádu (§ 49 a násl. OSŘ): Zásilka typu I připouští náhradní doručení vhozením do schránky po uplynutí 10denní úložní lhůty (fikce doručení). U zásilky typu II je vhození vyloučeno předsedou senátu a při nevyzvednutí se vrací soudu. (Právní úprava: Zákon č. 99/1963 Sb., občanský soudní řád (OSŘ) a kancelářský řád)`
 },
-  {
-    id: 'bs-05',
-    subject: 'Služební příprava',
-    topic: 'Eskortní služba',
-    question: 'Kdo nese zavazadlo s penězi a ceninami při pěším doprovodu pokladní soudu příslušníky Justiční stráže?',
-    answer: 'Zavazadlo s finanční hotovostí nese VŽDY zaměstnanec soudu (pokladní), NIKDY příslušník Justiční stráže.',
-    options: [
-              `Zavazadlo s finanční hotovostí nese VŽDY zaměstnanec soudu (pokladní), NIKDY příslušník Justiční stráže.`,
-              `Příslušníci JS a pokladní se v nesení zavazadla střídají v pravidelných 15minutových intervalech z důvodu snížení fyzické únavy.`,
-              `Zavazadlo nese mladší příslušník JS připoutané bezpečnostním ocelovým lankem k opasku, zatímco pokladní kráčí v čele formace.`,
-              `Zavazadlo s hotovostí nese velitel eskorty, který je jištěn dalším příslušníkem JS s tasrem nebo střelnou zbraní v pohotovostní poloze.`
-            ],
-    correctOption: 0,
-    rationale: 'Zásadní taktické pravidlo: Příslušníci JS mají volné ruce pro zajištění bezpečnosti, manipulaci s donucovacími prostředky a zbraní. Peníze a ceniny nese přepravovaná oprávněná civilní osoba, která jde mezi příslušníky.',
-    source: 'Směrnice pro přepravu peněz a cenin Justiční stráží',
-      explanation: `Zásadní taktické pravidlo: Příslušníci JS mají volné ruce pro zajištění bezpečnosti, manipulaci s donucovacími prostředky a zbraní. Peníze a ceniny nese přepravovaná oprávněná civilní osoba, která jde mezi příslušníky. (Právní úprava: Směrnice pro přepravu peněz a cenin Justiční stráží)`
-},
-  {
+    {
     id: 'bs-06',
     subject: 'Služební příprava',
     topic: 'Strážní služba – strážní věž',

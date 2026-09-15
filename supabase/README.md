@@ -38,6 +38,7 @@ projektu spusťte v tomto pořadí:
 | 24 | `023_sluzebni_priprava_dostava_obsah.sql` | Služební příprava dostává svůj obsah (21 otázek); `zbrane`/`taktika`/`zop` mizí jako štítky |
 | 25 | `024_pouziti_sily_do_sluzebni_pripravy.sql` | Dvě otázky o použití DP a zbraně přecházejí z Bezpečnostní služby do Služební přípravy |
 | 26 | `025_zruseni_bezpecnostni_sluzby.sql` | Ruší předmět Bezpečnostní služba — 34 otázek do Služební přípravy, 2 jinam |
+| 27 | `026_smazani_duplicit_a_zruseni_zop.sql` | Maže 13 zdvojených otázek a ruší předmět ZOP — banka klesá na 364 |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
@@ -350,3 +351,25 @@ Karta předmětu zůstává v `subjectsInfo.ts`, ale bez otázek se v Předměte
 nenabídne. Parser importních šablon nově posílá `bezpečnostní služba`,
 `strážní` i `dozorčí` rovnou do Služební přípravy, aby ji import nezaložil
 znovu.
+
+## Smazání duplicit a zrušení ZOP (`026`)
+
+Skript **maže data**. Krok 1 vypíše, co půjde pryč, teprve krok 2 to smaže.
+Celé znění mazaných otázek včetně distraktorů je v
+`026_zaloha_smazanych_duplicit.txt`.
+
+**Třináct otázek** se ptalo na totéž jako jiná otázka, která v bance zůstala —
+ve Zdravovědě byla resuscitace i popáleniny třikrát. Většinu zdvojení způsobilo
+to, že sedm otázek o první pomoci bylo napsaných do `sluzebniPriprava.ts` vedle
+už existujících `zdr-*`; migrace `022` je přeřadila do Zdravovědy a tím se
+dvojice dostaly vedle sebe. Unikátní index na sloupci `question` je nezachytil,
+protože znění se lišilo — shodná byla až odpověď.
+
+**Předmět ZOP** se ruší. Základní odborná příprava je celý kurz, ne okruh vedle
+Práva a Penologie; jeho čtyři otázky jsou služební příprava.
+
+Výsledek: **377 → 364 otázek**, Služební příprava 60 a je největší.
+
+Záměrně se nemazaly dvojice ptající se na týž pojem z obou stran (`ped-11` ↔
+`ped-25`, `pe_20` ↔ `pe_28`, `pe_23` ↔ `pe_29`) — to je legitimní procvičování —
+ani dvojice s jiným rozsahem (`pen-12` ≈ `pen-18`, `pen-06` ≈ `pen-33`).
