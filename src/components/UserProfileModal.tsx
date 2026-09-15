@@ -22,6 +22,7 @@ import { supabase } from '../lib/supabase';
 import { UserRank } from '../types';
 import { AVATAR_PRESETS, resolveAvatarDisplay, toPresetAvatarUrl } from '../utils/avatar';
 import { useDialog } from '../hooks/useDialog';
+import { MIN_PASSWORD_LENGTH, translateAuthError } from '../constants/auth';
 
 const ROLE_LABELS: Record<UserRole, string> = {
   student: 'Kadet / Student',
@@ -38,7 +39,6 @@ const ROLE_COLORS: Record<UserRole, string> = {
 };
 
 const MAX_AVATAR_SIZE_BYTES = 5 * 1024 * 1024;
-const MIN_PASSWORD_LENGTH = 6;
 
 interface FormMessage {
   type: 'success' | 'error';
@@ -275,7 +275,10 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     setPasswordSaving(false);
 
     if (error) {
-      setPasswordMessage({ type: 'error', text: `Změna hesla selhala: ${error}` });
+      setPasswordMessage({
+        type: 'error',
+        text: `Změna hesla se nezdařila: ${translateAuthError({ message: error })}`,
+      });
     } else {
       setPasswordMessage({ type: 'success', text: 'Heslo bylo úspěšně změněno.' });
       setNewPassword('');
@@ -509,7 +512,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                 type={showPassword ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Nové heslo (min. 6 znaků)"
+                placeholder={`Nové heslo (min. ${MIN_PASSWORD_LENGTH} znaků)`}
                 minLength={MIN_PASSWORD_LENGTH}
                 autoComplete="new-password"
                 className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 pr-11 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
