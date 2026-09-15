@@ -32,6 +32,7 @@ projektu spusťte v tomto pořadí:
 | 18 | `017_oprava_rekurze_politik.sql` | Oprava „infinite recursion … for relation profiles" (42P17) |
 | 19 | `018_get_role_neni_volatelna_z_klienta.sql` | Zavádí `my_role()` a odebírá klientům `EXECUTE` na `get_role(uuid)` |
 | 20 | `019_vykon_politik_a_indexu.sql` | Výkon: ruší překrývající se politiky, obaluje `auth.uid()` do `(select …)`, doplňuje indexy nad cizími klíči |
+| 21 | `020_ochrana_posledniho_spravce.sql` | Pojistka: poslednímu správci nelze odebrat roli ani ho smazat |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
