@@ -107,10 +107,10 @@ export const PEConcepts: React.FC = () => {
       {/* Concepts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 print:grid-cols-2">
         {filteredConcepts.map(item => (
-          <div
+          <button type="button"
             key={item.id}
             onClick={() => setSelectedConceptIndex(selectedConceptIndex === item.id ? null : item.id)}
-            className={`p-5 rounded-2xl border transition-all cursor-pointer relative group print-card break-inside-avoid print:bg-white print:text-[#111827] print:border-slate-300 print:p-4 print:mb-3 print:shadow-none ${
+            className={`flex flex-col justify-start w-full text-left p-5 rounded-2xl border transition-all cursor-pointer relative group print-card break-inside-avoid print:bg-white print:text-[#111827] print:border-slate-300 print:p-4 print:mb-3 print:shadow-none ${
               selectedConceptIndex === item.id
                 ? 'bg-slate-800/95 border-emerald-500 shadow-lg shadow-emerald-500/10'
                 : 'bg-slate-900/80 hover:bg-slate-800/60 border-slate-800 hover:border-slate-700'
@@ -148,7 +148,7 @@ export const PEConcepts: React.FC = () => {
               </span>
               <ChevronRight className={`w-3.5 h-3.5 transition-transform ${selectedConceptIndex === item.id ? 'rotate-90' : ''}`} />
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>

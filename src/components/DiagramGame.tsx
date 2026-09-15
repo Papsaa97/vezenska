@@ -14,6 +14,7 @@ import {
   useSensor,
   useSensors
 } from '@dnd-kit/core';
+import { activateOnKey } from '../utils/a11y';
 
 function DraggablePart({ 
   part, 
@@ -90,7 +91,10 @@ function DroppableZone({
   return (
     <div 
       ref={setNodeRef}
+      role={isMatched ? undefined : 'button'}
+      tabIndex={isMatched ? undefined : 0}
       onClick={!isMatched ? onZoneClick : undefined}
+      onKeyDown={isMatched || !onZoneClick ? undefined : activateOnKey(onZoneClick)}
       style={{ top: `${y}%`, left: `${x}%`, transform: 'translate(-50%, -50%)' }}
       className={`absolute z-10 flex items-center justify-center cursor-pointer select-none ${
         isMatched 

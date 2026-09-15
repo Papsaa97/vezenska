@@ -443,7 +443,7 @@ export default function LegalRegistryView({
               const isSelected = art.id === currentArticle?.id;
               const isFav = savedFavorites.includes(art.id);
               return (
-                <div
+                <button type="button"
                   key={art.id}
                   onClick={() => handleSelectArticle(art.id)}
                   className={`w-full text-left p-3 rounded-xl transition-all cursor-pointer flex items-start justify-between gap-2 ${
@@ -470,7 +470,7 @@ export default function LegalRegistryView({
                     </p>
                   </div>
                   <ChevronRight className={`w-4 h-4 shrink-0 transition-transform ${isSelected ? 'text-blue-600 translate-x-0.5' : 'text-slate-300 dark:text-slate-600'}`} />
-                </div>
+                </button>
               );
             })
           )}

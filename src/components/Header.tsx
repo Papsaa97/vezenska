@@ -238,8 +238,8 @@ export default function Header({
         
         {/* Brand Logo & Title + Desktop History Controls */}
         <div className="flex-shrink-0 flex items-center gap-2 sm:gap-3">
-          <div 
-            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group" 
+          <button type="button" 
+            className="text-left flex items-center gap-2.5 sm:gap-3 cursor-pointer group" 
             onClick={() => {
               setActiveTab('dashboard');
               setOpenDropdown(null);
@@ -258,7 +258,7 @@ export default function Header({
               </h1>
               <span className="text-[10px] text-slate-400 hidden xl:block tracking-wide">Výukový & zkušební systém</span>
             </div>
-          </div>
+          </button>
 
           {/* Desktop Back / Forward History Controls */}
           <div className="hidden lg:flex items-center gap-1 ml-1 pl-2 border-l border-slate-800 text-slate-400">

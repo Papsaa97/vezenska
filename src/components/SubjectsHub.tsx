@@ -33,6 +33,7 @@ import PrintHeader from './common/PrintHeader';
 import { useAuth } from '../context/AuthContext';
 import QuestionEditModal from './common/QuestionEditModal';
 import { isQuestionHidden, toggleQuestionVisibilityInSupabase } from '../utils/questionActions';
+import { activateOnKey } from '../utils/a11y';
 
 interface SubjectsHubProps {
   questions?: Question[];
@@ -489,7 +490,11 @@ export default function SubjectsHub({
                     }`}
                   >
                     <div 
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={isExpanded}
                       onClick={toggleExpand}
+                      onKeyDown={activateOnKey(toggleExpand)}
                       className="p-4 flex items-start justify-between gap-4 cursor-pointer select-none"
                     >
                       <div className="flex items-start gap-3 flex-1">
@@ -691,11 +696,16 @@ export default function SubjectsHub({
           const stats = subjectStats?.[subjKey] || { totalQuestions: 0 };
           const styles = getSubjectColorStyles(info?.accentColor || 'indigo');
 
+          // Dlaždice předmětu se chová jako tlačítko, ale <button> to být
+          // nemůže — uvnitř už další tlačítka jsou a vnořit je nelze.
           return (
             <div
               key={subjKey}
+              role="button"
+              tabIndex={0}
               onClick={() => setSelectedSubjectKey(subjKey)}
-              className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col justify-between transition-all duration-200 hover:shadow-md hover:-translate-y-1 hover:shadow-lg cursor-pointer ${styles.cardBg} group`}
+              onKeyDown={activateOnKey(() => setSelectedSubjectKey(subjKey))}
+              className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col justify-between transition-all duration-200 hover:shadow-md hover:-translate-y-1 hover:shadow-lg cursor-pointer text-left ${styles.cardBg} group`}
             >
               <div className="space-y-4">
                 {/* Header with Icon and Code */}

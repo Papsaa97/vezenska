@@ -23,6 +23,7 @@ import { useAuth } from '../context/AuthContext';
 import LeitnerHelpModal from './common/LeitnerHelpModal';
 import QuestionEditModal from './common/QuestionEditModal';
 import { isQuestionHidden, toggleQuestionVisibilityInSupabase } from '../utils/questionActions';
+import { activateOnKey } from '../utils/a11y';
 
 interface FlashcardsProps {
   questions: Question[];
@@ -542,8 +543,12 @@ export default function Flashcards({
             {/* The 3D Card */}
             <div className="relative min-h-[360px] md:min-h-[420px] h-auto w-full perspective-1000">
               <div 
+                role="button"
+                tabIndex={0}
+                aria-label={isFlipped ? 'Otočit kartičku na otázku' : 'Otočit kartičku na odpověď'}
                 className={`w-full min-h-[360px] md:min-h-[420px] h-full transition-all duration-500 preserve-3d cursor-pointer ${isFlipped ? 'rotate-y-180' : ''}`}
                 onClick={handleFlip}
+                onKeyDown={activateOnKey(handleFlip)}
               >
                 {/* Front Side */}
                 <div className={`absolute inset-0 w-full h-full min-h-[360px] md:min-h-[420px] backface-hidden bg-white dark:bg-slate-900 border rounded-2xl shadow-sm p-6 sm:p-8 flex flex-col hover:shadow-md transition-all ${

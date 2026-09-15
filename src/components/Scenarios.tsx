@@ -164,10 +164,10 @@ export default function Scenarios() {
           {filteredScenarios.map((scenario) => {
             const isCompleted = completedScenarios.includes(scenario.id);
             return (
-              <div
+              <button type="button"
                 key={scenario.id}
                 onClick={() => handleSelectScenario(scenario)}
-                className={`group relative bg-white dark:bg-slate-900 border rounded-xl p-5 hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                className={`w-full text-left group relative bg-white dark:bg-slate-900 border rounded-xl p-5 hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col justify-between ${
                   isCompleted 
                     ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-500/[0.02]' 
                     : 'border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600'
@@ -217,7 +217,7 @@ export default function Scenarios() {
                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

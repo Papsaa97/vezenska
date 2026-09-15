@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { CheckCircle2, RefreshCw, Check } from 'lucide-react';
 import { updateDailyStreak } from '../../utils/gamification';
+import { activateOnKey } from '../../utils/a11y';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -178,9 +179,15 @@ export default function PrisonAdminStyleRules() {
             }
 
             return (
+              // <button> tu být nemůže: je inline-block, takže by se delší úsek
+              // textu nemohl zalomit uprostřed a odstavec by se přeskládal
+              // (na úzké obrazovce až k přetečení). Proto span s rolí tlačítka.
               <span
                 key={seg.id}
+                role="button"
+                tabIndex={0}
                 onClick={() => handleToggleErrorSegment(seg.id)}
+                onKeyDown={activateOnKey(() => handleToggleErrorSegment(seg.id))}
                 className={badgeClass}
               >
                 {seg.text}
