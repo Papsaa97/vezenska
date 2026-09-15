@@ -1,9 +1,30 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { tacticalScenarios, Scenario, ScenarioStep, ScenarioChoice } from '../data/scenariosData';
-import { ShieldAlert, CheckCircle2, XCircle, ArrowRight, RotateCcw, Award, BookOpen, AlertTriangle, ChevronRight, Compass } from 'lucide-react';
+import { ShieldAlert, CheckCircle2, XCircle, ArrowRight, RotateCcw, Award, BookOpen, AlertTriangle, ChevronRight, Compass, Plus, Edit3, Trash2, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useAuth } from '../context/AuthContext';
+import { useEditableContent } from '../hooks/useEditableContent';
+import ScenarioEditModal from './common/ScenarioEditModal';
 
 export default function Scenarios() {
+  const { profile } = useAuth();
+  const canEdit = profile?.role === 'lektor' || profile?.role === 'admin';
+
+  // Modelové situace z repozitáře přepsané úpravami lektora (contentLibrary.ts).
+  const {
+    entries: scenarioEntries,
+    items: scenarios,
+    save: saveScenario,
+    remove: removeScenario,
+    restore: restoreScenario,
+    toggleHidden: toggleScenarioHidden,
+  } = useEditableContent<Scenario>('scenario', tacticalScenarios, canEdit);
+
+  const [scenarioModalOpen, setScenarioModalOpen] = useState(false);
+  const [editingScenario, setEditingScenario] = useState<Scenario | null>(null);
+  const [confirmDeleteScenarioId, setConfirmDeleteScenarioId] = useState<string | null>(null);
+  const [scenarioError, setScenarioError] = useState<string | null>(null);
+
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [selectedChoice, setSelectedChoice] = useState<ScenarioChoice | null>(null);
@@ -36,8 +57,36 @@ export default function Scenarios() {
     return () => window.removeEventListener('storage', handleStorageUpdate);
   }, []);
 
-  const categories = useMemo(() => Array.from(new Set(tacticalScenarios.map(s => s.category))), []);
-  const filteredScenarios = activeCategory === 'all' ? tacticalScenarios : tacticalScenarios.filter(s => s.category === activeCategory);
+  const categories = useMemo(
+    () => Array.from(new Set(scenarios.map(s => s.category))),
+    [scenarios]
+  );
+  const filteredScenarios = activeCategory === 'all'
+    ? scenarios
+    : scenarios.filter(s => s.category === activeCategory);
+
+  // Stav položky (skrytá, smazaná, upravená) podle jejího id.
+  const entryById = useMemo(
+    () => new Map(scenarioEntries.map(entry => [entry.id, entry])),
+    [scenarioEntries]
+  );
+  const deletedEntries = useMemo(
+    () => scenarioEntries.filter(entry => entry.isDeleted),
+    [scenarioEntries]
+  );
+
+  const handleScenarioSave = async (scenario: Scenario) => {
+    const result = await saveScenario(scenario);
+    setScenarioError(result.error);
+    return result;
+  };
+
+  const handleScenarioDelete = async (id: string) => {
+    const result = await removeScenario(id);
+    setScenarioError(result.error);
+    setConfirmDeleteScenarioId(null);
+    if (!result.error) setSelectedScenario(prev => (prev?.id === id ? null : prev));
+  };
 
   const markScenarioCompleted = (scenarioId: string) => {
     setCompletedScenarios(prev => {
@@ -129,12 +178,31 @@ export default function Scenarios() {
               <div>
                 <div className="text-[11px] uppercase tracking-wider text-slate-300">Úspěšnost zásahů</div>
                 <div className="text-lg font-bold text-white">
-                  {completedScenarios.length} / {tacticalScenarios.length} <span className="text-xs font-normal text-slate-300">vyřešeno</span>
+                  {completedScenarios.length} / {scenarios.length} <span className="text-xs font-normal text-slate-300">vyřešeno</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {canEdit && (
+          <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
+            <button
+              type="button"
+              onClick={() => {
+                setEditingScenario(null);
+                setScenarioModalOpen(true);
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-bold transition-colors cursor-pointer shadow-sm"
+            >
+              <Plus className="w-4 h-4" />
+              Přidat modelovou situaci
+            </button>
+            {scenarioError && (
+              <span className="text-xs text-red-600 dark:text-red-400">{scenarioError}</span>
+            )}
+          </div>
+        )}
 
         {/* Category Filter Bar */}
         <div className="flex items-center gap-2 flex-wrap mb-5">
@@ -144,7 +212,7 @@ export default function Scenarios() {
               activeCategory === 'all' ? 'bg-blue-600 text-white shadow-sm' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-400'
             }`}
           >
-            Vše ({tacticalScenarios.length})
+            Vše ({scenarios.length})
           </button>
           {categories.map(cat => (
             <button
@@ -154,7 +222,7 @@ export default function Scenarios() {
                 activeCategory === cat ? 'bg-blue-600 text-white shadow-sm' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-400'
               }`}
             >
-              {cat} ({tacticalScenarios.filter(s => s.category === cat).length})
+              {cat} ({scenarios.filter(s => s.category === cat).length})
             </button>
           ))}
         </div>
@@ -163,12 +231,15 @@ export default function Scenarios() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredScenarios.map((scenario) => {
             const isCompleted = completedScenarios.includes(scenario.id);
+            const entry = entryById.get(scenario.id);
             return (
+              <div key={scenario.id} className="flex flex-col gap-2">
               <button type="button"
-                key={scenario.id}
                 onClick={() => handleSelectScenario(scenario)}
-                className={`w-full text-left group relative bg-white dark:bg-slate-900 border rounded-xl p-5 hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col justify-between ${
-                  isCompleted 
+                className={`w-full text-left group relative bg-white dark:bg-slate-900 border rounded-xl p-5 hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col justify-between flex-1 ${
+                  entry?.isHidden
+                    ? 'border-dashed border-amber-300 dark:border-amber-700'
+                    : isCompleted
                     ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-500/[0.02]' 
                     : 'border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600'
                 }`}
@@ -179,6 +250,12 @@ export default function Scenarios() {
                       {scenario.category}
                     </span>
                     <div className="flex items-center gap-1.5">
+                      {entry?.isHidden && (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                          <EyeOff className="w-3 h-3" />
+                          Skryto
+                        </span>
+                      )}
                       {isCompleted && (
                         <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300/60 dark:border-emerald-800/60">
                           <CheckCircle2 className="w-3 h-3" />
@@ -218,9 +295,93 @@ export default function Scenarios() {
                   </div>
                 </div>
               </button>
+
+              {/* Správa situace — jen lektor a správce. Tlačítka nejdou dovnitř
+                  karty, ta je sama tlačítkem a vnořit je nelze. */}
+              {canEdit && (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingScenario(scenario);
+                      setScenarioModalOpen(true);
+                    }}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 text-[11px] font-bold cursor-pointer"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    Upravit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleScenarioHidden(scenario.id).then(r => setScenarioError(r.error))}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-bold cursor-pointer"
+                  >
+                    {entry?.isHidden ? <EyeOff className="w-3.5 h-3.5 text-amber-500" /> : <Eye className="w-3.5 h-3.5" />}
+                    {entry?.isHidden ? 'Zveřejnit' : 'Skrýt'}
+                  </button>
+                  {confirmDeleteScenarioId === scenario.id ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleScenarioDelete(scenario.id)}
+                        className="px-2.5 py-1 rounded-lg bg-red-600 text-white text-[11px] font-bold cursor-pointer"
+                      >
+                        Opravdu smazat
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmDeleteScenarioId(null)}
+                        className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-bold cursor-pointer"
+                      >
+                        Ne
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDeleteScenarioId(scenario.id)}
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-[11px] font-bold cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Odebrat
+                    </button>
+                  )}
+                </div>
+              )}
+              </div>
             );
           })}
         </div>
+
+        {canEdit && deletedEntries.length > 0 && (
+          <div className="mt-5 flex items-center gap-2 flex-wrap text-[11px] text-slate-500 dark:text-slate-400">
+            <span className="font-semibold">Odebrané situace:</span>
+            {deletedEntries.map(entry => (
+              <button
+                key={entry.id}
+                type="button"
+                onClick={() => restoreScenario(entry.id).then(r => setScenarioError(r.error))}
+                className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold transition-colors cursor-pointer"
+              >
+                <RotateCcw className="w-3 h-3" />
+                {entry.item.title}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {canEdit && (
+          <ScenarioEditModal
+            scenario={editingScenario}
+            isOpen={scenarioModalOpen}
+            usedIds={scenarioEntries.map(e => e.id)}
+            onClose={() => {
+              setScenarioModalOpen(false);
+              setEditingScenario(null);
+            }}
+            onSave={handleScenarioSave}
+          />
+        )}
       </div>
     );
   }

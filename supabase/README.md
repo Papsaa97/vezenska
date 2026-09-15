@@ -39,6 +39,7 @@ projektu spusťte v tomto pořadí:
 | 25 | `024_pouziti_sily_do_sluzebni_pripravy.sql` | Dvě otázky o použití DP a zbraně přecházejí z Bezpečnostní služby do Služební přípravy |
 | 26 | `025_zruseni_bezpecnostni_sluzby.sql` | Ruší předmět Bezpečnostní služba — 34 otázek do Služební přípravy, 2 jinam |
 | 27 | `026_smazani_duplicit_a_zruseni_zop.sql` | Maže 13 zdvojených otázek a ruší předmět ZOP — banka klesá na 364 |
+| 28 | `027_stitky_souboru_a_editovatelny_obsah.sql` | Štítky souborů (`material_tags`) a editovatelné bloky obsahu (`content_blocks`) |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
@@ -373,3 +374,47 @@ Výsledek: **377 → 364 otázek**, Služební příprava 60 a je největší.
 Záměrně se nemazaly dvojice ptající se na týž pojem z obou stran (`ped-11` ↔
 `ped-25`, `pe_20` ↔ `pe_28`, `pe_23` ↔ `pe_29`) — to je legitimní procvičování —
 ani dvojice s jiným rozsahem (`pen-12` ≈ `pen-18`, `pen-06` ≈ `pen-33`).
+
+## Štítky souborů a editovatelný obsah (`027`)
+
+Dvě nové tabulky. Obě řeší totéž: co dosud určoval zdrojový kód nebo název
+složky ve Storage, má jít změnit z aplikace.
+
+### `material_tags` — soubor patří k předmětům a třídám
+
+Dosud rozhodovala o zařazení souboru složka v bucketu `studijni-materialy`
+(`pravo/`, `penologie/`, …), takže soubor patřil právě k jednomu předmětu
+a ke třídě vůbec. Štítky to obracejí: cesta ve Storage je jen adresa, zařazení
+nese řádek v téhle tabulce a štítků může být víc najednou. Jde je nastavit při
+nahrávání i kdykoli potom.
+
+Klíčem je celá cesta v bucketu, protože přesně tou se soubor stahuje i maže.
+Nové soubory se nahrávají do `materialy/`; starší složky se čtou dál a soubor
+bez štítků se zobrazí podle své složky, takže se nic neztratí a nic se nemusí
+přesouvat.
+
+`class_ids` **nemá cizí klíč** na `class_boards`. Nástěnky tříd fungují i bez
+serveru (výchozí sada v `localStorage`), takže třída, na kterou štítek ukazuje,
+nemusí mít v databázi řádek — cizí klíč by v takovém případě označení
+znemožnil. Osiřelý odkaz nevadí, aplikace zobrazuje jen štítky existujících
+tříd.
+
+### `content_blocks` — překryv nad daty z repozitáře
+
+Předměty (`subjectsInfo.ts`), poznávačky (`questionsData.ts`) a modelové
+situace (`scenariosData.ts`) zůstávají v repozitáři. Tabulka je nepřepisuje,
+leží nad nimi jako překryv:
+
+| Řádek | Účinek |
+|---|---|
+| `id` shodné s výchozí položkou | nahradí její obsah |
+| `id`, které ve výchozích datech není | přidá položku navíc |
+| `is_deleted = true` | schová výchozí položku (lektor ji může vrátit) |
+| `is_hidden = true` | schová položku studentům, lektor ji vidí dál |
+
+Výchozí data tím zůstávají nedotčená a smazáním řádku překryvu se aplikace
+vrátí k tomu, co je v repozitáři. `payload` je `JSONB`, protože každý druh
+obsahu má jiný tvar; kontroluje ho aplikace při zápisu i při čtení
+(`src/utils/contentLibrary.ts`). Sloupec `kind` má omezení `CHECK` na výčet
+`subject`, `matching_category`, `scenario` — nový druh obsahu znamená novou
+migraci, která výčet rozšíří.

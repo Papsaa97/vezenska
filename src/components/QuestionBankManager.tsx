@@ -28,6 +28,8 @@ import { useAuth } from '../context/AuthContext';
 import PrintHeader from './common/PrintHeader';
 import BulkQuestionImportModal from './BulkQuestionImportModal';
 import { downloadQuestionsTemplate } from '../utils/questionTemplateParser';
+import { useEditableContent } from '../hooks/useEditableContent';
+import { DEFAULT_SUBJECTS } from '../utils/contentLibrary';
 import {
   importDefaultQuestionsToSupabase,
   getUniqueDefaultQuestions,
@@ -161,6 +163,17 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
   const [loading, setLoading] = useState(true);
   const [tableMissing, setTableMissing] = useState(false);
   const [filterSubject, setFilterSubject] = useState<string>('all');
+
+  // Předměty, které lektor přidal v záložce Předměty, musí jít vybrat i tady —
+  // jinak by k novému předmětu nešlo napsat jedinou otázku. QUIZ_SUBJECTS drží
+  // pořadí zavedených předmětů, nové se připojují za ně.
+  const { entries: subjectEntries } = useEditableContent('subject', DEFAULT_SUBJECTS, true);
+  const subjectOptions = useMemo(() => {
+    const names = subjectEntries
+      .filter((entry) => !entry.isDeleted)
+      .map((entry) => entry.item.name);
+    return Array.from(new Set<string>([...QUIZ_SUBJECTS, ...names]));
+  }, [subjectEntries]);
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -631,7 +644,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
               onChange={(e) => setFormData((prev) => ({ ...prev, subject: e.target.value }))}
               className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
             >
-              {QUIZ_SUBJECTS.map((subj) => (
+              {subjectOptions.map((subj) => (
                 <option key={subj} value={subj}>
                   {subj}
                 </option>
@@ -948,7 +961,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
                 className="pl-8 pr-7 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer"
               >
                 <option value="all">Všechny předměty</option>
-                {QUIZ_SUBJECTS.map((s) => (
+                {subjectOptions.map((s) => (
                   <option key={s} value={s}>
                     {s}
                   </option>

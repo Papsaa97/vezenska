@@ -20,6 +20,9 @@ import {
   getTodayCzechName,
 } from '../../utils/classBoardService';
 import CourseCountdownWidget from './CourseCountdownWidget';
+import AttachedFilesPanel from '../common/AttachedFilesPanel';
+import { useTaggedMaterials } from '../../hooks/useTaggedMaterials';
+import { materialsForClass } from '../../utils/materials';
 
 interface ClassDetailExpandedProps {
   item: ClassBoardItem;
@@ -50,6 +53,11 @@ export default function ClassDetailExpanded({
   onOpenLightbox,
   onPrintSchedule,
 }: ClassDetailExpandedProps) {
+  // Soubory se ke třídě nepřipojují tady, ale ve správci souborů — stačí jim
+  // dát štítek téhle třídy. Nově založená třída je tam k dispozici hned.
+  const { materials, loading: materialsLoading } = useTaggedMaterials();
+  const classFiles = materialsForClass(materials, item.id);
+
   return (
     <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden space-y-6 p-6 sm:p-8">
       {/* Horní hlavička třídy */}
@@ -460,16 +468,34 @@ export default function ClassDetailExpanded({
 
         {/* Sekce Studijní materiály & Modulární sekce */}
         <div className="space-y-4">
-          {/* Odkazy na studijní materiály třídy */}
+          {/* Soubory označené štítkem téhle třídy ve správci souborů */}
           <div className="space-y-2">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-indigo-500" />
-              <span>Studijní materiály pro třídu {item.className}</span>
+              <span>Studijní soubory pro třídu {item.className}</span>
+              {classFiles.length > 0 && (
+                <span className="text-xs font-normal text-slate-400">({classFiles.length})</span>
+              )}
             </h3>
 
-            <div className="space-y-2">
-              {item.linkedMaterials && item.linkedMaterials.length > 0 ? (
-                item.linkedMaterials.map((mat) => (
+            <AttachedFilesPanel
+              materials={classFiles}
+              loading={materialsLoading}
+              emptyText={
+                isManager
+                  ? 'K téhle třídě zatím není přiřazený žádný soubor. Přiřadíte ho ve Správě obsahu → Správce souborů, kde souboru dáte štítek třídy.'
+                  : 'K této třídě nejsou přiřazeny žádné specifické soubory. Všechny studijní texty naleznete v hlavní Knihovně.'
+              }
+            />
+
+            {/* Starší ručně vložené odkazy zůstávají, dokud je někdo nepřenese
+                do správce souborů — jinak by z nástěnky zmizely bez náhrady. */}
+            {item.linkedMaterials && item.linkedMaterials.length > 0 && (
+              <div className="space-y-2 pt-1">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  Odkazy vložené ručně
+                </div>
+                {item.linkedMaterials.map((mat) => (
                   <div
                     key={mat.id}
                     className="p-3 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-800/50 flex items-center justify-between gap-3 text-xs"
@@ -496,13 +522,9 @@ export default function ClassDetailExpanded({
                       <span>Stáhnout</span>
                     </a>
                   </div>
-                ))
-              ) : (
-                <div className="p-4 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 text-center text-slate-400 text-xs italic">
-                  K této třídě nejsou přiřazeny žádné specifické soubory. Všechny studijní texty naleznete v hlavní Knihovně.
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Vlastní modulární sekce */}
