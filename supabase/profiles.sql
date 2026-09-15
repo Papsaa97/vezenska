@@ -40,6 +40,12 @@ $$;
 REVOKE ALL ON FUNCTION public.get_role(UUID) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.get_role(UUID) TO authenticated;
 
+-- COALESCE je tu podstatný, ne kosmetika. get_role() vrátí pro nepřihlášeného
+-- NULL, takže `NULL = 'admin'` je NULL. V RLS politice to zákaz znamená, ale
+-- v plpgsql se `IF NOT NULL THEN` chová jako nepravda — a přesně tak se dala
+-- obejít strážní podmínka v admin_delete_user(). Viz migrace 015. Funkce jsou
+-- tu rovnou v opravené podobě, aby opakované spuštění tohohle skriptu opravu
+-- z 015 nevrátilo zpátky.
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN
 LANGUAGE sql
@@ -47,11 +53,25 @@ SECURITY DEFINER
 STABLE
 SET search_path = public
 AS $$
-  SELECT public.get_role(auth.uid()) = 'admin';
+  SELECT COALESCE(public.get_role(auth.uid()) = 'admin', false);
 $$;
 
 REVOKE ALL ON FUNCTION public.is_admin() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
+
+/** True pro lektora i správce — tedy pro kohokoli, kdo spravuje obsah. */
+CREATE OR REPLACE FUNCTION public.is_staff()
+RETURNS BOOLEAN
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+SET search_path = public
+AS $$
+  SELECT COALESCE(public.get_role(auth.uid()) IN ('lektor', 'admin'), false);
+$$;
+
+REVOKE ALL ON FUNCTION public.is_staff() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_staff() TO authenticated;
 
 -- 3. RLS Politiky pro public.profiles
 
