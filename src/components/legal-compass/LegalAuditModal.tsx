@@ -33,20 +33,25 @@ export default function LegalAuditModal({
   return (
     <AnimatePresence>
       {showIntegrityModal && (
-        <div
-          ref={dialogRef}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-          tabIndex={-1}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-xs"
-          onClick={(e) => { if (e.target === e.currentTarget) setShowIntegrityModal(false); }}
-        >
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
+          {/* Ztmavené pozadí je dekorace: klik na něj dialog zavře, ale pro
+              odečítač obrazovky neexistuje a klávesnice má Escape (useDialog).
+              Proto je oddělené od samotného dialogu a označené aria-hidden. */}
+          <div
+            aria-hidden="true"
+            onClick={() => setShowIntegrityModal(false)}
+            className="absolute inset-0 bg-black/60 backdrop-blur-xs"
+          />
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            tabIndex={-1}
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-xl h-[90dvh] sm:h-auto sm:max-h-[90vh] overflow-y-auto overscroll-contain [touch-action:pan-y] p-4 sm:p-7 space-y-5"
+            className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-xl h-[90dvh] sm:h-auto sm:max-h-[90vh] overflow-y-auto overscroll-contain [touch-action:pan-y] p-4 sm:p-7 space-y-5"
           >
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2.5">

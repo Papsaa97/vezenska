@@ -16,22 +16,26 @@ export default function LeitnerHelpModal({ isOpen, onClose }: LeitnerHelpModalPr
   return (
     <AnimatePresence>
       {isOpen && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs no-print overflow-y-auto"
-          ref={dialogRef}
-          tabIndex={-1}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="leitner-help-title"
-          onClick={onClose}
-        >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 no-print overflow-y-auto">
+          {/* Ztmavené pozadí je dekorace: klik na něj dialog zavře, ale pro
+              odečítač obrazovky neexistuje a klávesnice má Escape (useDialog).
+              Proto je oddělené od samotného dialogu a označené aria-hidden. */}
+          <div
+            aria-hidden="true"
+            onClick={onClose}
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"
+          />
           <motion.div
+            ref={dialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="leitner-help-title"
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.18 }}
-            className="w-full max-w-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden my-auto"
-            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden my-auto"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-850/50">

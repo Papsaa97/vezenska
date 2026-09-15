@@ -31,20 +31,25 @@ export default function LegalEditorModal({
   return (
     <AnimatePresence>
       {showEditorModal && editingRegulation && (
-        <div
-          ref={dialogRef}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={`${fieldIds}-title`}
-          tabIndex={-1}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-6 bg-black/70 backdrop-blur-xs"
-          onClick={(e) => { if (e.target === e.currentTarget) setShowEditorModal(false); }}
-        >
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-6">
+          {/* Ztmavené pozadí je dekorace: klik na něj dialog zavře, ale pro
+              odečítač obrazovky neexistuje a klávesnice má Escape (useDialog).
+              Proto je oddělené od samotného dialogu a označené aria-hidden. */}
+          <div
+            aria-hidden="true"
+            onClick={() => setShowEditorModal(false)}
+            className="absolute inset-0 bg-black/70 backdrop-blur-xs"
+          />
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`${fieldIds}-title`}
+            tabIndex={-1}
             initial={{ scale: 0.96, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.96, opacity: 0 }}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-2xl sm:rounded-3xl shadow-2xl w-full max-w-2xl h-[100dvh] sm:h-auto sm:max-h-[92vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100"
+            className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-2xl sm:rounded-3xl shadow-2xl w-full max-w-2xl h-[100dvh] sm:h-auto sm:max-h-[92vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100"
           >
             <div className="p-3 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950 shrink-0">
               <div className="flex items-center gap-2">

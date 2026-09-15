@@ -261,24 +261,25 @@ export default function BulkQuestionImportModal({
   const totalValid = parseResult.validQuestions.length;
 
   return (
-    <div
-      ref={dialogRef}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="bulk-import-title"
-      tabIndex={-1}
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto"
-      onClick={(e) => {
-        if (e.target === e.currentTarget && !isExecuting) {
-          onClose();
-        }
-      }}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      {/* Ztmavené pozadí je dekorace: klik na něj dialog zavře, ale pro
+          odečítač obrazovky neexistuje a klávesnice má Escape (useDialog).
+          Proto je oddělené od samotného dialogu a označené aria-hidden. */}
+      <div
+        aria-hidden="true"
+        onClick={() => { if (!isExecuting) onClose(); }}
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"
+      />
       <motion.div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="bulk-import-title"
+        tabIndex={-1}
         initial={{ opacity: 0, scale: 0.96, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 8 }}
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl max-w-4xl w-full flex flex-col max-h-[92vh] overflow-hidden transition-all"
+        className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl max-w-4xl w-full flex flex-col max-h-[92vh] overflow-hidden transition-all"
       >
         {/* ── Modal Header ── */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-slate-50/50 dark:bg-slate-800/30">
