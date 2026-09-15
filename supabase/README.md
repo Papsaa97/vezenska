@@ -35,6 +35,7 @@ projektu spusťte v tomto pořadí:
 | 21 | `020_ochrana_posledniho_spravce.sql` | Pojistka: poslednímu správci nelze odebrat roli ani ho smazat |
 | 22 | `021_vyhodnoceni_kvizu_na_serveru.sql` | Skóre testu počítá funkce `vyhodnotit_kviz()`, ne prohlížeč; sloupec `quiz_results.overeno` |
 | 23 | `022_uklid_banky_otazek.sql` | Smaže 51 řádků odpadu z importu a srovná předměty u 17 špatně zařazených otázek |
+| 24 | `023_sluzebni_priprava_dostava_obsah.sql` | Služební příprava dostává svůj obsah (21 otázek); `zbrane`/`taktika`/`zop` mizí jako štítky |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
@@ -282,8 +283,34 @@ bezpečnostní služba, administrativa, penologie). Stejná oprava je
 i v `src/data/questions/sluzebniPriprava.ts`, takže se synchronizací
 výchozích otázek nevrátí zpátky.
 
+### Proč hned potom následuje `023`
+
+Úklid v `022` odstěhoval ze „Služební přípravy“ všech sedmnáct otázek, protože
+ani jedna z nich tam obsahem nepatřila. Předmět tím ale zůstal prázdný a
+v Předmětech se přestal nabízet — a to je na Akademii VS ČR jeden z hlavních
+předmětů.
+
+Jeho skutečný obsah v bance celou dobu byl, jen seděl pod štítky `zbrane` (12)
+a `taktika` (17). Že jde o klíče a ne o názvy předmětů, je poznat na první
+pohled: jsou malými písmeny bez diakritiky, zatímco všechny ostatní předměty
+mají řádné české názvy. Totéž platilo pro `zop` (4).
+
+`023` to srovnává na **Služební příprava 21**, **Zbraně 10** a **ZOP 4**.
+Karta Taktika zůstává v `subjectsInfo.ts`, ale bez otázek — její obsah
+(donucovací prostředky, pouta, obušek, paralyzér, sebeobrana) je služební
+příprava. Prázdné okruhy se v Předmětech skrývají samy.
+
+Pole `topic` se nemění a nese jemnější dělení dál.
+
 Kontrola, jestli odpad nepřibyl znovu:
 
 ```sql
 SELECT count(*) FROM public.quiz_questions WHERE question ~ '\[[0-9a-fA-F]{8}\]';
+```
+
+Kontrola, že se štítky malými písmeny nevrátily:
+
+```sql
+SELECT DISTINCT subject FROM public.quiz_questions
+WHERE subject IN ('zbrane', 'taktika', 'zop');
 ```
