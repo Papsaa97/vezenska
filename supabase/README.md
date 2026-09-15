@@ -34,6 +34,7 @@ projektu spusťte v tomto pořadí:
 | 20 | `019_vykon_politik_a_indexu.sql` | Výkon: ruší překrývající se politiky, obaluje `auth.uid()` do `(select …)`, doplňuje indexy nad cizími klíči |
 | 21 | `020_ochrana_posledniho_spravce.sql` | Pojistka: poslednímu správci nelze odebrat roli ani ho smazat |
 | 22 | `021_vyhodnoceni_kvizu_na_serveru.sql` | Skóre testu počítá funkce `vyhodnotit_kviz()`, ne prohlížeč; sloupec `quiz_results.overeno` |
+| 23 | `022_uklid_banky_otazek.sql` | Smaže 51 řádků odpadu z importu a srovná předměty u 17 špatně zařazených otázek |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
@@ -260,3 +261,29 @@ Otázka se v bance dohledává primárně podle `id`, a když to není UUID, pod
 otázky. Druhá cesta je pro testy dokončené offline nad bundlovanou sadou, kde mají
 otázky identifikátory typu `pravo-1`. Nedohledaná otázka se počítá jako chybná
 a celý řádek vyjde jako neověřený.
+
+## Úklid banky otázek (`022`)
+
+Skript **maže data**. Nejdřív vypíše, co půjde pryč, teprve pak to smaže —
+spusťte ho po částech a na výpis se podívejte.
+
+Šlo o 51 řádků z jednoho automatického importu 12. 9. 2026, ve kterých bylo
+dohromady jen osm různých otázek. Kopie se lišily hexadecimální příponou na
+konci textu (`… nepatří: [0ff143bd] [7cf656d0]`), čímž obešly unikátní index
+na sloupci `question` — ten má u importu sloužit jako konfliktní klíč, takže
+místo aktualizace řádku pokaždé vznikl nový.
+
+Obsah těch osmi otázek je v `022_zaloha_smazanych_otazek.sql`. Ten skript se
+běžně nespouští; je tu proto, že smazání se vrátit nedá.
+
+Druhá část skriptu srovnává předmět u 17 otázek, které byly pod
+„Služební příprava“, ale patří jinam (první pomoc, trestní právo,
+bezpečnostní služba, administrativa, penologie). Stejná oprava je
+i v `src/data/questions/sluzebniPriprava.ts`, takže se synchronizací
+výchozích otázek nevrátí zpátky.
+
+Kontrola, jestli odpad nepřibyl znovu:
+
+```sql
+SELECT count(*) FROM public.quiz_questions WHERE question ~ '\[[0-9a-fA-F]{8}\]';
+```
