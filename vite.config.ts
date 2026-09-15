@@ -2,7 +2,6 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
-import { autonomaVitePlugin } from './src/autonoma/vitePlugin';
 import pkg from './package.json';
 
 /**
@@ -25,7 +24,7 @@ function resolveBuildId(): string {
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss(), autonomaVitePlugin()],
+    plugins: [react(), tailwindcss()],
     define: {
       // POZOR: define NEPLATÍ pro soubory v public/ — ty se kopírují beze změny.
       // Service Worker proto verzi nedostane odsud, ale z query stringu vlastní

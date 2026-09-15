@@ -78,7 +78,6 @@ Kompletní seznam s popisem je v [`.env.example`](.env.example). Stručně:
 | `VITE_SUPABASE_ANON_KEY` | ano | Anon klíč (je určen ke zveřejnění, chrání ho RLS) |
 | `VITE_ADMIN_EMAILS` | ne | Bootstrap správce, než se role nastaví v databázi |
 | `VITE_GEMINI_API_KEY` | ne | AI asistent. Bez něj si klíč zadá uživatel sám — bezpečnější |
-| `AUTONOMA_*` | ne | End-to-end testy, viz níže |
 
 > Vše s prefixem `VITE_` se vkládá do **veřejného** klientského bundlu. Nikdy tam
 > nedávej `service_role` klíč ani nic, co nemá být vidět ve zdrojovém kódu stránky.
@@ -97,15 +96,6 @@ role, o kterých rozhoduje **výhradně** sloupec `public.profiles.role`:
 
 Roli přiděluje správce ve správě uživatelů. Uživatel si ji nemůže nastavit sám —
 zápis jde přímo do databáze a vynucuje ho RLS politika, ne kód na klientovi.
-
-## End-to-end testy (Autonoma)
-
-Endpoint `/api/autonoma` zakládá a maže **reálné řádky** v databázi, proto je
-**ve výchozím stavu vypnutý** a tváří se jako neexistující (404). Zapne se jen
-tehdy, je-li `AUTONOMA_ENABLED=true` **a zároveň** vyplněné všechny proměnné
-`AUTONOMA_*` z `.env.example`. V produkci ho nechej vypnutý.
-
-Tajemství nejsou nikde v repozitáři — vygeneruj si vlastní (`openssl rand -hex 32`).
 
 ## Nasazení
 
