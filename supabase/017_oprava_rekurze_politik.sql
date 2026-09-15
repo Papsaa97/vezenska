@@ -19,12 +19,11 @@
 --   přes OR, stačí JEDNA taková — shodí čtení profilu i všem správným politikám
 --   vedle sebe.
 --
---   Typicky vznikne ručním založením v dashboardu. Starší skript
---   fix_admin_rls_recursion.sql maže takové politiky podle PŘESNÝCH názvů,
---   takže politiku s jiným názvem mine. Tenhle skript je hledá podle DEFINICE.
---
---   ⚠️ fix_admin_rls_recursion.sql dnes už nespouštějte: přepsal by
---   admin_delete_user() a is_admin() zpět na verze bez pojistek z migrace 015.
+--   Typicky vznikne ručním založením v dashboardu. Dřívější skript
+--   fix_admin_rls_recursion.sql mazal takové politiky podle PŘESNÝCH názvů,
+--   takže politiku pojmenovanou jinak minul — a navíc vracel admin_delete_user()
+--   a is_admin() zpět na verze bez pojistek z migrace 015. Byl proto z repozitáře
+--   odstraněn. Tenhle skript hledá politiky podle DEFINICE, ne podle názvu.
 --
 -- PROČ TO NENAŠLA MIGRACE 016
 --   Diagnostika v 016 běží v SQL Editoru jako role postgres, která RLS obchází.
