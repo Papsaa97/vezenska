@@ -171,7 +171,7 @@ ORDER BY tablename, cmd, policyname;
 ```
 
 Vrátit smí jen `class_boards` a `global_announcements` (čtení pro přihlášené) a
-`quiz_questions` (záměrně veřejné). Cokoli dalšího — hlavně `profiles` nebo
+`quiz_questions` (čtení pro všechny přihlášené). Cokoli dalšího — hlavně `profiles` nebo
 `user_feedback` — znamená, že 013 neúčinkuje a je potřeba spustit `014`.
 
 ## Po utažení politik se změní chování
@@ -187,6 +187,24 @@ Vrátit smí jen `class_boards` a `global_announcements` (čtení pro přihláš
 
 ## Co zatím utažené není
 
-`quiz_questions` má SELECT `USING (true)` i pro nepřihlášené. Je to záměrně
-ponecháno: `App.tsx` načítá otázky ještě před dokončením přihlášení a všech 377
-výchozích otázek je tak jako tak součástí veřejného klientského bundlu.
+Banku otázek čte každý **přihlášený** uživatel celou, včetně sloupce
+`correct_index` — politika `quiz_questions_select` má `USING (true)` pro roli
+`authenticated`. Ponecháno záměrně: všech 377 výchozích otázek i se správnými
+odpověďmi je tak jako tak součástí veřejného klientského bundlu, protože `App.tsx`
+importuje `academyQuestions`. Samotné utažení RLS by tedy odpovědi neutajilo —
+muselo by se vyhodnocování testů přesunout na server a `academyQuestions` vyřadit
+z bundlu.
+
+**Nepřihlášený** uživatel naproti tomu nedostane ani řádek: pro roli `anon` na
+`quiz_questions` žádná politika není. Z toho plynou dva důsledky:
+
+- `App.tsx` volá `loadQuestions()` hned při připojení komponenty, tedy ještě před
+  dokončením přihlášení. Dotaz nevrátí nic, `fetchQuizQuestionsFromSupabase()` vrátí
+  `null` a aplikace tiše spadne na bundlovanou sadu.
+- Znovunačtení po přihlášení nic nespouští — událost `vscr:questions_updated` posílá
+  jen správa otázek a na `onAuthStateChange` se `App.tsx` nevěší. V čerstvé záložce
+  tak student jede na bundlované sadě až do dalšího načtení stránky.
+
+Pozor i na rozpor mezi repozitářem a produkcí: `quiz_questions.sql` zakládá politiku
+„Povolit čtení otázek pro všechny" bez klauzule `TO`, tedy pro `PUBLIC`. V nasazené
+databázi ji nahradila `quiz_questions_select` omezená na `authenticated`.
