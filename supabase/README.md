@@ -208,6 +208,9 @@ z bundlu.
   jen správa otázek a na `onAuthStateChange` se `App.tsx` nevěší. V čerstvé záložce
   tak student jede na bundlované sadě až do dalšího načtení stránky.
 
-Pozor i na rozpor mezi repozitářem a produkcí: `quiz_questions.sql` zakládá politiku
-„Povolit čtení otázek pro všechny" bez klauzule `TO`, tedy pro `PUBLIC`. V nasazené
-databázi ji nahradila `quiz_questions_select` omezená na `authenticated`.
+Politika se jmenuje `quiz_questions_select` a má `TO authenticated` — to je
+podstatné. Bez klauzule `TO` by platila pro `PUBLIC`, tedy i pro roli `anon`, a
+banku by si stáhl kdokoli bez přihlášení. `quiz_questions.sql` dřív takovou
+politiku zakládal pod názvem „Povolit čtení otázek pro všechny", takže se
+repozitář rozcházel s produkcí a čistá instalace vycházela volnější než ostrý
+provoz. Srovnáno; starý název skript shazuje.
