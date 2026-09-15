@@ -92,9 +92,12 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
   const effectiveProfile: UserProfile = {
     id: profile?.id || user?.id || '',
     email: profile?.email || user?.email || '',
+    // Jméno ani fotka se NEBEROU z localStorage. Bývaly tu jako fallback, jenže
+    // ten přežije odhlášení: na sdíleném počítači pak druhý uživatel viděl ve
+    // svém profilu jméno a podobiznu toho předchozího. Zdroj pravdy je databáze,
+    // pak podepsaná session; chybí-li fotka, ukážou se iniciály.
     full_name:
       profile?.full_name ||
-      (typeof window !== 'undefined' ? localStorage.getItem('vscr_user_full_name') : null) ||
       user?.user_metadata?.full_name ||
       user?.email?.split('@')[0] ||
       'Uživatel',
@@ -102,7 +105,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     // brala hodnota z localStorage, kterou si uživatel mohl sám přepsat.
     role: (isSystemAdmin ? 'admin' : profile?.role || 'student') as UserRole,
     created_at: profile?.created_at || user?.created_at || new Date().toISOString(),
-    avatar_url: profile?.avatar_url ?? (typeof window !== 'undefined' ? localStorage.getItem('vscr_user_avatar') : null),
+    avatar_url: profile?.avatar_url ?? null,
     user_class:
       profile?.user_class ||
       (typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') : null) ||
@@ -110,10 +113,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
   };
 
   const [fullName, setFullName] = useState<string>(
-    effectiveProfile.full_name ||
-      (typeof window !== 'undefined' ? localStorage.getItem('vscr_user_full_name') || '' : '') ||
-      user?.email?.split('@')[0] ||
-      ''
+    effectiveProfile.full_name || user?.email?.split('@')[0] || ''
   );
   const [nameSaving, setNameSaving] = useState<boolean>(false);
   const [nameMessage, setNameMessage] = useState<FormMessage | null>(null);

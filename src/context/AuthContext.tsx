@@ -42,6 +42,32 @@ export function isKnownAdmin(email?: string | null): boolean {
   return ADMIN_EMAILS.includes(normalized);
 }
 
+/** Předvolba třídy v prohlížeči a účet, kterému patří. */
+const LOCAL_CLASS_KEY = 'vscr_my_class';
+const LOCAL_CLASS_OWNER_KEY = 'vscr_my_class_owner';
+
+/**
+ * Uklidí předvolby v prohlížeči, aby nepřetekly mezi účty.
+ *
+ * localStorage přežije odhlášení i zavření prohlížeče. Dřív se z něj braly jako
+ * fallback i jméno a fotka, takže na sdíleném počítači viděl druhý uživatel ve
+ * svém profilu podobiznu a jméno toho předchozího — a kdyby mu ještě neexistoval
+ * řádek v profiles, upsert níže by mu je rovnou zapsal do databáze.
+ *
+ * Jméno a fotka se proto v prohlížeči nedrží vůbec; zdrojem pravdy je databáze.
+ * Předvolba třídy zůstává, protože je to jen předvyplnění formuláře, ale je
+ * svázaná s účtem: patří-li někomu jinému, zahodí se.
+ */
+function pruneLocalPrefs(userId: string): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem('vscr_user_full_name');
+  localStorage.removeItem('vscr_user_avatar');
+  if (localStorage.getItem(LOCAL_CLASS_OWNER_KEY) !== userId) {
+    localStorage.removeItem(LOCAL_CLASS_KEY);
+    localStorage.removeItem(LOCAL_CLASS_OWNER_KEY);
+  }
+}
+
 /** Tvar řádku vráceného z tabulky public.profiles v Supabase. */
 interface ProfileDatabaseRow {
   id: string;
@@ -185,9 +211,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * teď ohlídá, že se sem uživatel opravdu vždy předá.
    */
   const fetchProfile = useCallback(async (userId: string, authUser: User) => {
-    const localClass = typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') : null;
-    const localName = typeof window !== 'undefined' ? localStorage.getItem('vscr_user_full_name') : null;
-    const localAvatar = typeof window !== 'undefined' ? localStorage.getItem('vscr_user_avatar') : null;
+    pruneLocalPrefs(userId);
+    const localClass = typeof window !== 'undefined' ? localStorage.getItem(LOCAL_CLASS_KEY) : null;
 
     const userEmail = authUser.email || '';
 
@@ -255,7 +280,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const effectiveClass = profileData?.user_class?.trim() || localClass?.trim() || 'ZOP A11';
 
     if (typeof window !== 'undefined') {
-      localStorage.setItem('vscr_my_class', effectiveClass);
+      localStorage.setItem(LOCAL_CLASS_KEY, effectiveClass);
+      localStorage.setItem(LOCAL_CLASS_OWNER_KEY, userId);
       // Zbytek po dřívějším ukládání role do prohlížeče — odstraníme, ať se na něj
       // nemůže nic omylem navázat a ať starým instalacím nezůstane v úložišti.
       localStorage.removeItem('vscr_user_role');
@@ -263,7 +289,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const effectiveFullName =
       profileData?.full_name?.trim() ||
-      localName?.trim() ||
       authUser.user_metadata?.full_name ||
       (userEmail ? userEmail.split('@')[0] : 'Uživatel');
 
@@ -273,7 +298,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       full_name: effectiveFullName,
       role: effectiveRole,
       created_at: profileData?.created_at || authUser.created_at || new Date().toISOString(),
-      avatar_url: profileData?.avatar_url || localAvatar || null,
+      avatar_url: profileData?.avatar_url || null,
       user_class: effectiveClass,
     };
 
@@ -337,19 +362,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Role je do dokončení dotazu na profiles vždy 'student' — nikdy se nepřebírá
         // z localStorage, aby ani na okamžik nebylo vidět vyšší oprávnění, než jaké
         // uživatel skutečně má v databázi.
-        const localClass = typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') : null;
-        const localName = typeof window !== 'undefined' ? localStorage.getItem('vscr_user_full_name') : null;
-        const localAvatar = typeof window !== 'undefined' ? localStorage.getItem('vscr_user_avatar') : null;
+        pruneLocalPrefs(currentUser.id);
+        const localClass = typeof window !== 'undefined' ? localStorage.getItem(LOCAL_CLASS_KEY) : null;
         const initialRole: UserRole = isKnownAdmin(currentUser.email) ? 'admin' : 'student';
         const initialClass = localClass?.trim() || 'ZOP A11';
 
+        // Jméno a fotka se do doběhnutí dotazu na profiles neberou z prohlížeče,
+        // ze stejného důvodu jako role: cizí hodnota by na okamžik vypadala jako
+        // vlastní. Jméno se odvodí z podepsané session, fotka zůstane prázdná
+        // a ukážou se iniciály.
         setProfile({
           id: currentUser.id,
           email: currentUser.email || '',
-          full_name: localName || currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Uživatel',
+          full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Uživatel',
           role: initialRole,
           created_at: currentUser.created_at,
-          avatar_url: localAvatar || null,
+          avatar_url: null,
           user_class: initialClass,
         });
 
@@ -445,6 +473,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setProfile(null);
       setRoleSyncWarning(null);
       setPreviewRoleState(null);
+      // Předvolby patří odhlášenému účtu — na sdíleném počítači nemají čekat
+      // na dalšího uživatele.
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(LOCAL_CLASS_KEY);
+        localStorage.removeItem(LOCAL_CLASS_OWNER_KEY);
+        localStorage.removeItem('vscr_user_full_name');
+        localStorage.removeItem('vscr_user_avatar');
+      }
     }
   }, []);
 
@@ -522,13 +558,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Do localStorage zapisujeme teprve po úspěšném zápisu do databáze, ať se
-      // v prohlížeči nedrží hodnoty, které na serveru nikdy neskončily.
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('vscr_my_class', effectiveClass);
-        localStorage.setItem('vscr_user_full_name', effectiveFullName);
-        if (effectiveAvatar) {
-          localStorage.setItem('vscr_user_avatar', effectiveAvatar);
-        }
+      // v prohlížeči nedrží hodnoty, které na serveru nikdy neskončily. Ukládá se
+      // jedině předvolba třídy, a to spolu s účtem, kterému patří — jméno ani
+      // fotka v prohlížeči nemají co dělat, viz pruneLocalPrefs().
+      if (typeof window !== 'undefined' && user) {
+        localStorage.setItem(LOCAL_CLASS_KEY, effectiveClass);
+        localStorage.setItem(LOCAL_CLASS_OWNER_KEY, user.id);
       }
 
       return { error: null };
