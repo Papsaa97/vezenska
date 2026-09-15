@@ -40,9 +40,13 @@ export const questionsBySubject: Record<string, Question[]> = {
   'Bezpečnostní služba': podlePredmetu('Bezpečnostní služba'),
   'Penologie': podlePredmetu('Penologie'),
   'Služební příprava': podlePredmetu('Služební příprava'),
-  'Zbraně': podlePredmetu('zbrane', 'Zbraně'),
-  'Taktika': podlePredmetu('taktika', 'Taktika'),
-  'ZOP': podlePredmetu('zop', 'ZOP'),
+  // Taktika vychází prázdná: její obsah (donucovací prostředky, pouta, obušek,
+  // paralyzér, sebeobrana, taktika zákroku) je služební příprava a je pod ní.
+  // Karta zůstává v subjectsMeta pro případ, že sem taktické otázky přibydou —
+  // prázdné okruhy se v Předmětech skrývají samy.
+  'Zbraně': podlePredmetu('Zbraně'),
+  'Taktika': podlePredmetu('Taktika'),
+  'ZOP': podlePredmetu('ZOP'),
   'Psychologie': podlePredmetu('Psychologie'),
   'Profesní etika': podlePredmetu('Profesní etika'),
   'Pedagogika': podlePredmetu('Pedagogika'),
