@@ -3,7 +3,7 @@ import { Question } from '../../types';
 export const sluzebniPripravaQuestions: Question[] = [
   {
     "id": "sp-01",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Použití donucovacích prostředků",
     "question": "Jaké jsou zákonné podmínky pro použití donucovacích prostředků (DP) dle § 17 zákona č. 555/1992 Sb.?",
     "answer": "K zajištění pořádku a bezpečnosti, k ochraně osob a majetku a proti maření účelu vazby/výkonu trestu; musí předcházet výzva „Jménem zákona!“ s výstrahou, ledaže je bezprostředně ohrožen život/zdraví a zákrok nesnese odkladu.",
@@ -20,7 +20,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-02",
-    "subject": "zbrane",
+    "subject": "Služební příprava",
     "topic": "Použití střelné zbraně",
     "question": "V jakých 5 taxativních případech je příslušník VS ČR oprávněn použít střelnou zbraň dle § 18 odst. 1 zákona č. 555/1992 Sb.?",
     "answer": "a) nutná obrana (život/zdraví), b) překonání odporu mařícího zákrok ohrožujícího životy, c) zamezení útěku vězněné osoby ze střeženého objektu/eskorty, d) odvrácení nebezpečného útoku na objekt po marné výzvě, e) zneškodnění nebezpečného zvířete.",
@@ -37,7 +37,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-03",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Katalog donucovacích prostředků",
     "question": "Které donucovací prostředky jsou taxativně vyjmenovány v § 17 zákona č. 555/1992 Sb.?",
     "answer": "Hmaty, chvaty, údery a kopy sebeobrany, předváděcí řetízky, pouta, poutací popruhy, pouta s poutacím opaskem, slzotvorný/elektrický prostředek, obušek, služební pes, vodní stříkač, zásahová výbuška, expanzní zbraně, úder zbraní, hrozba zbraní, varovný výstřel, vytlačování štítem/vozidlem a prostředek k zamezení prostorové orientace.",
@@ -54,7 +54,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-04",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Zákonná omezení použití DP a zbraně",
     "question": "Vůči kterým osobám je příslušník povinen omezit použití DP a zbraně dle § 19 zákona č. 555/1992 Sb.?",
     "answer": "Vůči těhotným ženám, osobám vysokého věku, osobám se zjevným tělesným postižením a dětem mladším 15 let (smí použít pouze hmaty a chvaty, neohrožují-li bezprostředně život).",
@@ -71,7 +71,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-05",
-    "subject": "zbrane",
+    "subject": "Zbraně",
     "topic": "Střelecká příprava – Pistole CZ 75 B / P-10 C",
     "question": "Jaký je stanovený postup bezpečné kontroly zbraně (vybití zbraně) u lapače střel?",
     "answer": "1. Zbraň směřuje do lapače střel (úhel 45°), 2. Vyjmout zásobník, 3. Zkontrolovat nábojovou komoru (zrakem a hmatem), 4. Vypustit závěr, 5. Rána jistoty do lapače, 6. Zajistit/zasunout do pouzdra.",
@@ -88,7 +88,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-06",
-    "subject": "zbrane",
+    "subject": "Zbraně",
     "topic": "Střelecká příprava – CZ Scorpion EVO 3A1",
     "question": "Jaká je ráže a základní režimy střelby samopalu CZ Scorpion EVO 3A1 používaného u VS ČR?",
     "answer": "Ráže 9×19 mm Luger; režimy střelby: zajištěno (0), jednotlivé rány (1), tříranná dávka (3) a plně automatická střelba (∞).",
@@ -105,7 +105,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-07",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – Zástava masivního krvácení",
     "question": "Jaký je správný a okamžitý postup při masivním tepenném krvácení z končetiny (např. po bodném poranění)?",
     "answer": "Okamžitě naložit turniket (škrtidlo) 5–7 cm nad ránu (mimo kloub), utáhnout vratidlo do úplného zastavení krvácení, zajistit a poznamenat přesný čas naložení na pásek/čelo zraněného.",
@@ -122,7 +122,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-08",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – KPR a AED",
     "question": "Jaký je správný poměr stlačování hrudníku a umělých vdechů při základní resuscitaci dospělého a jaká je frekvence dle ERC Guidelines?",
     "answer": "Poměr 30 stlačení : 2 vdechy, frekvence 100–120 stlačení za minutu, hloubka 5–6 cm uprostřed hrudníku na tvrdé podložce; co nejrychleji připojit AED.",
@@ -139,7 +139,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-09",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Povinnosti po použití zbraně a DP",
     "question": "Jaké povinnosti má příslušník VS ČR bezprostředně po použití donucovacích prostředků nebo zbraně dle § 20 zákona č. 555/1992 Sb.?",
     "answer": "Poskytnout první pomoc a zajistit lékařské ošetření zraněných, zabezpečit místo činu/stopy, ihned událost ohlásit nadřízenému a sepsat písemnou zprávu (úřední záznam).",
@@ -156,7 +156,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-10",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Elektrický paralyzér",
     "question": "Jaká jsou bezpečnostní pravidla a omezení při použití elektrického paralyzéru (Taser / kontaktní paralyzér)?",
     "answer": "Nesmí se cílit na hlavu, krk a oblast srdce; nesmí se použít v prostředí s rizikem výbuchu (hořlavé plyny, benzín) ani na osobách na vyvýšených místech s hrozbou pádu z výšky.",
@@ -173,7 +173,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-11",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – Popáleniny a poleptání",
     "question": "Jaká je správná první pomoc při termickém popálení pokožky II. stupně (puchýře)?",
     "answer": "Okamžitě chladit čistou studenou vodou (cca 10–20 minut), nestrhávat přiškvařený oděv, nepropichovat puchýře, sterilně překrýt popáleninovým krytím.",
@@ -190,7 +190,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-12",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Taktika služebního zákroku v cele",
     "question": "Jaká jsou základní taktická pravidla při vstupu hlídky do cely k provedení zákroku proti ozbrojenému agresivnímu odsouzenému?",
     "answer": "Zákrok provádí minimálně 3–4 vystrojení příslušníci s balistickými a úderovými štíty, zásahovými přilbami, předem určenými rolemi (štít, fixace rukou, poutání, jištění) a pod vedením velitele.",
@@ -207,7 +207,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-13",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – Tenzní pneumotorax",
     "question": "Jak se v taktické první pomoci (TCCC) ošetřuje otevřené poranění hrudníku (nasávající rána hrudníku)?",
     "answer": "Aplikací hrudního chlopňového krytí (Chest Seal s ventilem), které brání nasávání vzduchu do pohrudniční dutiny, ale umožňuje únik krve a vzduchu ven.",
@@ -224,7 +224,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-14",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Použití pout a poutacích pásů",
     "question": "Jaké jsou zásady správného nasazení služebních pout na ruce osoby za zády?",
     "answer": "Pouta nasadit na zápěstí klíčovými dírkami směrem k tělu (nahoru/k tělu), dotáhnout na vůli cca jednoho prstu (nesmí škrtit oběh) a VŽDY uzamknout pojistku proti samovolnému dotažení.",
@@ -241,7 +241,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-15",
-    "subject": "zbrane",
+    "subject": "Zbraně",
     "topic": "Střelecká příprava – Závady na zbrani",
     "question": "Jaký je okamžitý střelecký drill při selhání výstřelu (tzv. zádržka zbraně / Tap-Rack-Bang)?",
     "answer": "1. Dorazit zásobník zespodu dlaní (TAP), 2. Prudce natáhnout závěr vzad a vyhodit vadný náboj (RACK), 3. Zamířit a pokračovat ve střelbě (BANG).",
@@ -258,7 +258,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-16",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Slzotvorné a dráždivé prostředky",
     "question": "Jaká látka a typ trysky se standardně využívá u služebních obranných sprejů ve výzbroji VS ČR a jak se aplikují?",
     "answer": "Látka OC (Oleoresin Capsicum - výtažek z kajenského pepře), tryska typu JET (tekutá střela/pěna) s dosahem 3–5 m, aplikace krátkými dávkami do oblasti očí a dýchacích cest.",
@@ -275,7 +275,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-17",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – Anafylaktický šok",
     "question": "Jaké jsou příznaky a první pomoc při těžké alergické reakci (anafylaxi) s otokem dýchacích cest?",
     "answer": "Dušnost, otok jazyka a hrdla, kopřivka, pokles tlaku; okamžitě aplikovat autoinjektor s adrenalinem (EpiPen) do zevní strany stehna a volat ZZS.",
@@ -292,7 +292,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-18",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Služební obušek a tonfa",
     "question": "Které části těla jsou zakázanými zónami pro údery služebním obuškem při vedení zákroku?",
     "answer": "Hlava, krk, oblast hrtanu, oblast ledvin, páteř a rozkrok (tyto údery jsou přípustné pouze v podmínkách nutné obrany při přímém ohrožení života).",
@@ -309,7 +309,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-19",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – Epileptický záchvat",
     "question": "Jaká je správná první pomoc při záchvatu křečí s bezvědomím (epileptický záchvat typu Grand Mal)?",
     "answer": "Zabránit poranění hlavy (podložit měkkým předmětem), odstranit nebezpečné věci z okolí, nevkládat nic do úst, nebránit křečím násilím, po odeznění zajistit dýchací cesty a sledovat stav.",
@@ -326,7 +326,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-20",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Zastavovací pás",
     "question": "Za jakých podmínek a jakým způsobem se smí použít donucovací prostředek zastavovací pás (§ 17)?",
     "answer": "K násilnému zastavení motorového vozidla, jehož řidič odmítá zastavit na výzvu a bezprostředně ohrožuje bezpečnost; nesmí se použít proti jednostopým vozidlům (motocykly, jízdní kola).",
@@ -343,7 +343,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-21",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – Zlomeniny a imobilizace",
     "question": "Jak se provádí první pomoc při podezření na zlomeninu dlouhé kosti končetiny?",
     "answer": "Znehybnit přes dva sousední klouby (kloub nad i pod zlomeninou), u otevřených zlomenin sterilně krýt ránu bez zatlačování kostních úlomků, chladit a zajistit transport.",
@@ -360,7 +360,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-22",
-    "subject": "zbrane",
+    "subject": "Zbraně",
     "topic": "Střelecká příprava – Taktické přebití zbraně",
     "question": "Jaký je rozdíl mezi taktickým přebitím (přebití s uschováním) a nouzovým přebitím zbraně?",
     "answer": "Nouzové přebití se provádí při prázdné zbrani na záchytu závěru co nejrychleji s odhozením zásobníku; taktické přebití probíhá v krytu při náboji v komoře s uschováním částečně plného zásobníku.",
@@ -377,7 +377,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-23",
-    "subject": "zop",
+    "subject": "ZOP",
     "topic": "Povinnost zakročit – Výjimky ze zákroku",
     "question": "Kdy příslušník VS ČR NENÍ povinen provést služební zákrok dle § 7 odst. 2 zákona č. 555/1992 Sb.?",
     "answer": "Je-li pod vlivem léků/látek snižujících schopnost jednání, není-li k provedení odborně vyškolen/vycvičen, nebo brání-li tomu důležitý zájem služby (je však povinen vyrozumět nadřízeného).",
@@ -394,7 +394,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-24",
-    "subject": "zop",
+    "subject": "ZOP",
     "topic": "Prokazování příslušnosti k VS ČR",
     "question": "Jakými způsoby prokazuje příslušník svoji příslušnost k Vězeňské službě ČR (§ 8 zákona č. 555/1992 Sb.)?",
     "answer": "Služebním průkazem nebo služebním stejnokrojem s identifikačním číslem, v místech VV/VTOS též identifikačním štítkem a ve výjimečných situacích ústním prohlášením „Vězeňská služba“.",
@@ -445,7 +445,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-27",
-    "subject": "Služební příprava",
+    "subject": "Bezpečnostní služba",
     "topic": "Vstupy do objektů – Výjimky z prohlídek",
     "question": "U kterých ústavních činitelů a funkcionářů se při vstupu do věznice NEPROVÁDÍ kontrola ani prohlídka zavazadla (§ 80 odst. 2 písm. c NGŘ č. 33/2019)?",
     "answer": "Prezident ČR, předseda vlády, předsedové PS a Senátu, ministr spravedlnosti a náměstci, členové vlády, generální ředitel VS ČR a náměstci, soudci, státní zástupci, ředitel GIBS a ombudsman.",
@@ -462,7 +462,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-28",
-    "subject": "Služební příprava",
+    "subject": "Bezpečnostní služba",
     "topic": "Vstupy do objektů – Vstupní doklady",
     "question": "Na jaké doklady mohou osoby vstupovat do střežených objektů VS ČR dle § 103 NGŘ č. 33/2019?",
     "answer": "Služební průkaz VS ČR / PČR / GIBS / BIS / CS / AČR / VP, občanský průkaz, cestovní/diplomatický pas, zvláštní povolení, průkaz ombudsmana a průkaz CPT.",
@@ -479,7 +479,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-29",
-    "subject": "Služební příprava",
+    "subject": "Bezpečnostní služba",
     "topic": "Technická kontrola osob – Kardiostimulátor",
     "question": "Jaký je správný postup strážného na vchodu při kontrole osoby s implantovaným kardiostimulátorem?",
     "answer": "Osoba neprochází rámem bez zastavení, nepřejíždí se opakovaně ručním detektorem přes přístroj; po předložení identifikační karty přístroje se provede alternativní ruční osobní prohlídka.",
@@ -496,7 +496,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-30",
-    "subject": "Služební příprava",
+    "subject": "Bezpečnostní služba",
     "topic": "Kontrola vozidel – Detektor tepové frekvence",
     "question": "Jaké úkony se musí provést před spuštěním detektoru tepové frekvence (Heartbeat detector) u vozidla?",
     "answer": "Řidič vypne motor, zavře všechna okna a dveře, všechny osoby vystoupí mimo vozidlo a seismické senzory se umístí na přední a zadní rám vozidla + zemní senzor.",
@@ -513,7 +513,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-31",
-    "subject": "Služební příprava",
+    "subject": "Bezpečnostní služba",
     "topic": "Justiční stráž – Přeprava cenin a peněz",
     "question": "Jaká striktní zásada platí pro nesení zavazadla s peněžní hotovostí při přepravě Justiční stráží dle § 144?",
     "answer": "Zavazadlo s finanční hotovostí nese VÝHRADNĚ zaměstnanec soudu/SZ/ministerstva, NIKDY příslušník justiční stráže; příslušníci zajišťují pouze ozbrojené krytí.",
@@ -530,7 +530,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-32",
-    "subject": "Služební příprava",
+    "subject": "Bezpečnostní služba",
     "topic": "Justiční stráž – Asistence při odnětí dítěte",
     "question": "Jaké jsou povinnosti příslušníka Justiční stráže při doprovodu soudního vykonavatele k odebrání nezletilého dítěte (§ 143)?",
     "answer": "Zajišťuje bezpečnost a ochranu zaměstnance soudu před fyzickými útoky, do objektu nevstupuje první, nepodílí se na samotném odebírání dítěte ani stěhování věcí a při ohrožení zajistí bezpečný odchod.",
@@ -547,7 +547,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-33",
-    "subject": "Služební příprava",
+    "subject": "Vězeňská administrativa",
     "topic": "Justiční stráž – Doručování písemností a obálky",
     "question": "U kterého typu soudní obálky NIKDY nenastává fikce doručení vhozením do schránky (§ 146 / OSŘ)?",
     "answer": "Obálka typu II (zelený pruh) – doručování do vlastních rukou s vyloučením vložení do schránky (např. platební rozkaz, trestní příkaz); po 10 dnech se vrací soudu.",
@@ -564,7 +564,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-34",
-    "subject": "zop",
+    "subject": "ZOP",
     "topic": "Služební zdvořilost – Hodnosti ve VS ČR",
     "question": "Jaké jsou hodnostní sbory a hodnostní označení ve Vězeňské službě ČR dle zákona č. 361/2003 Sb.?",
     "answer": "Praporčické (rotný až nadpraporčík – stříbrné hvězdy), Důstojnické (podporučík až plukovník – zlaté pěticípé hvězdy), Generálské (brigádní generál až generálporučík – zlaté s lipovou ratolestí).",
@@ -581,7 +581,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-35",
-    "subject": "zop",
+    "subject": "ZOP",
     "topic": "Pořadová příprava – Kdy příslušník nezdraví",
     "question": "Ve kterých situacích příslušník VS ČR podle NGŘ č. 38/2018 NEZDRAVÍ a nepodává hlášení?",
     "answer": "Při provádění zákroku nebo úkonu, při řízení vozidla/obsluze stroje, při obsluze spojovacích a EZS prostředků na OS, při záchranných pracích, na stanovišti se zbraní v ponosu a při jídle/hygieně.",
@@ -598,7 +598,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-36",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Eskorty – Postup při úmrtí vězně",
     "question": "Jaké úkony musí provést velitel eskorty v případě úmrtí eskortované osoby během přepravy (§ 73)?",
     "answer": "Přivolat RZS k ohledání lékařem (koronerem), převzít protokol o prohlídce zemřelého, zajistit předání do márnice, vyhotovit záznam o osobních věcech a ihned informovat ředitele vysílající věznice a Policii ČR.",
@@ -615,7 +615,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-37",
-    "subject": "Služební příprava",
+    "subject": "Penologie",
     "topic": "Prevence násilí – Kategorie vězňů",
     "question": "Kdo rozhoduje o zařazení vězněné osoby do kategorie DVO (další vytypovaná osoba) a DVO-P (profese) dle NGŘ č. 24/2022?",
     "answer": "Výhradně ŘEDITEL VĚZNICE, který své rozhodnutí písemně odůvodní a originál se zakládá do osobního spisu vězně.",
@@ -632,7 +632,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-38",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Metodika poutání – Nožní pouta",
     "question": "Proč se řetízková i pevná nožní pouta přikládají VÝHRADNĚ na holé nohy nad kotníky a NIKDY přes kalhoty?",
     "answer": "Při přiložení přes kalhoty si vězeň může nohavici vykasat/vysunout zpod pout, čímž se pouta uvolní a ztratí svůj zábranný účinek (hrozí útěk nebo napadení).",
@@ -649,7 +649,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-39",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Dokumentace – Záznam o použití DP",
     "question": "Které části formuláře Záznamu o použití donucovacího prostředku vyplňuje a podepisuje zakročující příslušník (ML č. 5/2014)?",
     "answer": "Části A až G (údaje o příslušníkovi, osobě, svědcích, důvodu a popisu zákroku, grafické zakreslení zasažených míst na těle, výsledek a prvotní opatření).",
@@ -666,7 +666,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-40",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Donucovací prostředky",
     "question": "Ve kterých situacích je příslušník VS ČR oprávněn použít pouta (nebo prostředky k zamezení prostorové orientace) jako donucovací prostředek?",
     "answer": "K vzájemnému připoutání předváděných osob, při eskortě, k zamezení fyzického napadání, poškozování majetku nebo pokusu o útěk, a na osobě, která má být umístěna do výkonu trestu/vazby a klade odpor.",
@@ -683,7 +683,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-41",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Donucovací prostředky",
     "question": "U jakých kategorií osob je příslušníkům VS ČR zakázáno použít úderů, kopů, slzotvorných prostředků, taseru a zbraně (neplatí pro nutnou obranu a krajní nouzi)?",
     "answer": "U zjevně těhotných žen, osob zjevně vysokého věku, osob se zjevnou tělesnou vadou (invalidů) a dětí mladších 15 let.",
@@ -700,7 +700,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-42",
-    "subject": "zbrane",
+    "subject": "Zbraně",
     "topic": "Zbraňová bezpečnost",
     "question": "Jak zní první a nejdůležitější pravidlo bezpečné manipulace se střelnou zbraní?",
     "answer": "S každou zbraní je třeba vždy zacházet tak, jako by byla nabitá a připravená k výstřelu.",
@@ -717,7 +717,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-43",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Taktická sebeobrana",
     "question": "Jaké je základní taktické pravidlo při nečekaném útoku nožem na krátkou vzdálenost?",
     "answer": "Prioritou je zablokovat/kontrolovat útočící končetinu (ruku s nožem) a narušit stabilitu útočníka, nikoliv se primárně pokoušet nůž vytrhnout.",
@@ -734,7 +734,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-44",
-    "subject": "taktika",
+    "subject": "Služební příprava",
     "topic": "Donucovací prostředky",
     "question": "Jaký je princip účinku elektrického paralyzéru (např. Taser) používaného VS ČR?",
     "answer": "Taser vystřeluje elektrody, které po zasažení těla naruší senzorický a motorický nervový systém útočníka (NMI - Neuromuskulární inkapacitace), což způsobí okamžitou, ale dočasnou svalovou paralýzu a neschopnost ovládat tělo.",
@@ -751,7 +751,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-45",
-    "subject": "zbrane",
+    "subject": "Zbraně",
     "topic": "Střelecká příprava",
     "question": "Který prostor se při manipulaci se střelnou zbraní (vybíjení, nabíjení, rána jistoty) považuje za bezpečný prostor?",
     "answer": "Prostor určený provozním řádem (např. vybíjecí zařízení/lapač střel), kde při případném nechtěném výstřelu nemůže dojít k ohrožení života, zdraví ani vzniku majetkové škody.",
@@ -768,7 +768,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-46",
-    "subject": "zbrane",
+    "subject": "Služební příprava",
     "topic": "Zákonné podmínky užití zbraně",
     "question": "Jaká povinnost příslušníka VS ČR předchází použití zbraně podle § 20 zákona č. 555/1992 Sb., je-li to s ohledem na okolnosti možné?",
     "answer": "Vyzvat osobu, proti které zakročuje, aby upustila od protiprávního jednání, s výstrahou, že bude použito zbraně, a užít výstražného výstřelu.",
@@ -785,7 +785,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-47",
-    "subject": "zbrane",
+    "subject": "Zbraně",
     "topic": "Střelecká příprava – Útočná puška CZ BREN 2",
     "question": "Jaká je ráže, kapacita zásobníku a charakteristika útočné pušky CZ BREN 2 zařazené ve výzbroji VS ČR?",
     "answer": "Ráže 5,56×45 mm NATO; kapacita zásobníku 30 nábojů; princip odběru prachových plynů z hlavně s krátkým pohybem pístu; určena pro zvláštní eskorty a strážní zabezpečení.",
@@ -802,7 +802,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-48",
-    "subject": "zbrane",
+    "subject": "Zbraně",
     "topic": "Balistika a zastavovací účinek",
     "question": "Co zkoumá terminální (cílová) balistika a jaký je hlavní účel celoplášťové střely (FMJ) služebního střeliva 9×19 mm Luger?",
     "answer": "Zkoumá chování a účinek střely v cíli; služební FMJ střela zajišťuje spolehlivou penetraci a stabilitu bez nadměrné fragmentace, s důrazem na předání kinetické energie a zastavovací účinek.",
@@ -819,7 +819,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-49",
-    "subject": "zbrane",
+    "subject": "Zbraně",
     "topic": "Konstrukce střeliva",
     "question": "Ze kterých 4 základních částí se skládá jednotný náboj pro služební pistole a samopaly (např. 9×19 mm Luger)?",
     "answer": "Nábojnice, zápalka (zápalková slož), prachová náplň (bezdýmný prach) a střela.",
@@ -836,7 +836,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-50",
-    "subject": "zbrane",
+    "subject": "Zbraně",
     "topic": "Mířidla a zamíření",
     "question": "Jaká je správná optická rovina při míření mechanickými mířidly (muška – hledí) a na co musí střelec primárně zaostřit zrak?",
     "answer": "Muška je přesně vystředěna v zářezu hledí (rovná muška na horní hraně hledí s rovnoměrnými světelnými mezerami); zrak střelce je ostře zaostřen na vrchol mušky, cíl a hledí jsou mírně rozostřené.",

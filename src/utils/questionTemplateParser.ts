@@ -99,7 +99,14 @@ export function normalizeSubject(rawSubject: string): {
   if (clean.includes('penolog')) {
     return { canonicalSubject: 'Penologie', isForbiddenKrimi: false };
   }
-  if (clean.includes('taktik') || clean.includes('sebeobrana')) {
+  // Sebeobrana patří do služební přípravy, ne do taktiky: hmaty, chvaty a obrana
+  // proti noži jsou vypsané mezi okruhy Služební přípravy (viz subjectsInfo).
+  // Napíše-li ale někdo do šablony rovnou „Taktika", respektuje se to — karta
+  // Taktika dál existuje, jen je po úklidu předmětů prázdná.
+  if (clean.includes('sebeobrana')) {
+    return { canonicalSubject: 'Služební příprava', isForbiddenKrimi: false };
+  }
+  if (clean.includes('taktik')) {
     return { canonicalSubject: 'Taktika', isForbiddenKrimi: false };
   }
   if (clean.includes('prav') || clean.includes('zakon')) {
