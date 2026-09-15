@@ -36,6 +36,7 @@ projektu spusťte v tomto pořadí:
 | 22 | `021_vyhodnoceni_kvizu_na_serveru.sql` | Skóre testu počítá funkce `vyhodnotit_kviz()`, ne prohlížeč; sloupec `quiz_results.overeno` |
 | 23 | `022_uklid_banky_otazek.sql` | Smaže 51 řádků odpadu z importu a srovná předměty u 17 špatně zařazených otázek |
 | 24 | `023_sluzebni_priprava_dostava_obsah.sql` | Služební příprava dostává svůj obsah (21 otázek); `zbrane`/`taktika`/`zop` mizí jako štítky |
+| 25 | `024_pouziti_sily_do_sluzebni_pripravy.sql` | Dvě otázky o použití DP a zbraně přecházejí z Bezpečnostní služby do Služební přípravy |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
@@ -314,3 +315,16 @@ Kontrola, že se štítky malými písmeny nevrátily:
 SELECT DISTINCT subject FROM public.quiz_questions
 WHERE subject IN ('zbrane', 'taktika', 'zop');
 ```
+
+## Otevřené nálezy v obsahu otázek
+
+Tohle se přeštítkováním spravit nedá — jde o znění otázek, ne o jejich zařazení.
+
+**Rozpor v barvách soudních obálek.** `bs-04` (Bezpečnostní služba) tvrdí, že
+zelený pruh má typ I a červený typ II. `sp-33` (Vězeňská administrativa) tvrdí,
+že zelený pruh má typ II. Obě nemohou platit zároveň a kdo se učí obojí, naučí
+se to opačně. Která je správně, se musí ověřit proti předpisu.
+
+**Dvě otázky na totéž.** `bs-05` a `sp-31` se obě ptají, kdo nese zavazadlo
+s hotovostí při přepravě Justiční stráží, a mají stejnou odpověď — jen jinými
+slovy. Unikátní index na textu otázky je nezachytí, protože znění se liší.

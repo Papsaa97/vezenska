@@ -484,7 +484,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
   // 20. Použití střelné zbraně proti davu
   {
     id: 'bs-29',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Strážní služba',
     question: 'Je příslušník VS ČR oprávněn použít střelnou zbraň proti davu, pokud z něj vychází nebezpečí?',
     answer: 'Příslušník nesmí použít zbraň přímo proti davu (do davu střílet nelze z důvodu ohrožení nezúčastněných osob). Může použít varovný výstřel (do bezpečného prostoru), aby dav zastavil, nebo zasáhnout konkrétního identifikovaného agresora, pokud to situace vyžaduje a nejsou ohroženi ostatní.',
@@ -502,7 +502,7 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
   // 21. Použití donucovacích prostředků
   {
     id: 'bs-30',
-    subject: 'Bezpečnostní služba',
+    subject: 'Služební příprava',
     topic: 'Donucovací prostředky',
     question: 'Jaké jsou povinnosti příslušníka před použitím donucovacího prostředku?',
     answer: 'Příslušník je povinen vyzvat osobu jménem zákona k upuštění od protiprávního jednání (s výstrahou, že bude zakročeno) s výjimkou případů, kdy hrozí bezprostřední nebezpečí a výzvu není možné učinit. Musí volit prostředek přiměřený povaze protiprávního jednání (zásada subsidiarity a proporcionality).',
