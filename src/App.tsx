@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import Header, { NavTab } from './components/Header';
 import OfflineBanner from './components/OfflineBanner';
 import RoleSyncBanner from './components/RoleSyncBanner';
+import RolePreviewBanner from './components/RolePreviewBanner';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import UpdatePrompt from './components/UpdatePrompt';
 import FeedbackButton from './components/FeedbackButton';
@@ -553,6 +554,7 @@ export default function App() {
         />
         <OfflineBanner pendingResultCount={pendingResults.length} />
         <RoleSyncBanner />
+        <RolePreviewBanner />
       </div>
       <PWAInstallPrompt />
       <UpdatePrompt />
