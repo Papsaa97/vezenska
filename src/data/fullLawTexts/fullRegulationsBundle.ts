@@ -92,7 +92,7 @@ e) propuštění ze služebního poměru.
 export const LAW_40_2009_FULL = `ZÁKON č. 40/2009 Sb. – TRESTNÍ ZÁKONÍK
 (výběr klíčových ustanovení pro Vězeňskou službu ČR)
 
-§ 14 Věková hranice trestní odpovědnosti
+§ 25 Věk
 Kdo v době spáchání činu nedovršil patnáctý rok svého věku, není trestně odpovědný.
 
 § 28 Krajní nouze
@@ -103,7 +103,7 @@ Kdo v době spáchání činu nedovršil patnáctý rok svého věku, není tres
 (1) Čin jinak trestný, kterým někdo odvrací přímo hrozící nebo trvající útok na zájem chráněný trestním zákonem, není trestným činem.
 (2) Nejde o nutnou obranu, byla-li obrana zcela zjevně nepřiměřená způsobu útoku.
 
-§ 39a Způsob výkonu trestu odnětí svobody
+§ 56 Výkon trestu odnětí svobody
 (1) Trest odnětí svobody se vykonává diferencovaně ve věznicích s ostrahou a ve věznicích se zvýšenou ostrahou.
 (2) Do věznice se zvýšenou ostrahou soud zpravidla zařadí pachatele, kterému byl uložen výjimečný trest, nebo kterému byl uložen trest odnětí svobody za zvlášť závažný zločin spáchaný ve prospěch organizované zločinecké skupiny, anebo který již v minulosti uprchl z vazby nebo výkonu trestu.
 
@@ -138,7 +138,7 @@ Postavení policejního orgánu mají pověřené orgány Vězeňské služby Č
 Obviněný smí být vzat do vazby jen tehdy, jestliže z jeho jednání nebo dalších konkrétních skutečností vyplývá důvodná obava, že:
 a) uprchne nebo se bude skrývat, aby se tak trestnímu stíhání nebo trestu vyhnul, zejména nelze-li jeho totožnost zjistit, nemá-li stálé bydliště anebo hrozí-li mu vysoký trest (vazba útěková),
 b) bude působit na dosud nevyslechnuté svědky nebo spoluobviněné nebo jinak mařit objasňování skutečností závažných pro trestní stíhání (vazba koluzní), nebo
-c) bude opakovat trestnou činnost, pro niž je stíhán, dokoná trestný čin, o který se pokusil, nebo vykoná trestný čin, který připravoval nebo kterým hrozil (vazba předstihová).
+c) bude opakovat trestnou činnost, pro niž je stíhán, dokoná trestný čin, o který se pokusil, nebo vykoná trestný čin, který připravoval nebo kterým hrozil (vazba předstižná).
 
 § 76 Zadržení osoby podezřelé
 (1) Osobu podezřelou ze spáchání trestného činu může policejní orgán v naléhavých případech zadržet, i když proti ní dosud nebylo zahájeno trestní stíhání.

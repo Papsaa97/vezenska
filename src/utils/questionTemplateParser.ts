@@ -109,18 +109,24 @@ export function normalizeSubject(rawSubject: string): {
   if (clean.includes('taktik')) {
     return { canonicalSubject: 'Taktika', isForbiddenKrimi: false };
   }
+  // MUSÍ být před pravidlem pro Právo: „sluzebni priprava“ obsahuje podřetězec
+  // „prav“, takže by ho `clean.includes('prav')` spolklo a předmět by se
+  // z importní šablony zakládal jako Právo.
+  if (clean === 'sp' || clean.includes('sluzebni prip')) {
+    return { canonicalSubject: 'Služební příprava', isForbiddenKrimi: false };
+  }
   if (clean.includes('prav') || clean.includes('zakon')) {
     return { canonicalSubject: 'Právo', isForbiddenKrimi: false };
   }
+  // Bezpečnostní služba jako předmět na Akademii VS ČR není a v bance po úklidu
+  // nezbyla ani jedna otázka — strážní, dozorčí i eskortní služba je služební
+  // příprava. Šablona psaná podle staršího rozdělení se proto přesměruje tam.
   if (
     clean === 'bs' ||
     clean.includes('bezpecnostni') ||
     clean.includes('strazni') ||
     clean.includes('dozorci')
   ) {
-    return { canonicalSubject: 'Bezpečnostní služba', isForbiddenKrimi: false };
-  }
-  if (clean === 'sp' || clean.includes('sluzebni priprava')) {
     return { canonicalSubject: 'Služební příprava', isForbiddenKrimi: false };
   }
   if (clean === 'pe' || clean.includes('etik')) {

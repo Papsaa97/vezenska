@@ -66,7 +66,7 @@ export const penologieQuestions: Question[] = [
             ],
     correctOption: 3,
     rationale: 'Dle § 5 a § 10 zákona č. 293/1993 Sb. a trestního řádu může do vazby vzít osobu pouze soudce na základě písemného příkazu. Propuštění nařizuje soud, státní zástupce (v přípravném řízení či při dozoru dle § 29) nebo v řízení o milosti.',
-    source: '§ 5 a § 10 zákona č. 293/1993 Sb. a Studijní text Penologie ZOP A str. 9-10',
+    source: '§ 6 zákona č. 293/1993 Sb. a Studijní text Penologie ZOP A str. 9-10',
       explanation: `Dle § 5 a § 10 zákona č. 293/1993 Sb. a trestního řádu může do vazby vzít osobu pouze soudce na základě písemného příkazu. Propuštění nařizuje soud, státní zástupce (v přípravném řízení či při dozoru dle § 29) nebo v řízení o milosti. (Právní úprava: § 5 a § 10 zákona č. 293/1993 Sb. a Studijní text Penologie ZOP A str. 9-10)`
 },
   {
@@ -576,7 +576,7 @@ export const penologieQuestions: Question[] = [
             ],
     correctOption: 0,
     rationale: 'Dle § 10 zákona č. 293/1993 Sb. vazební věznice neprodleně propustí obviněného na svobodu po doručení originálu (či ověřeného faxu) písemného příkazu soudu, státního zástupce nebo v řízení o milosti.',
-    source: '§ 10 zákona č. 293/1993 Sb., o výkonu vazby a Studijní text str. 9, 10',
+    source: '§ 6 zákona č. 293/1993 Sb., o výkonu vazby a Studijní text str. 9, 10',
       explanation: `Dle § 10 zákona č. 293/1993 Sb. vazební věznice neprodleně propustí obviněného na svobodu po doručení originálu (či ověřeného faxu) písemného příkazu soudu, státního zástupce nebo v řízení o milosti. (Právní úprava: § 10 zákona č. 293/1993 Sb., o výkonu vazby a Studijní text str. 9, 10)`
 },
   {
@@ -627,7 +627,7 @@ export const penologieQuestions: Question[] = [
             ],
     correctOption: 2,
     rationale: 'Dle § 16 odst. 2 a § 14 odst. 1 zákona č. 293/1993 Sb. o výkonu vazby má obviněný nárok na potravinový balíček 1x za 3 měsíce do 5 kg a návštěvu 4 osob na 90 minut jednou za 14 dní.',
-    source: '§ 14 a § 16 zákona č. 293/1993 Sb. a Studijní text str. 73–74',
+    source: '§ 14 a § 17 zákona č. 293/1993 Sb. a Studijní text str. 73–74',
       explanation: `Dle § 16 odst. 2 a § 14 odst. 1 zákona č. 293/1993 Sb. o výkonu vazby má obviněný nárok na potravinový balíček 1x za 3 měsíce do 5 kg a návštěvu 4 osob na 90 minut jednou za 14 dní. (Právní úprava: § 14 a § 16 zákona č. 293/1993 Sb. a Studijní text str. 73–74)`
 },
   {
@@ -661,7 +661,7 @@ export const penologieQuestions: Question[] = [
             ],
     correctOption: 1,
     rationale: 'Dle § 17 zákona č. 169/1999 Sb. a § 24 vyhlášky č. 345/1999 Sb. je korespondence významným sociálním kontaktem, přičemž ochrana obhajoby a kontrolních orgánů má absolutní zákonnou prioritu.',
-    source: '§ 17 zákona č. 169/1999 Sb. a Studijní text str. 61–62',
+    source: '§ 18 zákona č. 169/1999 Sb. a Studijní text str. 61–62',
       explanation: `Dle § 17 zákona č. 169/1999 Sb. a § 24 vyhlášky č. 345/1999 Sb. je korespondence významným sociálním kontaktem, přičemž ochrana obhajoby a kontrolních orgánů má absolutní zákonnou prioritu. (Právní úprava: § 17 zákona č. 169/1999 Sb. a Studijní text str. 61–62)`
 },
   {
