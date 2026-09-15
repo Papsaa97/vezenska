@@ -23,19 +23,31 @@ export const academyQuestions: Question[] = [
   ...vezenskaAdministrativaQuestions,
 ];
 
+/**
+ * Otázky seskupené podle předmětu.
+ *
+ * Klíčem je to, co má otázka ve `subject`, ne soubor, ve kterém leží. Ten rozdíl je
+ * podstatný: v `sluzebniPriprava.ts` je sedmnáct otázek, které patří jinam (první
+ * pomoc, nutná obrana, vstupy do objektů, Justiční stráž) a `subject` mají podle
+ * obsahu. Kdyby se tenhle seznam skládal ze souborových polí, jak to bylo dřív,
+ * schovaly by se pod předmět podle souboru a v příslušném okruhu by chyběly.
+ */
+const podlePredmetu = (...nazvy: string[]): Question[] =>
+  academyQuestions.filter((q) => nazvy.includes(q.subject));
+
 export const questionsBySubject: Record<string, Question[]> = {
-  'Právo': pravoQuestions,
-  'Bezpečnostní služba': bezpecnostniSluzbaQuestions,
-  'Penologie': penologieQuestions,
-  'Služební příprava': sluzebniPripravaQuestions.filter(q => q.subject === 'Služební příprava'),
-  'Zbraně': sluzebniPripravaQuestions.filter(q => q.subject === 'zbrane' || q.subject === 'Zbraně'),
-  'Taktika': sluzebniPripravaQuestions.filter(q => q.subject === 'taktika' || q.subject === 'Taktika'),
-  'ZOP': sluzebniPripravaQuestions.filter(q => q.subject === 'zop' || q.subject === 'ZOP'),
-  'Psychologie': psychologieQuestions,
-  'Profesní etika': profesniEtikaQuestions,
-  'Pedagogika': pedagogikaQuestions,
-  'Zdravověda a první pomoc': zdravovedaQuestions,
-  'Vězeňská administrativa': vezenskaAdministrativaQuestions
+  'Právo': podlePredmetu('Právo'),
+  'Bezpečnostní služba': podlePredmetu('Bezpečnostní služba'),
+  'Penologie': podlePredmetu('Penologie'),
+  'Služební příprava': podlePredmetu('Služební příprava'),
+  'Zbraně': podlePredmetu('zbrane', 'Zbraně'),
+  'Taktika': podlePredmetu('taktika', 'Taktika'),
+  'ZOP': podlePredmetu('zop', 'ZOP'),
+  'Psychologie': podlePredmetu('Psychologie'),
+  'Profesní etika': podlePredmetu('Profesní etika'),
+  'Pedagogika': podlePredmetu('Pedagogika'),
+  'Zdravověda a první pomoc': podlePredmetu('Zdravověda a první pomoc'),
+  'Vězeňská administrativa': podlePredmetu('Vězeňská administrativa')
 };
 
 export {

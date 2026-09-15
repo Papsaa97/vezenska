@@ -105,7 +105,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-07",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – Zástava masivního krvácení",
     "question": "Jaký je správný a okamžitý postup při masivním tepenném krvácení z končetiny (např. po bodném poranění)?",
     "answer": "Okamžitě naložit turniket (škrtidlo) 5–7 cm nad ránu (mimo kloub), utáhnout vratidlo do úplného zastavení krvácení, zajistit a poznamenat přesný čas naložení na pásek/čelo zraněného.",
@@ -122,7 +122,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-08",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – KPR a AED",
     "question": "Jaký je správný poměr stlačování hrudníku a umělých vdechů při základní resuscitaci dospělého a jaká je frekvence dle ERC Guidelines?",
     "answer": "Poměr 30 stlačení : 2 vdechy, frekvence 100–120 stlačení za minutu, hloubka 5–6 cm uprostřed hrudníku na tvrdé podložce; co nejrychleji připojit AED.",
@@ -173,7 +173,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-11",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – Popáleniny a poleptání",
     "question": "Jaká je správná první pomoc při termickém popálení pokožky II. stupně (puchýře)?",
     "answer": "Okamžitě chladit čistou studenou vodou (cca 10–20 minut), nestrhávat přiškvařený oděv, nepropichovat puchýře, sterilně překrýt popáleninovým krytím.",
@@ -207,7 +207,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-13",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – Tenzní pneumotorax",
     "question": "Jak se v taktické první pomoci (TCCC) ošetřuje otevřené poranění hrudníku (nasávající rána hrudníku)?",
     "answer": "Aplikací hrudního chlopňového krytí (Chest Seal s ventilem), které brání nasávání vzduchu do pohrudniční dutiny, ale umožňuje únik krve a vzduchu ven.",
@@ -275,7 +275,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-17",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – Anafylaktický šok",
     "question": "Jaké jsou příznaky a první pomoc při těžké alergické reakci (anafylaxi) s otokem dýchacích cest?",
     "answer": "Dušnost, otok jazyka a hrdla, kopřivka, pokles tlaku; okamžitě aplikovat autoinjektor s adrenalinem (EpiPen) do zevní strany stehna a volat ZZS.",
@@ -309,7 +309,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-19",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – Epileptický záchvat",
     "question": "Jaká je správná první pomoc při záchvatu křečí s bezvědomím (epileptický záchvat typu Grand Mal)?",
     "answer": "Zabránit poranění hlavy (podložit měkkým předmětem), odstranit nebezpečné věci z okolí, nevkládat nic do úst, nebránit křečím násilím, po odeznění zajistit dýchací cesty a sledovat stav.",
@@ -343,7 +343,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-21",
-    "subject": "Služební příprava",
+    "subject": "Zdravověda a první pomoc",
     "topic": "První pomoc – Zlomeniny a imobilizace",
     "question": "Jak se provádí první pomoc při podezření na zlomeninu dlouhé kosti končetiny?",
     "answer": "Znehybnit přes dva sousední klouby (kloub nad i pod zlomeninou), u otevřených zlomenin sterilně krýt ránu bez zatlačování kostních úlomků, chladit a zajistit transport.",
@@ -411,7 +411,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-25",
-    "subject": "Služební příprava",
+    "subject": "Právo",
     "topic": "Trestní právo – Nutná obrana",
     "question": "Jaké jsou zákonné podmínky a meze nutné obrany dle § 29 trestního zákoníku (č. 40/2009 Sb.)?",
     "answer": "Odvrací se přímo hrozící nebo trvající útok na zájem chráněný trestním zákonem; obrana nesmí být zcela zjevně nepřiměřená způsobu útoku.",
@@ -428,7 +428,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-26",
-    "subject": "Služební příprava",
+    "subject": "Právo",
     "topic": "Trestní právo – Krajní nouze",
     "question": "V čem spočívá základní rozdíl mezi nutnou obranou (§ 29 TZ) a krajní nouzí (§ 28 TZ)?",
     "answer": "Krajní nouze odvrací nebezpečí (např. živelní pohromu, zvíře, požár), platí u ní přísná subsidiarita (nebezpečí nešlo odvrátit jinak) a proporcionalita (následek nesmí být stejně závažný ani závažnější).",
@@ -445,7 +445,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-27",
-    "subject": "Služební příprava",
+    "subject": "Bezpečnostní služba",
     "topic": "Vstupy do objektů – Výjimky z prohlídek",
     "question": "U kterých ústavních činitelů a funkcionářů se při vstupu do věznice NEPROVÁDÍ kontrola ani prohlídka zavazadla (§ 80 odst. 2 písm. c NGŘ č. 33/2019)?",
     "answer": "Prezident ČR, předseda vlády, předsedové PS a Senátu, ministr spravedlnosti a náměstci, členové vlády, generální ředitel VS ČR a náměstci, soudci, státní zástupci, ředitel GIBS a ombudsman.",
@@ -462,7 +462,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-28",
-    "subject": "Služební příprava",
+    "subject": "Bezpečnostní služba",
     "topic": "Vstupy do objektů – Vstupní doklady",
     "question": "Na jaké doklady mohou osoby vstupovat do střežených objektů VS ČR dle § 103 NGŘ č. 33/2019?",
     "answer": "Služební průkaz VS ČR / PČR / GIBS / BIS / CS / AČR / VP, občanský průkaz, cestovní/diplomatický pas, zvláštní povolení, průkaz ombudsmana a průkaz CPT.",
@@ -479,7 +479,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-29",
-    "subject": "Služební příprava",
+    "subject": "Bezpečnostní služba",
     "topic": "Technická kontrola osob – Kardiostimulátor",
     "question": "Jaký je správný postup strážného na vchodu při kontrole osoby s implantovaným kardiostimulátorem?",
     "answer": "Osoba neprochází rámem bez zastavení, nepřejíždí se opakovaně ručním detektorem přes přístroj; po předložení identifikační karty přístroje se provede alternativní ruční osobní prohlídka.",
@@ -496,7 +496,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-30",
-    "subject": "Služební příprava",
+    "subject": "Bezpečnostní služba",
     "topic": "Kontrola vozidel – Detektor tepové frekvence",
     "question": "Jaké úkony se musí provést před spuštěním detektoru tepové frekvence (Heartbeat detector) u vozidla?",
     "answer": "Řidič vypne motor, zavře všechna okna a dveře, všechny osoby vystoupí mimo vozidlo a seismické senzory se umístí na přední a zadní rám vozidla + zemní senzor.",
@@ -513,7 +513,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-31",
-    "subject": "Služební příprava",
+    "subject": "Bezpečnostní služba",
     "topic": "Justiční stráž – Přeprava cenin a peněz",
     "question": "Jaká striktní zásada platí pro nesení zavazadla s peněžní hotovostí při přepravě Justiční stráží dle § 144?",
     "answer": "Zavazadlo s finanční hotovostí nese VÝHRADNĚ zaměstnanec soudu/SZ/ministerstva, NIKDY příslušník justiční stráže; příslušníci zajišťují pouze ozbrojené krytí.",
@@ -530,7 +530,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-32",
-    "subject": "Služební příprava",
+    "subject": "Bezpečnostní služba",
     "topic": "Justiční stráž – Asistence při odnětí dítěte",
     "question": "Jaké jsou povinnosti příslušníka Justiční stráže při doprovodu soudního vykonavatele k odebrání nezletilého dítěte (§ 143)?",
     "answer": "Zajišťuje bezpečnost a ochranu zaměstnance soudu před fyzickými útoky, do objektu nevstupuje první, nepodílí se na samotném odebírání dítěte ani stěhování věcí a při ohrožení zajistí bezpečný odchod.",
@@ -547,7 +547,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-33",
-    "subject": "Služební příprava",
+    "subject": "Vězeňská administrativa",
     "topic": "Justiční stráž – Doručování písemností a obálky",
     "question": "U kterého typu soudní obálky NIKDY nenastává fikce doručení vhozením do schránky (§ 146 / OSŘ)?",
     "answer": "Obálka typu II (zelený pruh) – doručování do vlastních rukou s vyloučením vložení do schránky (např. platební rozkaz, trestní příkaz); po 10 dnech se vrací soudu.",
@@ -615,7 +615,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-37",
-    "subject": "Služební příprava",
+    "subject": "Penologie",
     "topic": "Prevence násilí – Kategorie vězňů",
     "question": "Kdo rozhoduje o zařazení vězněné osoby do kategorie DVO (další vytypovaná osoba) a DVO-P (profese) dle NGŘ č. 24/2022?",
     "answer": "Výhradně ŘEDITEL VĚZNICE, který své rozhodnutí písemně odůvodní a originál se zakládá do osobního spisu vězně.",
