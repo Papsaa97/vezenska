@@ -142,6 +142,13 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     effectiveProfile.role === 'student' && isSystemAdmin ? 'admin' : effectiveProfile.role
   );
 
+  // Escape, past na fokus a jeho návrat po zavření — viz hooks/useDialog.
+  // MUSÍ být nad `return null` níže. Dokud byl hook až za ním, přeskočil se
+  // pro nepřihlášeného uživatele a po přihlášení se počet zavolaných hooků
+  // změnil — React na to v prohlížeči hlásil „Internal React error: Expected
+  // static flag was missing". Zachytil to až ESLint.
+  const dialogRef = useDialog<HTMLDivElement>({ isOpen: user != null, onClose });
+
   if (!user) return null;
 
   // Odznak ukazuje roli z profilu, ne rozepsaný výběr v seznamu — ten platí teprve po uložení.
@@ -153,9 +160,6 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     return name.slice(0, 2).toUpperCase() || 'VS';
   })();
-
-  // Escape, past na fokus a jeho návrat po zavření — viz hooks/useDialog.
-  const dialogRef = useDialog<HTMLDivElement>({ isOpen: true, onClose });
 
   const handleSaveName = async (e: React.FormEvent) => {
     e.preventDefault();

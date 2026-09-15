@@ -634,7 +634,6 @@ function EditNameDialog({ targetUser, onClose, onSaved }: EditNameDialogProps) {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              autoFocus
               className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
             />
           </div>

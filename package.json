@@ -8,13 +8,15 @@
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
-    "lint": "tsc --noEmit",
+    "lint": "npm run lint:types && npm run lint:a11y",
     "test": "npm run lint && npm run check:legal && npm run check:questions",
     "sync:laws": "tsx scripts/sync-regulations.ts",
     "check:legal": "tsx scripts/verify-legal-integrity.ts",
     "check:questions": "tsx scripts/check-question-quality.ts",
     "deploy": "vercel",
-    "deploy:prod": "vercel --prod"
+    "deploy:prod": "vercel --prod",
+    "lint:types": "tsc --noEmit",
+    "lint:a11y": "eslint . --max-warnings 60"
   },
   "dependencies": {
     "@autonoma-ai/sdk": "^0.2.9",
@@ -37,11 +39,16 @@
     "@types/node": "^22.14.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.12.0",
     "sharp": "^0.35.4",
     "tailwindcss": "^4.1.14",
     "ts-morph": "^28.0.0",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
+    "typescript-eslint": "^8.70.0",
     "vercel": "^59.1.4",
     "vite": "^6.2.3"
   }
