@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useId, Suspense, lazy
 import { motion, AnimatePresence } from 'motion/react';
 import Header, { NavTab } from './components/Header';
 import OfflineBanner from './components/OfflineBanner';
+import RoleSyncBanner from './components/RoleSyncBanner';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import UpdatePrompt from './components/UpdatePrompt';
 import FeedbackButton from './components/FeedbackButton';
@@ -534,6 +535,7 @@ export default function App() {
           onGoForward={handleGoForward}
         />
         <OfflineBanner pendingResultCount={pendingResults.length} />
+        <RoleSyncBanner />
       </div>
       <PWAInstallPrompt />
       <UpdatePrompt />

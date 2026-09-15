@@ -29,17 +29,60 @@ projektu spusťte v tomto pořadí:
 | 15 | `014_drop_leftover_policies.sql` | **Shodí zbylé povolující politiky**, které rušily účinek kroku 13 |
 | 16 | `avatars_storage.sql` | Bucket `avatars` |
 | 17 | `set_admin_miichalpapi.sql` | Prvotní nastavení správce — **uprav si e-mail** |
+| 18 | `016_diagnostika_zapisu.sql` | Diagnostika a oprava, když nejde nic uložit — **uprav si e-mail** |
 
 > Kroky 13 a 14 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 13 na sobě nezávisí. Spustíte-li
 > 012 před 013, stačí 012 spustit ještě jednou.
 
+## Nejde uložit vůbec nic? Spusť `016_diagnostika_zapisu.sql`
+
+Příznak: otázky, uživatelé ani nástěnka nejdou uložit. Buď to skončí hláškou,
+že databáze změnu odmítla, nebo se změna zdánlivě uloží a po obnovení stránky
+je pryč.
+
+Příčina je skoro vždy v tom, že **o oprávnění rozhoduje výhradně sloupec
+`public.profiles.role`**, ne to, co ukazuje aplikace. Účet uvedený ve
+`VITE_ADMIN_EMAILS` vidí správcovské rozhraní i tehdy, když má v databázi roli
+`student` — rozhraní je pak funkční jen na pohled a RLS každý zápis zamítne.
+Roli správce navíc nelze nastavit z aplikace: politika „Pouze administrátor může
+měnit role“ vyžaduje, aby už nějaký správce existoval. Prvního správce v projektu
+proto musí založit SQL.
+
+`016_diagnostika_zapisu.sql` nejdřív vypíše, co je špatně, pak to opraví a nakonec
+vypíše výsledek. Řeší čtyři příčiny: chybějící roli správce, chybějící řádek
+v `profiles`, chybějící sloupec `user_class` (migrace 010) a chybějící roli
+`velitel_tridy` v omezení `CHECK` (migrace 011). Je idempotentní a nic nemaže.
+
+> **Po opravě se v aplikaci odhlas a znovu přihlas.** Role se čte při načtení
+> profilu, takže stará session ukazuje pořád stará oprávnění.
+
+### Proč se zamítnutý zápis nijak neprojeví
+
+Zamítnutí RLS u `UPDATE` a `DELETE` **není chyba**. Politika jen odfiltruje
+řádky, které volající smí měnit, a příkaz korektně změní nula řádků — PostgREST
+vrátí HTTP 200 a prázdný výsledek:
+
+```
+=> UPDATE public.quiz_questions SET question = 'ZMĚNĚNO' WHERE id = '…';
+UPDATE 0        -- žádná chyba, a přitom se nezapsalo nic
+```
+
+Klient proto musí každý `UPDATE` a `DELETE` zakončit `.select()` a spočítat
+vrácené řádky — jinak ohlásí úspěch i tam, kde se nezapsalo nic. `INSERT`
+a `upsert` tuhle past nemají: porušení `WITH CHECK` je u nich skutečná chyba
+(SQLSTATE 42501).
+
 ## ⚠️ Pořadí při nasazení: nejdřív SQL, potom kód
 
-Aplikace už roli nedoplňuje z localStorage — bere ji výhradně z databáze. Dokud
-sloupec `user_class` neexistuje, selže dotaz na `profiles` i jeho záložní varianta
-a **každý uživatel se načte jako `student`**, tedy i lektoři a správci ztratí
-přístup ke správě obsahu.
+Aplikace už roli nedoplňuje z localStorage — bere ji výhradně z databáze.
+
+Dřív platilo, že bez sloupce `user_class` selže dotaz na `profiles` i jeho
+záložní varianta a **každý uživatel se načte jako `student`**, tedy i lektoři
+a správci ztratí přístup ke správě obsahu. `AuthContext` dnes volitelné sloupce
+při chybě 42703 postupně ubírá, takže roli přečte i z instalace bez migrace 010.
+Pořadí přesto dodržte: `user_class` určuje, kterou nástěnku smí velitel třídy
+upravovat, a bez něj ho `can_manage_class()` úmyslně nepustí k žádné.
 
 Proto migrace spusť **před** nasazením nové verze aplikace, nebo hned po něm.
 Jediná výjimka jsou e-maily uvedené v `VITE_ADMIN_EMAILS` — těm se role správce

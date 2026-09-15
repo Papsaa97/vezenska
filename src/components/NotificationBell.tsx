@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react';
 import { Bell, CheckCheck, Check, Loader2, Inbox, AlertTriangle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { writeFailure } from '../utils/supabaseWrite';
 import { useAuth } from '../context/AuthContext';
 import { UserNotification } from './UserManager';
 
@@ -73,9 +74,16 @@ export default function NotificationBell() {
   const markAsRead = async (notification: UserNotification) => {
     if (notification.is_read || markingId) return;
     setMarkingId(notification.id);
-    const { error } = await supabase.from('user_notifications').update({ is_read: true }).eq('id', notification.id);
-    if (error) {
-      setNotice(`Zprávu se nepodařilo označit jako přečtenou (${error.message}).`);
+    // .select(): zamítnutí RLS se u UPDATE projeví nulou zasažených řádků, ne
+    // chybou — bez kontroly by odznak zmizel a zpráva zůstala nepřečtená.
+    const res = await supabase
+      .from('user_notifications')
+      .update({ is_read: true })
+      .eq('id', notification.id)
+      .select('id');
+    const failure = writeFailure('Zprávu', res);
+    if (failure) {
+      setNotice(failure);
     } else {
       setNotice(null);
       setNotifications((prev) => prev.map((n) => (n.id === notification.id ? { ...n, is_read: true } : n)));
@@ -93,10 +101,15 @@ export default function NotificationBell() {
     const previous = notifications;
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
 
-    const { error } = await supabase.from('user_notifications').update({ is_read: true }).in('id', unreadIds);
-    if (error) {
+    const res = await supabase
+      .from('user_notifications')
+      .update({ is_read: true })
+      .in('id', unreadIds)
+      .select('id');
+    const failure = writeFailure('Zprávy', res);
+    if (failure) {
       setNotifications(previous);
-      setNotice(`Zprávy se nepodařilo označit jako přečtené (${error.message}).`);
+      setNotice(failure);
     } else {
       setNotice(null);
     }
