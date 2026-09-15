@@ -37,6 +37,7 @@ projektu spusťte v tomto pořadí:
 | 23 | `022_uklid_banky_otazek.sql` | Smaže 51 řádků odpadu z importu a srovná předměty u 17 špatně zařazených otázek |
 | 24 | `023_sluzebni_priprava_dostava_obsah.sql` | Služební příprava dostává svůj obsah (21 otázek); `zbrane`/`taktika`/`zop` mizí jako štítky |
 | 25 | `024_pouziti_sily_do_sluzebni_pripravy.sql` | Dvě otázky o použití DP a zbraně přecházejí z Bezpečnostní služby do Služební přípravy |
+| 26 | `025_zruseni_bezpecnostni_sluzby.sql` | Ruší předmět Bezpečnostní služba — 34 otázek do Služební přípravy, 2 jinam |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
@@ -328,3 +329,24 @@ se to opačně. Která je správně, se musí ověřit proti předpisu.
 **Dvě otázky na totéž.** `bs-05` a `sp-31` se obě ptají, kdo nese zavazadlo
 s hotovostí při přepravě Justiční stráží, a mají stejnou odpověď — jen jinými
 slovy. Unikátní index na textu otázky je nezachytí, protože znění se liší.
+
+## Zrušení předmětu Bezpečnostní služba (`025`)
+
+Takový předmět se na Akademii VS ČR nevyučuje. Strážní, dozorčí a eskortní
+služba, služba justiční stráže, prohlídky a vstupy do objektů je služební
+příprava, a tam těch 34 otázek přechází. Dvě jdou jinam, protože do ní obsahem
+nepatří:
+
+- `bs-04` (doručování písemností soudu typu I/II) do **Vězeňské administrativy**,
+  kde už týž okruh je (`sp-33`),
+- `bs-08` (hmotnostní limit balíčku, § 24 z. 169/1999 Sb.) do **Penologie**,
+  kde je k témuž `pen-41`.
+
+Skript porovnává proti předmětu, ne proti vyjmenovaným textům otázek — v bance
+je `Bezpečnostní služba` právě těch 36 řádků, takže je pravidlo úplné
+a opakované spuštění už nenajde co měnit.
+
+Karta předmětu zůstává v `subjectsInfo.ts`, ale bez otázek se v Předmětech
+nenabídne. Parser importních šablon nově posílá `bezpečnostní služba`,
+`strážní` i `dozorčí` rovnou do Služební přípravy, aby ji import nezaložil
+znovu.
