@@ -12,7 +12,7 @@ projektu spusťte v tomto pořadí:
 
 | # | Soubor | Co dělá |
 |---|---|---|
-| 1 | `profiles.sql` | Tabulka `profiles`, funkce `get_role()` / `is_admin()`, trigger na registraci |
+| 1 | `profiles.sql` | Tabulka `profiles`, funkce `get_role()` / `is_admin()` / `is_staff()`, trigger na registraci |
 | 2 | `profiles_avatar.sql` | Sloupec `avatar_url` |
 | 3 | `010_profiles_user_class.sql` | Sloupec `user_class` — **bez něj se autorizace rolí opírá o localStorage** |
 | 4 | `011_profiles_role_constraint.sql` | Doplní roli `velitel_tridy` do omezení `CHECK` |
@@ -23,17 +23,16 @@ projektu spusťte v tomto pořadí:
 | 9 | `user_notifications.sql` | Interní zprávy od správce |
 | 10 | `class_boards.sql` | Nástěnky tříd a celoškolní hlášení |
 | 11 | `admin_user_management.sql` | RPC `admin_delete_user()` |
-| 12 | `fix_admin_rls_recursion.sql` | Oprava rekurze v politikách (starší instalace) |
-| 13 | `013_harden_rls.sql` | **Utažení politik**, které byly `USING (true)`; funkce `is_staff()`, `my_class()`, `can_manage_class()` |
-| 14 | `012_materials_storage.sql` | Bucket `studijni-materialy` (potřebuje funkce z kroku 13) |
-| 15 | `014_drop_leftover_policies.sql` | **Shodí zbylé povolující politiky**, které rušily účinek kroku 13 |
-| 16 | `avatars_storage.sql` | Bucket `avatars` |
-| 17 | `set_admin_miichalpapi.sql` | Prvotní nastavení správce — **uprav si e-mail** |
-| 18 | `016_diagnostika_zapisu.sql` | Diagnostika a oprava, když nejde nic uložit — **uprav si e-mail** |
-| 19 | `017_oprava_rekurze_politik.sql` | Oprava „infinite recursion … for relation profiles" (42P17) |
+| 12 | `013_harden_rls.sql` | **Utažení politik**, které byly `USING (true)`; funkce `my_class()`, `can_manage_class()` |
+| 13 | `012_materials_storage.sql` | Bucket `studijni-materialy` (potřebuje funkce z kroku 12) |
+| 14 | `014_drop_leftover_policies.sql` | **Shodí zbylé povolující politiky**, které rušily účinek kroku 12 |
+| 15 | `avatars_storage.sql` | Bucket `avatars` |
+| 16 | `set_admin_miichalpapi.sql` | Prvotní nastavení správce — **uprav si e-mail** |
+| 17 | `016_diagnostika_zapisu.sql` | Diagnostika a oprava, když nejde nic uložit — **uprav si e-mail** |
+| 18 | `017_oprava_rekurze_politik.sql` | Oprava „infinite recursion … for relation profiles" (42P17) |
 
-> Kroky 13 a 14 jsou číselně naopak, protože `012_materials_storage.sql` používá
-> `public.get_role()` z kroku 1 a politiky z kroku 13 na sobě nezávisí. Spustíte-li
+> Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
+> `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
 > 012 před 013, stačí 012 spustit ještě jednou.
 
 ## Chyba „infinite recursion detected in policy for relation profiles" (42P17)
@@ -59,9 +58,11 @@ takže najde i politiku pojmenovanou jakkoli. Zároveň převede politiky nad
 `quiz_questions` z inline dotazu na `public.is_staff()`, aby úpravy otázek na
 stavu politik nad `profiles` vůbec nezávisely.
 
-> ⚠️ **`fix_admin_rls_recursion.sql` už nespouštěj.** Řeší totéž, ale jen pro
-> politiky se známými názvy, a navíc přepíše `admin_delete_user()` a `is_admin()`
-> zpět na verze bez pojistek z migrace `015`. Nahradila ho `017`.
+> ⚠️ **Hledáš-li `fix_admin_rls_recursion.sql`, ten už v repozitáři není.** Řešil
+> totéž, ale jen pro politiky se známými názvy, takže tuhle rekurzi minul —
+> a navíc přepisoval `admin_delete_user()` a `is_admin()` zpět na verze bez
+> pojistek z migrace `015`. Všechno, co dělal, dnes pokrývají `profiles.sql`,
+> `admin_user_management.sql`, `user_notifications.sql`, `015` a `017`.
 
 ### Proč to nenajde `016`
 
