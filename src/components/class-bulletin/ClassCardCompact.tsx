@@ -135,7 +135,7 @@ export default function ClassCardCompact({
 
           <div className="flex-1 min-h-[140px] flex items-center justify-center">
             {item.scheduleUrl ? (
-              <div
+              <button type="button"
                 onClick={onOpenLightbox}
                 className="group relative w-full h-full min-h-[140px] max-h-[170px] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 cursor-pointer"
               >
@@ -148,7 +148,7 @@ export default function ClassCardCompact({
                   <ZoomIn className="w-3.5 h-3.5" />
                   <span>Zvětšit</span>
                 </div>
-              </div>
+              </button>
             ) : (
               <div className="w-full h-full min-h-[140px] rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-3 text-center">
                 <ImageIcon className="w-6 h-6 text-slate-400 mb-1 opacity-50" />

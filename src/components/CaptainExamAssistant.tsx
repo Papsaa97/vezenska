@@ -43,6 +43,7 @@ import {
   SavedCustomExam 
 } from '../utils/geminiAnalyzer';
 import { useDialog } from '../hooks/useDialog';
+import { activateOnKey } from '../utils/a11y';
 
 interface CaptainExamAssistantProps {
   onStartCustomQuiz: (questions: Question[]) => void;
@@ -489,7 +490,10 @@ export default function CaptainExamAssistant({
                 {savedExams.map((exam) => (
                   <div
                     key={exam.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => handleOpenSavedExam(exam)}
+                    onKeyDown={activateOnKey(() => handleOpenSavedExam(exam))}
                     className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600 bg-slate-50/50 dark:bg-slate-800/40 cursor-pointer transition-all flex items-start justify-between gap-3 group"
                   >
                     <div className="space-y-1 min-w-0">
@@ -668,7 +672,11 @@ export default function CaptainExamAssistant({
                   }`}
                 >
                   <div
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={expandedQuestionIds.has(q.id)}
                     onClick={() => toggleExpand(q.id)}
+                    onKeyDown={activateOnKey(() => toggleExpand(q.id))}
                     className="p-4 print:p-1.5 flex items-start justify-between gap-4 cursor-pointer select-none"
                   >
                     <div className="flex items-start gap-3 print:gap-1.5 flex-1">

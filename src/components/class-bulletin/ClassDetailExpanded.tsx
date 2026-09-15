@@ -199,7 +199,7 @@ export default function ClassDetailExpanded({
           </div>
 
           {item.scheduleUrl ? (
-            <div
+            <button type="button"
               onClick={onOpenLightbox}
               className="group relative w-full h-80 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 cursor-pointer shadow-sm hover:shadow-md transition-shadow"
             >
@@ -212,7 +212,7 @@ export default function ClassDetailExpanded({
                 <ZoomIn className="w-5 h-5" />
                 <span>Kliknutím otevřete velký rozvrh s možností zoomu</span>
               </div>
-            </div>
+            </button>
           ) : (
             <div className="w-full h-72 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 flex flex-col items-center justify-center p-6 text-center">
               <Calendar className="w-12 h-12 text-slate-400 mb-3 opacity-60" />
