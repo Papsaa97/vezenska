@@ -120,7 +120,6 @@ export default function FeedbackModal({ onClose, screenContext }: FeedbackModalP
           aria-label="Zpětná vazba"
           tabIndex={-1}
           className="pointer-events-auto w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-3xl shadow-2xl p-6 sm:p-7 relative"
-          onClick={(e) => e.stopPropagation()}
         >
           {/* Close */}
           <button

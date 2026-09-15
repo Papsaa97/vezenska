@@ -312,7 +312,6 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
           aria-label="Profil uživatele"
           tabIndex={-1}
           className="pointer-events-auto w-full max-w-lg max-h-[92vh] overflow-y-auto bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl p-5 sm:p-8 relative"
-          onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={onClose}

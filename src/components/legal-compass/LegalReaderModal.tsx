@@ -72,23 +72,26 @@ export default function LegalReaderModal({
   return (
     <AnimatePresence>
       {activeModalRegulation && (
-        <div
-          ref={dialogRef}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-          tabIndex={-1}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 md:p-6 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200 print:relative print:inset-auto print:bg-white print:p-0 print:block"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) closeReader();
-          }}
-        >
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 md:p-6 animate-in fade-in duration-200 print:relative print:inset-auto print:bg-white print:p-0 print:block">
+          {/* Ztmavené pozadí je dekorace: klik na něj dialog zavře, ale pro
+              odečítač obrazovky neexistuje a klávesnice má Escape (useDialog).
+              Proto je oddělené od samotného dialogu a označené aria-hidden. */}
+          <div
+            aria-hidden="true"
+            onClick={() => closeReader()}
+            className="absolute inset-0 bg-black/75 backdrop-blur-sm print:hidden"
+          />
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            tabIndex={-1}
             initial={{ scale: 0.96, opacity: 0, y: 16 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.96, opacity: 0, y: 16 }}
             transition={{ duration: 0.2 }}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-2xl sm:rounded-3xl shadow-2xl w-full max-w-4xl h-[100dvh] sm:h-auto sm:max-h-[92vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100 print:w-full print:max-w-none print:h-auto print:max-h-none print:border-none print:shadow-none print:rounded-none"
+            className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-2xl sm:rounded-3xl shadow-2xl w-full max-w-4xl h-[100dvh] sm:h-auto sm:max-h-[92vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100 print:w-full print:max-w-none print:h-auto print:max-h-none print:border-none print:shadow-none print:rounded-none"
           >
             {/* Modal Header */}
             <div className="p-3 sm:p-5 border-b border-slate-200 dark:border-slate-800 space-y-2 sm:space-y-3 shrink-0 bg-slate-50/70 dark:bg-slate-950/70 print:bg-white print:border-b-2 print:border-slate-900 print:p-0 print:mb-4">
