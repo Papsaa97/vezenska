@@ -138,9 +138,18 @@ export async function fetchQuizQuestionsFromSupabase(): Promise<Question[] | nul
   }
 
   try {
+    // Vyjmenované sloupce musí v tabulce existovat, jinak PostgREST celý dotaz
+    // odmítne chybou 42703 a načtení skončí fallbackem na bundlovanou sadu — i když
+    // je banka plná. Přesně to se dělo: výběr obsahoval `answer`, `correct_option`,
+    // `correctOption` a `rationale`, tedy čtyři názvy, které v public.quiz_questions
+    // nikdy nevznikly (skutečné schéma viz supabase/quiz_questions.sql). Aplikace tak
+    // trvale jela na 377 otázkách z balíčku místo na bance.
+    //
+    // mapRowToQuestion() ty názvy dál umí přečíst, kdyby řádek odjinud přišel — jen
+    // se na ně už nesmí ptát databáze.
     const { data, error } = await supabase
       .from('quiz_questions')
-      .select('id, subject, topic, question, answer, options, correct_index, correct_option, correctOption, explanation, rationale, source, is_hidden')
+      .select('id, subject, topic, question, options, correct_index, explanation, source, is_hidden')
       .order('created_at', { ascending: false })
       .limit(5000);
 

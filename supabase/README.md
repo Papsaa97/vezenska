@@ -33,6 +33,7 @@ projektu spusťte v tomto pořadí:
 | 19 | `018_get_role_neni_volatelna_z_klienta.sql` | Zavádí `my_role()` a odebírá klientům `EXECUTE` na `get_role(uuid)` |
 | 20 | `019_vykon_politik_a_indexu.sql` | Výkon: ruší překrývající se politiky, obaluje `auth.uid()` do `(select …)`, doplňuje indexy nad cizími klíči |
 | 21 | `020_ochrana_posledniho_spravce.sql` | Pojistka: poslednímu správci nelze odebrat roli ani ho smazat |
+| 22 | `021_vyhodnoceni_kvizu_na_serveru.sql` | Skóre testu počítá funkce `vyhodnotit_kviz()`, ne prohlížeč; sloupec `quiz_results.overeno` |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
@@ -192,21 +193,25 @@ Vrátit smí jen `class_boards` a `global_announcements` (čtení pro přihláš
 
 Banku otázek čte každý **přihlášený** uživatel celou, včetně sloupce
 `correct_index` — politika `quiz_questions_select` má `USING (true)` pro roli
-`authenticated`. Ponecháno záměrně: všech 377 výchozích otázek i se správnými
-odpověďmi je tak jako tak součástí veřejného klientského bundlu, protože `App.tsx`
-importuje `academyQuestions`. Samotné utažení RLS by tedy odpovědi neutajilo —
-muselo by se vyhodnocování testů přesunout na server a `academyQuestions` vyřadit
-z bundlu.
+`authenticated`. Ponecháno záměrně, a nejde jen o bundlované otázky: portál
+správné odpovědi **sám ukazuje**. V sekci Předměty si každý přihlášený rozklikne
+otázku i s vyznačenou správnou odpovědí a vysvětlením — to je smysl studijní
+pomůcky. Utáhnout RLS by tedy znamenalo tu sekci zrušit, ne něco utajit.
+
+Z toho plyne, co serverové vyhodnocení testů (migrace 021) řeší a co ne:
+
+- **Řeší:** zapsané skóre odpovídá odeslaným odpovědím. Dřív si `correct_answers`
+  i `accuracy` spočítal prohlížeč a poslal je hotové; politika u `INSERT` hlídala
+  jedině `auth.uid() = user_id`. Vymyšlené číslo se tak dostalo až do admin
+  konzole, která z `quiz_results` počítá XP každého uživatele.
+- **Neřeší:** že se uživatel na odpověď předtím podíval. XP proto zůstává měkké
+  číslo, ne důkaz o znalostech.
 
 **Nepřihlášený** uživatel naproti tomu nedostane ani řádek: pro roli `anon` na
-`quiz_questions` žádná politika není. Z toho plynou dva důsledky:
-
-- `App.tsx` volá `loadQuestions()` hned při připojení komponenty, tedy ještě před
-  dokončením přihlášení. Dotaz nevrátí nic, `fetchQuizQuestionsFromSupabase()` vrátí
-  `null` a aplikace tiše spadne na bundlovanou sadu.
-- Znovunačtení po přihlášení nic nespouští — událost `vscr:questions_updated` posílá
-  jen správa otázek a na `onAuthStateChange` se `App.tsx` nevěší. V čerstvé záložce
-  tak student jede na bundlované sadě až do dalšího načtení stránky.
+`quiz_questions` žádná politika není. `App.tsx` proto otázky načítá až po
+vyřešení relace (efekt závisí na `authLoading` a `user?.id`), jinak by dotaz
+odešel jako anonymní, nevrátil nic a aplikace by zůstala na bundlované sadě až
+do dalšího načtení stránky.
 
 Politika se jmenuje `quiz_questions_select` a má `TO authenticated` — to je
 podstatné. Bez klauzule `TO` by platila pro `PUBLIC`, tedy i pro roli `anon`, a
@@ -214,3 +219,44 @@ banku by si stáhl kdokoli bez přihlášení. `quiz_questions.sql` dřív takov
 politiku zakládal pod názvem „Povolit čtení otázek pro všechny", takže se
 repozitář rozcházel s produkcí a čistá instalace vycházela volnější než ostrý
 provoz. Srovnáno; starý název skript shazuje.
+
+## Výsledky bez razítka (`quiz_results.overeno`)
+
+Sloupec `overeno` říká, jestli skóre spočítala funkce `vyhodnotit_kviz()`.
+Politika `„Vlastní výsledek jen jako neověřený"` klientovi nedovolí zapsat řádek
+s `overeno = true`, takže razítko umí dát jedině ta funkce.
+
+Přímý zápis **bez** razítka zůstává povolený schválně: výsledky, které uvízly ve
+frontě neodeslaných testů (`localStorage`, klíč `vscr_pending_quiz_results`) ještě
+ve starší verzi aplikace, si nepamatují text zvolené odpovědi a serverově se
+vyhodnotit nedají. Uloží se tedy bez razítka — zahodit je by znamenalo připravit
+uživatele o dokončený test. Do XP v admin konzoli se nezapočítají a u uživatele se
+zobrazí jako „+N neověř.".
+
+Až fronty doběhnou, je možné politiku shodit úplně a nechat jedinou cestu přes
+`vyhodnotit_kviz()`:
+
+```sql
+DROP POLICY "Vlastní výsledek jen jako neověřený" ON public.quiz_results;
+```
+
+Kolik neověřených řádků ještě je:
+
+```sql
+SELECT overeno, count(*) FROM public.quiz_results GROUP BY overeno;
+```
+
+## Proč se posílá text odpovědi, ne její pořadí
+
+`Quiz.tsx` možnosti u každé otázky před zobrazením promíchá
+(`shuffleQuestionOptions`), takže index, na který uživatel klikl, s pořadím
+v databázi nesouvisí. `vyhodnotit_kviz()` proto porovnává **text** zvolené
+odpovědi s `options ->> correct_index`.
+
+Stejný důvod stojí za polem `selectedText` v typu `QuestionAttempt`. Prázdný
+řetězec znamená „nevybráno" a vyhodnotí se jako chyba.
+
+Otázka se v bance dohledává primárně podle `id`, a když to není UUID, podle textu
+otázky. Druhá cesta je pro testy dokončené offline nad bundlovanou sadou, kde mají
+otázky identifikátory typu `pravo-1`. Nedohledaná otázka se počítá jako chybná
+a celý řádek vyjde jako neověřený.
