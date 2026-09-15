@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { LayoutGrid, CheckCircle2, RotateCcw, Timer, AlertCircle, Sparkles, Trophy, ArrowRight, Zap, Award, Printer } from 'lucide-react';
 import { MatchingCategory, MatchingRecord } from '../types';
 import DiagramGame from "./DiagramGame";
@@ -38,7 +38,11 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
     return [...activeCategory.pairs].map(p => ({ id: p.id, text: p.right })).sort((a, b) => a.text.localeCompare(b.text, 'cs'));
   }, [activeCategory]);
 
-  const initGame = () => {
+  // useCallback drží identitu initGame stabilní, dokud se nezmění kategorie. Efekt
+  // níže pak může mít v závislostech přímo initGame, aniž by se hra rozjížděla
+  // pořád dokola. `matchingCategories` je modulový import, takže activeCategory je
+  // stabilní reference a smyčka nehrozí.
+  const initGame = useCallback(() => {
     if (!activeCategory) return;
     
     const lefts = activeCategory.pairs.map(p => ({ id: p.id, text: p.left }));
@@ -58,11 +62,11 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
     setIsTimerRunning(true);
     startTimeRef.current = Date.now();
     setGameKey(prev => prev + 1);
-  };
+  }, [activeCategory]);
 
   useEffect(() => {
     initGame();
-  }, [selectedCategoryId, activeCategory]);
+  }, [initGame]);
 
   // Stopwatch timer effect
   useEffect(() => {
