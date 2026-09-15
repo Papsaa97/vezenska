@@ -291,6 +291,28 @@ WHERE n.nspname = 'public' AND p.proname = 'vyhodnotit_kviz';
 
 SELECT overeno, count(*) AS pocet FROM public.quiz_results GROUP BY overeno ORDER BY overeno;
 
+-- ─── Očekávané hlášení linteru ───────────────────────────────────────────────
+--
+-- vyhodnotit_kviz() se objeví v hlášení „Signed-In Users Can Execute SECURITY
+-- DEFINER Function" (0029) — stejně jako is_admin(), is_staff(), my_class(),
+-- my_role(), can_manage_class() a admin_delete_user(), viz migrace 018. Je to
+-- záměr: bez SECURITY DEFINER by funkce nemohla zapsat řádek s razítkem, což je
+-- celý smysl tohohle skriptu.
+--
+-- V hlášení „Public Can Execute" (0028, role anon) být NESMÍ — EXECUTE se jí
+-- v kroku 2 odebírá. Kontrola je v bodě (b) výše: v proacl nesmí figurovat anon.
+--
+-- ─── Návrat zpět ─────────────────────────────────────────────────────────────
+--
+--     DROP FUNCTION IF EXISTS public.vyhodnotit_kviz(uuid, text, integer, timestamptz, jsonb);
+--     DROP POLICY IF EXISTS "Vlastní výsledek jen jako neověřený" ON public.quiz_results;
+--     CREATE POLICY "Povolit vkládání vlastních výsledků"
+--       ON public.quiz_results FOR INSERT TO authenticated
+--       WITH CHECK ((SELECT auth.uid()) = user_id);
+--     ALTER TABLE public.quiz_results DROP COLUMN IF EXISTS overeno;
+--
+-- Uložené výsledky zůstanou; zmizí jen informace, které z nich počítal server.
+
 -- (d) Zkouška nasucho pod rolí přihlášeného uživatele. Přepište <UUID_UCTU>
 --     za id z public.profiles; transakce se celá vrací zpět:
 --
