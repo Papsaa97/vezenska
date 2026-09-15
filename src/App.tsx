@@ -174,9 +174,26 @@ export default function App() {
     setAllQuestions(prev => prev.map(q => q.id === updatedQuestion.id ? updatedQuestion : q));
   }, []);
 
+  // Otázky se načítají teprve po vyřešení relace, ne hned při připojení komponenty.
+  // Politika `quiz_questions_select` je omezená na roli `authenticated` a pro `anon`
+  // na tabulce žádná není, takže dotaz odeslaný před přihlášením nevrátí ani řádek:
+  // `fetchQuizQuestionsFromSupabase()` vrátí `null` a aplikace spadne na bundlovanou
+  // sadu. Bez tohoto efektu by na ní zůstala až do dalšího načtení stránky, protože
+  // znovunačtení posílá jedině správa otázek přes `vscr:questions_updated`.
+  //
+  // V závislostech je `user?.id`, ne `user`: při obnově tokenu chodí z
+  // onAuthStateChange nový objekt se stejným id a na ten otázky načítat znovu nemá
+  // smysl. Odhlášení naopak id změní na `null`, dotaz projde jako anonymní a sada se
+  // správně vrátí na bundlovanou.
+  //
+  // `allQuestions` startuje na `academyQuestions`, takže i kdyby se relace nevyřešila,
+  // aplikace pořád jede na bundlované sadě — čekání nemůže skončit prázdnou bankou.
   useEffect(() => {
+    if (authLoading) return;
     loadQuestions();
+  }, [loadQuestions, authLoading, user?.id]);
 
+  useEffect(() => {
     const handleUpdate = (e: Event) => {
       const customEvt = e as CustomEvent<{ question?: Question }>;
       if (customEvt.detail?.question) {
