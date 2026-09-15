@@ -93,8 +93,14 @@ export function normalizeSubject(rawSubject: string): {
   if (clean === 'zbrane' || clean === 'zbran' || clean.includes('strel')) {
     return { canonicalSubject: 'Zbraně', isForbiddenKrimi: false };
   }
+  // ZOP jako samostatný předmět v bance není — základní odborná příprava je celý
+  // kurz, ne okruh vedle Práva a Penologie. Její čtyři otázky (povinnost zakročit,
+  // prokazování příslušnosti, hodnosti, pořadová příprava) jsou služební příprava.
+  //
+  // Pravidlo musí zůstat PŘED pravidlem pro Právo: „odborna priprava“ obsahuje
+  // podřetězec „prav“.
   if (clean === 'zop' || clean.includes('odborna priprava')) {
-    return { canonicalSubject: 'ZOP', isForbiddenKrimi: false };
+    return { canonicalSubject: 'Služební příprava', isForbiddenKrimi: false };
   }
   if (clean.includes('penolog')) {
     return { canonicalSubject: 'Penologie', isForbiddenKrimi: false };

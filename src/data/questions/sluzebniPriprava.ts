@@ -103,41 +103,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "source": "Technický manuál a střelecký řád VS ČR",
     "explanation": "Samopal CZ Scorpion EVO 3A1 v ráži 9 mm Luger disponuje oboustranným 4polohovým voličem režimu střelby (0, 1, 3, dávka) a polymerovým tělem s lištami MIL-STD-1913. (Právní úprava: Technický manuál a střelecký řád VS ČR)"
   },
-  {
-    "id": "sp-07",
-    "subject": "Zdravověda a první pomoc",
-    "topic": "První pomoc – Zástava masivního krvácení",
-    "question": "Jaký je správný a okamžitý postup při masivním tepenném krvácení z končetiny (např. po bodném poranění)?",
-    "answer": "Okamžitě naložit turniket (škrtidlo) 5–7 cm nad ránu (mimo kloub), utáhnout vratidlo do úplného zastavení krvácení, zajistit a poznamenat přesný čas naložení na pásek/čelo zraněného.",
-    "options": [
-      "Naložit turniket co nejníže pod ránu směrem k prstům, vratidlo utáhnout výhradně mírně pro zachování hmatného tepu na periferii, ránu vypláchnout peroxidem vodíku a čas naložení nikam nezaznamenávat.",
-      "Přiložit sterilní gázu na ránu, končetinu svěsit dolů pod úroveň srdce a škrtidlo naložit přímo přes kloubní spojení s povolením každých 10 minut.",
-      "Provést dezinfekci rány jodovým roztokem, naložit tlakový obvaz s obráceným škrtidlem a končetinu fixovat dlahou bez záznamu času aplikace.",
-      "Okamžitě naložit turniket (škrtidlo) 5–7 cm nad ránu (mimo kloub), utáhnout vratidlo do úplného zastavení krvácení, zajistit a poznamenat přesný čas naložení na pásek/čelo zraněného."
-    ],
-    "correctOption": 3,
-    "rationale": "Masivní končetinové krvácení je nejčastější odvratitelnou příčinou smrti v taktickém prostředí (TCCC protokoly - MARCH). Turniket se utahuje do vymizení pulsu a zastavení krvácení a čas se striktně eviduje.",
-    "source": "Standardy první pomoci Akademie VS ČR a TCCC Guidelines",
-    "explanation": "Masivní končetinové krvácení je nejčastější odvratitelnou příčinou smrti v taktickém prostředí (TCCC protokoly - MARCH). Turniket se utahuje do vymizení pulsu a zastavení krvácení a čas se striktně eviduje. (Právní úprava: Standardy první pomoci Akademie VS ČR a TCCC Guidelines)"
-  },
-  {
-    "id": "sp-08",
-    "subject": "Zdravověda a první pomoc",
-    "topic": "První pomoc – KPR a AED",
-    "question": "Jaký je správný poměr stlačování hrudníku a umělých vdechů při základní resuscitaci dospělého a jaká je frekvence dle ERC Guidelines?",
-    "answer": "Poměr 30 stlačení : 2 vdechy, frekvence 100–120 stlačení za minutu, hloubka 5–6 cm uprostřed hrudníku na tvrdé podložce; co nejrychleji připojit AED.",
-    "options": [
-      "Pouze nepřetržité umělé dýchání bez masáže hrudníku frekvencí 20 vdechů za minutu až do příjezdu záchranné služby. Automatizovaný externí defibrilátor se u dospělých nepoužívá.",
-      "Poměr 30 stlačení : 5 vdechů, frekvence 140–160 stlačení za minutu, hloubka 8–10 cm v oblasti žaludku; defibrilátor aplikovat výhradně při přítomnosti lékaře.",
-      "Poměr 30 stlačení : 2 vdechy, frekvence 100–120 stlačení za minutu, hloubka 5–6 cm uprostřed hrudníku na tvrdé podložce; co nejrychleji připojit AED.",
-      "Poměr 15 stlačení : 2 vdechy, frekvence 80 stlačení za minutu, hloubka 2–3 cm na boku postiženého; AED připojit až po 10 minutách manuální KPR. Podložka pod hrudníkem musí být měkká, aby nedošlo ke zlomení žeber."
-    ],
-    "correctOption": 2,
-    "rationale": "Dle mezinárodních doporučení ERC (European Resuscitation Council) je standardem pro dospělé KPR v poměru 30:2 s frekvencí 100-120/min, minimálním přerušováním a včasnou defibrilací pomocí AED.",
-    "source": "Doporučené postupy ERC a výukové standardy Akademie VS ČR",
-    "explanation": "Dle mezinárodních doporučení ERC (European Resuscitation Council) je standardem pro dospělé KPR v poměru 30:2 s frekvencí 100-120/min, minimálním přerušováním a včasnou defibrilací pomocí AED. (Právní úprava: Doporučené postupy ERC a výukové standardy Akademie VS ČR)"
-  },
-  {
+      {
     "id": "sp-09",
     "subject": "Služební příprava",
     "topic": "Povinnosti po použití zbraně a DP",
@@ -171,24 +137,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "source": "Metodika použití donucovacích prostředků – elektrošokové zbraně VS ČR",
     "explanation": "Použití elektrického paralyzéru vyžaduje směrování sond do velkých svalových skupin (trup, stehna, záda). Zásah do krku či hlavy je zakázán pro riziko těžkého zranění. (Právní úprava: Metodika použití donucovacích prostředků – elektrošokové zbraně VS ČR)"
   },
-  {
-    "id": "sp-11",
-    "subject": "Zdravověda a první pomoc",
-    "topic": "První pomoc – Popáleniny a poleptání",
-    "question": "Jaká je správná první pomoc při termickém popálení pokožky II. stupně (puchýře)?",
-    "answer": "Okamžitě chladit čistou studenou vodou (cca 10–20 minut), nestrhávat přiškvařený oděv, nepropichovat puchýře, sterilně překrýt popáleninovým krytím.",
-    "options": [
-      "Aplikovat ledové obklady s ledem přímo na ránu po dobu alespoň 60 minut a ránu ponechat zcela otevřenou na vzduchu bez krytí.",
-      "Okamžitě chladit čistou studenou vodou (cca 10–20 minut), nestrhávat přiškvařený oděv, nepropichovat puchýře, sterilně překrýt popáleninovým krytím.",
-      "Puchýře sterilně propíchnout k vypuštění tekutiny, aplikovat mastný krém nebo zásyp a pevně obvázat elastickým obinadlem.",
-      "Strhnout přiškvařené zbytky oděvu z popáleného místa pinzetou, ránu dezinfikovat koncentrovaným lihem, přiložit suchý froté ručník a chlazení vodou zásadně neprovádět."
-    ],
-    "correctOption": 1,
-    "rationale": "Při popáleninách je prioritou šetrné chlazení vodou o teplotě cca 15 °C k zastavení tepelné destrukce tkáně a prevence infekce sterilním nepřilnavým krytím bez nanášení mastí.",
-    "source": "Standardy první pomoci Akademie VS ČR",
-    "explanation": "Při popáleninách je prioritou šetrné chlazení vodou o teplotě cca 15 °C k zastavení tepelné destrukce tkáně a prevence infekce sterilním nepřilnavým krytím bez nanášení mastí. (Právní úprava: Standardy první pomoci Akademie VS ČR)"
-  },
-  {
+    {
     "id": "sp-12",
     "subject": "Služební příprava",
     "topic": "Taktika služebního zákroku v cele",
@@ -205,24 +154,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "source": "Metodika služebních zákroků v uzavřených prostorách, Akademie VS ČR",
     "explanation": "Taktika vstupu do cely (Cell Extraction) je týmovou činností založenou na momentu překvapení, převaze síly, použití ochranných štítů a bleskovém znehybnění agresora bez zranění personálu. (Právní úprava: Metodika služebních zákroků v uzavřených prostorách, Akademie VS ČR)"
   },
-  {
-    "id": "sp-13",
-    "subject": "Zdravověda a první pomoc",
-    "topic": "První pomoc – Tenzní pneumotorax",
-    "question": "Jak se v taktické první pomoci (TCCC) ošetřuje otevřené poranění hrudníku (nasávající rána hrudníku)?",
-    "answer": "Aplikací hrudního chlopňového krytí (Chest Seal s ventilem), které brání nasávání vzduchu do pohrudniční dutiny, ale umožňuje únik krve a vzduchu ven.",
-    "options": [
-      "Ránu hermeticky uzavřít neprodyšnou náplastí ze všech 4 stran bez jakéhokoli ventilu a zraněného uložit na záda se zvednutými dolními končetinami a hlavou v hlubokém záklonu.",
-      "Aplikací hrudního chlopňového krytí (Chest Seal s ventilem), které brání nasávání vzduchu do pohrudniční dutiny, ale umožňuje únik krve a vzduchu ven.",
-      "Provést okamžitý výplach rány fyziologickým roztokem, zavést škrtidlo přes hrudník a nutit zraněného k hlubokému usilovnému dýchání.",
-      "Přiložit suchý savý obvaz, zraněného položit na zdravý bok a provádět nepřetržitou masáž hrudníku i při zachovaném vědomí."
-    ],
-    "correctOption": 1,
-    "rationale": "Otevřený pneumotorax může rychle přejít v tenzní pneumotorax vedoucí k útlaku srdce a plic. Použití polopropustného ventilového krytí (Chest Seal) zachraňuje život.",
-    "source": "TCCC Guidelines a traumatologický protokol Akademie VS ČR",
-    "explanation": "Otevřený pneumotorax může rychle přejít v tenzní pneumotorax vedoucí k útlaku srdce a plic. Použití polopropustného ventilového krytí (Chest Seal) zachraňuje život. (Právní úprava: TCCC Guidelines a traumatologický protokol Akademie VS ČR)"
-  },
-  {
+    {
     "id": "sp-14",
     "subject": "Služební příprava",
     "topic": "Použití pout a poutacích pásů",
@@ -273,24 +205,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "source": "Metodika použití donucovacích prostředků VS ČR",
     "explanation": "Typ trysky JET (tekutá střela nebo pěna) je vhodný pro uzavřené prostory chodeb věznic, protože nekontaminuje celou místnost a působí cíleně na agresora. (Právní úprava: Metodika použití donucovacích prostředků VS ČR)"
   },
-  {
-    "id": "sp-17",
-    "subject": "Zdravověda a první pomoc",
-    "topic": "První pomoc – Anafylaktický šok",
-    "question": "Jaké jsou příznaky a první pomoc při těžké alergické reakci (anafylaxi) s otokem dýchacích cest?",
-    "answer": "Dušnost, otok jazyka a hrdla, kopřivka, pokles tlaku; okamžitě aplikovat autoinjektor s adrenalinem (EpiPen) do zevní strany stehna a volat ZZS.",
-    "options": [
-      "Svalový třes a hyperventilace; podat uklidňující sedativa, zraněného posadit k otevřenému oknu a vyčkat bez volání ZZS. Adrenalinový autoinjektor se u alergické reakce nikdy nepoužívá.",
-      "Krvácení z nosu a ztuhlost šíje; aplikovat autoinjektor s inzulínem přímo do břišní stěny a postiženého nutit k intenzivní chůzi. Otok jazyka a hrdla mezi příznaky anafylaxe nepatří.",
-      "Dušnost, otok jazyka a hrdla, kopřivka, pokles tlaku; okamžitě aplikovat autoinjektor s adrenalinem (EpiPen) do zevní strany stehna a volat ZZS.",
-      "Zvýšená teplota a křeče v břiše; podat perorálně tabletu aspirinu, zapít velkým množstvím studené vody, uložit postiženého do polohy na břiše a záchrannou službu volat až při ztrátě vědomí."
-    ],
-    "correctOption": 2,
-    "rationale": "Anafylaxe bezprostředně ohrožuje život udušením a oběhovým selháním. Jediným kauzálním lékem první volby je intramuskulární podání adrenalinu do stehna.",
-    "source": "Traumatologie a standardy první pomoci Akademie VS ČR",
-    "explanation": "Anafylaxe bezprostředně ohrožuje život udušením a oběhovým selháním. Jediným kauzálním lékem první volby je intramuskulární podání adrenalinu do stehna. (Právní úprava: Traumatologie a standardy první pomoci Akademie VS ČR)"
-  },
-  {
+    {
     "id": "sp-18",
     "subject": "Služební příprava",
     "topic": "Služební obušek a tonfa",
@@ -307,24 +222,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "source": "Metodika použití obušku a taktiky sebeobrany Akademie VS ČR",
     "explanation": "Údery obuškem směřují do velkých svalových partií (stehna, hýždě, paže) k vyřazení motoriky. Údery na hlavu a páteř mohou způsobit smrt nebo trvalé ochrnutí. (Právní úprava: Metodika použití obušku a taktiky sebeobrany Akademie VS ČR)"
   },
-  {
-    "id": "sp-19",
-    "subject": "Zdravověda a první pomoc",
-    "topic": "První pomoc – Epileptický záchvat",
-    "question": "Jaká je správná první pomoc při záchvatu křečí s bezvědomím (epileptický záchvat typu Grand Mal)?",
-    "answer": "Zabránit poranění hlavy (podložit měkkým předmětem), odstranit nebezpečné věci z okolí, nevkládat nic do úst, nebránit křečím násilím, po odeznění zajistit dýchací cesty a sledovat stav.",
-    "options": [
-      "Vložit mezi zuby roubík nebo dřevěný kolík proti překousnutí jazyka, zalehnout končetiny vší silou k zastavení křečí, podat tekutiny a po odeznění záchvatu nechat postiženého ihned samostatně odejít.",
-      "Zabránit poranění hlavy (podložit měkkým předmětem), odstranit nebezpečné věci z okolí, nevkládat nic do úst, nebránit křečím násilím, po odeznění zajistit dýchací cesty a sledovat stav.",
-      "Otočit postiženého okamžitě na břicho, vytáhnout jazyk pinzetou a zahájit nepřímou masáž srdce bez ohledu na probíhající křeče.",
-      "Aplikovat studené obklady na hrudník, provést masáž krčních tepen a po celou dobu záchvatu držet hlavu v záklonu v sedě na židli."
-    ],
-    "correctOption": 1,
-    "rationale": "Vkládání předmětů do úst vede k vylomení zubů a ucpání dýchacích cest. Prioritou je ochrana hlavy před úderem o podlahu a zotavovací poloha po záchvatu.",
-    "source": "Standardy první pomoci Akademie VS ČR",
-    "explanation": "Vkládání předmětů do úst vede k vylomení zubů a ucpání dýchacích cest. Prioritou je ochrana hlavy před úderem o podlahu a zotavovací poloha po záchvatu. (Právní úprava: Standardy první pomoci Akademie VS ČR)"
-  },
-  {
+    {
     "id": "sp-20",
     "subject": "Služební příprava",
     "topic": "Zastavovací pás",
@@ -377,7 +275,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-23",
-    "subject": "ZOP",
+    "subject": "Služební příprava",
     "topic": "Povinnost zakročit – Výjimky ze zákroku",
     "question": "Kdy příslušník VS ČR NENÍ povinen provést služební zákrok dle § 7 odst. 2 zákona č. 555/1992 Sb.?",
     "answer": "Je-li pod vlivem léků/látek snižujících schopnost jednání, není-li k provedení odborně vyškolen/vycvičen, nebo brání-li tomu důležitý zájem služby (je však povinen vyrozumět nadřízeného).",
@@ -394,7 +292,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-24",
-    "subject": "ZOP",
+    "subject": "Služební příprava",
     "topic": "Prokazování příslušnosti k VS ČR",
     "question": "Jakými způsoby prokazuje příslušník svoji příslušnost k Vězeňské službě ČR (§ 8 zákona č. 555/1992 Sb.)?",
     "answer": "Služebním průkazem nebo služebním stejnokrojem s identifikačním číslem, v místech VV/VTOS též identifikačním štítkem a ve výjimečných situacích ústním prohlášením „Vězeňská služba“.",
@@ -564,7 +462,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-34",
-    "subject": "ZOP",
+    "subject": "Služební příprava",
     "topic": "Služební zdvořilost – Hodnosti ve VS ČR",
     "question": "Jaké jsou hodnostní sbory a hodnostní označení ve Vězeňské službě ČR dle zákona č. 361/2003 Sb.?",
     "answer": "Praporčické (rotný až nadpraporčík – stříbrné hvězdy), Důstojnické (podporučík až plukovník – zlaté pěticípé hvězdy), Generálské (brigádní generál až generálporučík – zlaté s lipovou ratolestí).",
@@ -581,7 +479,7 @@ export const sluzebniPripravaQuestions: Question[] = [
   },
   {
     "id": "sp-35",
-    "subject": "ZOP",
+    "subject": "Služební příprava",
     "topic": "Pořadová příprava – Kdy příslušník nezdraví",
     "question": "Ve kterých situacích příslušník VS ČR podle NGŘ č. 38/2018 NEZDRAVÍ a nepodává hlášení?",
     "answer": "Při provádění zákroku nebo úkonu, při řízení vozidla/obsluze stroje, při obsluze spojovacích a EZS prostředků na OS, při záchranných pracích, na stanovišti se zbraní v ponosu a při jídle/hygieně.",

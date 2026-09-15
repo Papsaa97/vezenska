@@ -188,24 +188,7 @@ export const zdravovedaQuestions: Question[] = [
     source: 'ERC Guidelines – Management of Foreign Body Airway Obstruction (FBAO)',
       explanation: `Gordonovy údery a Heimlichův manévr prudce zvýší nitrohrudní tlak a vypudí váznoucí těleso z hrtanu/průdušnice. Při bezvědomí se okamžitě přechází na resuscitaci. (Právní úprava: ERC Guidelines – Management of Foreign Body Airway Obstruction (FBAO))`
 },
-  {
-    id: 'zdr-12',
-    subject: 'Zdravověda a první pomoc',
-    topic: 'Popáleniny a poleptání',
-    question: 'Jaká jsou základní pravidla první pomoci při termických popáleninách II. a III. stupně?',
-    answer: 'Okamžitě chladit čistou vlažnou/chladnou vodou (10–20 minut, vyvarovat se celkového podchlazení), nestrhávat přiškvařený oděv, sterilně či čistě překrýt (ideálně netrhavým krytím / Water-Jel gelem), nepíchat puchýře a nemaže se mastmi.',
-    options: [
-              `Chladit ledem nebo ledovou tříští po dobu nejméně 60 minut, vzniklé puchýře sterilně propíchnout k vypuštění tekutiny a ránu potřít hojivou mastí s panthenolem nebo lihem. Přiškvařený oděv se z rány odstraňuje tahem a krytí se přikládá až po úplném vychladnutí plochy.`,
-              `Okamžitě chladit čistou vlažnou/chladnou vodou (10–20 minut, vyvarovat se celkového podchlazení), nestrhávat přiškvařený oděv, sterilně či čistě překrýt (ideálně netrhavým krytím / Water-Jel gelem), nepíchat puchýře a nemaže se mastmi.`,
-              `Přiškvařené syntetické oděvy ihned strhnout z rány, popálené plochy vydezinfikovat koncentrovaným jódovým roztokem a pevně stáhnout tlakovým obvazem pro zástavu edému. Chlazení vodou se neprovádí vůbec a puchýře se propichují k urychlení hojení rány.`,
-              `Ponořit celého popáleného do ledové lázně na 45 minut, na rány nasypat zásyp s antibiotiky a ponechat plochy zcela nezakryté pro volný přístup vzduchu. Sterilní krytí se nepřikládá vůbec a přiškvařený oděv se z popálené plochy odstraňuje pinzetou.`
-            ],
-    correctOption: 1,
-    rationale: 'Chlazení zastavuje termickou destrukci hlubších vrstev tkání a tlumí bolest. Aplikace mastí, zásypů nebo trhání oděvu zhoršuje infekci a poškozuje tkáň.',
-    source: 'Popáleninová medicína a traumatologie – FN Královské Vinohrady',
-      explanation: `Chlazení zastavuje termickou destrukci hlubších vrstev tkání a tlumí bolest. Aplikace mastí, zásypů nebo trhání oděvu zhoršuje infekci a poškozuje tkáň. (Právní úprava: Popáleninová medicína a traumatologie – FN Královské Vinohrady)`
-},
-  {
+    {
     id: 'zdr-13',
     subject: 'Zdravověda a první pomoc',
     topic: 'Infekční rizika a profylaxe personálu',
@@ -307,24 +290,7 @@ export const zdravovedaQuestions: Question[] = [
     source: 'Urgentní medicína – Hypotermie a chladová poranění',
       explanation: `Prudké zahřívání nebo hrubá manipulace vyvolá návrat studené a kyselé krve z periferie do jádra (afterdrop) s fatální srdeční zástavou. Alkohol navíc roztahuje periferní cévy a zrychluje prochladnutí. (Právní úprava: Urgentní medicína – Hypotermie a chladová poranění)`
 },
-  {
-    id: 'zdr-19',
-    subject: 'Zdravověda a první pomoc',
-    topic: 'Zlomeniny a jejich znehybnění',
-    question: 'Jaké je základní pravidlo pro znehybnění (fixaci) zavřené zlomeniny dlouhé kosti (např. předloktí nebo bérce)?',
-    answer: 'Znehybnit minimálně dva sousední klouby – jeden nad a jeden pod místem zlomeniny (pomocí dlahy SAM splint nebo improvizovaně) a kontrolovat periferní prokrvení a citlivost.',
-    options: [
-              `Před přiložením dlahy provést silným tahem reponaci a narovnání kostních úlomků do anatomické osy a zafixovat výhradně samotné místo zlomeniny elastickým obinadlem.`,
-              `Znehybnit minimálně dva sousední klouby – jeden nad a jeden pod místem zlomeniny (pomocí dlahy SAM splint nebo improvizovaně) a kontrolovat periferní prokrvení a citlivost.`,
-              `Fixovat celou končetinu včetně páteře do vakuové matrace bez použití dlahy a aplikovat hřejivé zábaly přímo na místo fraktury; sousední klouby se nefixují.`,
-              `Znehybnit výhradně jeden kloub nejblíže ke zlomenině a končetinu pevně stáhnout škrtidlem k prevenci edému; prokrvení se nekontroluje.`
-            ],
-    correctOption: 1,
-    rationale: 'Správná fixace zabraňuje pohybu kostních úlomků, tlumí bolest a předchází sekundárnímu poškození cév, nervů a svalů.',
-    source: 'Základy traumatologie a první pomoci',
-      explanation: `Správná fixace zabraňuje pohybu kostních úlomků, tlumí bolest a předchází sekundárnímu poškození cév, nervů a svalů. (Právní úprava: Základy traumatologie a první pomoci)`
-},
-  {
+    {
     id: 'zdr-20',
     subject: 'Zdravověda a první pomoc',
     topic: 'Poranění oka',
@@ -377,24 +343,7 @@ export const zdravovedaQuestions: Question[] = [
 }
   ,
   // 31. Intoxikace a předávkování
-  {
-    id: 'zdr-23',
-    subject: 'Zdravověda a první pomoc',
-    topic: 'Akutní stavy',
-    question: 'Jaké jsou typické příznaky předávkování opioidy (např. heroin, fentanyl) a jaká je první pomoc?',
-    answer: 'Příznaky: zpomalené až zástavové dýchání, bezvědomí, modrání rtů a prstů (cyanóza), extrémně zúžené zorničky (špendlíkové hlavičky). První pomoc: přivolat ZZS, zajistit dýchací cesty, při zástavě dechu zahájit KPR, pokud je k dispozici, podat antidotum Naloxon (Nyxoid sprej do nosu).',
-    options: [
-              `Příznaky: zpomalené až zástavové dýchání, bezvědomí, modrání rtů a prstů (cyanóza), extrémně zúžené zorničky (špendlíkové hlavičky). První pomoc: přivolat ZZS, zajistit dýchací cesty, při zástavě dechu zahájit KPR, pokud je k dispozici, podat antidotum Naloxon (Nyxoid sprej do nosu).`,
-              `Příznaky: zvracení krve, silné křeče a vzestup tělesné teploty nad 40 °C, zorničky zůstávají normálně široké. První pomoc: podat aktivní uhlí, donutit osobu vypít velké množství vody a vyvolat zvracení stlačením kořene jazyka. Naloxon se nepodává, protože u této otravy nemá účinek, a ZZS se volá až při bezvědomí.`,
-              `Příznaky: hyperaktivita, rozšířené zorničky, rychlý tep a nadměrné pocení, dýchání je naopak zrychlené. První pomoc: podat kávu, nechat osobu chodit nebo běhat, aby se urychlil metabolismus, a zajistit dostatek chladných nápojů. Zajištění dýchacích cest ani KPR nejsou u tohoto stavu namístě.`,
-              `Příznaky: žluté zbarvení kůže a očních bělem, tmavá moč a bolest pod pravým žeberním obloukem, dýchání i zorničky jsou bez odchylky. První pomoc: podat sladký čaj, uložit do stabilizované polohy a zajistit klid na lůžku. Antidotum Naloxon se u tohoto stavu nepoužívá a postačí ranní vizita lékaře.`
-            ],
-    correctOption: 0,
-    rationale: 'Předávkování opioidy je život ohrožující stav kvůli útlumu dýchacího centra v mozku. Rychlé podání Naloxonu (antidota) a podpora dýchání zachraňuje život.',
-    source: 'Metodický pokyn zdravotnické služby VS ČR',
-      explanation: `Předávkování opioidy je život ohrožující stav kvůli útlumu dýchacího centra v mozku. Rychlé podání Naloxonu (antidota) a podpora dýchání zachraňuje život. (Právní úprava: Metodický pokyn zdravotnické služby VS ČR)`
-},
-  // 32. Anafylaktický šok
+    // 32. Anafylaktický šok
   {
     id: 'zdr-24',
     subject: 'Zdravověda a první pomoc',
@@ -431,24 +380,7 @@ export const zdravovedaQuestions: Question[] = [
       explanation: `Chlazení snižuje hloubku poškození tkání a tlumí bolest. Použití mastí nebo krémů ránu uzavře a brání odvodu tepla (zhoršuje stav). (Právní úprava: Doporučené postupy ČČK)`
 },
   // 34. Stabilizovaná poloha
-  {
-    id: 'zdr-26',
-    subject: 'Zdravověda a první pomoc',
-    topic: 'Základní postupy',
-    question: 'Kdy se používá zotavovací (stabilizovaná) poloha na boku?',
-    answer: 'Používá se výhradně u pacienta, který je v bezvědomí, ALE normálně a pravidelně dýchá (a nemá podezření na zranění páteře). Účelem je udržet průchodné dýchací cesty a zabránit vdechnutí zvratků.',
-    options: [
-              `Používá se u všech pacientů s bolestí břicha nebo hrudníku jako úlevová poloha, která snižuje napětí břišní stěny. U pacienta v bezvědomí se naopak nepoužívá, protože by ztížila kontrolu dýchání.`,
-              `Používá se u pacienta v bezvědomí, který vůbec nedýchá nebo lapá po dechu (gasping), aby se uvolnily dýchací cesty. Zahájení KPR se do jejího uložení odkládá a podezření na poranění páteře jejímu použití nebrání.`,
-              `Používá se výhradně u pacienta, který je v bezvědomí, ALE normálně a pravidelně dýchá (a nemá podezření na zranění páteře). Účelem je udržet průchodné dýchací cesty a zabránit vdechnutí zvratků.`,
-              `Používá se u zlomenin dolních končetin k fixaci kostí a ke snížení bolesti při transportu. U pacienta v bezvědomí se nepoužívá, protože kontrolu dýchání provádíme vleže na zádech se zakloněnou hlavou.`
-            ],
-    correctOption: 2,
-    rationale: 'Zotavovací poloha zajišťuje dýchací cesty (jazyk nepadá dozadu). Pokud pacient nedýchá normálně, musí ležet na zádech a musí být zahájena KPR.',
-    source: 'Doporučené postupy ERC (Evropská resuscitační rada)',
-      explanation: `Zotavovací poloha zajišťuje dýchací cesty (jazyk nepadá dozadu). Pokud pacient nedýchá normálně, musí ležet na zádech a musí být zahájena KPR. (Právní úprava: Doporučené postupy ERC (Evropská resuscitační rada))`
-},
-  // 35. Použití škrtidla (CAT) na krku
+    // 35. Použití škrtidla (CAT) na krku
   {
     id: 'zdr-27',
     subject: 'Zdravověda a první pomoc',
@@ -466,24 +398,7 @@ export const zdravovedaQuestions: Question[] = [
     source: 'Mezinárodní taktický standard TCCC',
       explanation: `Turniket okluduje krevní řečiště kompletním stlačením tkáně proti kosti. Na krku by to znemožnilo dýchání a zablokovalo průtok krve do mozku oběma karotidami. (Právní úprava: Mezinárodní taktický standard TCCC)`
 },
-    {
-        id: 'zdr-28',
-        subject: 'Zdravověda a první pomoc',
-        topic: 'Kardiopulmonální resuscitace',
-        question: 'Jaký je správný poměr stlačení hrudníku a umělých vdechů při poskytování KPR u dospělé osoby v bezvědomí bez normálního dýchání?',
-        answer: '30 stlačení ku 2 vdechům (frekvence stlačování 100–120 za minutu, hloubka 5–6 cm).',
-        options: [
-            `15 stlačení ku 2 vdechům s frekvencí 80 za minutu, hloubka se neurčuje.`,
-            '30 stlačení ku 2 vdechům (frekvence stlačování 100–120 za minutu, hloubka 5–6 cm).',
-            `Pouze 5 vdechů a následně vyčkání na příjezd záchranné služby, bez stlačování.`,
-            `50 stlačení ku 5 vdechům bez přerušení; frekvence ani hloubka se neurčují.`
-        ],
-        correctOption: 1,
-        rationale: 'Doporučené postupy ERC (European Resuscitation Council) stanovují pro dospělé poměr 30:2 s frekvencí kompresí 100–120/min a hloubkou 5–6 cm.',
-        source: 'Doporučené postupy ERC pro resuscitaci a NGŘ č. 33/2019 Sb.',
-        explanation: 'Standardní KPR u dospělého se provádí v poměru 30 stlačení ku 2 vdechům s frekvencí 100–120/min.'
-    },
-    {
+        {
         id: 'zdr-29',
         subject: 'Zdravověda a první pomoc',
         topic: 'Masivní končetinové krvácení',

@@ -732,24 +732,7 @@ export const penologieQuestions: Question[] = [
     source: '§ 12 ZVV, § 29 vyhl. 109/1994 Sb. a Studijní text str. 73',
       explanation: `Dle § 12 zákona č. 293/1993 Sb. a § 29 vyhlášky č. 109/1994 Sb. je nošení vlastního oděvu u obviněných standardem vyplývajícím z presumpce neviny. (Právní úprava: § 12 ZVV, § 29 vyhl. 109/1994 Sb. a Studijní text str. 73)`
 },
-  {
-    id: 'pen-44',
-    subject: 'Penologie',
-    topic: 'Zdravotní péče o vězněné osoby – úrovně',
-    question: 'Jakými způsoby je poskytována zdravotní péče vězněným osobám v systému VS ČR?',
-    answer: '1. Vězeňská zdravotnická střediska (ordinace praktického lékaře, zubního lékaře a sester ve věznici), 2. Vězeňské nemocnice (Praha-Pankrác a Brno s lůžkovými odděleními), 3. Civilní zdravotnická zařízení (ambulantní specialisté a nemocnice pod střežením VS), 4. Rychlá záchranná služba (RZS) při akutních stavech.',
-    options: [
-              `1. Vězeňská zdravotnická střediska (ordinace praktického lékaře, zubního lékaře a sester ve věznici), 2. Vězeňské nemocnice (Praha-Pankrác a Brno s lůžkovými odděleními), 3. Civilní zdravotnická zařízení (ambulantní specialisté a nemocnice pod střežením VS), 4. Rychlá záchranná služba (RZS) při akutních stavech.`,
-              `1. Vězeňské nemocnice ve Valdicích, na Mírově a v Ruzyni, 2. Posádková zdravotnická střediska Armády ČR, 3. Soukromé kliniky plastické a estetické chirurgie, 4. Lékařské konzultace zajišťované výhradně telefonicky. O zařazení do jednotlivých úrovní rozhoduje vrchní inspektor ostrahy podle volné kapacity, nikoliv lékař.`,
-              `1. Ošetřovny vedené vyškolenými dozorci se základním kurzem první pomoci, 2. Krajské hygienické stanice docházející na vyžádání, 3. Samostatné polní lazarety Ministerstva vnitra, 4. Nestátní neziskové zdravotnické organizace. Vlastní zdravotnická střediska ani vězeňské nemocnice se v soustavě nevyskytují.`,
-              `1. Ordinace závodního lékaře pro příslušníky VS využívané i pro vězně, 2. Lázeňské léčebny Ministerstva spravedlnosti, 3. Mobilní sanitní vozy bez stálé posádky, 4. Zajištění péče rodinou vězněného po propuštění na propustku. Střežení při převozu do civilního zařízení se nezajišťuje a akutní stavy řeší dozorce.`
-            ],
-    correctOption: 0,
-    rationale: 'Dle § 16 ZVTOS, § 18 ZVV a § 23 vyhlášky č. 345/1999 Sb. je zdravotní péče organizována vícestupňově k zajištění nepřetržité dostupnosti neodkladné i specializované péče.',
-    source: '§ 16 ZVTOS, § 18 ZVV a Studijní text str. 60',
-      explanation: `Dle § 16 ZVTOS, § 18 ZVV a § 23 vyhlášky č. 345/1999 Sb. je zdravotní péče organizována vícestupňově k zajištění nepřetržité dostupnosti neodkladné i specializované péče. (Právní úprava: § 16 ZVTOS, § 18 ZVV a Studijní text str. 60)`
-},
-  {
+    {
     id: 'pen-45',
     subject: 'Penologie',
     topic: 'Specifika a práva mladistvých ve VTOS',

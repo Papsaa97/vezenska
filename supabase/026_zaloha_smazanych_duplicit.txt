@@ -1,0 +1,151 @@
+════════════════════════════════════════════════════════════════════════════════
+ZÁLOHA OTÁZEK SMAZANÝCH JAKO DUPLICITY (migrace 026)
+
+Tenhle soubor se nespouští, je to jen záznam. Smazání se vrátit nedá, a kdyby
+se ukázalo, že některá z těch třinácti otázek přece jen chybí, je tu celé její
+znění včetně distraktorů.
+
+PROČ BYLY SMAZANÉ
+  Každá z nich se ptala na totéž jako jiná otázka, která v bance zůstala.
+  Ve Zdravovědě byla resuscitace i popáleniny dokonce třikrát.
+
+  Většinu zdvojení způsobilo to, že sedm otázek o první pomoci bylo napsaných
+  do src/data/questions/sluzebniPriprava.ts vedle už existujících zdr-*.
+  Migrace 022 je přeřadila do Zdravovědy, čímž se dvojice dostaly vedle sebe
+  a bylo je vidět.
+
+  Unikátní index na sloupci question je nezachytil, protože znění se lišilo —
+  shodná byla až odpověď.
+
+KTERÁ ZE DVOJICE ZŮSTALA
+  Zpravidla ta z vlastní sady předmětu (zdr-*), protože má odpovídající téma
+  a je psaná pro Zdravovědu. Kde se obsahem lišily, rozhodla úplnost odpovědi:
+
+    turniket                 zůstává zdr-01   (CAT, „high and tight“, vymizení pulzu)
+    resuscitace 30:2         zůstává zdr-02   (+ dolní polovina hrudní kosti)
+    popáleniny               zůstává zdr-25   (+ ukončit působení tepla, nemazat, ZZS)
+    nasávající rána hrudníku zůstává zdr-05   (+ improvizované krytí)
+    anafylaxe                zůstává zdr-24   (+ spouštěče, protišoková poloha, KPR)
+    epileptický záchvat      zůstává zdr-08
+    zlomenina dlouhé kosti   zůstává SP-21    (jediná řeší otevřené zlomeniny)
+    opioidy a Naloxon        zůstává zdr-07   (+ mióza, morfin)
+    zotavovací poloha        zůstává zdr-06
+    zdravotní péče ve VS ČR  zůstává pen-26   (+ § 23 vyhl. 345/1999 Sb.)
+    hotovost u Justiční str. zůstává sp-31    (+ § 144, ozbrojené krytí)
+
+CO SE ZÁMĚRNĚ NEMAZALO
+  Dvojice, které se ptají na týž pojem z OBOU STRAN, zůstávají — je to
+  legitimní procvičování (poznat pojem ↔ vybavit si definici):
+    ped-11 ↔ ped-25 (etopedie), pe_20 ↔ pe_28 (axiologie),
+    pe_23 ↔ pe_29 (deontologie)
+
+  A dvojice, které se překrývají, ale mají jiný rozsah:
+    pen-12 ≈ pen-18 (pen-18 navíc uvádí rozsahy a mladistvé)
+    pen-06 ≈ pen-33 (úkoly dozorce OVV vs. povinnosti v oddělení VV)
+════════════════════════════════════════════════════════════════════════════════
+
+-- Zálohovaný obsah 13 smazaných otázek --
+
+[sp-07 · Zdravověda a první pomoc · První pomoc – Zástava masivního krvácení]
+Q: Jaký je správný a okamžitý postup při masivním tepenném krvácení z končetiny (např. po bodném poranění)?
+    Naložit turniket co nejníže pod ránu směrem k prstům, vratidlo utáhnout výhradně mírně pro zachování hmatného tepu na periferii, ránu vypláchnout peroxidem vodíku a čas naložení nikam nezaznamenávat.
+    Přiložit sterilní gázu na ránu, končetinu svěsit dolů pod úroveň srdce a škrtidlo naložit přímo přes kloubní spojení s povolením každých 10 minut.
+    Provést dezinfekci rány jodovým roztokem, naložit tlakový obvaz s obráceným škrtidlem a končetinu fixovat dlahou bez záznamu času aplikace.
+  ✔ Okamžitě naložit turniket (škrtidlo) 5–7 cm nad ránu (mimo kloub), utáhnout vratidlo do úplného zastavení krvácení, zajistit a poznamenat přesný čas naložení na pásek/čelo zraněného.
+Zdroj: Standardy první pomoci Akademie VS ČR a TCCC Guidelines
+
+[sp-08 · Zdravověda a první pomoc · První pomoc – KPR a AED]
+Q: Jaký je správný poměr stlačování hrudníku a umělých vdechů při základní resuscitaci dospělého a jaká je frekvence dle ERC Guidelines?
+    Pouze nepřetržité umělé dýchání bez masáže hrudníku frekvencí 20 vdechů za minutu až do příjezdu záchranné služby. Automatizovaný externí defibrilátor se u dospělých nepoužívá.
+    Poměr 30 stlačení : 5 vdechů, frekvence 140–160 stlačení za minutu, hloubka 8–10 cm v oblasti žaludku; defibrilátor aplikovat výhradně při přítomnosti lékaře.
+  ✔ Poměr 30 stlačení : 2 vdechy, frekvence 100–120 stlačení za minutu, hloubka 5–6 cm uprostřed hrudníku na tvrdé podložce; co nejrychleji připojit AED.
+    Poměr 15 stlačení : 2 vdechy, frekvence 80 stlačení za minutu, hloubka 2–3 cm na boku postiženého; AED připojit až po 10 minutách manuální KPR. Podložka pod hrudníkem musí být měkká, aby nedošlo ke zlomení žeber.
+Zdroj: Doporučené postupy ERC a výukové standardy Akademie VS ČR
+
+[sp-11 · Zdravověda a první pomoc · První pomoc – Popáleniny a poleptání]
+Q: Jaká je správná první pomoc při termickém popálení pokožky II. stupně (puchýře)?
+    Aplikovat ledové obklady s ledem přímo na ránu po dobu alespoň 60 minut a ránu ponechat zcela otevřenou na vzduchu bez krytí.
+  ✔ Okamžitě chladit čistou studenou vodou (cca 10–20 minut), nestrhávat přiškvařený oděv, nepropichovat puchýře, sterilně překrýt popáleninovým krytím.
+    Puchýře sterilně propíchnout k vypuštění tekutiny, aplikovat mastný krém nebo zásyp a pevně obvázat elastickým obinadlem.
+    Strhnout přiškvařené zbytky oděvu z popáleného místa pinzetou, ránu dezinfikovat koncentrovaným lihem, přiložit suchý froté ručník a chlazení vodou zásadně neprovádět.
+Zdroj: Standardy první pomoci Akademie VS ČR
+
+[sp-13 · Zdravověda a první pomoc · První pomoc – Tenzní pneumotorax]
+Q: Jak se v taktické první pomoci (TCCC) ošetřuje otevřené poranění hrudníku (nasávající rána hrudníku)?
+    Ránu hermeticky uzavřít neprodyšnou náplastí ze všech 4 stran bez jakéhokoli ventilu a zraněného uložit na záda se zvednutými dolními končetinami a hlavou v hlubokém záklonu.
+  ✔ Aplikací hrudního chlopňového krytí (Chest Seal s ventilem), které brání nasávání vzduchu do pohrudniční dutiny, ale umožňuje únik krve a vzduchu ven.
+    Provést okamžitý výplach rány fyziologickým roztokem, zavést škrtidlo přes hrudník a nutit zraněného k hlubokému usilovnému dýchání.
+    Přiložit suchý savý obvaz, zraněného položit na zdravý bok a provádět nepřetržitou masáž hrudníku i při zachovaném vědomí.
+Zdroj: TCCC Guidelines a traumatologický protokol Akademie VS ČR
+
+[sp-17 · Zdravověda a první pomoc · První pomoc – Anafylaktický šok]
+Q: Jaké jsou příznaky a první pomoc při těžké alergické reakci (anafylaxi) s otokem dýchacích cest?
+    Svalový třes a hyperventilace; podat uklidňující sedativa, zraněného posadit k otevřenému oknu a vyčkat bez volání ZZS. Adrenalinový autoinjektor se u alergické reakce nikdy nepoužívá.
+    Krvácení z nosu a ztuhlost šíje; aplikovat autoinjektor s inzulínem přímo do břišní stěny a postiženého nutit k intenzivní chůzi. Otok jazyka a hrdla mezi příznaky anafylaxe nepatří.
+  ✔ Dušnost, otok jazyka a hrdla, kopřivka, pokles tlaku; okamžitě aplikovat autoinjektor s adrenalinem (EpiPen) do zevní strany stehna a volat ZZS.
+    Zvýšená teplota a křeče v břiše; podat perorálně tabletu aspirinu, zapít velkým množstvím studené vody, uložit postiženého do polohy na břiše a záchrannou službu volat až při ztrátě vědomí.
+Zdroj: Traumatologie a standardy první pomoci Akademie VS ČR
+
+[sp-19 · Zdravověda a první pomoc · První pomoc – Epileptický záchvat]
+Q: Jaká je správná první pomoc při záchvatu křečí s bezvědomím (epileptický záchvat typu Grand Mal)?
+    Vložit mezi zuby roubík nebo dřevěný kolík proti překousnutí jazyka, zalehnout končetiny vší silou k zastavení křečí, podat tekutiny a po odeznění záchvatu nechat postiženého ihned samostatně odejít.
+  ✔ Zabránit poranění hlavy (podložit měkkým předmětem), odstranit nebezpečné věci z okolí, nevkládat nic do úst, nebránit křečím násilím, po odeznění zajistit dýchací cesty a sledovat stav.
+    Otočit postiženého okamžitě na břicho, vytáhnout jazyk pinzetou a zahájit nepřímou masáž srdce bez ohledu na probíhající křeče.
+    Aplikovat studené obklady na hrudník, provést masáž krčních tepen a po celou dobu záchvatu držet hlavu v záklonu v sedě na židli.
+Zdroj: Standardy první pomoci Akademie VS ČR
+
+[zdr-12 · Zdravověda a první pomoc · Popáleniny a poleptání]
+Q: Jaká jsou základní pravidla první pomoci při termických popáleninách II. a III. stupně?
+    Chladit ledem nebo ledovou tříští po dobu nejméně 60 minut, vzniklé puchýře sterilně propíchnout k vypuštění tekutiny a ránu potřít hojivou mastí s panthenolem nebo lihem. Přiškvařený oděv se z rány odstraňuje tahem a krytí se přikládá až po úplném vychladnutí plochy.
+  ✔ Okamžitě chladit čistou vlažnou/chladnou vodou (10–20 minut, vyvarovat se celkového podchlazení), nestrhávat přiškvařený oděv, sterilně či čistě překrýt (ideálně netrhavým krytím / Water-Jel gelem), nepíchat puchýře a nemaže se mastmi.
+    Přiškvařené syntetické oděvy ihned strhnout z rány, popálené plochy vydezinfikovat koncentrovaným jódovým roztokem a pevně stáhnout tlakovým obvazem pro zástavu edému. Chlazení vodou se neprovádí vůbec a puchýře se propichují k urychlení hojení rány.
+    Ponořit celého popáleného do ledové lázně na 45 minut, na rány nasypat zásyp s antibiotiky a ponechat plochy zcela nezakryté pro volný přístup vzduchu. Sterilní krytí se nepřikládá vůbec a přiškvařený oděv se z popálené plochy odstraňuje pinzetou.
+Zdroj: Popáleninová medicína a traumatologie – FN Královské Vinohrady
+
+[zdr-19 · Zdravověda a první pomoc · Zlomeniny a jejich znehybnění]
+Q: Jaké je základní pravidlo pro znehybnění (fixaci) zavřené zlomeniny dlouhé kosti (např. předloktí nebo bérce)?
+    Před přiložením dlahy provést silným tahem reponaci a narovnání kostních úlomků do anatomické osy a zafixovat výhradně samotné místo zlomeniny elastickým obinadlem.
+  ✔ Znehybnit minimálně dva sousední klouby – jeden nad a jeden pod místem zlomeniny (pomocí dlahy SAM splint nebo improvizovaně) a kontrolovat periferní prokrvení a citlivost.
+    Fixovat celou končetinu včetně páteře do vakuové matrace bez použití dlahy a aplikovat hřejivé zábaly přímo na místo fraktury; sousední klouby se nefixují.
+    Znehybnit výhradně jeden kloub nejblíže ke zlomenině a končetinu pevně stáhnout škrtidlem k prevenci edému; prokrvení se nekontroluje.
+Zdroj: Základy traumatologie a první pomoci
+
+[zdr-23 · Zdravověda a první pomoc · Akutní stavy]
+Q: Jaké jsou typické příznaky předávkování opioidy (např. heroin, fentanyl) a jaká je první pomoc?
+  ✔ Příznaky: zpomalené až zástavové dýchání, bezvědomí, modrání rtů a prstů (cyanóza), extrémně zúžené zorničky (špendlíkové hlavičky). První pomoc: přivolat ZZS, zajistit dýchací cesty, při zástavě dechu zahájit KPR, pokud je k dispozici, podat antidotum Naloxon (Nyxoid sprej do nosu).
+    Příznaky: zvracení krve, silné křeče a vzestup tělesné teploty nad 40 °C, zorničky zůstávají normálně široké. První pomoc: podat aktivní uhlí, donutit osobu vypít velké množství vody a vyvolat zvracení stlačením kořene jazyka. Naloxon se nepodává, protože u této otravy nemá účinek, a ZZS se volá až při bezvědomí.
+    Příznaky: hyperaktivita, rozšířené zorničky, rychlý tep a nadměrné pocení, dýchání je naopak zrychlené. První pomoc: podat kávu, nechat osobu chodit nebo běhat, aby se urychlil metabolismus, a zajistit dostatek chladných nápojů. Zajištění dýchacích cest ani KPR nejsou u tohoto stavu namístě.
+    Příznaky: žluté zbarvení kůže a očních bělem, tmavá moč a bolest pod pravým žeberním obloukem, dýchání i zorničky jsou bez odchylky. První pomoc: podat sladký čaj, uložit do stabilizované polohy a zajistit klid na lůžku. Antidotum Naloxon se u tohoto stavu nepoužívá a postačí ranní vizita lékaře.
+Zdroj: Metodický pokyn zdravotnické služby VS ČR
+
+[zdr-26 · Zdravověda a první pomoc · Základní postupy]
+Q: Kdy se používá zotavovací (stabilizovaná) poloha na boku?
+    Používá se u všech pacientů s bolestí břicha nebo hrudníku jako úlevová poloha, která snižuje napětí břišní stěny. U pacienta v bezvědomí se naopak nepoužívá, protože by ztížila kontrolu dýchání.
+    Používá se u pacienta v bezvědomí, který vůbec nedýchá nebo lapá po dechu (gasping), aby se uvolnily dýchací cesty. Zahájení KPR se do jejího uložení odkládá a podezření na poranění páteře jejímu použití nebrání.
+  ✔ Používá se výhradně u pacienta, který je v bezvědomí, ALE normálně a pravidelně dýchá (a nemá podezření na zranění páteře). Účelem je udržet průchodné dýchací cesty a zabránit vdechnutí zvratků.
+    Používá se u zlomenin dolních končetin k fixaci kostí a ke snížení bolesti při transportu. U pacienta v bezvědomí se nepoužívá, protože kontrolu dýchání provádíme vleže na zádech se zakloněnou hlavou.
+Zdroj: Doporučené postupy ERC (Evropská resuscitační rada)
+
+[zdr-28 · Zdravověda a první pomoc · Kardiopulmonální resuscitace]
+Q: Jaký je správný poměr stlačení hrudníku a umělých vdechů při poskytování KPR u dospělé osoby v bezvědomí bez normálního dýchání?
+    15 stlačení ku 2 vdechům s frekvencí 80 za minutu, hloubka se neurčuje.
+  ✔ 30 stlačení ku 2 vdechům (frekvence stlačování 100–120 za minutu, hloubka 5–6 cm).
+    Pouze 5 vdechů a následně vyčkání na příjezd záchranné služby, bez stlačování.
+    50 stlačení ku 5 vdechům bez přerušení; frekvence ani hloubka se neurčují.
+Zdroj: Doporučené postupy ERC pro resuscitaci a NGŘ č. 33/2019 Sb.
+
+[pen-44 · Penologie · Zdravotní péče o vězněné osoby – úrovně]
+Q: Jakými způsoby je poskytována zdravotní péče vězněným osobám v systému VS ČR?
+  ✔ 1. Vězeňská zdravotnická střediska (ordinace praktického lékaře, zubního lékaře a sester ve věznici), 2. Vězeňské nemocnice (Praha-Pankrác a Brno s lůžkovými odděleními), 3. Civilní zdravotnická zařízení (ambulantní specialisté a nemocnice pod střežením VS), 4. Rychlá záchranná služba (RZS) při akutních stavech.
+    1. Vězeňské nemocnice ve Valdicích, na Mírově a v Ruzyni, 2. Posádková zdravotnická střediska Armády ČR, 3. Soukromé kliniky plastické a estetické chirurgie, 4. Lékařské konzultace zajišťované výhradně telefonicky. O zařazení do jednotlivých úrovní rozhoduje vrchní inspektor ostrahy podle volné kapacity, nikoliv lékař.
+    1. Ošetřovny vedené vyškolenými dozorci se základním kurzem první pomoci, 2. Krajské hygienické stanice docházející na vyžádání, 3. Samostatné polní lazarety Ministerstva vnitra, 4. Nestátní neziskové zdravotnické organizace. Vlastní zdravotnická střediska ani vězeňské nemocnice se v soustavě nevyskytují.
+    1. Ordinace závodního lékaře pro příslušníky VS využívané i pro vězně, 2. Lázeňské léčebny Ministerstva spravedlnosti, 3. Mobilní sanitní vozy bez stálé posádky, 4. Zajištění péče rodinou vězněného po propuštění na propustku. Střežení při převozu do civilního zařízení se nezajišťuje a akutní stavy řeší dozorce.
+Zdroj: § 16 ZVTOS, § 18 ZVV a Studijní text str. 60
+
+[bs-05 · Služební příprava · Eskortní služba]
+Q: Kdo nese zavazadlo s penězi a ceninami při pěším doprovodu pokladní soudu příslušníky Justiční stráže?
+  ✔ Zavazadlo s finanční hotovostí nese VŽDY zaměstnanec soudu (pokladní), NIKDY příslušník Justiční stráže.
+    Příslušníci JS a pokladní se v nesení zavazadla střídají v pravidelných 15minutových intervalech z důvodu snížení fyzické únavy.
+    Zavazadlo nese mladší příslušník JS připoutané bezpečnostním ocelovým lankem k opasku, zatímco pokladní kráčí v čele formace.
+    Zavazadlo s hotovostí nese velitel eskorty, který je jištěn dalším příslušníkem JS s tasrem nebo střelnou zbraní v pohotovostní poloze.
+Zdroj: Směrnice pro přepravu peněz a cenin Justiční stráží
