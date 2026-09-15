@@ -47,6 +47,11 @@ export function translateAuthError(error: TranslatableAuthError): string {
         + 'chybí jí nastavení ověření. Nejde o chybu vašich údajů; obraťte se prosím na správce portálu.';
   }
 
+  // Vrací se při změně hesla v profilu, když uživatel zadá to stávající.
+  if (error.code === 'same_password' || msg.includes('should be different from the old password')) {
+    return 'Nové heslo se musí lišit od toho stávajícího.';
+  }
+
   if (msg.includes('Invalid login credentials')) return 'Nesprávný e-mail nebo heslo.';
   if (msg.includes('Email not confirmed')) return 'E-mail ještě nebyl ověřen. Zkontrolujte prosím svou schránku.';
   if (msg.includes('User already registered')) return 'Účet s tímto e-mailem již existuje.';
