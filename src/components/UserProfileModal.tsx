@@ -22,14 +22,7 @@ import { supabase } from '../lib/supabase';
 import { UserRank } from '../types';
 import { AVATAR_PRESETS, resolveAvatarDisplay, toPresetAvatarUrl } from '../utils/avatar';
 import { useDialog } from '../hooks/useDialog';
-import { MIN_PASSWORD_LENGTH, translateAuthError } from '../constants/auth';
-
-const ROLE_LABELS: Record<UserRole, string> = {
-  student: 'Kadet / Student',
-  velitel_tridy: 'Velitel třídy',
-  lektor: 'Lektor',
-  admin: 'Správce',
-};
+import { MIN_PASSWORD_LENGTH, ROLE_LABELS, translateAuthError } from '../constants/auth';
 
 const ROLE_COLORS: Record<UserRole, string> = {
   student: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
@@ -91,7 +84,8 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
   const fieldIds = useId();
 
-  const { user, profile, updateProfile, updateRole, updatePassword } = useAuth();
+  const { user, profile, updateProfile, updatePassword, previewRole, realRole, setPreviewRole } =
+    useAuth();
   const isSystemAdmin = useIsAdmin();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -139,7 +133,8 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
       (typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') || 'ZOP A11' : 'ZOP A11')
   );
   const [selectedRole, setSelectedRole] = useState<UserRole>(
-    effectiveProfile.role === 'student' && isSystemAdmin ? 'admin' : effectiveProfile.role
+    previewRole ??
+      (effectiveProfile.role === 'student' && isSystemAdmin ? 'admin' : effectiveProfile.role)
   );
 
   // Escape, past na fokus a jeho návrat po zavření — viz hooks/useDialog.
@@ -182,21 +177,26 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
       return;
     }
 
-    // Roli smí změnit jen správce a jde vždy samostatným zápisem do databáze,
-    // kde o oprávnění rozhoduje RLS politika nad public.profiles — nikoli stav
-    // v prohlížeči. Selže-li zápis, uživatel se to dozví.
-    const canAssignRoles = isSystemAdmin || effectiveProfile.role === 'admin';
-    if (canAssignRoles && selectedRole !== effectiveProfile.role) {
-      const { error: roleError } = await updateRole(effectiveProfile.id, selectedRole);
-      if (roleError) {
-        setNameSaving(false);
-        setNameMessage({ type: 'error', text: roleError });
-        return;
-      }
+    // Výběr role je NÁHLED, ne změna účtu. Do databáze se nezapisuje nic:
+    // public.profiles.role zůstává, jak je, a RLS dál rozhoduje podle ní.
+    //
+    // Dřív tenhle výběr roli opravdu přepisoval, jenže to byla jednosměrná
+    // cesta: po degradaci si správce roli zpátky nastavit nemohl, protože
+    // měnit role smí jen správce. Jediný správce se tím odřízl úplně. Roli
+    // účtu se proto mění ve správě uživatelů, tady se jen prohlíží.
+    const canPreviewRoles = isSystemAdmin || realRole === 'admin';
+    const previewChanged = canPreviewRoles && selectedRole !== realRole;
+    if (canPreviewRoles) {
+      setPreviewRole(selectedRole === realRole ? null : selectedRole);
     }
 
     setNameSaving(false);
-    setNameMessage({ type: 'success', text: 'Profil a zařazení ke třídě byly úspěšně uloženy.' });
+    setNameMessage({
+      type: 'success',
+      text: previewChanged
+        ? `Profil uložen. Rozhraní teď ukazuje náhled role ${ROLE_LABELS[selectedRole]} — účet i oprávnění zůstávají beze změny.`
+        : 'Profil a zařazení ke třídě byly úspěšně uloženy.',
+    });
   };
 
   const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -431,10 +431,10 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                 <label className="block text-xs font-bold text-amber-400 flex items-center justify-between" htmlFor={`${fieldIds}-2`}>
                   <span className="flex items-center gap-1.5">
                     <Shield className="w-3.5 h-3.5 text-amber-400" />
-                    Role účtu (Správce systému)
+                    Náhled role
                   </span>
                   <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-extrabold border border-amber-500/40">
-                    Správce
+                    {previewRole ? 'Náhled běží' : 'Jen zobrazení'}
                   </span>
                 </label>
                 <select
@@ -449,7 +449,12 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                   <option value="student">Kadet / Student</option>
                 </select>
                 <p className="text-[10px] text-slate-400 leading-tight">
-                  Jako vlastník aplikace máte právo správce kdykoliv aktivovat a otestovat chování aplikace pod libovolnou rolí.
+                  Mění se jen to, co vidíte. Role účtu v databázi zůstává{' '}
+                  <strong className="text-slate-300">
+                    {realRole ? ROLE_LABELS[realRole] : '—'}
+                  </strong>{' '}
+                  a data se načítají podle ní, takže náhled ukáže rozhraní dané role, ne její
+                  výřez dat. Načtení stránky náhled vypne. Roli účtu měňte ve správě uživatelů.
                 </p>
               </div>
             ) : (

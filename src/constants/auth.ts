@@ -1,4 +1,16 @@
 import { isCaptchaConfigured } from './captcha';
+import type { UserRole } from '../types/auth';
+
+/**
+ * Lidské názvy rolí. Sdílené, protože je potřebuje profil i pruh s náhledem —
+ * dvě kopie by se dřív nebo později rozešly.
+ */
+export const ROLE_LABELS: Record<UserRole, string> = {
+  student: 'Kadet / Student',
+  velitel_tridy: 'Velitel třídy',
+  lektor: 'Lektor',
+  admin: 'Správce',
+};
 
 /**
  * Minimální délka hesla používaná v nápovědě a v atributu minLength.

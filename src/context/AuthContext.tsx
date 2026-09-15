@@ -2,6 +2,7 @@ import React, {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
   useCallback,
   ReactNode,
@@ -99,6 +100,19 @@ interface AuthContextValue {
   loading: boolean;
   /** Proč databáze odmítne zápisy, nebo `null`, je-li role v pořádku. */
   roleSyncWarning: string | null;
+  /**
+   * Role, pod kterou si správce právě prohlíží rozhraní, nebo `null`.
+   *
+   * Je to VÝHRADNĚ náhled: do databáze se nezapisuje nic, `profiles.role`
+   * zůstává beze změny a RLS dál pouští jen to, na co má účet doopravdy právo.
+   * Rozhraní se tedy chová jako u zvolené role, ale data vidí pořád podle té
+   * skutečné — proto se náhled hlásí pruhem přes celou šířku.
+   */
+  previewRole: UserRole | null;
+  /** Role, kterou má účet doopravdy. Náhled ji nikdy nepřepisuje. */
+  realRole: UserRole | null;
+  /** Zapne náhled zvolené role, `null` ho vypne. Smí ho zapnout jen správce. */
+  setPreviewRole: (role: UserRole | null) => void;
   signIn: (email: string, password: string, captchaToken?: string) => Promise<{ error: AuthError | null; signedIn: boolean }>;
   signUp: (email: string, password: string, fullName: string, captchaToken?: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
@@ -119,6 +133,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [roleSyncWarning, setRoleSyncWarning] = useState<string | null>(null);
+
+  // Náhled cizí role. Schválně jen ve stavu komponenty, ne v localStorage:
+  // načtení stránky ho tím pádem vždycky vypne, takže se v něm nejde zaseknout.
+  const [previewRole, setPreviewRoleState] = useState<UserRole | null>(null);
+
+  const realRole: UserRole | null = profile?.role ?? null;
+
+  /**
+   * Náhled smí zapnout jen ten, kdo je správcem doopravdy.
+   *
+   * Není to bezpečnostní opatření — o tom rozhoduje RLS, ne prohlížeč — ale
+   * brání tomu, aby se někdo dostal do matoucího stavu, kdy mu rozhraní slibuje
+   * víc, než mu databáze dovolí.
+   */
+  const setPreviewRole = useCallback(
+    (role: UserRole | null) => {
+      // Vypnout náhled smí kdokoli a kdykoli — je to únikový východ.
+      if (role !== null && realRole !== 'admin') return;
+      setPreviewRoleState(role);
+    },
+    [realRole]
+  );
+
+  // Profil, který dostanou komponenty. Liší se od `profile` jen tehdy, když
+  // běží náhled — a to pouze v poli `role`. Nikam se neukládá.
+  const profileForConsumers: UserProfile | null = useMemo(() => {
+    if (!profile) return null;
+    if (!previewRole || previewRole === profile.role) return profile;
+    return { ...profile, role: previewRole };
+  }, [profile, previewRole]);
 
   /**
    * Načte profil uživatele z tabulky public.profiles.
@@ -400,6 +444,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       setProfile(null);
       setRoleSyncWarning(null);
+      setPreviewRoleState(null);
     }
   }, []);
 
@@ -536,7 +581,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ session, user, profile, loading, roleSyncWarning, signIn, signUp, signOut, updateProfile, updateRole, updatePassword }}
+      value={{
+        session,
+        user,
+        profile: profileForConsumers,
+        loading,
+        roleSyncWarning,
+        previewRole,
+        realRole,
+        setPreviewRole,
+        signIn,
+        signUp,
+        signOut,
+        updateProfile,
+        updateRole,
+        updatePassword,
+      }}
     >
       {children}
     </AuthContext.Provider>
