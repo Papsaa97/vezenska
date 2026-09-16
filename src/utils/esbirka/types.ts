@@ -74,7 +74,12 @@ export interface EsbirkaDownloadLinks {
   };
 }
 
-/** Chybová odpověď API. Server ji vrací i s HTTP 400. */
+/**
+ * Chybová odpověď. e-Sbírka vrací pole `chyby` (i s HTTP 400), vlastní proxy
+ * `/api/esbirka` vrací jedinou hlášku v poli `chyba`. Podle toho, které pole
+ * přijde, se pozná, kde se to zlomilo.
+ */
 export interface EsbirkaErrorBody {
   chyby?: Array<{ kod?: string; popis?: string; datumCasChyby?: string }>;
+  chyba?: string;
 }

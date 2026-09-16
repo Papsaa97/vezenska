@@ -97,13 +97,25 @@ function isBrowser(): boolean {
   return typeof window !== 'undefined' && typeof window.document !== 'undefined';
 }
 
-function describeError(status: number, body: string): string {
+/**
+ * Hláška o nezdařeném volání.
+ *
+ * Záleží na tom, kdo chybu vrátil: `chyby` posílá e-Sbírka, `chyba` vlastní
+ * proxy. Když nepřijde ani jedno a stav je 5xx, selhal most na naší straně —
+ * svádět to na e-Sbírku by poslalo hledání poruchy špatným směrem (přesně to
+ * se stalo, když serverless funkce padala na chybějící příponu v importu).
+ */
+function describeError(status: number, body: string, viaProxy: boolean): string {
   try {
     const parsed = JSON.parse(body) as EsbirkaErrorBody;
     const first = parsed.chyby?.[0];
     if (first?.popis) return `${first.kod ? `${first.kod}: ` : ''}${first.popis}`;
+    if (parsed.chyba) return parsed.chyba;
   } catch {
-    // Odpověď nebyla JSON — použije se holý stav níže.
+    // Odpověď nebyla JSON — rozhodne stav níže.
+  }
+  if (viaProxy && status >= 500) {
+    return `most k e-Sbírce na /api/esbirka selhal se stavem HTTP ${status}`;
   }
   return `e-Sbírka odpověděla stavem HTTP ${status}`;
 }
@@ -119,7 +131,8 @@ export async function fetchEsbirkaRaw(
   query: EsbirkaQuery,
   options: EsbirkaRequestOptions = {}
 ): Promise<string> {
-  const url = isBrowser() ? buildProxyUrl(query) : buildUpstreamUrl(query);
+  const viaProxy = isBrowser();
+  const url = viaProxy ? buildProxyUrl(query) : buildUpstreamUrl(query);
   const timeoutMs = options.timeoutMs ?? 15000;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -133,7 +146,7 @@ export async function fetchEsbirkaRaw(
     });
     const body = await response.text();
     if (!response.ok) {
-      throw new EsbirkaError(describeError(response.status, body), response.status);
+      throw new EsbirkaError(describeError(response.status, body, viaProxy), response.status);
     }
     return body;
   } catch (error) {
