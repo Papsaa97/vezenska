@@ -19,19 +19,30 @@ Parlament se usnesl na tomto zákoně České republiky:
 (2) S chovanci se zachází humánním způsobem při respektování jejich lidské důstojnosti a s ohledem na jejich zdravotní a psychický stav.
 (3) Chovancům se zajišťuje nepřetržitá psychiatrická, psychologická, ošetřovatelská a sociální péče.
 
-§ 4 Místo výkonu detence
-Ústavy pro výkon zabezpečovací detence zřizuje a ruší ministr spravedlnosti jako specializované organizační jednotky Vězeňské služby (Brno, Opava, Rýnovice).
+§ 4
+(1) Při umístění do ústavu musí být prokazatelně provedeno seznámení chovance s jeho právy a povinnostmi podle tohoto zákona, s vnitřním řádem ústavu a s jeho právem podávat návrhy na propuštění ze zabezpečovací detence nebo na změnu zabezpečovací detence na ochranné léčení. Poučení se provede způsobem přiměřeným rozumovým schopnostem chovance. Při nástupu do ústavu se provede osobní prohlídka chovance.
 
-§ 10 Přijímání chovanců
-Při přijetí do ústavu se chovanec podrobí osobní prohlídce, hygienické očistě a komplexnímu lékařskému a psychiatrickému vyšetření. Sepíše se anamnéza a stanoví se individuální léčebný a resocializační plán.
+§ 10 Návštěvy
+(1) Chovanec má právo během pobytu v ústavu přijímat návštěvy nejméně dvakrát týdně vždy po dobu nejméně dvou hodin, a to v čase určeném vnitřním řádem ústavu nebo ředitelem ústavu.
+(2) Návštěvy obhájce nebo advokáta oprávněného chovance zastupovat, soudem ustanoveného opatrovníka, duchovních a úředních osob omezení podle odstavce 1 nepodléhají.
 
-§ 14 Režim a programy zacházení
-(1) Pro chovance se sestavuje denní program zahrnující individuální a skupinovou psychoterapii, pracovní terapii (ergoterapii), vzdělávání, kulturní a sportovní aktivity.
-(2) Chovancům se zajišťuje denní pobyt na čerstvém vzduchu (vycházka) v délce nejméně 2 hodin denně, pokud tomu nebrání zdravotní stav nebo závažné bezpečnostní důvody.
+§ 14 Přijímání balíčků
+(1) Chovanec má právo jedenkrát za tři měsíce přijmout balíček s trvanlivými potravinami a věcmi osobní potřeby do hmotnosti 5 kg.
+(2) Bez omezení přijímá balíčky obsahující prádlo, oděv, obuv, knihy a tiskoviny a věci potřebné k realizaci programu nebo k dalšímu vzdělávání a zájmové činnosti.
 
-§ 24 Použití omezovacích prostředků
-(1) Jestliže chovanec svým chováním bezprostředně ohrožuje svůj život nebo zdraví anebo život a zdraví jiných osob nebo ničí zařízení ústavu, lze vůči němu použít zdravotnické omezovací prostředky (poutací pásy, izolační místnost, ochranný kabátec) na základě příkazu ošetřujícího lékaře.
-(2) Příslušníci Vězeňské služby poskytují zdravotnickému personálu nezbytnou asistenci a ochranu při provádění zákroku.`;
+§ 20 Sociální podmínky
+(1) Chovancům se poskytuje pravidelná strava za podmínek a v hodnotách, které odpovídají požadavku udržení zdraví a přihlížejí k jejich zdravotnímu stavu, věku a případně též obtížnosti vykonávané práce; poskytují se jim rovněž základní prostředky osobní hygieny.
+(2) Každý chovanec musí mít zabezpečeno lůžko, židli a prostor pro uložení osobních věcí.
+(4) Chovancům se zabezpečuje denně osmihodinová doba ke spánku v době nočního klidu, doba potřebná k osobní hygieně, úklidu a stravování, NEJMÉNĚ JEDNOHODINOVÁ VYCHÁZKA a přiměřené osobní volno.
+
+§ 36 Omezovací prostředky
+(1) V nezbytně nutných případech lze k ochraně chovance a jiných osob použít omezovací prostředky.
+(2) Omezovacími prostředky jsou:
+a) pobyt na uzavřeném oddělení,
+b) umístění chovance v izolační místnosti,
+c) omezení chovance v pohybu prostřednictvím ochranných pásů,
+d) omezení chovance v pohybu prostřednictvím manuálního držení,
+e) akutní parenterální podávání psychofarmak, pokud se nejedná o léčbu na žádost chovance.`;
 
 export const LAW_361_2003_FULL = `ZÁKON č. 361/2003 Sb.
 ze dne 23. září 2003
@@ -45,23 +56,35 @@ Parlament se usnesl na tomto zákoně České republiky:
 § 1 Předmět úpravy
 Tento zákon upravuje právní poměry fyzických osob, které v bezpečnostním sboru vykonávají službu (dále jen „příslušník“), a jejich služební vztahy k České republice. Bezpečnostním sborem se pro účely tohoto zákona rozumí Policie České republiky, Hasičský záchranný sbor České republiky, Celní správa České republiky, Vězeňská služba České republiky, Generální inspekce bezpečnostních sborů, Bezpečnostní informační služba a Úřad pro zahraniční styky a informace.
 
-§ 7 Služební hodnosti a tarifní třídy
-(1) Stanoví se tyto služební hodnosti, minimální požadované vzdělání a tarifní třídy:
-a) rotný (střední vzdělání s výučním listem, 1. TT, 1 stříbrná hvězda),
-b) strážmistr (střední vzdělání s maturitou, 2. TT, 2 stříbrné hvězdy),
-c) nadstrážmistr (střední vzdělání s maturitou, 3. TT, 3 stříbrné hvězdy),
-d) podpraporčík (vyšší odborné nebo bakalářské vzdělání, 4. TT, 1 stříbrná hvězda + stříbrná kolejnička),
-e) praporčík (vyšší odborné nebo bakalářské vzdělání, 5. TT, 2 stříbrné hvězdy + stříbrná kolejnička),
-f) nadpraporčík (vyšší odborné nebo bakalářské vzdělání, 6. TT, 3 stříbrné hvězdy + stříbrná kolejnička),
-g) vrchní praporčík (vysokoškolské vzdělání, 7. TT, 4 stříbrné hvězdy + stříbrná kolejnička),
-h) podporučík (vysokoškolské bakalářské vzdělání, 8. TT, 1 zlatá hvězda),
-ch) poručík (vysokoškolské magisterské vzdělání, 9. TT, 2 zlaté hvězdy),
-i) nadporučík (vysokoškolské magisterské vzdělání, 10. TT, 3 zlaté hvězdy),
-j) kapitán (vysokoškolské magisterské vzdělání, 11. TT, 4 zlaté hvězdy),
-k) major (vysokoškolské magisterské vzdělání, 12. TT, 1 zlatá hvězda + zlatá kolejnička),
-l) podplukovník (vysokoškolské magisterské vzdělání, 13. TT, 2 zlaté hvězdy + zlatá kolejnička),
-m) plukovník (vysokoškolské magisterské vzdělání, 14. TT, 3 zlaté hvězdy + zlatá kolejnička),
-n) brigádní generál (vysokoškolské magisterské vzdělání, 15. TT, 1 generálská hvězda + lipová ratolest).
+§ 7 Služební hodnost, minimální stupeň vzdělání, minimální doba trvání služebního poměru pro služební hodnost a tarifní třída
+(1) Pro příslušníky se stanovují tyto SLUŽEBNÍ HODNOSTI (pozor: to nejsou hodnostní označení, ta jsou v § 8), minimální stupně vzdělání, minimální doby trvání služebního poměru a tarifní třídy:
+a) referent — střední nebo střední s výučním listem, bez požadované doby, 1. TT,
+b) vrchní referent — střední s maturitní zkouškou, bez požadované doby, 2. TT,
+c) asistent — střední s maturitní zkouškou, bez požadované doby, 3. TT,
+d) vrchní asistent — střední s maturitní zkouškou, 2 roky, 4. TT,
+e) inspektor — střední s maturitní zkouškou, 3 roky, 5. TT,
+f) vrchní inspektor — střední s maturitní zkouškou / vyšší odborné, 5 let, 6. TT,
+g) komisař — vyšší odborné nebo vysokoškolské bakalářské, 6 let, 7. TT,
+h) vrchní komisař — vysokoškolské bakalářské, 7 let, 8. TT,
+i) rada — vysokoškolské magisterské, 9 let, 9. TT,
+j) vrchní rada — vysokoškolské magisterské, 10 let, 10. TT,
+k) vrchní státní rada — vysokoškolské magisterské, 12 let, 11. TT.
+
+§ 8 Hodnostní označení
+(1) Příslušníkovi ve služební hodnosti náleží hodnostní označení:
+a) referent — rotný,
+b) vrchní referent — strážmistr,
+c) asistent — nadstrážmistr,
+d) vrchní asistent — podpraporčík,
+e) inspektor — praporčík nebo nadpraporčík,
+f) vrchní inspektor — nadpraporčík nebo podporučík,
+g) komisař — poručík nebo nadporučík,
+h) vrchní komisař — kapitán nebo major,
+i) rada — podplukovník nebo plukovník,
+j) vrchní rada — plukovník,
+k) vrchní státní rada — plukovník.
+(2) Jsou-li pro služební hodnost stanovena 2 hodnostní označení, náleží vyšší hodnostní označení vedoucímu příslušníkovi.
+(3) Prezident republiky může jmenovat ředitele bezpečnostního sboru, jeho náměstka nebo vedoucího organizační části na návrh vlády do hodnosti brigádní generál, generálmajor nebo generálporučík.
 
 § 45 Základní povinnosti příslušníka
 Příslušník je povinen:
@@ -72,22 +95,42 @@ d) zachovávat mlčenlivost o skutečnostech, o nichž se dozvěděl v souvislos
 e) poskytnout pomoc osobě v nebezpečí života nebo zdraví i v době mimo službu,
 f) zdržet se jednání, které by mohlo vést ke střetu zájmů státu a osobních zájmů.
 
-§ 46 Omezení některých práv příslušníka
-(1) Příslušník nesmí být členem politické strany nebo politického hnutí ani vykonávat činnost v jejich prospěch.
-(2) Příslušník nesmí vykonávat jinou výdělečnou činnost než službu podle tohoto zákona. Zákaz se nevztahuje na správu vlastního majetku a činnost vědeckou, pedagogickou, publicistickou, literární nebo uměleckou.
+§ 46 Služební kázeň
+(1) Služební kázeň spočívá v nestranném, řádném a svědomitém plnění služebních povinností příslušníka, které pro něj vyplývají z právních předpisů, služebních předpisů a rozkazů.
+(2) Je-li rozkaz vedoucího příslušníka ve zřejmém rozporu s právním předpisem, příslušník je povinen jej na tuto skutečnost upozornit. Trvá-li vedoucí příslušník na splnění rozkazu, je příslušník oprávněn žádat o jeho písemné vydání.
 
-§ 50 Kázeňské tresty příslušníka
-(1) Kázeňským proviněním je zaviněné porušení služebních povinností.
-(2) Kázeňskými tresty jsou:
-a) písemná výtka,
-b) snížení základního tarifu až o 25 % na dobu až 3 měsíců,
+§ 47, § 48 Omezení některých práv příslušníka
+§ 47 odst. 1: Příslušník nesmí být členem politické strany nebo politického hnutí ani vykonávat činnost v jejich prospěch; volební právo tím není dotčeno.
+§ 48 odst. 1: Příslušník nesmí být členem řídících nebo kontrolních orgánů právnických osob provozujících podnikatelskou činnost, s výjimkou vyslání služebním funkcionářem a orgánů právnických osob zřízených státem.
+§ 48 odst. 2: Jinou výdělečnou činnost smí vykonávat jen se souhlasem; zákaz se nevztahuje na správu vlastního majetku a na činnost vědeckou, pedagogickou, publicistickou, literární nebo uměleckou.
+
+§ 49 Kázeňské odměny
+(1) Příslušníkovi lze za projevení osobní statečnosti, za splnění zvlášť významného služebního úkolu anebo za ocenění příkladného plnění služebních povinností udělit kázeňskou odměnu.
+(2) Kázeňskou odměnou je:
+a) písemná pochvala,
+b) peněžitý nebo věcný dar, anebo
+c) udělení služební medaile.
+
+§ 50 Kázeňský přestupek
+(1) Kázeňským přestupkem je zaviněné jednání, které porušuje služební povinnost, ale nejde o trestný čin nebo o jednání, které má znaky přestupku. Za takové jednání se považuje i dosahování neuspokojivých výsledků ve výkonu služby uvedené v závěru služebního hodnocení.
+
+§ 51 Kázeňský trest
+(1) Příslušníkovi se ukládá kázeňský trest:
+a) písemné napomenutí,
+b) snížení základního tarifu až o 25 % na dobu nejvýše 3 měsíců,
 c) odnětí služební medaile,
-d) odnětí služební hodnosti (snížení hodnosti o jeden stupeň na dobu 1 roku),
-e) propuštění ze služebního poměru.
+d) odnětí služební hodnosti,
+e) pokuta,
+f) propadnutí věci, nebo
+g) zákaz činnosti.
+(2) Kázeňské tresty podle odstavce 1 písm. e) až g) lze uložit pouze za jednání, které má znaky přestupku; lze je uložit společně, popřípadě společně s tresty podle písm. a) a c).
+POZOR: propuštění ze služebního poměru NENÍ kázeňský trest — je to samostatný důvod skončení služebního poměru podle § 42.
 
-§ 157 Výsluhový příspěvek
-(1) Příslušník, jehož služební poměr skončil po vykonání nejméně 15 let služby, má nárok na měsíční výsluhový příspěvek.
-(2) Výše výsluhového příspěvku činí po 15 letech služby 20 % průměrného hrubého měsíčního příjmu a zvyšuje se za každý další rok služby až do zákonem stanoveného maxima 50 %.`;
+§ 157 Podmínky nároku na výsluhový příspěvek
+Bývalý příslušník, který vykonával službu alespoň po dobu 15 let, má nárok na výsluhový příspěvek; to neplatí, skončil-li jeho služební poměr propuštěním z důvodů uvedených v § 42 odst. 1 písm. a), c), d) nebo m) za podmínek tam stanovených.
+
+§ 158 Výměra výsluhového příspěvku
+Základní výměra činí za 15 let služby 20 % měsíčního služebního příjmu. Zvyšuje se za 16. a každý další ukončený rok o 3 %, za 21. a každý další o 2 % a za 26. a každý další o 1 % měsíčního služebního příjmu. Nejvýše může činit 50 % měsíčního služebního příjmu.`;
 
 export const LAW_40_2009_FULL = `ZÁKON č. 40/2009 Sb. – TRESTNÍ ZÁKONÍK
 (výběr klíčových ustanovení pro Vězeňskou službu ČR)
@@ -168,11 +211,18 @@ e) vstupní lékařská prohlídka lékařem věznice do 24 hodin od přijetí.
 - nejméně 1 hodinu vycházky na čerstvém vzduchu denně,
 - večerní prověrku počtu a večerku.
 
-§ 16 Ubytovací standardy
-Ubytovací plocha ložnice pro odsouzené činí nejméně 4 m² na jednoho odsouzeného (u jednolůžkové cely nejméně 6 m²). Světlost a větrání musí odpovídat hygienickým normám pro trvalý pobyt osob.
+§ 17 Ubytování
+(5) Jsou-li ubytovacími místnostmi cely, musí být vybaveny sociálním zařízením se záchodem a umyvadlem s tekoucí pitnou vodou; plocha sociálního zařízení se do ubytovací plochy NEZAPOČÍTÁVÁ. Záchod musí být oddělen alespoň neprůhlednou zástěnou.
+(6) V ubytovací místnosti určené pro ubytování více odsouzených musí na jednoho odsouzeného připadat ubytovací plocha NEJMÉNĚ 4 m². Cela nebo ložnice určená k ubytování pouze jedné osoby nesmí mít ubytovací plochu menší než 6 m².
+(7) Do cely nebo ložnice, v níž na odsouzeného připadne plocha menší, nikoli však menší než 3 m², lze odsouzeného umístit jen za podmínek stanovených tímto odstavcem (nedostatečná ubytovací kapacita věznic téhož typu a stupně zabezpečení).
 
-§ 22 Osobní hygiena
-Odsouzený je povinen udržovat osobní čistotu. Sprchování teplou vodou je zajištěno nejméně dvakrát týdně, u pracujících na prašných provozech denně po skončení směny. Ložní prádlo se mění nejméně jednou za 14 dnů.`;
+§ 21 Osobní hygiena
+(1) Věznice je povinna vytvořit náležité podmínky pro dodržování osobní hygieny odsouzených tak, aby bylo zajištěno denní umývání, pravidelné holení a vykonávání běžných hygienických úkonů.
+(2) Koupání se odsouzeným umožní nejméně dvakrát týdně; vyžaduje-li to pracovní zařazení nebo jiné okolnosti, umožní se častěji. Za koupání se považuje sprchování teplou vodou.
+
+§ 22 Osobní volno
+(1) Osobním volnem se rozumí čas, který mají odsouzení k dispozici po splnění aktivit programu zacházení, doby potřebné k osobní hygieně, úklidu, stravování, jednohodinové vycházce, osmihodinové době ke spánku a činností vyplývajících z organizačního provozu věznice.
+(2) V osobním volnu se odsouzený podle své volby věnuje sebevzdělávání a uspokojování svých kulturních, duchovních a zájmových potřeb.`;
 
 export const DECREE_109_1994_FULL = `VYHLÁŠKA Ministerstva spravedlnosti č. 109/1994 Sb.
 kterou se vydává řád výkonu vazby (ŘVV)

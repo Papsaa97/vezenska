@@ -64,6 +64,29 @@ export interface ArticleSectionIssue {
   neznameParagrafy: string[];
 }
 
+/**
+ * Nález, kdy text uvádí paragraf pod jiným nadpisem, než jaký má v zákoně.
+ *
+ * Tohle je ta kontrola, která chyběla. Dosud se ověřovalo jen to, že citovaný
+ * paragraf v předpisu EXISTUJE — ne že obsah pod ním opravdu je. Právě tím
+ * mohl výklad roky tvrdit „§ 47 Kázeňské odměny“, zatímco § 47 zákona
+ * 169/1999 Sb. se jmenuje „Ukládání kázeňských trestů“ a odměny jsou § 45.
+ */
+export interface SectionHeadingIssue {
+  /** Id článku výkladu nebo označení předpisu, ve kterém se nadpis našel. */
+  id: string;
+  actNumber: string;
+  /** Paragraf, u kterého nadpis nesouhlasí. */
+  section: string;
+  /** Nadpis uvedený v naší aplikaci. */
+  nadpisVAplikaci: string;
+  /** Nadpis podle osnovy z e-Sbírky. */
+  nadpisVZakone: string;
+}
+
+/** Nadpisy paragrafů podle osnovy z e-Sbírky: `§ 45` → `Odměny`. */
+export type OfficialHeadings = Map<string, string>;
+
 export interface AuditReport {
   timestamp: string;
   totalArticles: number;
@@ -196,6 +219,141 @@ export function auditArticleSections(articles: LegalArticle[]): ArticleSectionIs
         actNumber: art.actNumber,
         section: art.section,
         neznameParagrafy: unknown.sort(compareSections),
+      });
+    }
+  }
+
+  return issues;
+}
+
+/**
+ * Nadpis paragrafu uvedený v našem textu, pokud tam nějaký je.
+ *
+ * Bere jen `§ N` na ZAČÁTKU řádku — tak jsou studijní texty formátované.
+ * Výskyt uprostřed větv je odkaz („… podle § 17 odst. 6 vyhlášky …“), ne
+ * nadpis, a porovnávat ho s osnovou by dělalo falešné nálezy. Ze stejného
+ * důvodu se přeskočí pokračování `odst.`, `písm.` a text v závorce: zkratka
+ * „(jen některý z těchto)“ za nadpisem je náš doplněk, ne součást názvu.
+ */
+export function collectLabeledHeadings(text: string): { section: string; heading: string }[] {
+  const found: { section: string; heading: string }[] = [];
+
+  for (const line of text.split('\n')) {
+    const match = line.match(/^\s*§\s*(\d+[a-z]*)\s+(.+)$/i);
+    if (!match) continue;
+
+    const rest = match[2].trim();
+    // Pokračování odkazu nebo rovnou tělo ustanovení, ne nadpis.
+    if (/^(odst\.|písm\.|a\s|až\s|–|-|\()/i.test(rest)) continue;
+
+    const heading = rest
+      .replace(/\([^)]*\)/g, ' ')
+      .replace(/[:;.,]\s*$/, '')
+      .trim();
+    if (heading.length < 3) continue;
+
+    found.push({ section: `§ ${match[1].toLowerCase()}`, heading });
+  }
+
+  return found;
+}
+
+/** Porovnávací tvar nadpisu: bez diakritiky, interpunkce a velkých písmen. */
+function normalizeHeading(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Spojky a předložky, které o obsahu nadpisu nevypovídají nic. */
+const HEADING_STOP_WORDS = new Set([
+  'a', 'i', 'o', 'u', 'v', 've', 'k', 'ke', 'ku', 's', 'se', 'z', 'ze', 'na', 'do',
+  'pro', 'po', 'pri', 'od', 'za', 'nebo', 'anebo', 'ci', 'jine', 'jinych', 'podobnych',
+]);
+
+/**
+ * Hrubý kmen slova — jen aby „kázeňský trest“ a „kázeňské tresty“ splynuly.
+ *
+ * Není to morfologický analyzátor a nemá být: stačí, aby porovnání nadpisů
+ * nepadalo na skloňování. Krátká slova se nechávají být, u delších se odřízne
+ * koncovka, takže z „kázeňského“ i „kázeňské“ zbyde „kázeňsk“.
+ */
+function stemWord(word: string): string {
+  if (word.length <= 4) return word;
+  return word.replace(
+    /(ateln[eay]|ovan[iíeay]|en[iíeay]|ost[iíeay]?|ami|ach|emi|ich|ych|ymi|eho|ymu|emu|[aeiouy]m|[aeiouy]ch|[aeiouy])$/,
+    ''
+  );
+}
+
+/** Kmeny významových slov nadpisu. */
+function headingStems(value: string): Set<string> {
+  return new Set(
+    normalizeHeading(value)
+      .split(' ')
+      .filter((word) => word.length > 1 && !HEADING_STOP_WORDS.has(word))
+      .map(stemWord)
+      .filter(Boolean)
+  );
+}
+
+function isSubset(smaller: Set<string>, larger: Set<string>): boolean {
+  for (const item of smaller) if (!larger.has(item)) return false;
+  return true;
+}
+
+/**
+ * Souhlasí nadpis v aplikaci s názvem paragrafu v zákoně?
+ *
+ * Shoda nemusí být znak po znaku. Studijní text nadpis běžně zkracuje
+ * („Služební hodnosti a tarifní třídy“ za zákonné „Služební hodnost, minimální
+ * stupeň vzdělání, … a tarifní třída“) a skloňuje jinak — to obojí projde.
+ * Neprojde záměna obsahu: „Kázeňské tresty ve vazbě“ nad paragrafem, který se
+ * jmenuje „Řízení o kázeňských přestupcích a o zabrání věci“, je vada.
+ */
+export function headingMatches(inApp: string, inLaw: string): boolean {
+  const a = normalizeHeading(inApp);
+  const b = normalizeHeading(inLaw);
+  if (!a || !b) return true;
+  if (a === b || a.includes(b) || b.includes(a)) return true;
+
+  const stemsApp = headingStems(inApp);
+  const stemsLaw = headingStems(inLaw);
+  if (stemsApp.size === 0 || stemsLaw.size === 0) return true;
+  return isSubset(stemsApp, stemsLaw) || isSubset(stemsLaw, stemsApp);
+}
+
+/**
+ * Ověří, že paragraf v textu nese tentýž nadpis jako v platném znění.
+ *
+ * Paragrafy, které osnova nepojmenovává (v zákoně mají jen číslo), se
+ * přeskakují — není s čím porovnávat.
+ */
+export function auditSectionHeadings(
+  entries: { id: string; actNumber: string; text: string }[],
+  headingsByAct: (actNumber: string) => OfficialHeadings | null
+): SectionHeadingIssue[] {
+  const issues: SectionHeadingIssue[] = [];
+
+  for (const entry of entries) {
+    const headings = headingsByAct(entry.actNumber);
+    if (!headings) continue;
+
+    for (const { section, heading } of collectLabeledHeadings(entry.text)) {
+      const official = headings.get(section);
+      if (!official) continue;
+      if (headingMatches(heading, official)) continue;
+
+      issues.push({
+        id: entry.id,
+        actNumber: entry.actNumber,
+        section,
+        nadpisVAplikaci: heading,
+        nadpisVZakone: official,
       });
     }
   }

@@ -21,10 +21,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { legalDatabase } from '../src/data/legalCompasData';
-import { auditLegalDatabase, measureRegulationCoverage } from '../src/utils/legalIntegrity';
+import {
+  auditLegalDatabase,
+  auditSectionHeadings,
+  measureRegulationCoverage,
+  type OfficialHeadings,
+} from '../src/utils/legalIntegrity';
 import { VSCR_REGULATIONS_REGISTRY } from '../src/data/vscrRegulationsRegistry';
 import { ESBIRKA_SNAPSHOTS } from '../src/data/esbirka/snapshotManifest';
-import { buildSnapshotSlug, parseSbiratkaRef } from '../src/utils/esbirka/eli';
+import { buildSnapshotSlug, normalizeSectionLabel, parseSbiratkaRef } from '../src/utils/esbirka/eli';
 import { buildShingleIndex, compareWithOfficialText } from '../src/utils/esbirka/verbatim';
 import type { EsbirkaSnapshot } from '../src/utils/esbirka/snapshot';
 
@@ -48,6 +53,37 @@ function officialIndex(actNumber: string): Set<string> | null {
   }
   indexCache.set(slug, index);
   return index;
+}
+
+/**
+ * Nadpisy paragrafů z osnovy stažené z e-Sbírky.
+ *
+ * Bere se z celého snapshotu na disku, ne z generovaného manifestu:
+ * `EsbirkaSnapshotSummary` nese jen seznam označení paragrafů, názvy nikoli.
+ */
+const headingCache = new Map<string, OfficialHeadings | null>();
+function officialHeadings(actNumber: string): OfficialHeadings | null {
+  const ref = parseSbiratkaRef(actNumber);
+  if (!ref) return null;
+  const slug = buildSnapshotSlug(ref);
+  if (headingCache.has(slug)) return headingCache.get(slug) ?? null;
+
+  let headings: OfficialHeadings | null = null;
+  try {
+    const raw = readFileSync(path.join(SNAPSHOT_DIR, `${slug}.json`), 'utf8');
+    const snapshot = JSON.parse(raw) as EsbirkaSnapshot;
+    headings = new Map();
+    for (const item of snapshot.osnova ?? []) {
+      const label = normalizeSectionLabel(item.oznaceni);
+      if (!label || !item.nazev) continue;
+      // Osnova uvádí paragraf jen jednou; první výskyt je ten platný.
+      if (!headings.has(label)) headings.set(label, item.nazev);
+    }
+  } catch {
+    headings = null;
+  }
+  headingCache.set(slug, headings);
+  return headings;
 }
 
 const coverage = VSCR_REGULATIONS_REGISTRY
@@ -169,8 +205,41 @@ if (verbatim.length > 0) {
   });
 }
 
+// Nese paragraf v našich textech tentýž nadpis jako v zákoně?
+// Kontroluje se Paragrafový výklad i studijní výběr v registru předpisů —
+// vada se vyskytla v obou.
+const headingEntries = [
+  ...legalDatabase.map((art) => ({
+    id: art.id,
+    actNumber: art.actNumber,
+    text: art.exactText,
+  })),
+  ...VSCR_REGULATIONS_REGISTRY.filter(
+    (reg) => typeof reg.fullLegalText === 'string' && reg.fullLegalText.length > 0
+  ).map((reg) => ({
+    id: `${reg.id} (studijní výběr)`,
+    actNumber: reg.code,
+    text: reg.fullLegalText,
+  })),
+];
+
+const headingIssues = auditSectionHeadings(headingEntries, officialHeadings);
+
 console.log('----------------------------------------------------');
 let failed = false;
+
+if (headingIssues.length > 0) {
+  failed = true;
+  console.log(
+    `NALEZENO ${headingIssues.length} paragrafů uvedených pod jiným nadpisem, než mají v zákoně:`
+  );
+  headingIssues.forEach((iss) => {
+    console.log(`- "${iss.id}" (${iss.actNumber}) u ${iss.section}`);
+    console.log(`     v aplikaci: ${iss.nadpisVAplikaci}`);
+    console.log(`     v zákoně:   ${iss.nadpisVZakone}`);
+  });
+  console.log('');
+}
 
 if (result.articleSectionIssues.length > 0) {
   failed = true;
