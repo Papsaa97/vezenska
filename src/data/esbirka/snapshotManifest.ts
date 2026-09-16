@@ -603,14 +603,14 @@ export const ESBIRKA_SNAPSHOTS: Record<string, EsbirkaSnapshotSummary> = {
     "citace": "555/1992 Sb.",
     "nazev": "Zákon České národní rady o Vězeňské službě a justiční stráži České republiky",
     "dokumentId": 2054655,
-    "cisloZneni": 24,
-    "ucinnostOd": "2025-08-01",
+    "cisloZneni": 25,
+    "ucinnostOd": "2026-01-01",
     "novely": [
       "270/2025 Sb."
     ],
     "portalUrl": "https://e-sbirka.gov.cz/sb/1992/555/2026-01-01?zalozka=text",
     "pdfUrl": "https://e-sbirka.gov.cz/sbr-externi/stahni/informativni-zneni/2054655/PDF",
-    "stazenoDne": "2026-09-16T06:35:46.963Z",
+    "stazenoDne": "2026-09-16T07:54:10.725Z",
     "pocetZnaku": 53213,
     "paragrafy": [
       "§ 1",
