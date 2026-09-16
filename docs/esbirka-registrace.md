@@ -1,8 +1,10 @@
 # Registrace k veřejnému REST API e-Sbírky
 
 Návod, jak požádat Ministerstvo vnitra o přístupový klíč, a co do žádosti
-vyplnit. Čísla v části „Obsah žádosti“ nejsou odhady — vycházejí z toho, co
-aplikace opravdu dělá, a dají se kdykoli přepočítat (viz „Odkud jsou čísla“).
+vyplnit. Dokument počítá s tím, že **žádá fyzická osoba za sebe**, ne Vězeňská
+služba ČR ani Akademie VS ČR — viz „Kdo žádá“. Čísla v části „Obsah žádosti“
+nejsou odhady; vycházejí z toho, co aplikace opravdu dělá, a dají se kdykoli
+přepočítat (viz „Odkud jsou čísla“).
 
 ## Potřebujeme to vůbec?
 
@@ -24,13 +26,43 @@ k endpointu `sbr-externi` nevyjadřuje — dokumentace zná jen
 `api.e-sbirka.gov.cz`.
 
 **Doporučení:** registrovat se. Náklad je jeden formulář datovou schránkou,
-získá se tím jistota, dokumentované podmínky užití a někdo, kdo o změnách
-uvědomí. Pro aplikaci státní organizace, která učí právní texty příslušníky,
-to za to stojí.
+API je po registraci bezplatné a přístup je jen čtecí. Získá se tím jistota,
+psané podmínky užití a někdo, kdo o změnách uvědomí — u aplikace, která
+ukazuje právní texty a tvrdí o nich, že jsou platné, to za ten formulář stojí.
 
 **Než se odešle žádost, vyplatí se zeptat** na podporu systému, jestli je
 dnešní použití `sbr-externi` v pořádku a jestli klíč situaci vůbec změní —
 viz „Co se zeptat předem“ níže.
+
+## Kdo žádá
+
+Žádost podává **fyzická osoba sama za sebe**. Co pro to mluví a co je pořád
+otevřené:
+
+**Formulář nic jiného nepředpokládá.** Má pole Název, E-mail, Telefon, ID
+datové schránky, Důvod žádosti a kapacitní údaje — a podepisuje se kolonkou
+*Jméno, příjmení*. Není v něm IČO, právní forma ani nic, co by jen organizace
+mohla vyplnit. (Ověřeno ve staženém DOCX, ne odhadnuto.)
+
+**Portál mluví o „subjektu“**, ne o organizaci ani o orgánu veřejné moci.
+
+**Co nikde napsané není:** že se žádosti fyzických osob přijímají. Ani že ne.
+Nenašel jsem k tomu žádné vyjádření. Riziko tedy zůstává — posouzení může
+skončit *požadavkem na doplnění údajů* nebo zamítnutím s uvedeným důvodem;
+obojí portál výslovně připouští. Není to slepá ulička: doplnit údaje a poslat
+znovu jde kdykoli.
+
+**Název musí sedět na držitele datové schránky, ze které se žádost posílá.**
+Ministerstvo odpovídá právě do ní a klíč pošle tomu, kdo je jejím držitelem.
+Fyzická osoba, která datovou schránku nemá, si ji může nechat zřídit zdarma
+na žádost — na kterémkoli Czech POINTu nebo online s Identitou občana
+(rozcestník <https://chcidatovku.gov.cz>).
+
+**Kdyby žádost jako fyzická osoba neprošla**, druhá cesta je podat ji jménem
+organizace: hlavní schránka VS ČR je `b86abcb` (IČO 00212423), Akademie má
+vlastní `dya227n` vedenou jako vedlejší pod týmž IČO. To už je ale úřední
+podání Vězeňské služby vůči Ministerstvu vnitra a musí projít tím, kdo je
+oprávněn z té schránky odesílat.
 
 ## Postup
 
@@ -38,7 +70,7 @@ viz „Co se zeptat předem“ níže.
 |---|---|
 | 1 | Stáhnout formulář **Žádost o registraci klienta veřejného REST API e-Sbírky a e-Legislativy** — [odkaz](https://opendata.eselpoint.gov.cz/dokumentace/Zadost%20o%20registraci%20klienta%20verejneho%20REST%20API%20e-Sbirky%20a%20e-Legislativy.docx) (soubor je DOCX, přestože ho portál popisuje jako PDF) |
 | 2 | Vyplnit podle části „Obsah žádosti“ níže |
-| 3 | Odeslat **do datové schránky Ministerstva vnitra `6bnaawp`** |
+| 3 | Odeslat **ze své datové schránky do datové schránky Ministerstva vnitra `6bnaawp`** |
 | 4 | Předmět zprávy: `e-Sbírka a e-Legislativa – registrace REST API` |
 | 5 | Počkat — žádost se posuzuje **nejpozději do 10 pracovních dní ode dne doručení** |
 | 6 | Výsledek přijde datovou schránkou. Při kladném posouzení s ním dorazí **přístupový klíč a podmínky užití** |
@@ -66,10 +98,10 @@ Formulář má sekci „Informace o klientovi“; hvězdička značí povinnou p
 
 | Položka | Co vyplnit |
 |---|---|
-| **Název\*** | Vězeňská služba České republiky, Akademie VS ČR Stráž pod Ralskem |
-| **E-mail\*** | *(služební adresa správce aplikace)* |
-| **Telefon** | *(služební telefon téže osoby)* |
-| **ID datové schránky\*** | `b86abcb` — hlavní schránka VS ČR (IČO 00212423, Soudní 1672/1a, Praha 4). Akademie má vlastní schránku `dya227n`, ta je ale vedená jako vedlejší („OVM – Ostatní“) pod týmž IČO; kterou uvést, je na rozhodnutí úřadu |
+| **Název\*** | *(jméno a příjmení žadatele)* — shodně s držitelem datové schránky, ze které se žádost odesílá. Lze doplnit název projektu, např. `Jan Novák – studijní portál ZOP A` |
+| **E-mail\*** | *(osobní e-mail žadatele — na ten chodí případná komunikace mimo datovou schránku)* |
+| **Telefon** | *(telefon téže osoby)* |
+| **ID datové schránky\*** | *(ID vlastní datové schránky žadatele — najdete ho po přihlášení na <https://www.mojedatovaschranka.cz> nebo v [Seznamu držitelů](https://www.datovka.gov.cz/sds))* |
 | **Důvod žádosti\*** | viz text níže |
 | **Datové požadavky\*** | Konsolidovaná znění 9 předpisů (7 zákonů, 2 vyhlášky) v DOCX, k nim osnova a metadata znění. Jeden úplný běh stáhne přibližně **1,8 MB** textu. |
 | **Maximální počet požadavků za sekundu\*** | **5** |
@@ -83,22 +115,33 @@ Pod tabulkou je prohlášení „Odesláním tohoto formuláře stvrzuji, že uv
 
 ### Důvod žádosti — návrh textu
 
-> Vězeňská služba České republiky provozuje pro Akademii VS ČR ve Stráži pod
-> Ralskem interní studijní portál pro přípravu příslušníků na zkoušku odborné
-> způsobilosti (ZOP A). Portál zobrazuje konsolidovaná znění předpisů, podle
-> nichž příslušníci jednají ve službě — zákona č. 555/1992 Sb. o Vězeňské
-> službě a justiční stráži, zákona č. 169/1999 Sb. o výkonu trestu odnětí
-> svobody, zákona č. 293/1993 Sb. o výkonu vazby a dalších.
+Text je psaný za fyzickou osobu. **Přečtěte si ho a upravte tak, aby seděl na
+skutečnost** — pod formulářem se podepisuje, že údaje jsou pravdivé, takže
+popis použití musí odpovídat tomu, jak se aplikace opravdu používá.
+
+> Vyvíjím a provozuji studijní webovou aplikaci pro přípravu na zkoušku odborné
+> způsobilosti (ZOP A) příslušníků Vězeňské služby ČR. Žádám jako fyzická osoba
+> za sebe; nejde o žádost jménem Vězeňské služby ČR ani Akademie VS ČR a
+> aplikace není jejich informačním systémem.
 >
-> Dosud se texty do aplikace přepisovaly ručně, což vedlo k tomu, že se
-> rozešly s platným zněním. Napojení na REST API e-Sbírky to má nahradit:
-> jednou týdně se automaticky ověří, zda u sledovaných předpisů nevyšla novela,
-> a případné nové znění se stáhne. Uživatel si navíc může u každého ustanovení
-> nechat zobrazit úřední znění a ověřit, že text v aplikaci odpovídá tomu,
-> co e-Sbírka vede jako účinné.
+> Aplikace zobrazuje konsolidovaná znění předpisů, podle nichž se ve výkonu
+> služby postupuje — zákona č. 555/1992 Sb., o Vězeňské službě a justiční
+> stráži, zákona č. 169/1999 Sb., o výkonu trestu odnětí svobody, zákona
+> č. 293/1993 Sb., o výkonu vazby, a dalších sedmi předpisů.
 >
-> Data se nijak dál nešíří ani neposkytují třetím stranám; slouží výhradně ke
-> služební přípravě příslušníků Vězeňské služby ČR. Přístup je čtecí.
+> Texty se dosud do aplikace vkládaly ručně, což vedlo k tomu, že se rozešly
+> s platným zněním. Napojení na REST API e-Sbírky to má nahradit: jednou týdně
+> se automaticky ověří, zda u sledovaných předpisů nevyšla novela, a případné
+> nové znění se stáhne. Uživatel si navíc může u každého ustanovení nechat
+> zobrazit úřední znění a porovnat ho s textem v aplikaci.
+>
+> Přístup je výhradně čtecí. Data se dál neprodávají ani neposkytují třetím
+> stranám; zobrazují se v aplikaci s uvedením zdroje a s upozorněním, že
+> informativní znění není právně závazné — závazná je částka Sbírky zákonů.
+
+Je-li aplikace veřejně dostupná nebo ji používá i někdo další, patří to do
+textu — třeba větou: *„Aplikace je dostupná na veřejné adrese a používají ji
+i další zájemci o přípravu na ZOP A.“* Kapacitní čísla níže s tím počítají.
 
 ### Odkud jsou čísla
 
@@ -139,22 +182,26 @@ někdo v aplikaci klikne na „Ověřit podle e-Sbírky“ — to je jeden poža
 Tohle ze zveřejněných zdrojů zjistit nejde a stojí za dotaz na `esel@spcss.cz`
 nebo +420 225 515 900 ještě před odesláním žádosti:
 
-1. **Je dnešní použití `https://e-sbirka.gov.cz/sbr-externi` bez klíče
+1. **Přijímáte žádost od fyzické osoby?** Formulář ani text portálu nic jiného
+   nevyžadují, ale ani to nikde nepotvrzují. Jedna otázka ušetří deset
+   pracovních dní čekání na zamítnutí.
+2. **Je dnešní použití `https://e-sbirka.gov.cz/sbr-externi` bez klíče
    v pořádku?** Dokumentace ho nezmiňuje, klíč nevyžaduje a my z toho neumíme
    vyvodit, jestli je to záměr, tolerovaný vedlejší efekt, nebo něco, co se
    může zavřít.
-2. **Podporuje Veřejné API to, co aplikace potřebuje?** V definičním souboru
+3. **Podporuje Veřejné API to, co aplikace potřebuje?** V definičním souboru
    OpenAPI (datován 17. 1. 2024) nejsou endpointy `/obsah`, `/detail-zneni`
    ani celá souborová služba, přes kterou se stahuje DOCX a úřední PDF.
    Dokumentace je ale o dva a půl roku starší než text portálu, takže z její
    neúplnosti nejde nic bezpečně usuzovat. Bez vydaného klíče to nejde
    vyzkoušet — 401 přijde dřív než routování.
-3. **Jaké limity se k našim číslům přidělí** a co se stane při jejich
+4. **Smí klíč vydaný fyzické osobě používat aplikace, ke které mají přístup
+   i další lidé?** Odpověď patří i do „Důvodu žádosti“, aby se pak podmínky
+   užití nerozešly s tím, co aplikace dělá.
+5. **Jaké limity se k našim číslům přidělí** a co se stane při jejich
    překročení (odpověď 429? zablokování klíče?).
-4. **Platnost a obnova klíče** — na jak dlouho se vydává, jde rotovat, co dělat
+6. **Platnost a obnova klíče** — na jak dlouho se vydává, jde rotovat, co dělat
    při kompromitaci.
-5. **Kdo má žádat** — VS ČR z hlavní schránky `b86abcb`, nebo Akademie
-   z `dya227n`.
 
 ## Co udělat s klíčem
 
@@ -183,6 +230,11 @@ Klíč se posílá v hlavičce `esel-api-access-key`; její název je v kódu pe
 protože ho určuje dokumentace (`securitySchemes.ApiKey` v OpenAPI e-Sbírky)
 a ověřuje měření — query parametr ani `Authorization: Bearer` server nepřijímá.
 
+> **Klíč vydaný fyzické osobě je vázaný na ni.** Podmínky užití, dodržení
+> limitů i odpovědnost za to, co s klíčem aplikace dělá, zůstávají žadateli —
+> i když ji používá někdo další. Klíč proto nikomu nepředávejte a držte ho jen
+> v proměnných prostředí, ne v repozitáři.
+
 ## Zdroje
 
 - Postup a klíč: [Použití REST API](https://e-sbirka.gov.cz/restful-api) —
@@ -192,3 +244,4 @@ a ověřuje měření — query parametr ani `Authorization: Bearer` server nep�
 - Definiční soubor OpenAPI 3.0: `https://opendata.eselpoint.gov.cz/dokumentace/Definicni_soubor_REST_API_e-Sbirka.zip`
 - Příručka: `https://opendata.eselpoint.gov.cz/dokumentace/Prirucka_REST_API_e-Sbirka.pdf`
 - Ověření datové schránky: [Seznam držitelů datových schránek](https://www.datovka.gov.cz/sds/detail?dbid=6bnaawp)
+- Zřízení datové schránky fyzické osoby: <https://chcidatovku.gov.cz>
