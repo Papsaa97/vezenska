@@ -4,7 +4,6 @@ import {
   Building2,
   Calendar,
   Clock,
-  Download,
   Edit2,
   FileText,
   MapPin,
@@ -488,43 +487,6 @@ export default function ClassDetailExpanded({
               }
             />
 
-            {/* Starší ručně vložené odkazy zůstávají, dokud je někdo nepřenese
-                do správce souborů — jinak by z nástěnky zmizely bez náhrady. */}
-            {item.linkedMaterials && item.linkedMaterials.length > 0 && (
-              <div className="space-y-2 pt-1">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  Odkazy vložené ručně
-                </div>
-                {item.linkedMaterials.map((mat) => (
-                  <div
-                    key={mat.id}
-                    className="p-3 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-800/50 flex items-center justify-between gap-3 text-xs"
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <FileText className="w-4 h-4 text-indigo-500 shrink-0" />
-                      <div className="min-w-0">
-                        <div className="font-bold text-slate-900 dark:text-white truncate">
-                          {mat.title}
-                        </div>
-                        <div className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                          {mat.subject && <span className="font-semibold">{mat.subject}</span>}
-                          {mat.sizeLabel && <span>{mat.sizeLabel}</span>}
-                        </div>
-                      </div>
-                    </div>
-                    <a
-                      href={mat.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] shrink-0 flex items-center gap-1 shadow-sm"
-                    >
-                      <Download className="w-3 h-3" />
-                      <span>Stáhnout</span>
-                    </a>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Vlastní modulární sekce */}

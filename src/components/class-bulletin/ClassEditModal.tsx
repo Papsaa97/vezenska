@@ -101,7 +101,6 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
         courseEndDate: courseEndDate ? courseEndDate : null,
         dutyRoster: item?.dutyRoster,
         uniformGuidance: item?.uniformGuidance,
-        linkedMaterials: item?.linkedMaterials,
         sections: item?.sections,
         createdAt: item?.createdAt,
       });

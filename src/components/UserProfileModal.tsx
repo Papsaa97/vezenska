@@ -106,10 +106,12 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     role: (isSystemAdmin ? 'admin' : profile?.role || 'student') as UserRole,
     created_at: profile?.created_at || user?.created_at || new Date().toISOString(),
     avatar_url: profile?.avatar_url ?? null,
+    // Nezadaná třída zůstává prázdná. Předvyplněná „ZOP A11" se uložením jména
+    // zapsala do profilu jako skutečné zařazení, i když ji nikdo nevybral.
     user_class:
       profile?.user_class ||
       (typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') : null) ||
-      'ZOP A11',
+      '',
   };
 
   const [fullName, setFullName] = useState<string>(
@@ -128,10 +130,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
   const [passwordSaving, setPasswordSaving] = useState<boolean>(false);
   const [passwordMessage, setPasswordMessage] = useState<FormMessage | null>(null);
 
-  const [userClass, setUserClass] = useState<string>(
-    effectiveProfile.user_class ||
-      (typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') || 'ZOP A11' : 'ZOP A11')
-  );
+  const [userClass, setUserClass] = useState<string>(effectiveProfile.user_class ?? '');
   const [selectedRole, setSelectedRole] = useState<UserRole>(
     previewRole ??
       (effectiveProfile.role === 'student' && isSystemAdmin ? 'admin' : effectiveProfile.role)
@@ -421,7 +420,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                 type="text"
                 value={userClass}
                 onChange={(e) => setUserClass(e.target.value)}
-                placeholder="např. ZOP A11, ZOP B04..."
+                placeholder="Zatím nezadáno — např. ZOP A11"
                 className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all font-semibold"
               />
             </div>
@@ -473,8 +472,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                 </div>
                 <div className="text-[10px] text-slate-400 leading-tight mt-1">
                   Roli velitele třídy, lektora nebo správce přiděluje správce systému ve
-                  správě uživatelů. Pokud máš velet třídě {userClass || 'ZOP'}, požádej o to
-                  svého lektora.
+                  správě uživatelů. Pokud máš velet své třídě, požádej o to svého lektora.
                 </div>
               </div>
             )}

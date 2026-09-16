@@ -1,5 +1,10 @@
 -- Schéma tabulky public.class_boards a public.global_announcements pro Informační tabuli tříd ZOP
 -- Spusťte tento skript v Supabase SQL Editoru (Dashboard -> SQL Editor)
+--
+-- POZOR na starší projekty: tabulka tu kdysi existovala s jinými názvy sloupců
+-- (announcements místo info_text, schedule_image_url místo schedule_url, id jako
+-- UUID). Tenhle skript takovou tabulku NEOPRAVÍ — `CREATE TABLE IF NOT EXISTS`
+-- ji nechá být. Srovnání dělá migrace 028_naprava_schematu_class_boards.sql.
 
 CREATE TABLE IF NOT EXISTS public.class_boards (
   id TEXT PRIMARY KEY,
@@ -9,7 +14,6 @@ CREATE TABLE IF NOT EXISTS public.class_boards (
   info_text TEXT NOT NULL DEFAULT '',
   duty_roster JSONB DEFAULT '[]'::jsonb,
   uniform_guidance JSONB,
-  linked_materials JSONB DEFAULT '[]'::jsonb,
   sections JSONB DEFAULT '[]'::jsonb,
   updated_at TIMESTAMPTZ DEFAULT now(),
   created_at TIMESTAMPTZ DEFAULT now(),
@@ -21,7 +25,6 @@ ALTER TABLE public.class_boards ADD COLUMN IF NOT EXISTS course_start_date DATE;
 ALTER TABLE public.class_boards ADD COLUMN IF NOT EXISTS course_end_date DATE;
 ALTER TABLE public.class_boards ADD COLUMN IF NOT EXISTS duty_roster JSONB DEFAULT '[]'::jsonb;
 ALTER TABLE public.class_boards ADD COLUMN IF NOT EXISTS uniform_guidance JSONB;
-ALTER TABLE public.class_boards ADD COLUMN IF NOT EXISTS linked_materials JSONB DEFAULT '[]'::jsonb;
 ALTER TABLE public.class_boards ADD COLUMN IF NOT EXISTS sections JSONB DEFAULT '[]'::jsonb;
 
 -- Indexy pro rychlé řazení a vyhledávání

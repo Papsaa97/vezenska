@@ -353,14 +353,6 @@ export function getCourseCountdown(
   };
 }
 
-export interface LinkedMaterialItem {
-  id: string;
-  title: string;
-  url: string;
-  subject?: string;
-  sizeLabel?: string;
-}
-
 export interface ClassSection {
   id: string;
   type: 'event' | 'duty' | 'uniform' | 'links' | 'notice' | 'custom';
@@ -381,7 +373,6 @@ export interface ClassBoardItem {
   infoText: string;
   dutyRoster?: DutyRosterItem[];
   uniformGuidance?: UniformGuidance;
-  linkedMaterials?: LinkedMaterialItem[];
   sections?: ClassSection[];
   updatedAt: string;
   createdAt?: string;
@@ -412,202 +403,30 @@ const HIDDEN_CLASSES_KEY = 'vscr_hidden_classes';
 const BUCKET_NAME = 'studijni-materialy';
 const FOLDER_NAME = 'rozvrhy';
 
-/**
- * Počáteční celoškolní hlášení (platná pro všechny třídy a posluchače).
- */
-export const INITIAL_GLOBAL_ANNOUNCEMENTS: GlobalAnnouncement[] = [
-  {
-    id: 'global-announcement-1',
-    title: 'Mimořádné bezpečnostní hlášení velitele Akademie VS ČR',
-    content: `Vzhledem k plánovaným prověrkám fyzické zdatnosti a střelecké přípravy platí v celém areálu Akademie VS ČR přísný zákaz opuštění ubytovacích prostor bez vědomí dozorčího po 21:30.
-Dále se připomíná všem posluchačům povinnost nosit služební průkaz viditelně na oděvu nebo v pouzdře dle Nařízení generálního ředitele.`,
-    badge: 'CELOŠKOLNÍ ROZKAZ',
-    date: '14. 9. 2026',
-    author: 'Velitel výcviku plk. Mgr. Horák',
-    priority: 'urgent',
-    updatedAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-  },
-  {
-    id: 'global-announcement-2',
-    title: 'Výdej stravy a provoz školní jídelny',
-    content: `Od pondělí 15. 9. 2026 je posunut výdej obědů pro třídy Základní odborné přípravy:
-• ZOP A11 a ZOP B04: 11:30 – 12:15
-• ZOP K02 a ostatní kurzy: 12:15 – 13:00
-Prosíme o dodržování časových oken pro zamezení front u výdejních pultů.`,
-    badge: 'REŽIM AKADEMIE',
-    date: '12. 9. 2026',
-    author: 'Hospodářská správa Akademie',
-    priority: 'normal',
-    updatedAt: new Date(Date.now() - 1000 * 60 * 300).toISOString(),
-  },
-];
-
-/**
- * Počáteční realistická data pro jednotlivé třídy ZOP.
- */
-export const INITIAL_CLASS_BOARDS: ClassBoardItem[] = [
-  {
-    id: 'zop-a11',
-    className: 'ZOP A11',
-    courseStartDate: '2026-09-01',
-    courseEndDate: '2026-12-18',
-    scheduleUrl: null,
-    infoText: `• Pondělí 15. 9. 2026: Změna učebny – Penologie přesunuta do posluchárny B2 (2. patro).
-• Středa 17. 9. 2026: Střelby posunuty na 13:00 (Střelnice Akademie, plná polní výstroj a chrániče sluchu).
-• Pátek 19. 9. 2026: Průběžný test z Právní přípravy (Zákon č. 555/1992 Sb. a donucovací prostředky).
-• Upozornění: Odevzdání seminárních prací z Profesní etiky do pátku 12:00 lektorovi.`,
-    dutyRoster: [
-      {
-        id: 'duty-a11-1',
-        type: 'pankrac',
-        title: 'Výpomoc VV Praha - Pankrác (Eskortní oddělení)',
-        date: '22. 9. 2026',
-        time: '06:30 – 15:30',
-        location: 'Vazební věznice Praha - Pankrác (hlavní vchod)',
-        attendees: 'stržm. Novák, stržm. Dvořák, stržm. Kovář, stržm. Svoboda (4 posluchači)',
-        uniform: 'Pracovní stejnokroj PS II, vysoká taktická obuv, taktický opasek, služební průkaz',
-        notes: 'Sraz před vchodem Akademie v 06:00, odjezd služebním mikrobusem. Poučení velitele eskorty na místě.',
-      },
-      {
-        id: 'duty-a11-2',
-        type: 'recepce',
-        title: 'Služba na recepci a vchodu Akademie VS ČR',
-        date: '19. 9. 2026',
-        time: '06:00 – 18:00 (denní směna)',
-        location: 'Recepce Akademie VS ČR (hlavní brána)',
-        attendees: 'stržm. Černý, stržm. Veselý',
-        uniform: 'Služební stejnokroj, vázanka, služební odznak, čistá obuv',
-        notes: 'Evidence návštěv, klíčové hospodářství, součinnost s dozorčím Akademie.',
-      },
-    ],
-    uniformGuidance: {
-      days: [
-        { day: 'Pondělí', outfit: 'PS II, čepice', hasWorkout: false },
-        { day: 'Úterý', outfit: 'PS II', hasWorkout: true, workoutNote: 'Věci na sebeobranu do tělocvičny s sebou' },
-        { day: 'Středa', outfit: 'PS II (učebna)', hasWorkout: false },
-        { day: 'Čtvrtek', outfit: 'PS II', hasWorkout: true, workoutNote: 'Kondiční příprava / tělocvik' },
-        { day: 'Pátek', outfit: 'PS II', hasWorkout: false },
-      ],
-      notes: 'Přezůvky do tělocvičny a čistý ručník s sebou.',
-      updatedBy: 'Velitel třídy prap. Novotný',
-      updatedAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-    },
-    linkedMaterials: [
-      {
-        id: 'mat-1',
-        title: 'Právní rámec donucovacích prostředků – Zákon č. 555/1992 Sb.',
-        url: '#',
-        subject: 'Právo',
-        sizeLabel: '2.4 MB (PDF)',
-      },
-      {
-        id: 'mat-2',
-        title: 'Bezpečnostní postupy při eskortách vězněných osob',
-        url: '#',
-        subject: 'Taktika',
-        sizeLabel: '4.1 MB (PDF)',
-      },
-      {
-        id: 'mat-3',
-        title: 'Střelecká příprava – rozborka a sborka CZ 75 B',
-        url: '#',
-        subject: 'Zbraně',
-        sizeLabel: '1.8 MB (DOCX)',
-      },
-    ],
-    sections: [
-      {
-        id: 'sec-a11-1',
-        type: 'notice',
-        title: 'Příprava na prověrku z Penologie',
-        content: 'Lektor mjr. PhDr. Mareček upozorňuje, že otázky k diferenciaci odsouzených budou vycházet ze Zákona č. 169/1999 Sb. Materiály jsou dostupné v Knihovně.',
-        date: '16. 9. 2026',
-        badge: 'ZKOUŠKA',
-        badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
-      },
-    ],
-    updatedAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
-  },
-  {
-    id: 'zop-b04',
-    className: 'ZOP B04',
-    courseStartDate: '2026-08-17',
-    courseEndDate: '2026-11-27',
-    scheduleUrl: null,
-    infoText: `• Úterý 16. 9. 2026: Praktický výcvik sebeobrany a eskortní činnosti v tělocvičně od 08:30.
-• Čtvrtek 18. 9. 2026: Exkurze a praktická stáž na eskortním oddělení (sraz před hlavní budovou v 07:45).
-• Lékařské prohlídky pro skupinu 2 proběhnou ve čtvrtek od 10:30 na zdravotnickém středisku.
-• Studijní materiály k předmětu Bezpečnostní služba naleznete v sekci Knihovna.`,
-    dutyRoster: [
-      {
-        id: 'duty-b04-1',
-        type: 'recepce',
-        title: 'Služba na recepci Akademie VS ČR (Noční směna)',
-        date: '21. 9. 2026',
-        time: '18:00 – 06:00',
-        location: 'Recepce Akademie VS ČR',
-        attendees: 'stržm. Král, stržm. Procházka',
-        uniform: 'Pracovní stejnokroj PS II, reflexní vesta pro noční kontrolu obvodu',
-        notes: 'Noční uzávěra areálu ve 22:00, kontrola osvětlení a vjezdové brány.',
-      },
-    ],
-    uniformGuidance: {
-      days: [
-        { day: 'Pondělí', outfit: 'PS II, blůza', hasWorkout: false },
-        { day: 'Úterý', outfit: 'PS II', hasWorkout: true, workoutNote: 'Praktický výcvik sebeobrany od 08:30' },
-        { day: 'Středa', outfit: 'PS II', hasWorkout: false },
-        { day: 'Čtvrtek', outfit: 'PS II + taktický opasek', hasWorkout: false },
-        { day: 'Pátek', outfit: 'PS II', hasWorkout: false },
-      ],
-      notes: 'Ráno sraz v 07:45, kontrola odznaků a služebních průkazů.',
-      updatedBy: 'Velitel třídy prap. Bartoš',
-      updatedAt: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
-    },
-    linkedMaterials: [
-      {
-        id: 'mat-b4-1',
-        title: 'Manipulace s pouty a donucovacími prostředky',
-        url: '#',
-        subject: 'Taktika',
-        sizeLabel: '3.2 MB (PDF)',
-      },
-    ],
-    updatedAt: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-  },
-  {
-    id: 'zop-k02',
-    className: 'ZOP K02',
-    courseStartDate: '2026-10-01',
-    courseEndDate: '2027-01-29',
-    scheduleUrl: null,
-    infoText: `• Zahájení kurzu: Uvítání vedením Akademie a instruktáž BOZP v hlavní aule.
-• Vyzvednutí studijních průkazů a klíčů od šatních skříněk u hospodáře do 15:00.
-• Rozvrh na nadcházející 2 týdny bude zveřejněn po schválení velitelem výcviku.`,
-    dutyRoster: [],
-    uniformGuidance: {
-      days: [
-        { day: 'Pondělí', outfit: 'Služební stejnokroj (slavnostní zahájení)', hasWorkout: false },
-        { day: 'Úterý', outfit: 'PS II', hasWorkout: false },
-        { day: 'Středa', outfit: 'PS II', hasWorkout: true, workoutNote: 'Základní tělesná příprava do tělocvičny' },
-        { day: 'Čtvrtek', outfit: 'PS II', hasWorkout: false },
-        { day: 'Pátek', outfit: 'PS II', hasWorkout: false },
-      ],
-      notes: 'V pondělí včasný příchod na slavnostní zahájení v aule.',
-      updatedBy: 'Velitel třídy npor. Sedlák',
-      updatedAt: new Date(Date.now() - 1000 * 60 * 360).toISOString(),
-    },
-    updatedAt: new Date(Date.now() - 1000 * 60 * 360).toISOString(),
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-  },
-];
+// ─── Proč tu nejsou žádná výchozí data ───────────────────────────────────────
+//
+// Dřív tu stály dvě „ukázkové" třídy a dvě celoškolní hlášení: vymyšlené služby
+// se jmény příslušníků, vymyšlené rozkazy podepsané neexistujícím velitelem
+// výcviku a odkazy na materiály vedoucí na `#`. Aplikace je při prvním spuštění
+// zapsala do localStorage a od té chvíle je ukazovala jako skutečný obsah
+// nástěnky — student neměl jak poznat, že čte výmysl.
+//
+// Nástěnka teď ukazuje jen to, co někdo opravdu zadal. Když není zadáno nic,
+// je prázdná a řekne to.
 
 // ─── Local Storage & Preference Helpers ───────────────────────────────────────
 
+/**
+ * Třída zvolená v tomhle zařízení, nebo prázdný řetězec, když žádná zvolená není.
+ *
+ * Dřív odsud padalo natvrdo „ZOP A11". Kdo si třídu nikdy nevybral, viděl
+ * nástěnku cizí třídy jako svoji — a protože se hodnota odsud dostala i do
+ * profilu, zapsala se do databáze jako jeho skutečná třída. Prázdná hodnota je
+ * poctivá odpověď: uživatel si má třídu vybrat sám.
+ */
 export function getMyClass(): string {
-  if (typeof window === 'undefined') return 'ZOP A11';
-  return localStorage.getItem(MY_CLASS_KEY) || 'ZOP A11';
+  if (typeof window === 'undefined') return '';
+  return localStorage.getItem(MY_CLASS_KEY) || '';
 }
 
 export function setMyClass(className: string): void {
@@ -639,44 +458,34 @@ export function toggleHideClass(classId: string): string[] {
   return next;
 }
 
+/**
+ * Záložní kopie nástěnek z tohoto zařízení. Prázdný seznam znamená, že tu ještě
+ * nic uloženého není — ne že se má něco vymyslet.
+ */
 function loadLocalBoards(): ClassBoardItem[] {
-  if (typeof window === 'undefined') return INITIAL_CLASS_BOARDS;
+  if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_CLASS_BOARDS));
-      return INITIAL_CLASS_BOARDS;
-    }
+    if (!raw) return [];
+
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      let hasMigration = false;
-      const migrated = (parsed as ClassBoardItem[]).map((item) => {
-        const seed = INITIAL_CLASS_BOARDS.find((s) => s.id === item.id);
-        if (item.courseStartDate === undefined && seed?.courseStartDate) {
-          item.courseStartDate = seed.courseStartDate;
-          item.courseEndDate = seed.courseEndDate;
-          hasMigration = true;
-        }
-        if (item.uniformGuidance && !Array.isArray(item.uniformGuidance.days)) {
-          if (seed?.uniformGuidance?.days) {
-            item.uniformGuidance.days = seed.uniformGuidance.days;
-            item.uniformGuidance.notes = seed.uniformGuidance.notes;
-          } else {
-            item.uniformGuidance.days = normalizeUniformDays(item.uniformGuidance);
-          }
-          hasMigration = true;
-        }
-        return item;
-      });
-      if (hasMigration) {
-        saveLocalBoards(migrated);
+    if (!Array.isArray(parsed)) return [];
+
+    // Starší záznamy mohly mít ústrojovou kázeň v podobě today/tomorrow místo
+    // pole dnů. Převedou se na místě, ať se nerozsypou komponenty nad nimi.
+    let hasMigration = false;
+    const migrated = (parsed as ClassBoardItem[]).map((item) => {
+      if (item.uniformGuidance && !Array.isArray(item.uniformGuidance.days)) {
+        item.uniformGuidance.days = normalizeUniformDays(item.uniformGuidance);
+        hasMigration = true;
       }
-      return migrated;
-    }
-    return INITIAL_CLASS_BOARDS;
+      return item;
+    });
+    if (hasMigration) saveLocalBoards(migrated);
+    return migrated;
   } catch (err) {
-    console.warn('[ClassBoard] Chyba při čtení z localStorage, použity výchozí třídy:', err);
-    return INITIAL_CLASS_BOARDS;
+    console.warn('[ClassBoard] Chyba při čtení nástěnek z localStorage:', err);
+    return [];
   }
 }
 
@@ -692,20 +501,14 @@ function saveLocalBoards(items: ClassBoardItem[]): void {
 // ─── Global Announcements ─────────────────────────────────────────────────────
 
 export function loadLocalGlobalAnnouncements(): GlobalAnnouncement[] {
-  if (typeof window === 'undefined') return INITIAL_GLOBAL_ANNOUNCEMENTS;
+  if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(GLOBAL_ANNOUNCEMENTS_KEY);
-    if (!raw) {
-      localStorage.setItem(GLOBAL_ANNOUNCEMENTS_KEY, JSON.stringify(INITIAL_GLOBAL_ANNOUNCEMENTS));
-      return INITIAL_GLOBAL_ANNOUNCEMENTS;
-    }
+    if (!raw) return [];
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed as GlobalAnnouncement[];
-    }
-    return INITIAL_GLOBAL_ANNOUNCEMENTS;
+    return Array.isArray(parsed) ? (parsed as GlobalAnnouncement[]) : [];
   } catch {
-    return INITIAL_GLOBAL_ANNOUNCEMENTS;
+    return [];
   }
 }
 
@@ -849,7 +652,6 @@ interface SupabaseClassBoardRow {
   info_text: string;
   duty_roster?: DutyRosterItem[];
   uniform_guidance?: UniformGuidance;
-  linked_materials?: LinkedMaterialItem[];
   sections?: ClassSection[];
   updated_at: string;
   created_at: string;
@@ -875,7 +677,6 @@ function mapRowToItem(row: SupabaseClassBoardRow): ClassBoardItem {
     infoText: row.info_text,
     dutyRoster: row.duty_roster ?? [],
     uniformGuidance,
-    linkedMaterials: row.linked_materials ?? [],
     sections: row.sections ?? [],
     updatedAt: row.updated_at,
     createdAt: row.created_at,
@@ -938,7 +739,6 @@ export async function saveClassBoard(
     infoText: input.infoText.trim(),
     dutyRoster: input.dutyRoster ?? [],
     uniformGuidance: input.uniformGuidance,
-    linkedMaterials: input.linkedMaterials ?? [],
     sections: input.sections ?? [],
     updatedAt: now,
     createdAt: input.createdAt || now,
@@ -957,7 +757,6 @@ export async function saveClassBoard(
       info_text: itemToSave.infoText,
       duty_roster: itemToSave.dutyRoster,
       uniform_guidance: itemToSave.uniformGuidance,
-      linked_materials: itemToSave.linkedMaterials,
       sections: itemToSave.sections,
       updated_at: itemToSave.updatedAt,
       created_at: itemToSave.createdAt,
