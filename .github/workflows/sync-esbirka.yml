@@ -72,8 +72,10 @@ jobs:
             echo "Neplatný vstup: povolené jsou jen číslice, lomítka a mezery." >&2
             exit 1
           fi
-          set -f  # bez rozbalování hvězdiček; dělení na slova je tu záměr
-          npm run sync:laws -- ${PREDPISY:-} --summary-file="$RUNNER_TEMP/esbirka-zmeny.md"
+          # Vstup se rozpadne na pole, ne na neuvozené dělení slov — tím
+          # odpadá i rozbalování hvězdiček.
+          read -r -a FILTRY <<< "${PREDPISY:-}"
+          npm run sync:laws -- "${FILTRY[@]}" --summary-file="$RUNNER_TEMP/esbirka-zmeny.md"
 
       - name: Zjistit, jestli se něco změnilo
         id: zmeny
