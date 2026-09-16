@@ -24,16 +24,26 @@ import {
   Volume2,
   Edit3,
   Eye,
-  EyeOff
+  EyeOff,
+  Plus,
+  Trash2,
+  RotateCcw,
+  Paperclip
 } from 'lucide-react';
 import { Question } from '../types';
-import { subjectsMeta, SubjectInfo, getSubjectInfo } from '../data/questions/subjectsInfo';
+import { SubjectInfo } from '../data/questions/subjectsInfo';
 import { speakText, isSpeechSupported } from '../utils/speech';
 import PrintHeader from './common/PrintHeader';
 import { useAuth } from '../context/AuthContext';
 import QuestionEditModal from './common/QuestionEditModal';
+import SubjectEditModal from './common/SubjectEditModal';
+import AttachedFilesPanel from './common/AttachedFilesPanel';
 import { isQuestionHidden, toggleQuestionVisibilityInSupabase } from '../utils/questionActions';
 import { activateOnKey } from '../utils/a11y';
+import { useEditableContent } from '../hooks/useEditableContent';
+import { useTaggedMaterials } from '../hooks/useTaggedMaterials';
+import { DEFAULT_SUBJECTS } from '../utils/contentLibrary';
+import { materialsForSubject } from '../utils/materials';
 
 interface SubjectsHubProps {
   questions?: Question[];
@@ -83,11 +93,30 @@ export default function SubjectsHub({
   const { profile } = useAuth();
   const canEdit = profile?.role === 'lektor' || profile?.role === 'admin';
 
+  // Vybraný předmět drží id, ne název. Název se dá přejmenovat a otevřený
+  // předmět by se tím pod rukama ztratil.
   const [selectedSubjectKey, setSelectedSubjectKey] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedQuestionIds, setExpandedQuestionIds] = useState<Set<string>>(new Set());
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+
+  // Předměty z repozitáře přepsané úpravami lektora (viz contentLibrary.ts).
+  const {
+    entries: subjectEntries,
+    save: saveSubject,
+    remove: removeSubject,
+    restore: restoreSubject,
+    toggleHidden: toggleSubjectHidden,
+  } = useEditableContent<SubjectInfo>('subject', DEFAULT_SUBJECTS, canEdit);
+
+  // Soubory označené ve správci souborů štítkem předmětu.
+  const { materials, loading: materialsLoading } = useTaggedMaterials();
+
+  const [subjectModalOpen, setSubjectModalOpen] = useState(false);
+  const [editingSubject, setEditingSubject] = useState<SubjectInfo | null>(null);
+  const [confirmDeleteSubjectId, setConfirmDeleteSubjectId] = useState<string | null>(null);
+  const [subjectActionError, setSubjectActionError] = useState<string | null>(null);
 
   // Filtrování podle role: Běžný student položky s is_hidden === true vůbec neuvidí (odfiltrují se ze statistik i přehledu)
   const accessibleQuestions = useMemo(() => {
@@ -96,41 +125,76 @@ export default function SubjectsHub({
     return raw.filter(q => !isQuestionHidden(q));
   }, [questions, canEdit]);
 
-  const subjectNames = useMemo(() => Object.keys(subjectsMeta), []);
-
-  // Compute question counts per subject safely
+  // Počty otázek a souborů u každého předmětu. Klíčem je id předmětu.
   const subjectStats = useMemo(() => {
-    const stats: Record<string, { totalQuestions: number }> = {};
+    const stats: Record<string, { totalQuestions: number; totalFiles: number }> = {};
     const safeQuestions = accessibleQuestions || [];
-    subjectNames.forEach(subj => {
-      const info = getSubjectInfo(subj);
-      const subjQuestions = safeQuestions.filter(
-        q => q?.subject && matchesSubject(q.subject, info)
-      );
-      stats[subj] = {
-        totalQuestions: subjQuestions.length
+    subjectEntries.forEach(entry => {
+      stats[entry.id] = {
+        totalQuestions: safeQuestions.filter(
+          q => q?.subject && matchesSubject(q.subject, entry.item)
+        ).length,
+        totalFiles: materialsForSubject(materials, entry.item.name).length,
       };
     });
     return stats;
-  }, [accessibleQuestions, subjectNames]);
+  }, [accessibleQuestions, subjectEntries, materials]);
 
-  // Pouze předměty s alespoň jednou otázkou (skrytí prázdných okruhů např. Ostatní)
-  const visibleSubjectNames = useMemo(() => {
-    return subjectNames.filter(subjKey => {
-      const count = subjectStats[subjKey]?.totalQuestions ?? 0;
-      return count > 0;
+  // Studentovi se prázdný okruh nenabízí — dřív se skrýval podle otázek, nově
+  // stačí i přiřazený soubor. Lektor vidí všechno včetně skrytých a smazaných:
+  // jinak by nový předmět zmizel hned po založení, než k němu něco přibude.
+  const visibleEntries = useMemo(() => {
+    if (canEdit) return subjectEntries;
+    return subjectEntries.filter(entry => {
+      const stats = subjectStats[entry.id];
+      return (stats?.totalQuestions ?? 0) > 0 || (stats?.totalFiles ?? 0) > 0;
     });
-  }, [subjectNames, subjectStats]);
+  }, [subjectEntries, subjectStats, canEdit]);
 
-  // Selected subject details - safe fallback guaranteed
-  const activeSubjectInfo: SubjectInfo | null = selectedSubjectKey ? getSubjectInfo(selectedSubjectKey) : null;
+  const activeEntry = useMemo(
+    () => subjectEntries.find(entry => entry.id === selectedSubjectKey) ?? null,
+    [subjectEntries, selectedSubjectKey]
+  );
+  const activeSubjectInfo: SubjectInfo | null = activeEntry?.item ?? null;
+
   const activeSubjectQuestions = useMemo(() => {
-    if (!selectedSubjectKey || !activeSubjectInfo) return [];
+    if (!activeSubjectInfo) return [];
     const safeQuestions = accessibleQuestions || [];
     return safeQuestions.filter(
       q => q?.subject && matchesSubject(q.subject, activeSubjectInfo)
     );
-  }, [accessibleQuestions, selectedSubjectKey, activeSubjectInfo]);
+  }, [accessibleQuestions, activeSubjectInfo]);
+
+  const activeSubjectFiles = useMemo(
+    () => (activeSubjectInfo ? materialsForSubject(materials, activeSubjectInfo.name) : []),
+    [materials, activeSubjectInfo]
+  );
+
+  const usedSubjectIds = useMemo(() => subjectEntries.map(entry => entry.id), [subjectEntries]);
+
+  const handleSubjectSave = async (subject: SubjectInfo) => {
+    const result = await saveSubject(subject);
+    if (result.error) setSubjectActionError(result.error);
+    else setSubjectActionError(null);
+    return result;
+  };
+
+  const handleSubjectDelete = async (id: string) => {
+    const result = await removeSubject(id);
+    setSubjectActionError(result.error);
+    setConfirmDeleteSubjectId(null);
+    if (!result.error && selectedSubjectKey === id) setSelectedSubjectKey(null);
+  };
+
+  const handleSubjectRestore = async (id: string) => {
+    const result = await restoreSubject(id);
+    setSubjectActionError(result.error);
+  };
+
+  const handleSubjectHiddenToggle = async (id: string) => {
+    const result = await toggleSubjectHidden(id);
+    setSubjectActionError(result.error);
+  };
 
   const handleToggleVisibility = async (q: Question) => {
     if (!canEdit || !q) return;
@@ -254,12 +318,24 @@ export default function SubjectsHub({
     return (
       <>
         {canEdit && (
-          <QuestionEditModal
-            question={editingQuestion}
-            isOpen={Boolean(editingQuestion)}
-            onClose={() => setEditingQuestion(null)}
-            onQuestionUpdated={handleQuestionSave}
-          />
+          <>
+            <QuestionEditModal
+              question={editingQuestion}
+              isOpen={Boolean(editingQuestion)}
+              onClose={() => setEditingQuestion(null)}
+              onQuestionUpdated={handleQuestionSave}
+            />
+            <SubjectEditModal
+              subject={editingSubject}
+              isOpen={subjectModalOpen}
+              usedIds={usedSubjectIds}
+              onClose={() => {
+                setSubjectModalOpen(false);
+                setEditingSubject(null);
+              }}
+              onSave={handleSubjectSave}
+            />
+          </>
         )}
         <AnimatePresence mode="wait">
         <motion.div
@@ -302,7 +378,7 @@ export default function SubjectsHub({
               <span>Tisk / PDF</span>
             </button>
             <button
-              onClick={() => onStartQuiz(selectedSubjectKey)}
+              onClick={() => onStartQuiz(activeSubjectInfo.name)}
               disabled={(activeSubjectQuestions || []).length === 0}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-lg font-medium text-sm shadow-sm transition-colors ${
                 (activeSubjectQuestions || []).length === 0
@@ -314,12 +390,26 @@ export default function SubjectsHub({
               Spustit test ({activeSubjectQuestions?.length ?? 0} otázek)
             </button>
             <button
-              onClick={() => onStartFlashcards(selectedSubjectKey)}
+              onClick={() => onStartFlashcards(activeSubjectInfo.name)}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-medium text-sm transition-colors cursor-pointer"
             >
               <Layers className="w-4 h-4" />
               Kartičky
             </button>
+            {canEdit && (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingSubject(activeSubjectInfo);
+                  setSubjectModalOpen(true);
+                }}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/60 font-medium text-sm transition-colors cursor-pointer"
+                title="Upravit popis, prameny i okruhy předmětu"
+              >
+                <Edit3 className="w-4 h-4" />
+                Upravit předmět
+              </button>
+            )}
           </div>
         </div>
 
@@ -386,6 +476,30 @@ export default function SubjectsHub({
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Soubory přiřazené předmětu ve správci souborů */}
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 print-avoid-break">
+          <div>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Paperclip className="w-5 h-5 text-indigo-600" />
+              Studijní soubory k předmětu ({activeSubjectFiles.length})
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Prezentace, skripta a předpisy, které lektor označil štítkem tohohle předmětu.
+              Otevřou se rovnou v aplikaci.
+            </p>
+          </div>
+
+          <AttachedFilesPanel
+            materials={activeSubjectFiles}
+            loading={materialsLoading}
+            emptyText={
+              canEdit
+                ? 'K předmětu zatím není přiřazený žádný soubor. Přiřadíte ho ve Správě obsahu → Správce souborů označením štítku předmětu.'
+                : 'K předmětu zatím není přiřazený žádný soubor.'
+            }
+          />
         </div>
 
         {/* Question Explorer Section */}
@@ -672,40 +786,108 @@ export default function SubjectsHub({
       transition={{ duration: 0.2 }}
       className="max-w-6xl mx-auto px-4 py-8 space-y-8"
     >
+      {canEdit && (
+        <SubjectEditModal
+          subject={editingSubject}
+          isOpen={subjectModalOpen}
+          usedIds={usedSubjectIds}
+          onClose={() => {
+            setSubjectModalOpen(false);
+            setEditingSubject(null);
+          }}
+          onSave={handleSubjectSave}
+        />
+      )}
+
       {/* Intro Header */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-            ZOP A
-          </span>
-          <span className="text-xs text-slate-500">Studijní plán Akademie Vězeňské služby ČR</span>
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+              ZOP A
+            </span>
+            <span className="text-xs text-slate-500">Studijní plán Akademie Vězeňské služby ČR</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Samostatné studijní předměty
+          </h1>
+          <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base max-w-3xl leading-relaxed">
+            Každý předmět základní odborné přípravy má samostatně vyhrazený studijní modul. 
+            Zvolte předmět pro podrobné studium, procházení konkrétních otázek s paragrafovými citacemi nebo spuštění specializovaného testu.
+          </p>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-          Samostatné studijní předměty
-        </h1>
-        <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base max-w-3xl leading-relaxed">
-          Každý předmět základní odborné přípravy má samostatně vyhrazený studijní modul. 
-          Zvolte předmět pro podrobné studium, procházení konkrétních otázek s paragrafovými citacemi nebo spuštění specializovaného testu.
-        </p>
+
+        {canEdit && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditingSubject(null);
+              setSubjectModalOpen(true);
+            }}
+            className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-colors cursor-pointer shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            Přidat předmět
+          </button>
+        )}
       </div>
+
+      {canEdit && subjectActionError && (
+        <div className="p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 text-xs">
+          {subjectActionError}
+        </div>
+      )}
 
       {/* Grid of Subject Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {visibleSubjectNames.map(subjKey => {
-          const info = getSubjectInfo(subjKey);
-          const stats = subjectStats?.[subjKey] || { totalQuestions: 0 };
+        {visibleEntries.map(entry => {
+          const info = entry.item;
+          const stats = subjectStats?.[entry.id] || { totalQuestions: 0, totalFiles: 0 };
           const styles = getSubjectColorStyles(info?.accentColor || 'indigo');
+
+          // Předmět, který lektor smazal, zůstává v jeho přehledu jako
+          // náhrobek — výchozí data jsou v repozitáři a dají se vrátit.
+          if (entry.isDeleted) {
+            return (
+              <div
+                key={entry.id}
+                className="bg-slate-50 dark:bg-slate-900/40 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-6 flex flex-col justify-between gap-4"
+              >
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                    Odebráno z nabídky
+                  </span>
+                  <h2 className="text-lg font-bold text-slate-500 dark:text-slate-400 mt-2">{info.name}</h2>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Studenti tenhle předmět nevidí. Obnovením se vrátí výchozí podoba z aplikace.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleSubjectRestore(entry.id)}
+                  className="w-full py-2 px-3 rounded-xl bg-slate-900 dark:bg-slate-700 text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Vrátit předmět zpět
+                </button>
+              </div>
+            );
+          }
 
           // Dlaždice předmětu se chová jako tlačítko, ale <button> to být
           // nemůže — uvnitř už další tlačítka jsou a vnořit je nelze.
           return (
             <div
-              key={subjKey}
+              key={entry.id}
               role="button"
               tabIndex={0}
-              onClick={() => setSelectedSubjectKey(subjKey)}
-              onKeyDown={activateOnKey(() => setSelectedSubjectKey(subjKey))}
-              className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col justify-between transition-all duration-200 hover:shadow-md hover:-translate-y-1 hover:shadow-lg cursor-pointer text-left ${styles.cardBg} group`}
+              onClick={() => setSelectedSubjectKey(entry.id)}
+              onKeyDown={activateOnKey(() => setSelectedSubjectKey(entry.id))}
+              className={`bg-white dark:bg-slate-900 rounded-2xl border p-6 flex flex-col justify-between transition-all duration-200 hover:shadow-md hover:-translate-y-1 hover:shadow-lg cursor-pointer text-left group ${
+                entry.isHidden
+                  ? 'border-dashed border-amber-300 dark:border-amber-700'
+                  : `border-slate-200 dark:border-slate-800 ${styles.cardBg}`
+              }`}
             >
               <div className="space-y-4">
                 {/* Header with Icon and Code */}
@@ -713,27 +895,40 @@ export default function SubjectsHub({
                   <div className={`p-3 rounded-xl ${styles.iconBg} shadow-sm transition-transform group-hover:scale-105`}>
                     {getSubjectIcon(info?.iconName || 'BookOpen', "w-6 h-6")}
                   </div>
-                  <span className={`px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider border ${styles.badge}`}>
-                    {info?.code || subjKey.substring(0, 3).toUpperCase()}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {entry.isHidden && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                        Skryto
+                      </span>
+                    )}
+                    <span className={`px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider border ${styles.badge}`}>
+                      {info?.code || info.name.substring(0, 3).toUpperCase()}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Title & Description */}
                 <div>
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {info?.name || subjKey}
+                    {info?.name}
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 line-clamp-3 leading-relaxed">
                     {info?.description || ''}
                   </p>
                 </div>
 
-                {/* Stats Pills - Only total questions */}
+                {/* Stats Pills */}
                 <div className="flex items-center gap-2 pt-1 flex-wrap">
                   <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md">
                     <FileText className="w-3.5 h-3.5 text-blue-500" />
                     {stats?.totalQuestions ?? 0} otázek
                   </span>
+                  {(stats?.totalFiles ?? 0) > 0 && (
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 px-2.5 py-1 rounded-md">
+                      <Paperclip className="w-3.5 h-3.5" />
+                      {stats.totalFiles} souborů
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -742,7 +937,7 @@ export default function SubjectsHub({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSelectedSubjectKey(subjKey);
+                    setSelectedSubjectKey(entry.id);
                   }}
                   className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors shadow-sm cursor-pointer"
                 >
@@ -755,7 +950,7 @@ export default function SubjectsHub({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onStartQuiz(subjKey);
+                      onStartQuiz(info.name);
                     }}
                     className={`py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${styles.lightBtn}`}
                     title="Spustit test z tohoto předmětu"
@@ -766,7 +961,7 @@ export default function SubjectsHub({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onStartFlashcards(subjKey);
+                      onStartFlashcards(info.name);
                     }}
                     className="py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
                     title="Procvičovat kartičky z tohoto předmětu"
@@ -775,6 +970,71 @@ export default function SubjectsHub({
                     Kartičky
                   </button>
                 </div>
+
+                {/* Správa bloku předmětu — jen lektor a správce */}
+                {canEdit && (
+                  <div className="flex items-center gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingSubject(info);
+                        setSubjectModalOpen(true);
+                      }}
+                      className="flex-1 py-1.5 px-2 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors cursor-pointer"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                      Upravit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSubjectHiddenToggle(entry.id);
+                      }}
+                      aria-label={entry.isHidden ? `Zveřejnit předmět ${info.name}` : `Skrýt předmět ${info.name} studentům`}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/30 transition-colors cursor-pointer"
+                    >
+                      {entry.isHidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                    {confirmDeleteSubjectId === entry.id ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSubjectDelete(entry.id);
+                          }}
+                          className="px-2 py-1.5 rounded-lg bg-red-600 text-white text-[11px] font-bold cursor-pointer"
+                        >
+                          Smazat
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfirmDeleteSubjectId(null);
+                          }}
+                          className="px-2 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-bold cursor-pointer"
+                        >
+                          Ne
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setConfirmDeleteSubjectId(entry.id);
+                        }}
+                        aria-label={`Odebrat předmět ${info.name}`}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           );

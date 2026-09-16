@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { LayoutGrid, CheckCircle2, RotateCcw, Timer, AlertCircle, Sparkles, Trophy, ArrowRight, Zap, Award, Printer } from 'lucide-react';
+import { LayoutGrid, CheckCircle2, RotateCcw, Timer, AlertCircle, Sparkles, Trophy, ArrowRight, Zap, Award, Printer, Plus, Edit3, Trash2, Eye, EyeOff } from 'lucide-react';
 import { MatchingCategory, MatchingRecord } from '../types';
 import DiagramGame from "./DiagramGame";
 import { recordMatchingCompletion, loadMatchingHistory } from '../utils/gamification';
 import PrintHeader from './common/PrintHeader';
+import MatchingCategoryEditModal from './common/MatchingCategoryEditModal';
+import { useAuth } from '../context/AuthContext';
+import { useEditableContent } from '../hooks/useEditableContent';
 
 interface MatchingGameProps {
   categories: MatchingCategory[];
@@ -12,8 +15,27 @@ interface MatchingGameProps {
 }
 
 export default function MatchingGame({ categories, onGameComplete, onNavigateToBadges }: MatchingGameProps) {
+  const { profile } = useAuth();
+  const canEdit = profile?.role === 'lektor' || profile?.role === 'admin';
+
+  // Poznávačky z repozitáře přepsané úpravami lektora (viz contentLibrary.ts).
+  // `categories` jsou výchozí data, překryv z databáze je může změnit, doplnit
+  // i schovat.
+  const {
+    entries: categoryEntries,
+    items: gameCategories,
+    save: saveCategory,
+    remove: removeCategory,
+    restore: restoreCategory,
+    toggleHidden: toggleCategoryHidden,
+  } = useEditableContent<MatchingCategory>('matching_category', categories, canEdit);
+
   const [gameKey, setGameKey] = useState(0);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>(categories[0]?.id || '');
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<MatchingCategory | null>(null);
+  const [confirmDeleteCategory, setConfirmDeleteCategory] = useState(false);
+  const [categoryError, setCategoryError] = useState<string | null>(null);
   
   const [leftItems, setLeftItems] = useState<{ id: string, text: string }[]>([]);
   const [rightItems, setRightItems] = useState<{ id: string, text: string }[]>([]);
@@ -31,7 +53,42 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
   const timerRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(Date.now());
 
-  const activeCategory = useMemo(() => categories.find(c => c.id === selectedCategoryId), [categories, selectedCategoryId]);
+  const activeCategory = useMemo(
+    () => gameCategories.find(c => c.id === selectedCategoryId),
+    [gameCategories, selectedCategoryId]
+  );
+  const activeEntry = useMemo(
+    () => categoryEntries.find(e => e.id === selectedCategoryId) ?? null,
+    [categoryEntries, selectedCategoryId]
+  );
+
+  // Vybraná poznávačka může zmizet — lektor ji smaže, nebo se seznam teprve
+  // dočte ze serveru. Bez tohohle by hra zůstala na prázdné obrazovce.
+  useEffect(() => {
+    if (gameCategories.length === 0) return;
+    if (!gameCategories.some(c => c.id === selectedCategoryId)) {
+      setSelectedCategoryId(gameCategories[0].id);
+    }
+  }, [gameCategories, selectedCategoryId]);
+
+  const deletedEntries = useMemo(
+    () => categoryEntries.filter(e => e.isDeleted),
+    [categoryEntries]
+  );
+
+  const handleCategorySave = async (category: MatchingCategory) => {
+    const result = await saveCategory(category);
+    setCategoryError(result.error);
+    if (!result.error) setSelectedCategoryId(category.id);
+    return result;
+  };
+
+  const handleCategoryDelete = async () => {
+    if (!activeEntry) return;
+    const result = await removeCategory(activeEntry.id);
+    setCategoryError(result.error);
+    setConfirmDeleteCategory(false);
+  };
 
   const printRights = useMemo(() => {
     if (!activeCategory || activeCategory.type === 'diagram') return [];
@@ -134,12 +191,12 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
   };
 
   const nextCategory = useMemo(() => {
-    const currentIndex = categories.findIndex(c => c.id === selectedCategoryId);
-    if (currentIndex >= 0 && currentIndex < categories.length - 1) {
-      return categories[currentIndex + 1];
+    const currentIndex = gameCategories.findIndex(c => c.id === selectedCategoryId);
+    if (currentIndex >= 0 && currentIndex < gameCategories.length - 1) {
+      return gameCategories[currentIndex + 1];
     }
     return null;
-  }, [categories, selectedCategoryId]);
+  }, [gameCategories, selectedCategoryId]);
 
   return (
     <section className="flex-1 flex flex-col h-full overflow-hidden items-center justify-start min-h-[600px] md:min-h-0">
@@ -177,7 +234,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
               value={selectedCategoryId}
               onChange={(e) => setSelectedCategoryId(e.target.value)}
             >
-              {categories.map(cat => (
+              {gameCategories.map(cat => (
                 <option key={cat.id} value={cat.id}>{cat.title}</option>
               ))}
             </select>
@@ -194,6 +251,115 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
             )}
           </div>
         </div>
+
+        {/* Správa poznávaček — jen lektor a správce */}
+        {canEdit && (
+          <div className="px-4 sm:px-5 py-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-2 no-print">
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingCategory(null);
+                  setCategoryModalOpen(true);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Přidat poznávačku
+              </button>
+
+              {activeCategory && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingCategory(activeCategory);
+                      setCategoryModalOpen(true);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    Upravit tuhle
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => toggleCategoryHidden(activeCategory.id).then(r => setCategoryError(r.error))}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    {activeEntry?.isHidden ? <EyeOff className="w-3.5 h-3.5 text-amber-500" /> : <Eye className="w-3.5 h-3.5" />}
+                    {activeEntry?.isHidden ? 'Skryto studentům' : 'Skrýt studentům'}
+                  </button>
+
+                  {confirmDeleteCategory ? (
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-xs font-semibold text-red-600 dark:text-red-400">
+                        Opravdu odebrat „{activeCategory.title}"?
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleCategoryDelete}
+                        className="px-2.5 py-1 rounded-lg bg-red-600 text-white text-xs font-bold cursor-pointer"
+                      >
+                        Ano
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmDeleteCategory(false)}
+                        className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold cursor-pointer"
+                      >
+                        Ne
+                      </button>
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDeleteCategory(true)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Odebrat
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+
+            {deletedEntries.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-500 dark:text-slate-400">
+                <span className="font-semibold">Odebrané:</span>
+                {deletedEntries.map(entry => (
+                  <button
+                    key={entry.id}
+                    type="button"
+                    onClick={() => restoreCategory(entry.id).then(r => setCategoryError(r.error))}
+                    className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold transition-colors cursor-pointer"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    {entry.item.title}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {categoryError && (
+              <div className="text-[11px] text-red-600 dark:text-red-400">{categoryError}</div>
+            )}
+          </div>
+        )}
+
+        {canEdit && (
+          <MatchingCategoryEditModal
+            category={editingCategory}
+            isOpen={categoryModalOpen}
+            usedIds={categoryEntries.map(e => e.id)}
+            onClose={() => {
+              setCategoryModalOpen(false);
+              setEditingCategory(null);
+            }}
+            onSave={handleCategorySave}
+          />
+        )}
             
             {/* Main Content Area */}
             <div className="p-4 sm:p-6 overflow-y-auto flex-1">

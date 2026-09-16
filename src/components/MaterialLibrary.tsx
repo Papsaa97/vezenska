@@ -1,252 +1,163 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   BookOpen,
   FileText,
   FileType2,
+  Image as ImageIcon,
   Presentation,
   Download,
+  Eye,
   RefreshCw,
   Search,
   FolderOpen,
   AlertCircle,
   Loader2,
   Printer,
+  Users,
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import PrintHeader from './common/PrintHeader';
+import FileViewerModal from './common/FileViewerModal';
+import { useTaggedMaterials } from '../hooks/useTaggedMaterials';
+import { useMaterialTagOptions } from '../hooks/useMaterialTagOptions';
+import {
+  TaggedMaterial,
+  downloadMaterial,
+  formatFileSize,
+  getFileKind,
+  getFileTypeLabel,
+} from '../utils/materials';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+const UNSORTED = 'Nezařazené';
 
-export type MaterialSubject =
-  | 'ZOP'
-  | 'Taktika'
-  | 'Penologie'
-  | 'Zbraně'
-  | 'Právo'
-  | 'Etika'
-  | 'Administrativa'
-  | 'Ostatní';
-
-export interface StudyMaterial {
-  name: string;
-  displayName: string;
-  subject: MaterialSubject;
-  size: number;
-  createdAt: string;
-  mimeType: string;
+function getFileIcon(material: TaggedMaterial): React.ReactElement {
+  switch (getFileKind(material.mimeType, material.name)) {
+    case 'pdf':
+      return <FileText className="w-8 h-8 text-red-500 shrink-0" />;
+    case 'word':
+      return <FileType2 className="w-8 h-8 text-blue-500 shrink-0" />;
+    case 'presentation':
+      return <Presentation className="w-8 h-8 text-orange-500 shrink-0" />;
+    case 'image':
+      return <ImageIcon className="w-8 h-8 text-emerald-500 shrink-0" />;
+    default:
+      return <FileText className="w-8 h-8 text-slate-400 shrink-0" />;
+  }
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const BUCKET = 'studijni-materialy';
-
-const SUBJECT_COLORS: Record<MaterialSubject, string> = {
-  ZOP:           'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-400/30',
-  Taktika:       'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-400/30',
-  Penologie:     'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-400/30',
-  'Zbraně':      'bg-red-500/15 text-red-700 dark:text-red-300 border-red-400/30',
-  'Právo':       'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-400/30',
-  Etika:         'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-400/30',
-  Administrativa:'bg-slate-500/15 text-slate-700 dark:text-slate-300 border-slate-400/30',
-  'Ostatní':     'bg-gray-500/15 text-gray-700 dark:text-gray-300 border-gray-400/30',
-};
-
-const ALL_SUBJECTS: MaterialSubject[] = [
-  'ZOP', 'Taktika', 'Penologie', 'Zbraně', 'Právo', 'Etika', 'Administrativa', 'Ostatní',
-];
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-type StorageObjMeta = { size?: number; mimetype?: string; lastModified?: string } | null;
-
-function getFileIcon(mimeType: string): React.ReactElement {
-  if (mimeType.includes('pdf')) {
-    return <FileText className="w-8 h-8 text-red-500 shrink-0" />;
+function typeBadgeColor(material: TaggedMaterial): string {
+  switch (getFileKind(material.mimeType, material.name)) {
+    case 'pdf':
+      return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300';
+    case 'word':
+      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300';
+    case 'presentation':
+      return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300';
+    case 'image':
+      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300';
+    default:
+      return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
   }
-  if (
-    mimeType.includes('word') ||
-    mimeType.includes('docx') ||
-    mimeType.includes('officedocument.wordprocessingml')
-  ) {
-    return <FileType2 className="w-8 h-8 text-blue-500 shrink-0" />;
-  }
-  if (
-    mimeType.includes('presentation') ||
-    mimeType.includes('pptx') ||
-    mimeType.includes('officedocument.presentationml')
-  ) {
-    return <Presentation className="w-8 h-8 text-orange-500 shrink-0" />;
-  }
-  return <FileText className="w-8 h-8 text-slate-400 shrink-0" />;
 }
 
-function getFileTypeBadge(mimeType: string): { label: string; color: string } {
-  if (mimeType.includes('pdf')) {
-    return { label: 'PDF', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' };
-  }
-  if (
-    mimeType.includes('word') ||
-    mimeType.includes('docx') ||
-    mimeType.includes('officedocument.wordprocessingml')
-  ) {
-    return { label: 'DOCX', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' };
-  }
-  if (
-    mimeType.includes('presentation') ||
-    mimeType.includes('pptx') ||
-    mimeType.includes('officedocument.presentationml')
-  ) {
-    return { label: 'PPTX', color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' };
-  }
-  return { label: 'FILE', color: 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300' };
+function pluralFiles(count: number): string {
+  if (count === 1) return 'soubor';
+  if (count < 5) return 'soubory';
+  return 'souborů';
 }
 
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-/** Zpětná mapa: ASCII slug složky → MaterialSubject pro zobrazení */
-const SLUG_TO_SUBJECT: Record<string, MaterialSubject> = {
-  zop:            'ZOP',
-  taktika:        'Taktika',
-  penologie:      'Penologie',
-  zbrane:         'Zbraně',
-  pravo:          'Právo',
-  etika:          'Etika',
-  administrativa: 'Administrativa',
-  ostatni:        'Ostatní',
-};
-
-/** Slugy složek odpovídající ALL_SUBJECTS (ve stejném pořadí) */
-const SUBJECT_SLUGS: string[] = [
-  'zop', 'taktika', 'penologie', 'zbrane', 'pravo', 'etika', 'administrativa', 'ostatni',
-];
-
-function parseMaterial(obj: { name: string; metadata: StorageObjMeta }): StudyMaterial {
-  const pathParts = obj.name.split('/');
-  const folder = pathParts[0];
-  const fileName = pathParts[pathParts.length - 1];
-
-  // displayName: část před posledním '__'; pokud oddělovač chybí, použij název bez přípony
-  const underscoreIdx = fileName.lastIndexOf('__');
-  const displayName =
-    underscoreIdx !== -1
-      ? fileName.slice(0, underscoreIdx)   // čistý ASCII text (bez URL-encodingu)
-      : fileName.replace(/\.[^.]+$/, '');
-
-  // Rozpoznej předmět přes slug → MaterialSubject; fallback na 'Ostatní'
-  const subject: MaterialSubject = SLUG_TO_SUBJECT[folder] ?? 'Ostatní';
-
-  return {
-    name: obj.name,
-    displayName,
-    subject,
-    size: obj.metadata?.size ?? 0,
-    createdAt: obj.metadata?.lastModified ?? new Date().toISOString(),
-    mimeType: obj.metadata?.mimetype ?? 'application/octet-stream',
-  };
-}
-
-
-// ─── Component ────────────────────────────────────────────────────────────────
-
+/**
+ * Knihovna studijních souborů.
+ *
+ * Soubory se sem řadí podle štítků, které jim lektor dal ve správci souborů —
+ * jeden soubor tak může být u Práva i u Penologie zároveň a navíc patřit
+ * konkrétní třídě. Starší soubory bez štítků se zařadí podle složky, ve které
+ * ve Storage leží, takže se z knihovny nic neztratilo.
+ */
 export default function MaterialLibrary() {
-  const [materials, setMaterials] = useState<StudyMaterial[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [activeSubject, setActiveSubject] = useState<MaterialSubject | 'Vše'>('Vše');
+  const { materials, loading, error, tagsError, reload } = useTaggedMaterials();
+  const { subjectOptions, classOptions, classNameById } = useMaterialTagOptions(false);
+
+  const [activeSubject, setActiveSubject] = useState<string>('Vše');
+  const [activeClassId, setActiveClassId] = useState<string>('Vše');
   const [searchQuery, setSearchQuery] = useState('');
   const [downloadingName, setDownloadingName] = useState<string | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [viewed, setViewed] = useState<TaggedMaterial | null>(null);
 
-  const loadMaterials = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const allFiles: StudyMaterial[] = [];
-
-      // Iteruj přes ASCII-safe slugy složek (ne původní názvy s diakritikou)
-      for (const slug of SUBJECT_SLUGS) {
-        const { data, error: listError } = await supabase.storage
-          .from(BUCKET)
-          .list(slug, { limit: 200, sortBy: { column: 'name', order: 'asc' } });
-
-        if (listError) continue;
-
-        if (data) {
-          for (const obj of data) {
-            if (obj.name === '.emptyFolderPlaceholder') continue;
-            allFiles.push(
-              parseMaterial({
-                name: `${slug}/${obj.name}`,
-                metadata: obj.metadata as StorageObjMeta,
-              })
-            );
-          }
-        }
-      }
-
-      setMaterials(allFiles);
-    } catch (err) {
-      setError('Nepodařilo se načíst materiály. Zkontrolujte připojení.');
-      console.error('[MaterialLibrary]', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadMaterials();
-  }, [loadMaterials]);
-
-  const handleDownload = async (material: StudyMaterial) => {
+  const handleDownload = async (material: TaggedMaterial) => {
     setDownloadingName(material.name);
-    try {
-      const { data, error: dlError } = await supabase.storage
-        .from(BUCKET)
-        .download(material.name);
-
-      if (dlError || !data) {
-        alert('Stahování selhalo: ' + (dlError?.message ?? 'Neznámá chyba'));
-        return;
-      }
-
-      const url = URL.createObjectURL(data);
-      const a = document.createElement('a');
-      a.href = url;
-      const ext = material.name.split('.').pop() ?? 'bin';
-      a.download = `${material.displayName}.${ext}`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } finally {
-      setDownloadingName(null);
-    }
+    setDownloadError(await downloadMaterial(material));
+    setDownloadingName(null);
   };
 
-  const filtered = materials.filter((m) => {
-    const matchSubject = activeSubject === 'Vše' || m.subject === activeSubject;
-    const q = searchQuery.toLowerCase();
-    const matchSearch =
-      !q || m.displayName.toLowerCase().includes(q) || m.subject.toLowerCase().includes(q);
-    return matchSubject && matchSearch;
-  });
+  /** Předměty, u kterých opravdu nějaký soubor je — jiné filtrovat nemá smysl. */
+  const presentSubjects = useMemo(() => {
+    const present = new Set<string>();
+    for (const material of materials) {
+      for (const subject of material.subjects) present.add(subject);
+    }
 
-  const grouped = ALL_SUBJECTS.reduce<Record<MaterialSubject, StudyMaterial[]>>((acc, subj) => {
-    acc[subj] = filtered.filter((m) => m.subject === subj);
-    return acc;
-  }, {} as Record<MaterialSubject, StudyMaterial[]>);
+    const ordered = subjectOptions
+      .map((option) => option.value)
+      .filter((value) => present.has(value));
 
-  const visibleSubjects = ALL_SUBJECTS.filter((s) => grouped[s].length > 0);
+    // Štítek předmětu, který mezitím zmizel ze seznamu předmětů, by jinak
+    // soubory schoval — připojí se na konec, ať zůstanou dohledatelné.
+    const extra = Array.from(present).filter((value) => !ordered.includes(value)).sort((a, b) => a.localeCompare(b, 'cs'));
+
+    return [...ordered, ...extra];
+  }, [materials, subjectOptions]);
+
+  const presentClasses = useMemo(() => {
+    const present = new Set<string>();
+    for (const material of materials) {
+      for (const classId of material.classIds) present.add(classId);
+    }
+    return classOptions.filter((option) => present.has(option.value));
+  }, [materials, classOptions]);
+
+  const filtered = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return materials.filter((material) => {
+      const matchSubject =
+        activeSubject === 'Vše' ||
+        (activeSubject === UNSORTED
+          ? material.subjects.length === 0
+          : material.subjects.includes(activeSubject));
+      const matchClass = activeClassId === 'Vše' || material.classIds.includes(activeClassId);
+      const matchSearch =
+        !q ||
+        material.displayName.toLowerCase().includes(q) ||
+        material.subjects.some((s) => s.toLowerCase().includes(q));
+      return matchSubject && matchClass && matchSearch;
+    });
+  }, [materials, activeSubject, activeClassId, searchQuery]);
+
+  /** Sekce k vykreslení: předmět → soubory. Soubor s více štítky je ve všech. */
+  const sections = useMemo(() => {
+    const groups: { subject: string; items: TaggedMaterial[] }[] = [];
+
+    for (const subject of presentSubjects) {
+      const items = filtered.filter((m) => m.subjects.includes(subject));
+      if (items.length > 0) groups.push({ subject, items });
+    }
+
+    const unsorted = filtered.filter((m) => m.subjects.length === 0);
+    if (unsorted.length > 0) groups.push({ subject: UNSORTED, items: unsorted });
+
+    return groups;
+  }, [filtered, presentSubjects]);
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-6 pb-8">
+      <FileViewerModal material={viewed} isOpen={Boolean(viewed)} onClose={() => setViewed(null)} />
+
       {/* Tisková hlavička – viditelná pouze při tisku */}
-      <PrintHeader 
-        subject="Knihovna studijních materiálů" 
-        docTitle={`Katalog výukových podkladů a předpisů (Filtr: ${activeSubject})`} 
-        subtext="Akademie Vězeňské služby ČR – Interní studijní materiály" 
+      <PrintHeader
+        subject="Knihovna studijních materiálů"
+        docTitle={`Katalog výukových podkladů a předpisů (Filtr: ${activeSubject})`}
+        subtext="Akademie Vězeňské služby ČR – Interní studijní materiály"
       />
 
       {/* Header na obrazovce */}
@@ -257,11 +168,14 @@ export default function MaterialLibrary() {
           </div>
           <div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">Knihovna materiálů</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Studijní podklady ke stažení</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Studijní podklady k otevření v aplikaci i ke stažení
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() => window.print()}
             disabled={loading || materials.length === 0}
             className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 transition-all cursor-pointer disabled:opacity-50 shadow-xs"
@@ -271,7 +185,8 @@ export default function MaterialLibrary() {
             Tisk / PDF
           </button>
           <button
-            onClick={loadMaterials}
+            type="button"
+            onClick={reload}
             disabled={loading}
             className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 transition-all cursor-pointer disabled:opacity-50"
           >
@@ -284,7 +199,11 @@ export default function MaterialLibrary() {
       {/* Search */}
       <div className="relative no-print">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <label className="sr-only" htmlFor="material-library-search">
+          Hledat materiál
+        </label>
         <input
+          id="material-library-search"
           type="text"
           placeholder="Hledat materiál…"
           value={searchQuery}
@@ -293,22 +212,51 @@ export default function MaterialLibrary() {
         />
       </div>
 
-      {/* Subject filter tabs */}
+      {/* Filtr podle předmětu */}
       <div className="flex flex-wrap gap-2 no-print">
-        {(['Vše', ...ALL_SUBJECTS] as (MaterialSubject | 'Vše')[]).map((subj) => (
-          <button
-            key={subj}
-            onClick={() => setActiveSubject(subj)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-              activeSubject === subj
-                ? 'bg-indigo-600 text-white border-indigo-500 shadow-sm shadow-indigo-500/25'
-                : 'bg-white dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300'
-            }`}
-          >
-            {subj}
-          </button>
-        ))}
+        {(['Vše', ...presentSubjects, ...(materials.some((m) => m.subjects.length === 0) ? [UNSORTED] : [])]).map(
+          (subject) => (
+            <button
+              key={subject}
+              type="button"
+              onClick={() => setActiveSubject(subject)}
+              aria-pressed={activeSubject === subject}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                activeSubject === subject
+                  ? 'bg-indigo-600 text-white border-indigo-500 shadow-sm shadow-indigo-500/25'
+                  : 'bg-white dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300'
+              }`}
+            >
+              {subject}
+            </button>
+          )
+        )}
       </div>
+
+      {/* Filtr podle třídy — jen když jsou soubory nějaké třídě přiřazené */}
+      {presentClasses.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 no-print">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <Users className="w-3.5 h-3.5 text-blue-500" />
+            Třída
+          </span>
+          {(['Vše', ...presentClasses.map((c) => c.value)]).map((classId) => (
+            <button
+              key={classId}
+              type="button"
+              onClick={() => setActiveClassId(classId)}
+              aria-pressed={activeClassId === classId}
+              className={`px-3 py-1 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                activeClassId === classId
+                  ? 'bg-blue-600 text-white border-blue-500'
+                  : 'bg-white dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-400'
+              }`}
+            >
+              {classId === 'Vše' ? 'Vše' : classNameById(classId) ?? classId}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* States */}
       {loading && (
@@ -318,10 +266,17 @@ export default function MaterialLibrary() {
         </div>
       )}
 
-      {!loading && error && (
+      {!loading && (error || downloadError) && (
         <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-2xl text-red-700 dark:text-red-300 text-sm no-print">
           <AlertCircle className="w-5 h-5 shrink-0" />
-          {error}
+          {error ?? downloadError}
+        </div>
+      )}
+
+      {!loading && !error && tagsError && (
+        <div className="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl text-amber-800 dark:text-amber-300 text-xs no-print">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          {tagsError} Soubory se zatím řadí podle složek.
         </div>
       )}
 
@@ -338,16 +293,16 @@ export default function MaterialLibrary() {
       {!loading && !error && materials.length > 0 && filtered.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400 no-print">
           <Search className="w-10 h-10 opacity-30" />
-          <span className="text-sm">Žádné výsledky pro „{searchQuery}"</span>
+          <span className="text-sm">Žádné výsledky pro zvolený filtr</span>
         </div>
       )}
 
-      {!loading && !error && visibleSubjects.length > 0 && (
+      {!loading && !error && sections.length > 0 && (
         <AnimatePresence>
           <div className="space-y-8">
-            {visibleSubjects.map((subject) => (
+            {sections.map((section) => (
               <motion.section
-                key={subject}
+                key={section.subject}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
@@ -355,51 +310,73 @@ export default function MaterialLibrary() {
                 className="print-avoid-break"
               >
                 <div className="flex items-center gap-2 mb-3 border-b border-slate-200 dark:border-slate-800 pb-1.5">
-                  <span className={`px-2.5 py-0.5 rounded-lg text-xs font-bold border ${SUBJECT_COLORS[subject]}`}>
-                    {subject}
+                  <span className="px-2.5 py-0.5 rounded-lg text-xs font-bold border bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-400/30">
+                    {section.subject}
                   </span>
                   <span className="text-xs text-slate-400 font-medium">
-                    {grouped[subject].length} {grouped[subject].length === 1 ? 'materiál' : grouped[subject].length < 5 ? 'materiály' : 'materiálů'}
+                    {section.items.length} {pluralFiles(section.items.length)}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-1 print:gap-2">
-                  {grouped[subject].map((material) => {
-                    const typeBadge = getFileTypeBadge(material.mimeType);
+                  {section.items.map((material) => {
                     const isDownloading = downloadingName === material.name;
                     return (
                       <div
-                        key={material.name}
+                        key={`${section.subject}-${material.name}`}
                         className="print-card flex items-center gap-3 p-4 bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-indigo-300 dark:hover:border-indigo-600 transition-all"
                       >
-                        <div className="print:hidden">
-                          {getFileIcon(material.mimeType)}
-                        </div>
+                        <div className="print:hidden">{getFileIcon(material)}</div>
                         <div className="flex-1 min-w-0">
                           <div className="font-semibold text-sm text-slate-900 dark:text-white truncate print:whitespace-normal">
                             {material.displayName}
                           </div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadge.color}`}>
-                              {typeBadge.label}
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadgeColor(material)}`}>
+                              {getFileTypeLabel(material.mimeType, material.name)}
                             </span>
                             <span className="text-[11px] text-slate-400 font-mono">
                               {formatFileSize(material.size)}
                             </span>
+                            {material.classIds.map((classId) => {
+                              const label = classNameById(classId);
+                              if (!label) return null;
+                              return (
+                                <span
+                                  key={classId}
+                                  className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+                                >
+                                  {label}
+                                </span>
+                              );
+                            })}
                           </div>
                         </div>
-                        <button
-                          onClick={() => handleDownload(material)}
-                          disabled={isDownloading}
-                          className="no-print shrink-0 p-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-800/50 border border-indigo-200 dark:border-indigo-700 transition-all cursor-pointer disabled:opacity-50"
-                          title="Stáhnout"
-                        >
-                          {isDownloading ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Download className="w-4 h-4" />
-                          )}
-                        </button>
+                        <div className="no-print flex items-center gap-1.5 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => setViewed(material)}
+                            aria-label={`Otevřít ${material.displayName} v aplikaci`}
+                            className="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition-all cursor-pointer"
+                            title="Otevřít v aplikaci"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDownload(material)}
+                            disabled={isDownloading}
+                            aria-label={`Stáhnout ${material.displayName}`}
+                            className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-800/50 border border-indigo-200 dark:border-indigo-700 transition-all cursor-pointer disabled:opacity-50"
+                            title="Stáhnout"
+                          >
+                            {isDownloading ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Download className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
