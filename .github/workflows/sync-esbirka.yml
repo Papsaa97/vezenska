@@ -1,0 +1,213 @@
+name: Synchronizace předpisů z e-Sbírky
+
+# Znění zákonů se mění novelami několikrát do roka a datum účinnosti bývá
+# známé dopředu. Ruční spuštění `npm run sync:laws` se proto snadno opomene
+# a aplikace pak měsíce ukazuje neplatné znění, aniž by si toho někdo všiml.
+# Tenhle běh se jednou týdně zeptá e-Sbírky sám.
+#
+# ZMĚNILO-LI SE NĚCO, založí pull request. Když se nezměnilo nic, neudělá nic:
+# synchronizační skript nepřepisuje soubory, jejichž obsah zůstal stejný, takže
+# prázdné pull requesty s pouhou změnou data stažení nevznikají.
+#
+# POZOR NA CI: pull request založený přes GITHUB_TOKEN nespouští další
+# workflow (GitHub to záměrně blokuje proti smyčkám), takže `ci.yml` na něm
+# neproběhne. Kontroly proto běží rovnou tady a jejich výsledek je v těle
+# pull requestu; bez nich by se změna dostala k posouzení neověřená.
+#
+# PŘEDPOKLAD NASTAVENÍ: Settings → Actions → General → Workflow permissions
+# musí mít zaškrtnuté „Allow GitHub Actions to create and approve pull
+# requests“. Bez toho krok se zakládáním pull requestu skončí chybou 403.
+
+on:
+  schedule:
+    # Pondělí 3:17 UTC. Nekulatá minuta schválně: v celou hodinu je fronta
+    # sdílených runnerů nejdelší a plánované běhy se odkládají.
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+    inputs:
+      predpisy:
+        description: 'Omezit na konkrétní předpisy, např. "555/1992 169/1999". Prázdné = všechny.'
+        required: false
+        type: string
+
+# Vytvoření větve, commitu a pull requestu. Nic víc sync nepotřebuje.
+permissions:
+  contents: write
+  pull-requests: write
+
+# Dva souběžné běhy by si přepisovaly tutéž větev.
+concurrency:
+  group: sync-esbirka
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Stáhnout znění a založit PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      SYNC_BRANCH: automat/esbirka-sync
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Stažení znění z e-Sbírky
+        # Vstup z workflow_dispatch se do příkazu nevkládá šablonou ${{ }},
+        # ale přes proměnnou prostředí — jinak by šlo do shellu propašovat
+        # vlastní příkaz. Tvar se navíc kontroluje: povolené jsou jen číslice,
+        # lomítka a mezery.
+        env:
+          PREDPISY: ${{ inputs.predpisy }}
+        run: |
+          set -euo pipefail
+          if [ -n "${PREDPISY:-}" ] && ! printf '%s' "$PREDPISY" | grep -Eq '^[0-9/ ]+$'; then
+            echo "Neplatný vstup: povolené jsou jen číslice, lomítka a mezery." >&2
+            exit 1
+          fi
+          # Vstup se rozpadne na pole, ne na neuvozené dělení slov — tím
+          # odpadá i rozbalování hvězdiček.
+          read -r -a FILTRY <<< "${PREDPISY:-}"
+          npm run sync:laws -- "${FILTRY[@]}" --summary-file="$RUNNER_TEMP/esbirka-zmeny.md"
+
+      - name: Zjistit, jestli se něco změnilo
+        id: zmeny
+        run: |
+          set -euo pipefail
+          if [ -n "$(git status --porcelain public/data/esbirka src/data/esbirka)" ]; then
+            echo "zmeneno=true" >> "$GITHUB_OUTPUT"
+            echo "Změněné soubory:"
+            git status --porcelain public/data/esbirka src/data/esbirka
+          else
+            echo "zmeneno=false" >> "$GITHUB_OUTPUT"
+            echo "Žádná znění se nezměnila, pull request není potřeba."
+          fi
+
+      # Kontroly běží před založením pull requestu, protože na něm samotném
+      # už `ci.yml` neproběhne (viz poznámka nahoře). Neexistující paragraf
+      # v `check:legal` shodí build, takže vadná data se do PR nedostanou.
+      - name: Typová kontrola a lint
+        if: steps.zmeny.outputs.zmeneno == 'true'
+        run: npm run lint
+
+      - name: Kontrola dat předpisů
+        if: steps.zmeny.outputs.zmeneno == 'true'
+        run: |
+          set -euo pipefail
+          npm run check:legal 2>&1 | tee "$RUNNER_TEMP/check-legal.log"
+
+      - name: Produkční build
+        if: steps.zmeny.outputs.zmeneno == 'true'
+        run: npm run build
+
+      - name: Sestavit tělo pull requestu
+        if: steps.zmeny.outputs.zmeneno == 'true'
+        run: |
+          set -euo pipefail
+
+          # Z výpisu kontroly jen porovnání s e-Sbírkou a závěr. Kdyby se
+          # výpis změnil a značka se nenašla, vezme se prostě jeho konec.
+          VYPIS="$(sed -n '/POKRYTÍ PŘEDPISU/,$p' "$RUNNER_TEMP/check-legal.log" | head -80)"
+          if [ -z "$VYPIS" ]; then VYPIS="$(tail -40 "$RUNNER_TEMP/check-legal.log")"; fi
+
+          {
+            echo "Automatická synchronizace s [veřejným REST API e-Sbírky](https://e-sbirka.gov.cz/restful-api)."
+            echo "Založil běh [\`${GITHUB_WORKFLOW}\`](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})."
+            echo
+            cat "$RUNNER_TEMP/esbirka-zmeny.md"
+            echo
+            echo "## Ověření"
+            echo
+            echo "Kontroly proběhly v tomto běhu, protože na pull requestu založeném přes \`GITHUB_TOKEN\` se \`ci.yml\` nespouští:"
+            echo
+            echo "- \`npm run lint\` (typová kontrola + přístupnost) — prošlo"
+            echo "- \`npm run check:legal\` — prošlo, výpis níže"
+            echo "- \`npm run build\` — prošlo"
+            echo
+            echo "<details><summary>Výpis <code>npm run check:legal</code></summary>"
+            echo
+            echo '```'
+            printf '%s\n' "$VYPIS"
+            echo '```'
+            echo
+            echo "</details>"
+            echo
+            echo "## Než to sloučíte"
+            echo
+            echo "- Projděte rozdíl v \`public/data/esbirka/\` — mění se text, který se studentům zobrazuje jako úřední znění."
+            echo "- Vyšla-li novela, zkontrolujte, jestli na ni nenavazuje **studijní výběr** v \`vscrRegulationsRegistry.ts\` a **Paragrafový výklad** v \`legalCompasData.ts\`. Ty skript needituje; \`check:legal\` upozorní jen na paragraf, který v novém znění vůbec není, a na rozpor v poli \`lastAmendment\`."
+            echo "- Informativní znění z e-Sbírky není právně závazné; závazná je částka Sbírky zákonů."
+          } > "$RUNNER_TEMP/pr-body.md"
+          cat "$RUNNER_TEMP/pr-body.md"
+
+      - name: Založit nebo aktualizovat pull request
+        if: steps.zmeny.outputs.zmeneno == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Větev patří výhradně tomuhle běhu a pokaždé vzniká znovu z main,
+          # aby v ní neležela stará stažení ani historie už sloučeného PR.
+          # Proto se na ni smí přepsat historie — nikdo jiný do ní necommituje.
+          # Fetch míří rovnou do sledovací reference, jinak by --force-with-lease
+          # neměl co porovnávat (checkout@v4 stahuje jen výchozí větev).
+          git fetch origin "+refs/heads/${SYNC_BRANCH}:refs/remotes/origin/${SYNC_BRANCH}" || true
+          git checkout -B "$SYNC_BRANCH"
+
+          {
+            echo "chore(předpisy): aktualizace znění podle e-Sbírky"
+            echo
+            cat "$RUNNER_TEMP/esbirka-zmeny.md"
+            echo
+            echo "Založil plánovaný běh ${GITHUB_WORKFLOW} (${GITHUB_RUN_ID})."
+          } > "$RUNNER_TEMP/commit-msg.txt"
+
+          git add public/data/esbirka src/data/esbirka
+          git commit -F "$RUNNER_TEMP/commit-msg.txt"
+
+          # --force-with-lease se schválně zadává s očekávanou hodnotou.
+          # Bez ní se opírá o sledovací referenci, jenže checkout@v4 nastaví
+          # refspec jen pro výchozí větev — pro tuhle by ji git nepovažoval za
+          # sledovanou a push by skončil na „stale info“ (ověřeno nanečisto).
+          if LEASE="$(git rev-parse --verify --quiet "refs/remotes/origin/${SYNC_BRANCH}")"; then
+            git push --force-with-lease="${SYNC_BRANCH}:${LEASE}" origin "$SYNC_BRANCH"
+          else
+            git push origin "$SYNC_BRANCH"
+          fi
+
+          CISLO="$(gh pr list --head "$SYNC_BRANCH" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$CISLO" ]; then
+            gh pr edit "$CISLO" --body-file "$RUNNER_TEMP/pr-body.md"
+            echo "Aktualizován pull request #${CISLO}"
+          else
+            gh pr create \
+              --draft \
+              --base main \
+              --head "$SYNC_BRANCH" \
+              --title "chore(předpisy): aktualizace znění podle e-Sbírky" \
+              --body-file "$RUNNER_TEMP/pr-body.md"
+          fi
+
+      - name: Přehled do souhrnu běhu
+        if: always()
+        run: |
+          {
+            echo "## Synchronizace s e-Sbírkou"
+            echo
+            if [ -f "$RUNNER_TEMP/esbirka-zmeny.md" ]; then
+              cat "$RUNNER_TEMP/esbirka-zmeny.md"
+            else
+              echo "Synchronizace neproběhla — podrobnosti ve výpisu kroků výše."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
