@@ -38,9 +38,9 @@ npm run dev          # http://localhost:3000
 | `npm run preview` | Náhled produkčního buildu |
 | `npm run lint` | Typová kontrola (`tsc --noEmit`) |
 | `npm test` | Typy + integrita předpisů + kvalita banky otázek |
-| `npm run check:legal` | Formální kontrola integrity dat předpisů |
+| `npm run check:legal` | Kontrola dat předpisů a porovnání s úředním zněním z e-Sbírky |
 | `npm run check:questions` | Strukturální kontroly otázek a ráčna na délkový tell |
-| `npm run sync:laws` | Synchronizace textů předpisů |
+| `npm run sync:laws` | Stažení úplných znění předpisů z REST API e-Sbírky |
 
 Na každý pull request (a na push do `main`) běží [CI](.github/workflows/ci.yml):
 typová kontrola, produkční build, integrita předpisů a kvalita banky otázek.
@@ -68,6 +68,48 @@ Po zlepšení obsahu přepiš referenční stav:
 ```bash
 npm run check:questions -- --update-baseline   # a commitni baseline
 ```
+
+## Právní kompas a e-Sbírka
+
+Znění zákonů a vyhlášek se do aplikace nepřepisují ručně. Stahuje je
+`npm run sync:laws` z [veřejného REST API e-Sbírky](https://e-sbirka.gov.cz/restful-api)
+— bez klíče a bez přihlášení:
+
+1. Pro každý předpis z registru, který má číslo ve Sbírce zákonů, se zjistí jeho
+   `dokumentId`, aktuální znění, historie novel a osnova (seznam paragrafů).
+2. Stáhne se úřední **informativní znění v DOCX** a převede se na text.
+3. Výsledek se uloží do `public/data/esbirka/<předpis>.json` a jeho metadata do
+   generovaného `src/data/esbirka/snapshotManifest.ts`.
+
+Texty leží mimo JavaScriptový balík záměrně: dohromady mají přes 1,5 MB (samotný
+trestní řád přes 600 kB) a načítají se až ve chvíli, kdy je čtenář otevře.
+Service Worker si je pak drží v mezipaměti, takže tlačítko **Stáhnout pro
+offline** skutečně stáhne znění do zařízení.
+
+| Kde | Co to umí |
+|---|---|
+| Paragrafový výklad | Pod studijním přepisem lze rozbalit **doslovné znění** citovaných paragrafů z e-Sbírky |
+| Registr předpisů | Odznak „Úplné znění od …“ vs. „Jen studijní výběr“ u každé karty |
+| Čtečka předpisu | Přepínač *Úplné znění (e-Sbírka)* / *Studijní výběr*, skok na paragraf, odkaz na úřední PDF |
+| Ověřit podle e-Sbírky | Živý dotaz na API: je stažené znění pořád to účinné? Odpověď zní *aktuální*, *e-Sbírka vede novější* nebo *nedostupné* — nikdy „ověřeno“ naslepo |
+| Audit | Kolik paragrafů předpisu studijní výběr pokrývá a které chybí, porovnáno s osnovou z e-Sbírky |
+
+Prohlížeč na e-Sbírku přímo nedosáhne — API posílá `Access-Control-Allow-Origin`
+jen pro vlastní doménu. Dotazy proto vedou přes vlastní cestu `/api/esbirka`,
+kterou obsluhuje serverless funkce [`api/esbirka.ts`](api/esbirka.ts) na Vercelu
+a při `npm run dev` stejná obsluha ve vývojovém serveru. Proxy pouští jen šest
+konkrétních endpointů a ELI ve tvaru `/eli/cz/sb/{rok}/{číslo}`; nic jiného ven
+neodejde. Na čistě statickém nasazení (`render.yaml`) funkce neběží a ověřování
+se poctivě označí za nedostupné.
+
+> **Právní závaznost:** e-Sbírka poskytuje *informativní* znění. Závazné je znění
+> vyhlášené ve Sbírce zákonů. Aplikace to u každého textu uvádí, včetně čísla
+> znění, data účinnosti a data stažení.
+
+`npm run check:legal` porovnává data s tím, co se stáhlo: hlásí paragrafy, které
+v platném znění neexistují (to shodí build), pokrytí předpisu studijním výběrem,
+rozpor mezi novelami v registru a v e-Sbírce a doslovnost textů, které se
+zobrazují jako znění zákona.
 
 ## Obsah, který spravuje lektor
 

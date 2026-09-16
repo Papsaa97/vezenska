@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { legalDatabase, LegalArticle } from '../data/legalCompasData';
 import { VscrRegulation, VSCR_REGULATIONS_REGISTRY } from '../data/vscrRegulationsRegistry';
 import { auditLegalDatabase, measureRegulationCoverage, AuditReport } from '../utils/legalIntegrity';
+import { prefetchAllSnapshots, formatMegabytes } from '../utils/esbirka/offline';
 import { speakText, isSpeechSupported } from '../utils/speech';
 import {
   getStoredRegulations,
@@ -41,6 +42,7 @@ export default function LegalCompass() {
   // Dynamic Regulations Database State
   const [regulationsList, setRegulationsList] = useState<VscrRegulation[]>(() => getStoredRegulations());
   const [offlineStatus, setOfflineStatus] = useState(() => getOfflineStatus());
+  const [offlineBusy, setOfflineBusy] = useState(false);
   const [pdfViewMode, setPdfViewMode] = useState<'paper' | 'dark'>('paper');
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
   
@@ -67,11 +69,11 @@ export default function LegalCompass() {
   });
 
   const auditReport: AuditReport = useMemo(() => {
-    // Rozsah plných textů předpisů se měří i tady, aby okno kontroly mohlo
-    // poctivě říct, u kterých předpisů jde jen o výběr ustanovení.
+    // Pokrytí se měří proti osnově předpisu stažené z e-Sbírky, ne odhadem
+    // z vlastního textu. Teprve tím se dá říct, kolik paragrafů výběr vynechává.
     const coverage = VSCR_REGULATIONS_REGISTRY
       .filter((reg) => typeof reg.fullLegalText === 'string' && reg.fullLegalText.length > 0)
-      .map((reg) => measureRegulationCoverage(reg.code, reg.shortTitle, reg.fullLegalText));
+      .map((reg) => measureRegulationCoverage(reg));
     return auditLegalDatabase(legalDatabase, coverage);
   }, []);
 
@@ -93,14 +95,37 @@ export default function LegalCompass() {
     setOfflineStatus(getOfflineStatus());
   };
 
-  const handleSaveForOffline = () => {
-    const res = saveAllForOffline();
-    if (res.success) {
-      setOfflineStatus({ isDownloaded: true, downloadedAt: res.timestamp });
-      showToast(`Všech ${res.count} předpisů uloženo do offline paměti zařízení!`);
-    } else {
-      showToast('Uložení do offline paměti selhalo.', 'error');
+  /**
+   * Uloží předpisy pro čtení bez připojení.
+   *
+   * Dřív se jen zkopírovala data z jednoho klíče localStorage do druhého a
+   * ohlásilo se „uloženo offline“ — přitom se nic nestáhlo a druhý klíč nikdo
+   * nikdy nečetl. Teď se skutečně stáhnou soubory s úplnými zněními, aby si je
+   * Service Worker uložil do mezipaměti zařízení, a hlášení říká, co dopadlo.
+   */
+  const handleSaveForOffline = async () => {
+    if (offlineBusy) return;
+    setOfflineBusy(true);
+    showToast('Stahuji úplná znění předpisů do zařízení…', 'info');
+
+    const metaSaved = saveAllForOffline();
+    const result = await prefetchAllSnapshots();
+    setOfflineBusy(false);
+
+    if (result.ulozeno === 0) {
+      showToast('Nepodařilo se stáhnout žádné znění. Zkontrolujte připojení.', 'error');
+      return;
     }
+
+    const stamp = new Date().toLocaleString('cs-CZ');
+    setOfflineStatus({ isDownloaded: true, downloadedAt: stamp });
+    const potize = result.selhalo > 0 ? ` ${result.selhalo} se nepodařilo stáhnout.` : '';
+    const metaPotize = metaSaved.success ? '' : ' Metadata předpisů se uložit nepodařilo.';
+    showToast(
+      `Uloženo ${result.ulozeno} úplných znění (${formatMegabytes(result.bajtu)}).${potize}${metaPotize} ` +
+        'Po aktualizaci aplikace je potřeba stáhnout znovu.',
+      result.selhalo > 0 ? 'info' : 'success'
+    );
   };
 
   const handleExportJSON = () => {
@@ -322,7 +347,10 @@ export default function LegalCompass() {
         reg.summary.toLowerCase().includes(q) ||
         reg.practicalApplication.toLowerCase().includes(q) ||
         reg.keyProvisions.some(p => p.toLowerCase().includes(q)) ||
-        reg.tags.some(t => t.toLowerCase().includes(q));
+        reg.tags.some(t => t.toLowerCase().includes(q)) ||
+        // Bez tohohle se hledání „donucovací prostředky" netrefilo do předpisu,
+        // který je má v textu, ale ne v souhrnu ani ve výčtu klíčových ustanovení.
+        reg.fullLegalText.toLowerCase().includes(q);
 
       return matchType && matchQuery;
     });
@@ -469,6 +497,7 @@ export default function LegalCompass() {
         setSelectedRegistryType={setSelectedRegistryType}
         regulationsList={regulationsList}
         handleSaveForOffline={handleSaveForOffline}
+        offlineBusy={offlineBusy}
         handleOpenNewEditor={handleOpenNewEditor}
         handleExportJSON={handleExportJSON}
         handleOpenEditModal={handleOpenEditModal}
@@ -510,8 +539,6 @@ export default function LegalCompass() {
         handleCopy={handleCopy}
         handleSpeak={handleSpeak}
         handleOpenEditModal={handleOpenEditModal}
-        showToast={showToast}
-        reloadRegulations={reloadRegulations}
       />
 
     </div>

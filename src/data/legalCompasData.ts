@@ -34,28 +34,35 @@ export const legalDatabase: LegalArticle[] = [
     actNumber: 'Zákon č. 555/1992 Sb.',
     actTitle: 'Zákon o Vězeňské službě a justiční stráži České republiky',
     section: '§ 1 – § 5',
-    title: 'Postavení, členění a hlavní úkoly Vězeňské služby a Justiční stráže',
-    exactText: `§ 1 Postavení Vězeňské služby:
-(1) Zřizuje se Vězeňská služba České republiky (dále jen „Vězeňská služba“). Vězeňská služba je ozbrojeným bezpečnostním sborem.
-(2) Vězeňská služba zajišťuje výkon zabezpečovací detence, výkon vazby a výkon trestu odnětí svobody a v rozsahu stanoveném tímto zákonem ochranu pořádku a bezpečnosti při výkonu soudnictví a správě soudů a při činnosti státních zastupitelství.
-(3) Vězeňskou službu řídí generální ředitel Vězeňské služby, kterého jmenuje a odvolává ministr spravedlnosti.
+    title: 'Postavení, úkoly a složky Vězeňské služby a Justiční stráže',
+    // Opraveno podle úplného znění z e-Sbírky (znění č. 25, účinné od 1. 1. 2026).
+    // Dřívější text tvrdil, že se sbor člení na tři složky, a pověřené orgány
+    // přiřazoval k § 5. Zákon uvádí pět složek (§ 3 odst. 1) a pověřené orgány
+    // řeší § 3 odst. 8; § 5 je o povinnostech příslušníka. Chytáky u zkoušky
+    // tak trénovaly opak toho, co v zákoně stojí.
+    exactText: `§ 1 Úvodní ustanovení:
+(1) Zřizuje se Vězeňská služba České republiky, která zajišťuje výkon vazby, výkon zabezpečovací detence a výkon trestu odnětí svobody a v rozsahu stanoveném tímto zákonem ochranu pořádku a bezpečnosti při výkonu soudnictví a správě soudů a při činnosti státních zastupitelství a Ministerstva spravedlnosti.
+(2) Vězeňská služba je ozbrojeným bezpečnostním sborem. Řídí ji generální ředitel Vězeňské služby, kterého jmenuje a odvolává ministr spravedlnosti.
+(3) Vězeňská služba je správním úřadem a účetní jednotkou.
+(4) Organizačními jednotkami jsou generální ředitelství, vazební věznice, věznice, ústavy pro výkon zabezpečovací detence, Střední odborné učiliště a Akademie Vězeňské služby.
 
-§ 2 Členění Vězeňské služby:
-Vězeňská služba se člení na:
-a) Vězeňskou stráž,
-b) Justiční stráž,
-c) Správní službu.
+§ 2 Úkoly Vězeňské služby:
+Vězeňská služba zejména spravuje a střeží vazební věznice, věznice a ústavy pro výkon zabezpečovací detence; střeží, předvádí a eskortuje osoby ve výkonu vazby, detence a trestu; prostřednictvím programů zacházení působí na odsouzené; zajišťuje pořádek a bezpečnost v budovách soudů, státních zastupitelství a ministerstva; vede evidenci osob ve výkonu vazby, detence a trestu a poskytuje jim zdravotní služby.
 
-§ 3 Úkoly Vězeňské stráže:
-Vězeňská stráž střeží, předvádí a eskortuje osoby ve výkonu zabezpečovací detence, ve výkonu vazby a ve výkonu trestu odnětí svobody, střeží věznice, ústavy pro výkon zabezpečovací detence a při výkonu služby v nich udržuje pořádek a bezpečnost.
+§ 3 Organizace a řízení Vězeňské služby:
+(1) Úkoly stanovené v § 2 zajišťují ve Vězeňské službě vězeňská stráž, justiční stráž, správní služba, Akademie Vězeňské služby a pověřené orgány Vězeňské služby. (Tedy PĚT složek, ne tři.)
+(2) Vězeňská stráž střeží, předvádí a eskortuje osoby ve výkonu vazby, zabezpečovací detence a trestu odnětí svobody a střeží vazební věznice, věznice a ústavy pro výkon zabezpečovací detence.
+(3) Justiční stráž zajišťuje pořádek a bezpečnost v budovách soudů, státních zastupitelství a ministerstva a v jiných místech jejich činnosti.
+(4) Příslušníci vězeňské stráže mohou být dočasně povoláni k plnění úkolů justiční stráže jen v mimořádných případech a jen se souhlasem generálního ředitele.
+(8) Pověřené orgány Vězeňské služby mají postavení policejního orgánu v řízení o trestných činech osob ve výkonu vazby, trestu odnětí svobody a zabezpečovací detence spáchaných v těchto objektech.
 
-§ 4 Úkoly Justiční stráže:
-Justiční stráž zajišťuje pořádek a bezpečnost v budovách soudů, státních zastupitelství a ministerstva spravedlnosti a v jiných místech jejich činnosti a při výkonu pravomoci soudů a státních zastupitelství.
+§ 4 Právní jednání za Vězeňskou službu:
+Právní úkony jménem státu činí za Vězeňskou službu generální ředitel; ředitelé vazebních věznic, věznic a dalších organizačních jednotek jednají za Vězeňskou službu ve všech věcech kromě těch, které si vyhradil generální ředitel.
 
-§ 5 Pověřené orgány Vězeňské služby:
-Pověřené orgány Vězeňské služby mají postavení policejního orgánu v řízení o trestných činech osob ve výkonu vazby, trestu odnětí svobody nebo zabezpečovací detence spáchaných v těchto objektech.`,
-    explanation: 'Základní organizační norma vymezující postavení VS ČR jako ozbrojeného sboru, trojí členění (Vězeňská stráž, Justiční stráž, Správní služba) a postavení pověřených orgánů jako policejního orgánu dle trestního řádu.',
-    examTips: 'Pozor na členění: Vězeňská služba se člení na 3 složky (Vězeňská stráž, Justiční stráž, Správní služba). Kdo jmenuje generálního ředitele? Ministr spravedlnosti.',
+§ 5 Povinnosti příslušníka:
+Příslušník je povinen plnit služební povinnosti a úkoly vyplývající pro něj ze zákonů a z dalších obecně závazných právních předpisů a z rozhodnutí a příkazů nadřízených.`,
+    explanation: 'Základní organizační norma. Vymezuje postavení VS ČR jako ozbrojeného bezpečnostního sboru (§ 1), její úkoly (§ 2) a složky, které je zajišťují (§ 3 odst. 1). Pozor na časté zjednodušení: složky jsou pět — vězeňská stráž, justiční stráž, správní služba, Akademie Vězeňské služby a pověřené orgány Vězeňské služby. Postavení policejního orgánu podle trestního řádu mají pověřené orgány, a to podle § 3 odst. 8, nikoli podle § 5; § 5 už patří do hlavy o povinnostech příslušníka.',
+    examTips: 'Kdo jmenuje a odvolává generálního ředitele? Ministr spravedlnosti (§ 1 odst. 2). Kolik složek zajišťuje úkoly Vězeňské služby? PĚT podle § 3 odst. 1 (vězeňská stráž, justiční stráž, správní služba, Akademie VS a pověřené orgány VS) — odpověď „tři složky" je zastaralá. Kde je postavení policejního orgánu? § 3 odst. 8, ne § 5. Vězeňská stráž smí být dočasně povolána k úkolům justiční stráže jen v mimořádných případech a se souhlasem generálního ředitele (§ 3 odst. 4).',
     category: '555_1992'
   },
   {

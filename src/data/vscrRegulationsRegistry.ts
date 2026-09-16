@@ -26,6 +26,13 @@ export interface VscrRegulation {
   type: 'zakon' | 'vyhlaska' | 'ngr' | 'instrukce' | 'ustava_mezinarodni';
   authority: string;
   effectiveFrom?: string;
+  /**
+   * Novely, kterými vzniklo platné znění.
+   *
+   * U předpisů ze Sbírky zákonů musí hodnota odpovídat tomu, co e-Sbírka vede
+   * u aktuálního znění — hlídá to `npm run check:legal`. Zdrojem pravdy je
+   * `src/data/esbirka/snapshotManifest.ts`, který plní `npm run sync:laws`.
+   */
   lastAmendment?: string;
   scope: string;
   keyProvisions: string[];
@@ -49,19 +56,27 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     type: 'zakon',
     authority: 'Parlament České republiky',
     effectiveFrom: '1. 1. 1993',
-    lastAmendment: 'Zákon č. 250/2023 Sb.',
+    lastAmendment: '270/2025 Sb.',
     officialUrl: 'https://e-sbirka.gov.cz/sb/1992/555?zalozka=text',
     scope: 'Základní organický a pravomocný zákon VS ČR. Vymezuje postavení sboru, oprávnění a povinnosti příslušníků, použití donucovacích prostředků a zbraně.',
+    // Ověřeno proti úplnému znění z e-Sbírky (znění č. 25 účinné od 1. 1. 2026).
+    // Předchozí verze tvrdila trojí členění sboru (zákon uvádí v § 3 odst. 1
+    // pět složek), přiřazovala pověřené orgány k § 5 (jsou v § 3 odst. 8)
+    // a po použití zbraně ukládala vyrozumět státního zástupce — § 20 ukládá
+    // bezodkladné oznámení nadřízenému a o státním zástupci v této souvislosti
+    // zákon nemluví vůbec.
     keyProvisions: [
-      '§ 1 – Postavení VS ČR jako ozbrojeného bezpečnostního sboru, jmenování GŘ ministrem spravedlnosti',
-      '§ 2 – Trojí členění: Vězeňská stráž, Justiční stráž, Správní služba',
-      '§ 5 – Pověřené orgány VS ČR s postavením policejního orgánu dle TŘ',
-      '§ 6 – Povinnost prokázat příslušnost a užít výzvu „Jménem zákona!“',
-      '§ 7–§ 16 – Zjišťování totožnosti, zajištění (max. 24 h), odebrání zbraně, prohlídky',
-      '§ 17 – Taxativní výčet donucovacích prostředků (hmaty/chvaty, pouta, obušek, slzotvorný prostředek, pes, elektrický paralyzér...) a podmínky použití',
-      '§ 18 – Použití služební zbraně (nutná obrana, odvrácení útoku na střežený objekt, zamezení útěku nebezpečné osoby, výzva a varovný výstřel)',
-      '§ 19 – Zvláštní omezení: zákaz použití zbraně a úderů obuškem proti těhotným ženám s viditelným těhotenstvím, starým osobám a dětem',
-      '§ 20 – Povinnosti po použití zbraně: poskytnout první pomoc, zajistit místo, sepsat záznam a IHNED vyrozumět státního zástupce'
+      '§ 1 – Zřízení VS ČR jako ozbrojeného bezpečnostního sboru; řídí ji generální ředitel, kterého jmenuje a odvolává ministr spravedlnosti',
+      '§ 2 – Úkoly Vězeňské služby: správa a střežení věznic a ústavů pro zabezpečovací detenci, eskorty, programy zacházení, pořádek v budovách soudů a státních zastupitelství',
+      '§ 3 odst. 1 – Úkoly zajišťuje PĚT složek: vězeňská stráž, justiční stráž, správní služba, Akademie Vězeňské služby a pověřené orgány Vězeňské služby',
+      '§ 3 odst. 8 – Pověřené orgány VS ČR mají postavení policejního orgánu v řízení o trestných činech osob ve výkonu vazby, trestu odnětí svobody a zabezpečovací detence',
+      '§ 6 – Povinnost jednat vážně a rozhodně a šetřit důstojnost osob; před zákrokem prokázat příslušnost k Vězeňské službě a použít domluvy, výzvy nebo varování — před výzvou příslušník použije slova „jménem zákona“',
+      '§ 7 – Kdy je příslušník povinen zakročit a kdy zákrok provést nemusí (vliv léků, chybějící výcvik, důležitý zájem služby)',
+      '§ 11–§ 16 – Osobní prohlídka, odnětí věcí, prokázání totožnosti, pronásledování prchajících osob, operativně pátrací prostředky',
+      '§ 17 – Taxativní výčet donucovacích prostředků (hmaty, chvaty, údery a kopy sebeobrany, předváděcí řetízky, pouta, obušek, slzotvorné prostředky, služební pes, elektrický paralyzér…) a podmínky použití',
+      '§ 18 – Střelná zbraň jen výjimečně a jen když jsou donucovací prostředky zřejmě neúčinné: nutná obrana, překonání odporu, zamezení útěku, odvrácení útoku na střežený objekt, zneškodnění zvířete; předchází výzva s výstrahou',
+      '§ 19 – Omezení: proti těhotné ženě, osobě vysokého věku, osobě se zjevným zdravotním postižením a osobě zjevně mladší 15 let nelze použít úderů a kopů, obušku, psa, paralyzéru ani střelné zbraně; proti ženě nelze použít psa, paralyzér a střelnou zbraň',
+      '§ 20 – Po použití: při zranění poskytnout první pomoc, zajistit lékařské ošetření a sepsat záznam; každé použití BEZODKLADNĚ oznámit svému NADŘÍZENÉMU'
     ],
     importanceForZOP: 'Klíčový (ZOP A)',
     tags: ['základní zákon', 'donucovací prostředky', 'použití zbraně', 'oprávnění', 'justiční stráž'],
@@ -77,7 +92,7 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     type: 'zakon',
     authority: 'Parlament České republiky',
     effectiveFrom: '1. 1. 2000',
-    lastAmendment: 'Zákon č. 130/2024 Sb.',
+    lastAmendment: '220/2025 Sb., 270/2025 Sb.',
     officialUrl: 'https://e-sbirka.gov.cz/sb/1999/169?zalozka=text',
     scope: 'Upravuje základní zásady výkonu trestu, diferenciaci věznic (ostraha vs. zvýšená ostraha), práva a povinnosti odsouzených, programy zacházení a kázeňské řízení.',
     keyProvisions: [
@@ -102,7 +117,7 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     type: 'zakon',
     authority: 'Parlament České republiky',
     effectiveFrom: '1. 1. 1994',
-    lastAmendment: 'Zákon č. 220/2021 Sb.',
+    lastAmendment: '220/2025 Sb., 270/2025 Sb.',
     officialUrl: 'https://e-sbirka.gov.cz/sb/1993/293?zalozka=text',
     scope: 'Upravuje podmínky výkonu vazby obviněných osob, zásadu presumpce neviny a koluzní, útěková a předstihová opatření.',
     keyProvisions: [
@@ -126,7 +141,7 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     type: 'zakon',
     authority: 'Parlament České republiky',
     effectiveFrom: '1. 1. 2009',
-    lastAmendment: 'Zákon č. 130/2024 Sb.',
+    lastAmendment: '220/2025 Sb., 270/2025 Sb.',
     officialUrl: 'https://e-sbirka.gov.cz/sb/2008/129?zalozka=text',
     scope: 'Upravuje výkon ochranného opatření zabezpečovací detence u duševně nemocných pachatelů závažných trestných činů, kteří jsou nebezpeční společnosti.',
     keyProvisions: [
@@ -149,7 +164,7 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     type: 'zakon',
     authority: 'Parlament České republiky',
     effectiveFrom: '1. 1. 2007',
-    lastAmendment: 'Zákon č. 349/2023 Sb.',
+    lastAmendment: '300/2025 Sb.',
     officialUrl: 'https://e-sbirka.gov.cz/sb/2003/361?zalozka=text',
     scope: 'Komplexní úprava právního postavení příslušníků VS ČR, vzniku, změn a zániku služebního poměru, služební kázně, odměňování a výsluhových nároků.',
     keyProvisions: [
@@ -173,7 +188,7 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     type: 'zakon',
     authority: 'Parlament České republiky',
     effectiveFrom: '1. 1. 2010',
-    lastAmendment: 'Zákon č. 130/2024 Sb.',
+    lastAmendment: '268/2024 Sb., 220/2025 Sb., 250/2025 Sb., 270/2025 Sb.',
     officialUrl: 'https://e-sbirka.gov.cz/sb/2009/40?zalozka=text',
     scope: 'Definuje základy trestní odpovědnosti, okolnosti vylučující protiprávnost a skutkové podstaty trestných činů relevantních pro vězeňství.',
     keyProvisions: [
@@ -198,7 +213,7 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     type: 'zakon',
     authority: 'Parlament České republiky',
     effectiveFrom: '1. 1. 1962',
-    lastAmendment: 'Zákon č. 130/2024 Sb.',
+    lastAmendment: '265/2001 Sb., 220/2025 Sb., 269/2025 Sb., 270/2025 Sb., 285/2025 Sb.',
     officialUrl: 'https://e-sbirka.gov.cz/sb/1961/141?zalozka=text',
     scope: 'Upravuje postup orgánů činných v trestním řízení, postavení pověřených orgánů VS ČR, instituty vazby (§ 67–73a) a výkonu rozhodnutí.',
     keyProvisions: [
@@ -225,7 +240,7 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     type: 'vyhlaska',
     authority: 'Ministerstvo spravedlnosti ČR',
     effectiveFrom: '1. 1. 2000',
-    lastAmendment: 'Vyhláška č. 278/2023 Sb.',
+    lastAmendment: '360/2024 Sb.',
     officialUrl: 'https://e-sbirka.gov.cz/sb/1999/345?zalozka=text',
     scope: 'Detailní prováděcí předpis k zákonu o VTOS. Upravuje každodenní režim života ve věznici, časový rozvrh dne, ubytování, hygienu, nákupy a kázeňské řízení.',
     keyProvisions: [
@@ -249,7 +264,7 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     type: 'vyhlaska',
     authority: 'Ministerstvo spravedlnosti ČR',
     effectiveFrom: '1. 7. 1994',
-    lastAmendment: 'Vyhláška č. 279/2023 Sb.',
+    lastAmendment: '360/2024 Sb.',
     officialUrl: 'https://e-sbirka.gov.cz/sb/1994/109?zalozka=text',
     scope: 'Prováděcí předpis k zákonu o výkonu vazby. Upravuje režim obviněných na celách, bezpečnostní opatření, vycházky a manipulaci s věcmi.',
     keyProvisions: [
