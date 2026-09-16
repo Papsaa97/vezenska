@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo, useId, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useId, useRef, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import Header, { NavTab } from './components/Header';
+import Header from './components/Header';
+import { NavTab, NAV_TAB_LABELS, VALID_TABS, isNavTab } from './data/navTabs';
 import OfflineBanner from './components/OfflineBanner';
 import RoleSyncBanner from './components/RoleSyncBanner';
 import RolePreviewBanner from './components/RolePreviewBanner';
@@ -25,9 +26,8 @@ const BadgesView           = lazy(() => import('./components/BadgesView'));
 const Statistics           = lazy(() => import('./components/Statistics'));
 const MaterialLibrary      = lazy(() => import('./components/MaterialLibrary'));
 const ContentManager       = lazy(() => import('./components/ContentManager'));
-import { matchingCategories } from './data/initialData';
 import { useDialog } from './hooks/useDialog';
-import { academyQuestions } from './data/questionsData';
+import { matchingCategories } from './data/questions/matching';
 import { tacticalScenarios } from './data/scenariosData';
 import { 
   FolderKanban,  
@@ -52,7 +52,7 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord, Question } from './types';
-import { loadMatchingHistory, updateDailyStreak } from './utils/gamification';
+import { loadMatchingHistory, saveMatchingHistory, updateDailyStreak } from './utils/gamification';
 import { fetchQuizHistory, saveQuizResult, clearQuizHistory } from './utils/quizResults';
 import {
   enqueuePendingResult,
@@ -65,6 +65,11 @@ import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import { getHiddenQuestionIds, isQuestionHidden } from './utils/questionActions';
+import { getStorageOwner, readScoped, writeScoped } from './utils/userScopedStorage';
+import { useProgressRevision } from './hooks/useProgressRevision';
+
+/** Oblíbené otázky uživatele (klíč se v úložišti doplní id účtu). */
+const FAVORITES_KEY = 'vscr_favorites';
 
 /** Spinner zobrazený při lazy-loadingu view komponent. */
 function TabLoader({ isDark }: { isDark?: boolean }) {
@@ -77,51 +82,15 @@ function TabLoader({ isDark }: { isDark?: boolean }) {
 }
 
 
-const NAV_TAB_LABELS: Record<NavTab, string> = {
-  dashboard: 'Nástěnka',
-  subjects: 'Předměty',
-  quiz: 'Zkouška',
-  assistant: 'AI Asistent',
-  compass: 'Kompas zákonů',
-  admin: 'Administrativa & ETŘ',
-  ethics: 'Profesní etika',
-  scenarios: 'Taktické scénáře',
-  weapons: 'Zbraně & Střelba',
-  flashcards: 'Kartičky',
-  matching: 'Poznávačka',
-  badges: 'Odznaky & Úrovně',
-  statistics: 'Statistiky',
-  library: 'Knihovna',
-  'content-manager': 'Správa obsahu',
-};
-
-const VALID_TABS: NavTab[] = [
-  'dashboard',
-  'subjects',
-  'quiz',
-  'assistant',
-  'compass',
-  'admin',
-  'ethics',
-  'scenarios',
-  'weapons',
-  'flashcards',
-  'matching',
-  'badges',
-  'statistics',
-  'library',
-  'content-manager',
-];
-
 function getInitialTab(): NavTab {
   if (typeof window !== 'undefined') {
     const rawHash = window.location.hash.replace(/^#/, '');
-    const tabFromHash = rawHash.split('/')[0] as NavTab;
-    if (VALID_TABS.includes(tabFromHash)) {
+    const tabFromHash = rawHash.split('/')[0];
+    if (isNavTab(tabFromHash)) {
       return tabFromHash;
     }
-    const saved = localStorage.getItem('vscr_active_tab') as NavTab | null;
-    if (saved && VALID_TABS.includes(saved)) {
+    const saved = localStorage.getItem('vscr_active_tab');
+    if (saved && isNavTab(saved)) {
       return saved;
     }
   }
@@ -133,13 +102,7 @@ export default function App() {
   const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
 
   const [activeTab, setActiveTab] = useState<NavTab>(getInitialTab);
-  const [favorites, setFavorites] = useState<string[]>(() => {
-  if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('vscr_favorites');
-    if (saved) { try { return JSON.parse(saved); } catch (e) { console.error(e); } }
-  }
-  return [];
-});
+  const [favorites, setFavorites] = useState<string[]>(() => readScoped<string[]>(FAVORITES_KEY, []));
   const [quizPreset, setQuizPreset] = useState<{ subject?: string }>({});
   const [flashcardPresetSubject, setFlashcardPresetSubject] = useState<string | undefined>(undefined);
   const [customQuestions, setCustomQuestions] = useState<Question[] | null>(null);
@@ -154,22 +117,47 @@ export default function App() {
     onClose: () => setIsMobileMenuOpen(false),
   });
 
-  // Otázky: primárně načtené ze Supabase tabulky quiz_questions, s fallbackem na lokální sadu
-  const [allQuestions, setAllQuestions] = useState<Question[]>(academyQuestions);
+  // Otázky: primárně načtené ze Supabase tabulky quiz_questions, s fallbackem na
+  // bundlovanou sadu. Startuje se na prázdném poli a sada se doplní až v
+  // `loadQuestions()` — viz komentář tam. Záložky s otázkami mezitím ukazují
+  // svůj prázdný stav a `questionsLoading` níže drží načítací stav.
+  const [allQuestions, setAllQuestions] = useState<Question[]>([]);
   const [questionsSource, setQuestionsSource] = useState<'supabase' | 'local'>('local');
+  const [questionsLoading, setQuestionsLoading] = useState<boolean>(true);
 
   const loadQuestions = useCallback(async () => {
     const dbQuestions = await fetchQuizQuestionsFromSupabase();
-    const hiddenSet = getHiddenQuestionIds();
-    const sourceQuestions = (dbQuestions && dbQuestions.length > 0) ? dbQuestions : academyQuestions;
-    const syncedQuestions = sourceQuestions.map(q => ({
-      ...q,
-      is_hidden: q.is_hidden === true || hiddenSet.has(q.id),
-    }));
+    const fromDb = Boolean(dbQuestions && dbQuestions.length > 0);
 
-    setAllQuestions(syncedQuestions);
-    setQuestionsSource(dbQuestions && dbQuestions.length > 0 ? 'supabase' : 'local');
+    // Bundlovaná záloha se stahuje TEPRVE když Supabase nic nevrátí.
+    //
+    // VÝKON: `data-questions` má 774 kB (194 kB gzip) — skoro polovinu
+    // gzipovaného payloadu úvodní obrazovky. Statickým importem se stahovala
+    // vždy, i když ji dotaz do Supabase okamžitě nahradil a nikdy se nepoužila.
+    const sourceQuestions = fromDb
+      ? dbQuestions!
+      : (await import('./data/questionsData')).academyQuestions;
+
+    const hiddenSet = getHiddenQuestionIds();
+    setAllQuestions(
+      sourceQuestions.map(q => ({
+        ...q,
+        is_hidden: q.is_hidden === true || hiddenSet.has(q.id),
+      }))
+    );
+    setQuestionsSource(fromDb ? 'supabase' : 'local');
+    setQuestionsLoading(false);
   }, []);
+
+  /**
+   * Čeká se ještě na banku otázek?
+   *
+   * Záložky s otázkami startují na prázdném poli (banka se stahuje až po
+   * vyřešení relace, viz `loadQuestions`). Bez tohohle rozlišení by v té
+   * chvíli ukázaly svůj prázdný stav — „Pro tento předmět nejsou žádné
+   * otázky“ — a tvrdily tak uživateli něco, co není pravda.
+   */
+  const questionsPending = questionsLoading && allQuestions.length === 0;
 
   const handleQuestionUpdate = useCallback((updatedQuestion: Question) => {
     setAllQuestions(prev => prev.map(q => q.id === updatedQuestion.id ? updatedQuestion : q));
@@ -187,8 +175,9 @@ export default function App() {
   // smysl. Odhlášení naopak id změní na `null`, dotaz projde jako anonymní a sada se
   // správně vrátí na bundlovanou.
   //
-  // `allQuestions` startuje na `academyQuestions`, takže i kdyby se relace nevyřešila,
-  // aplikace pořád jede na bundlované sadě — čekání nemůže skončit prázdnou bankou.
+  // Dokud dotaz neproběhne, drží `questionsLoading` načítací stav; selže-li,
+  // `loadQuestions()` doplní bundlovanou sadu, takže čekání nemůže skončit
+  // prázdnou bankou.
   useEffect(() => {
     if (authLoading) return;
     loadQuestions();
@@ -223,35 +212,37 @@ export default function App() {
   // Žijí v localStorage, takže přežijí obnovení stránky i zavření prohlížeče.
   const [pendingResults, setPendingResults] = useState<PendingQuizResult[]>([]);
 
-  useEffect(() => {
-    let cancelled = false;
+  /**
+   * Stáhne historii testů přihlášeného uživatele.
+   *
+   * Vytaženo z efektu do vlastní funkce, aby šlo načtení zkusit znovu z pruhu
+   * s chybou. Dřív se chyba uložila do `quizHistoryError` a nikde se
+   * nezobrazila: student viděl 0 XP, prázdné Statistiky a žádné vysvětlení —
+   * přesně to, čemu se komentář níže snažil zabránit.
+   */
+  const loadQuizHistory = useCallback(async (userId: string) => {
+    setQuizHistoryLoading(true);
+    const { history, error } = await fetchQuizHistory(userId);
+    if (error) {
+      // Historii NEMAŽEME na prázdnou: vypadalo by to, že o ni uživatel přišel.
+      console.error('[App] Nepodařilo se načíst historii testů:', error);
+      setQuizHistoryError(error);
+    } else {
+      setQuizHistoryError(null);
+      setQuizHistory(history);
+    }
+    setQuizHistoryLoading(false);
+  }, []);
 
+  useEffect(() => {
     if (!user) {
       setQuizHistory([]);
       setQuizHistoryError(null);
       setQuizHistoryLoading(false);
       return;
     }
-
-    setQuizHistoryLoading(true);
-    fetchQuizHistory(user.id).then(({ history, error }) => {
-      if (cancelled) return;
-      if (error) {
-        // Historii NEMAŽEME na prázdnou: vypadalo by to, že o ni uživatel přišel.
-        // Necháme dosavadní stav a řekneme, že se ji nepodařilo načíst.
-        console.error('[App] Nepodařilo se načíst historii testů:', error);
-        setQuizHistoryError(error);
-      } else {
-        setQuizHistoryError(null);
-        setQuizHistory(history);
-      }
-      setQuizHistoryLoading(false);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
+    void loadQuizHistory(user.id);
+  }, [user, loadQuizHistory]);
 
   /** Odešle vše, co čeká ve frontě, a promítne výsledek do stavu. */
   const flushQueue = useCallback(async (userId: string) => {
@@ -311,10 +302,15 @@ export default function App() {
     return [...quizHistory, ...extra].sort((a, b) => a.timestamp - b.timestamp);
   }, [quizHistory, pendingResults]);
 
-  // Load matching history from localStorage
-  const [matchingHistory, setMatchingHistory] = useState<MatchingRecord[]>(() => {
-    return loadMatchingHistory();
-  });
+  // Historie pexesa a oblíbené otázky patří účtu, ne zařízení — viz
+  // utils/userScopedStorage. Přečtou se znovu, jakmile se změní vlastník
+  // (přihlášení / odhlášení) nebo kdykoli jiná část aplikace do postupu zapíše.
+  const progressRevision = useProgressRevision();
+
+  const [matchingHistory, setMatchingHistory] = useState<MatchingRecord[]>(loadMatchingHistory);
+  useEffect(() => {
+    setMatchingHistory(loadMatchingHistory());
+  }, [progressRevision]);
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -325,15 +321,25 @@ export default function App() {
     return false;
   });
 
-  // Daily streak check on mount
-  useEffect(() => {
-    updateDailyStreak();
-  }, []);
+  // POZOR: `updateDailyStreak()` se tu schválně NEVOLÁ.
+  //
+  // Dřív ji spouštěl efekt na připojení App, takže „denní série“ počítala, kolik
+  // dní po sobě někdo aplikaci otevřel — ne kolik dní se učil. Sérii teď posouvá
+  // jedině dokončená aktivita: odevzdaný test (handleSaveQuizResult), pexeso,
+  // splněný scénář, zbraňový dril a vygenerovaný úřední záznam.
 
-  // Save favorites to localStorage whenever it changes
+  // Oblíbené otázky. Ukládají se pod klíč účtu a při změně vlastníka se načtou
+  // znovu — jinak by si studenti na sdíleném počítači viděli do oblíbených.
+  const favoritesOwnerRef = useRef<string>(getStorageOwner());
   useEffect(() => {
-    localStorage.setItem('vscr_favorites', JSON.stringify(favorites));
-  }, [favorites]);
+    const owner = getStorageOwner();
+    if (owner !== favoritesOwnerRef.current) {
+      favoritesOwnerRef.current = owner;
+      setFavorites(readScoped<string[]>(FAVORITES_KEY, []));
+      return;
+    }
+    writeScoped(FAVORITES_KEY, favorites);
+  }, [favorites, progressRevision]);
 
   useEffect(() => {
     localStorage.setItem('vscr_theme', isDarkMode ? 'dark' : 'light');
@@ -347,21 +353,44 @@ export default function App() {
   const canGoBack = historyIndex > 0;
   const canGoForward = historyIndex < navHistory.length - 1;
 
-  const navigateToTab = useCallback((tab: NavTab, push = true) => {
-    if (tab === 'quiz' || tab === 'flashcards') {
+  // Ref na aktuální historii, aby ji odběr `popstate` nemusel mít
+  // v závislostech a nezakládal se znovu při každé navigaci.
+  const navHistoryRef = useRef(navHistory);
+  useEffect(() => {
+    navHistoryRef.current = navHistory;
+  }, [navHistory]);
+
+  /**
+   * Jediná cesta k přepnutí záložky.
+   *
+   * Dřív se vedle ní na dvaceti místech volal přímo `setActiveTab` — spodní
+   * lišta, celá mobilní nabídka i „Zobrazit odznaky“ v testu. Tab se přepnul,
+   * ale `navHistory` o tom nevěděla, takže šipky Zpět/Vpřed i swipe skákaly
+   * jinam, než uživatel čekal. Proto tu není žádné `setActiveTab` mimo tuhle
+   * funkci a obsluhu historie.
+   *
+   * `keepContext` si vyžádá ten, kdo právě nastavil předvolbu předmětu nebo
+   * vlastní sadu otázek (viz handleStartSubjectQuiz). Bez něj se předvolba
+   * maže: jinak „Zkouška“ ve spodní liště navždy startovala s předmětem
+   * z posledního kliknutí v Předmětech.
+   */
+  const navigateToTab = useCallback((tab: NavTab, options?: { keepContext?: boolean }) => {
+    if (!options?.keepContext && (tab === 'quiz' || tab === 'flashcards')) {
       setCustomQuestions(null);
+      setQuizPreset({});
+      setFlashcardPresetSubject(undefined);
     }
+
     setActiveTab(tab);
-    if (push) {
-      setNavHistory(prev => {
-        const next = prev.slice(0, historyIndex + 1);
-        if (next[next.length - 1] === tab) return next;
-        return [...next, tab];
-      });
-      setHistoryIndex(prev => prev + 1);
-      window.history.pushState({ tab }, '', `#${tab}`);
-    }
-  }, [historyIndex]);
+
+    // Na tutéž záložku se historie nerozrůstá. Dřív se index zvýšil i tak,
+    // takže „Vpřed“ zesvětlelo a ukazovalo na prázdné místo za koncem pole.
+    if (navHistory[historyIndex] === tab) return;
+
+    setNavHistory(prev => [...prev.slice(0, historyIndex + 1), tab]);
+    setHistoryIndex(historyIndex + 1);
+    window.history.pushState({ tab }, '', `#${tab}`);
+  }, [historyIndex, navHistory]);
 
   const handleGoBack = useCallback(() => {
     if (historyIndex > 0) {
@@ -399,14 +428,25 @@ export default function App() {
     }
   }, [activeTab]);
 
-  // Reakce na historii a změny hashe v prohlížeči
+  // Reakce na historii a změny hashe v prohlížeči.
+  //
+  // Kromě přepnutí záložky se dorovná i vlastní `historyIndex`. Bez toho se
+  // tlačítko Zpět v prohlížeči a šipky v hlavičce rozešly: prohlížeč se vrátil
+  // o krok, vnitřní ukazatel zůstal na místě a další stisk šipky skočil jinam.
   useEffect(() => {
     const handleHashChange = () => {
       const rawHash = window.location.hash.replace(/^#/, '');
       const tabFromHash = rawHash.split('/')[0] as NavTab;
-      if (VALID_TABS.includes(tabFromHash)) {
-        setActiveTab((prev) => (prev !== tabFromHash ? tabFromHash : prev));
-      }
+      if (!VALID_TABS.includes(tabFromHash)) return;
+
+      setActiveTab((prev) => (prev !== tabFromHash ? tabFromHash : prev));
+
+      setHistoryIndex((idx) => {
+        if (navHistoryRef.current[idx] === tabFromHash) return idx;
+        if (navHistoryRef.current[idx - 1] === tabFromHash) return idx - 1;
+        if (navHistoryRef.current[idx + 1] === tabFromHash) return idx + 1;
+        return idx;
+      });
     };
 
     window.addEventListener('hashchange', handleHashChange);
@@ -513,31 +553,31 @@ export default function App() {
   const handleStartSubjectQuiz = (subject: string) => {
     setCustomQuestions(null);
     setQuizPreset({ subject });
-    navigateToTab('quiz');
+    navigateToTab('quiz', { keepContext: true });
   };
 
   const handleStartSubjectFlashcards = (subject: string) => {
     setCustomQuestions(null);
     setFlashcardPresetSubject(subject);
-    navigateToTab('flashcards');
+    navigateToTab('flashcards', { keepContext: true });
   };
 
   const handleStartCustomQuiz = (questions: Question[]) => {
     setCustomQuestions(questions);
     setQuizPreset({});
-    navigateToTab('quiz');
+    navigateToTab('quiz', { keepContext: true });
   };
 
   const handleStartCustomFlashcards = (questions: Question[]) => {
     setCustomQuestions(questions);
     setFlashcardPresetSubject(undefined);
-    navigateToTab('flashcards');
+    navigateToTab('flashcards', { keepContext: true });
   };
 
   const handleClearHistory = () => {
     setQuizHistory([]);
     setMatchingHistory([]);
-    localStorage.removeItem('vscr_matching_history');
+    saveMatchingHistory([]);
     if (user) {
       // Frontu je nutné vyprázdnit také, jinak by se čekající výsledky po
       // odeslání vrátily do právě smazané historie.
@@ -556,8 +596,14 @@ export default function App() {
     <ErrorBoundary>
       <ProtectedRoute isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}>
         <div className={`flex flex-col min-h-[100dvh] h-[100dvh] w-full font-sans overflow-hidden transition-colors print:h-auto print:overflow-visible print:bg-white print:text-black ${isDarkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
+      {/* Přeskočit navigaci. Vidí ho jen ten, kdo dojde Tabem — styl je
+          v index.css (.skip-to-content). */}
+      <a href="#hlavni-obsah" className="skip-to-content no-print">
+        Přeskočit na obsah
+      </a>
+
       <div className="no-print">
-        <Header 
+        <Header
           activeTab={activeTab} 
           setActiveTab={handleTabChange} 
           isDarkMode={isDarkMode} 
@@ -569,7 +615,11 @@ export default function App() {
           onGoBack={handleGoBack}
           onGoForward={handleGoForward}
         />
-        <OfflineBanner pendingResultCount={pendingResults.length} />
+        <OfflineBanner
+          pendingResultCount={pendingResults.length}
+          historyError={quizHistoryError}
+          onRetryHistory={user ? () => void loadQuizHistory(user.id) : undefined}
+        />
         <RoleSyncBanner />
         <RolePreviewBanner />
       </div>
@@ -577,7 +627,12 @@ export default function App() {
       <UpdatePrompt />
       <FeedbackButton screenLabel={NAV_TAB_LABELS[activeTab] ?? activeTab} />
       
-      <main className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 sm:p-4 pb-28 sm:pb-32 md:pb-6 lg:pb-4 md:p-6 gap-4 md:gap-6 w-full print:p-0 print:m-0 print:overflow-visible print:h-auto">
+      <main
+        id="hlavni-obsah"
+        tabIndex={-1}
+        aria-label={`Obsah záložky ${NAV_TAB_LABELS[activeTab] ?? activeTab}`}
+        className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 sm:p-4 pb-28 sm:pb-32 md:pb-6 lg:pb-4 md:p-6 gap-4 md:gap-6 w-full print:p-0 print:m-0 print:overflow-visible print:h-auto"
+      >
         <Suspense fallback={<TabLoader isDark={isDarkMode} />}>
         {activeTab === 'dashboard' && (
           <div className="w-full h-full overflow-y-auto pr-1">
@@ -587,27 +642,36 @@ export default function App() {
 
         {activeTab === 'subjects' && (
           <div className="w-full h-full overflow-y-auto pr-1">
-            <SubjectsHub
-              questions={allQuestions || []}
-              favorites={favorites}
-              toggleFavorite={toggleFavorite}
-              onStartQuiz={handleStartSubjectQuiz}
-              onStartFlashcards={handleStartSubjectFlashcards}
-              onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
-            />
+            {questionsPending ? (
+              <TabLoader isDark={isDarkMode} />
+            ) : (
+              <SubjectsHub
+                questions={allQuestions}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                onStartQuiz={handleStartSubjectQuiz}
+                onStartFlashcards={handleStartSubjectFlashcards}
+                onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
+              />
+            )}
           </div>
         )}
 
         {activeTab === 'quiz' && (
-          <Quiz 
-            questions={(customQuestions || allQuestions || []).filter(q => isPrivileged || !isQuestionHidden(q))} 
-            favorites={favorites} 
-            toggleFavorite={toggleFavorite}
-            onSaveQuizResult={handleSaveQuizResult}
-            onNavigateToBadges={() => setActiveTab('badges')}
-            presetSubject={quizPreset.subject}
-            questionsSource={questionsSource}
-          />
+          // Vlastní sada z AI asistenta banku nepotřebuje, na tu se nečeká.
+          questionsPending && !customQuestions ? (
+            <TabLoader isDark={isDarkMode} />
+          ) : (
+            <Quiz
+              questions={(customQuestions || allQuestions).filter(q => isPrivileged || !isQuestionHidden(q))}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              onSaveQuizResult={handleSaveQuizResult}
+              onNavigateToBadges={() => navigateToTab('badges')}
+              presetSubject={quizPreset.subject}
+              questionsSource={questionsSource}
+            />
+          )
         )}
 
         {activeTab === 'assistant' && (
@@ -633,7 +697,7 @@ export default function App() {
 
         {activeTab === 'ethics' && (
           <div className="w-full h-full overflow-y-auto pr-1">
-            <ProfessionalEthics />
+            <ProfessionalEthics onStartSubjectQuiz={handleStartSubjectQuiz} />
           </div>
         )}
 
@@ -646,26 +710,30 @@ export default function App() {
         {activeTab === 'weapons' && (
           <div className="w-full h-full overflow-y-auto pr-1">
             <WeaponSimulator 
-              onNavigateToBadges={() => setActiveTab('badges')}
+              onNavigateToBadges={() => navigateToTab('badges')}
             />
           </div>
         )}
         
         {activeTab === 'flashcards' && (
-          <Flashcards 
-            questions={customQuestions || allQuestions || []} 
-            favorites={favorites} 
-            toggleFavorite={toggleFavorite}
-            presetSubject={flashcardPresetSubject}
-            onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
-          />
+          questionsPending && !customQuestions ? (
+            <TabLoader isDark={isDarkMode} />
+          ) : (
+            <Flashcards
+              questions={customQuestions || allQuestions}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              presetSubject={flashcardPresetSubject}
+              onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
+            />
+          )
         )}
         
         {activeTab === 'matching' && (
           <MatchingGame 
             categories={matchingCategories} 
             onGameComplete={handleMatchingGameComplete}
-            onNavigateToBadges={() => setActiveTab('badges')}
+            onNavigateToBadges={() => navigateToTab('badges')}
           />
         )}
 
@@ -674,8 +742,8 @@ export default function App() {
             <BadgesView 
               quizHistory={effectiveQuizHistory}
               matchingHistory={matchingHistory}
-              onStartQuiz={() => setActiveTab('quiz')}
-              onStartMatching={() => setActiveTab('matching')}
+              onStartQuiz={() => navigateToTab('quiz')}
+              onStartMatching={() => navigateToTab('matching')}
             />
           </div>
         )}
@@ -684,7 +752,7 @@ export default function App() {
           <Statistics
             questions={allQuestions}
             history={effectiveQuizHistory}
-            isLoading={quizHistoryLoading}
+            isLoading={quizHistoryLoading || questionsPending}
             onStartTopicQuiz={handleStartSubjectQuiz}
             onClearHistory={handleClearHistory}
             onStartQuiz={() => navigateToTab('quiz')}
@@ -722,11 +790,11 @@ export default function App() {
       </main>
 
       {/* Mobile Bottom Navigation (5 Ergonomic Core Pillars) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 flex items-center justify-around px-2 py-1 z-40 shadow-[0_-4px_24px_rgba(0,0,0,0.12)] no-print" style={{ paddingBottom: 'calc(0.4rem + env(safe-area-inset-bottom))' }}>
+      <nav aria-label="Spodní navigace" className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 flex items-center justify-around px-2 py-1 z-40 shadow-[0_-4px_24px_rgba(0,0,0,0.12)] no-print" style={{ paddingBottom: 'calc(0.4rem + env(safe-area-inset-bottom))' }}>
         
         {/* 1. Subjects */}
         <button
-          onClick={() => { setActiveTab('subjects'); setIsMobileMenuOpen(false); }}
+          onClick={() => { navigateToTab('subjects'); setIsMobileMenuOpen(false); }}
           className={`flex flex-1 flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all cursor-pointer ${
             activeTab === 'subjects' ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-400 dark:text-slate-500 hover:text-slate-700'
           }`}
@@ -737,7 +805,7 @@ export default function App() {
 
         {/* 2. Quiz & Exam */}
         <button
-          onClick={() => { setCustomQuestions(null); setActiveTab('quiz'); setIsMobileMenuOpen(false); }}
+          onClick={() => { navigateToTab('quiz'); setIsMobileMenuOpen(false); }}
           className={`flex flex-1 flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all cursor-pointer ${
             activeTab === 'quiz' ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-400 dark:text-slate-500 hover:text-slate-700'
           }`}
@@ -748,7 +816,7 @@ export default function App() {
 
         {/* 3. AI Assistant (Featured Center Button) */}
         <button
-          onClick={() => { setActiveTab('assistant'); setIsMobileMenuOpen(false); }}
+          onClick={() => { navigateToTab('assistant'); setIsMobileMenuOpen(false); }}
           className="flex flex-1 flex-col items-center justify-center py-0.5 px-1 -mt-3 cursor-pointer group"
         >
           <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-105 ${
@@ -766,7 +834,7 @@ export default function App() {
         {/* 4. Practice / Scenarios */}
         <button
           onClick={() => { 
-            setActiveTab('scenarios');
+            navigateToTab('scenarios');
             setIsMobileMenuOpen(false);
           }}
           className={`flex flex-1 flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all cursor-pointer ${
@@ -838,7 +906,7 @@ export default function App() {
 
               {/* Informační tabule tříd ZOP - Hlavní uvítací nástěnka */}
               <button
-                onClick={() => { setActiveTab('dashboard'); setIsMobileMenuOpen(false); }}
+                onClick={() => { navigateToTab('dashboard'); setIsMobileMenuOpen(false); }}
                 className={`w-full p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                   activeTab === 'dashboard'
                     ? 'bg-blue-600/15 border-blue-500 text-blue-900 dark:text-blue-200 font-bold shadow-sm'
@@ -869,7 +937,7 @@ export default function App() {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={() => { setActiveTab('scenarios'); setIsMobileMenuOpen(false); }}
+                    onClick={() => { navigateToTab('scenarios'); setIsMobileMenuOpen(false); }}
                     className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                       activeTab === 'scenarios' 
                         ? 'bg-amber-500/10 border-amber-500 text-amber-900 dark:text-amber-300 font-bold' 
@@ -877,12 +945,12 @@ export default function App() {
                     }`}
                   >
                     <ShieldAlert className="w-5 h-5 text-amber-500 mb-1.5" />
-                    <div className="text-xs font-bold leading-snug">Taktické scénáře</div>
+                    <div className="text-xs font-bold leading-snug">{NAV_TAB_LABELS['scenarios']}</div>
                     <div className="text-[10px] text-slate-500 leading-tight mt-0.5">{tacticalScenarios.length} modelových situací</div>
                   </button>
 
                   <button
-                    onClick={() => { setActiveTab('weapons'); setIsMobileMenuOpen(false); }}
+                    onClick={() => { navigateToTab('weapons'); setIsMobileMenuOpen(false); }}
                     className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                       activeTab === 'weapons' 
                         ? 'bg-amber-500/10 border-amber-500 text-amber-900 dark:text-amber-300 font-bold' 
@@ -890,12 +958,12 @@ export default function App() {
                     }`}
                   >
                     <Crosshair className="w-5 h-5 text-blue-500 mb-1.5" />
-                    <div className="text-xs font-bold leading-snug">Zbraně & Střelba</div>
+                    <div className="text-xs font-bold leading-snug">{NAV_TAB_LABELS['weapons']}</div>
                     <div className="text-[10px] text-slate-500 leading-tight mt-0.5">CZ 75 B & Scorpion</div>
                   </button>
 
                   <button
-                    onClick={() => { setActiveTab('admin'); setIsMobileMenuOpen(false); }}
+                    onClick={() => { navigateToTab('admin'); setIsMobileMenuOpen(false); }}
                     className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                       activeTab === 'admin' 
                         ? 'bg-amber-500/10 border-amber-500 text-amber-900 dark:text-amber-300 font-bold' 
@@ -903,12 +971,12 @@ export default function App() {
                     }`}
                   >
                     <FileText className="w-5 h-5 text-emerald-500 mb-1.5" />
-                    <div className="text-xs font-bold leading-snug">Administrativa & ETŘ</div>
+                    <div className="text-xs font-bold leading-snug">{NAV_TAB_LABELS['admin']}</div>
                     <div className="text-[10px] text-slate-500 leading-tight mt-0.5">Úřední záznamy & Č.j.</div>
                   </button>
 
                   <button
-                    onClick={() => { setActiveTab('ethics'); setIsMobileMenuOpen(false); }}
+                    onClick={() => { navigateToTab('ethics'); setIsMobileMenuOpen(false); }}
                     className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                       activeTab === 'ethics' 
                         ? 'bg-amber-500/10 border-amber-500 text-amber-900 dark:text-amber-300 font-bold' 
@@ -916,7 +984,7 @@ export default function App() {
                     }`}
                   >
                     <HeartHandshake className="w-5 h-5 text-rose-500 mb-1.5" />
-                    <div className="text-xs font-bold leading-snug">Profesní etika</div>
+                    <div className="text-xs font-bold leading-snug">{NAV_TAB_LABELS['ethics']}</div>
                     <div className="text-[10px] text-slate-500 leading-tight mt-0.5">Kodex & rizika</div>
                   </button>
                 </div>
@@ -930,7 +998,7 @@ export default function App() {
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <button
-                    onClick={() => { setActiveTab('compass'); setIsMobileMenuOpen(false); }}
+                    onClick={() => { navigateToTab('compass'); setIsMobileMenuOpen(false); }}
                     className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer ${
                       activeTab === 'compass' 
                         ? 'bg-blue-500/10 border-blue-500 text-blue-900 dark:text-blue-300 font-bold' 
@@ -938,12 +1006,12 @@ export default function App() {
                     }`}
                   >
                     <Scale className="w-4 h-4 text-blue-500 mb-1" />
-                    <div className="text-xs font-bold">Předpisy & §</div>
-                    <div className="text-[9px] text-slate-500 mt-0.5">Kompas zákonů</div>
+                    <div className="text-xs font-bold">{NAV_TAB_LABELS['compass']}</div>
+                    <div className="text-[9px] text-slate-500 mt-0.5">Zákony, vyhlášky, NGŘ</div>
                   </button>
 
                   <button
-                    onClick={() => { setCustomQuestions(null); setActiveTab('flashcards'); setIsMobileMenuOpen(false); }}
+                    onClick={() => { navigateToTab('flashcards'); setIsMobileMenuOpen(false); }}
                     className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer ${
                       activeTab === 'flashcards' 
                         ? 'bg-blue-500/10 border-blue-500 text-blue-900 dark:text-blue-300 font-bold' 
@@ -951,12 +1019,12 @@ export default function App() {
                     }`}
                   >
                     <Layers className="w-4 h-4 text-amber-500 mb-1" />
-                    <div className="text-xs font-bold">Kartičky</div>
+                    <div className="text-xs font-bold">{NAV_TAB_LABELS['flashcards']}</div>
                     <div className="text-[9px] text-slate-500 mt-0.5">3D Leitner dril</div>
                   </button>
 
                   <button
-                    onClick={() => { setActiveTab('matching'); setIsMobileMenuOpen(false); }}
+                    onClick={() => { navigateToTab('matching'); setIsMobileMenuOpen(false); }}
                     className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer ${
                       activeTab === 'matching' 
                         ? 'bg-blue-500/10 border-blue-500 text-blue-900 dark:text-blue-300 font-bold' 
@@ -964,7 +1032,7 @@ export default function App() {
                     }`}
                   >
                     <LayoutGrid className="w-4 h-4 text-emerald-500 mb-1" />
-                    <div className="text-xs font-bold">Poznávačka</div>
+                    <div className="text-xs font-bold">{NAV_TAB_LABELS['matching']}</div>
                     <div className="text-[9px] text-slate-500 mt-0.5">Pexeso pojmů</div>
                   </button>
                 </div>
@@ -978,7 +1046,7 @@ export default function App() {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={() => { setActiveTab('badges'); setIsMobileMenuOpen(false); }}
+                    onClick={() => { navigateToTab('badges'); setIsMobileMenuOpen(false); }}
                     className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                       activeTab === 'badges' 
                         ? 'bg-amber-500/10 border-amber-500 text-amber-900 dark:text-amber-300 font-bold' 
@@ -986,14 +1054,14 @@ export default function App() {
                     }`}
                   >
                     <div>
-                      <div className="text-xs font-bold">Odznaky & Úrovně</div>
+                      <div className="text-xs font-bold">{NAV_TAB_LABELS['badges']}</div>
                       <div className="text-[10px] text-slate-500">Hodnostní postup</div>
                     </div>
                     <Award className="w-5 h-5 text-amber-500" />
                   </button>
 
                   <button
-                    onClick={() => { setActiveTab('statistics'); setIsMobileMenuOpen(false); }}
+                    onClick={() => { navigateToTab('statistics'); setIsMobileMenuOpen(false); }}
                     className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                       activeTab === 'statistics' 
                         ? 'bg-blue-500/10 border-blue-500 text-blue-900 dark:text-blue-300 font-bold' 
@@ -1001,7 +1069,7 @@ export default function App() {
                     }`}
                   >
                     <div>
-                      <div className="text-xs font-bold">Statistiky</div>
+                      <div className="text-xs font-bold">{NAV_TAB_LABELS['statistics']}</div>
                       <div className="text-[10px] text-slate-500">Analýza zkoušky</div>
                     </div>
                     <BarChart3 className="w-5 h-5 text-blue-500" />
@@ -1017,7 +1085,7 @@ export default function App() {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={() => { setActiveTab('library'); setIsMobileMenuOpen(false); }}
+                    onClick={() => { navigateToTab('library'); setIsMobileMenuOpen(false); }}
                     className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                       activeTab === 'library'
                         ? 'bg-indigo-500/10 border-indigo-500 text-indigo-900 dark:text-indigo-300 font-bold'
@@ -1025,7 +1093,7 @@ export default function App() {
                     }`}
                   >
                     <div>
-                      <div className="text-xs font-bold">Knihovna</div>
+                      <div className="text-xs font-bold">{NAV_TAB_LABELS['library']}</div>
                       <div className="text-[10px] text-slate-500">PDF, DOCX, PPTX</div>
                     </div>
                     <BookOpen className="w-5 h-5 text-indigo-500" />
@@ -1033,7 +1101,7 @@ export default function App() {
 
                   {isPrivileged && (
                     <button
-                      onClick={() => { setActiveTab('content-manager'); setIsMobileMenuOpen(false); }}
+                      onClick={() => { navigateToTab('content-manager'); setIsMobileMenuOpen(false); }}
                       className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                         activeTab === 'content-manager'
                           ? 'bg-emerald-500/10 border-emerald-500 text-emerald-900 dark:text-emerald-300 font-bold'
@@ -1041,7 +1109,7 @@ export default function App() {
                       }`}
                     >
                       <div>
-                        <div className="text-xs font-bold">Správa obsahu</div>
+                        <div className="text-xs font-bold">{NAV_TAB_LABELS['content-manager']}</div>
                         <div className="text-[10px] text-slate-500">Nahrávání souborů</div>
                       </div>
                       <Settings2 className="w-5 h-5 text-emerald-500" />

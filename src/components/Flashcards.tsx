@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useId } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useId, useRef } from 'react';
 import { 
   Search, 
   Star, 
@@ -22,8 +22,47 @@ import { getSubjectInfo } from '../data/questions/subjectsInfo';
 import { useAuth } from '../context/AuthContext';
 import LeitnerHelpModal from './common/LeitnerHelpModal';
 import QuestionEditModal from './common/QuestionEditModal';
+import ConfirmDialog from './common/ConfirmDialog';
 import { isQuestionHidden, toggleQuestionVisibilityInSupabase } from '../utils/questionActions';
 import { activateOnKey } from '../utils/a11y';
+import { updateDailyStreak } from '../utils/gamification';
+import { useProgressRevision } from '../hooks/useProgressRevision';
+import {
+  getStorageOwner,
+  readScoped,
+  readScopedRaw,
+  writeScoped,
+  writeScopedRaw,
+} from '../utils/userScopedStorage';
+
+/** Klíče postupu v Leitnerově drilu (v úložišti se doplní id účtu). */
+const LEITNER_BOXES_KEY = 'vscr_leitner_boxes';
+const LEITNER_ACTIVE_KEY = 'vscr_leitner_active';
+const LEITNER_REVIEWS_KEY = 'vscr_leitner_reviews';
+
+/**
+ * Odstup opakování pro jednotlivé krabičky ve dnech.
+ *
+ * PROČ TO TU JE: nápověda „Leitnerův systém rozloženého opakování“ tyhle
+ * intervaly slibovala („Denní opakování“, „Každé 2 až 3 dny“, „1× týdně“ …),
+ * ale v kódu nebylo nic, co by je vynucovalo — žádné datum posledního
+ * opakování, žádná fronta „dnes k opakování“. Krabičky byly jen ruční
+ * roztřídění a rozvrh si měl student pamatovat sám. Tím se z rozloženého
+ * opakování stal obyčejný zásobník kartiček.
+ */
+const LEITNER_INTERVAL_DAYS: Record<number, number> = { 1: 1, 2: 3, 3: 7, 4: 14, 5: 30 };
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+/** Je kartička v daném boxu dnes ke zopakování? */
+function isDueForReview(box: number, lastReviewedISO: string | undefined): boolean {
+  // Nikdy neopakovaná kartička je splatná vždy.
+  if (!lastReviewedISO) return true;
+  const last = new Date(lastReviewedISO).getTime();
+  if (Number.isNaN(last)) return true;
+  const interval = LEITNER_INTERVAL_DAYS[box] ?? 1;
+  return Date.now() - last >= interval * MS_PER_DAY;
+}
 
 interface FlashcardsProps {
   questions: Question[];
@@ -57,38 +96,41 @@ export default function Flashcards({
   // Modals state
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+  const [confirmResetLeitner, setConfirmResetLeitner] = useState(false);
 
-  // Leitner Spaced Repetition Box state (stored in localStorage)
-  const [isLeitnerMode, setIsLeitnerMode] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('vscr_leitner_active') === 'true';
-    }
-    return false;
-  });
+  // Leitnerovy krabičky. Patří účtu, ne zařízení (utils/userScopedStorage).
+  const progressRevision = useProgressRevision();
 
-  const [leitnerBoxes, setLeitnerBoxes] = useState<Record<string, number>>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('vscr_leitner_boxes');
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    }
-    return {};
-  });
+  const [isLeitnerMode, setIsLeitnerMode] = useState<boolean>(
+    () => readScopedRaw(LEITNER_ACTIVE_KEY) === 'true'
+  );
 
-  const [selectedLeitnerBox, setSelectedLeitnerBox] = useState<number | 'all'>('all');
+  const [leitnerBoxes, setLeitnerBoxes] = useState<Record<string, number>>(
+    () => readScoped<Record<string, number>>(LEITNER_BOXES_KEY, {})
+  );
+
+  /** Datum posledního opakování kartičky — podklad pro plánovač. */
+  const [leitnerReviews, setLeitnerReviews] = useState<Record<string, string>>(
+    () => readScoped<Record<string, string>>(LEITNER_REVIEWS_KEY, {})
+  );
+
+  // Výchozí volba je „ke zopakování dnes“ — to je celý smysl metody.
+  const [selectedLeitnerBox, setSelectedLeitnerBox] = useState<number | 'all' | 'due'>('due');
+
+  // Po změně vlastníka klíče (přihlášení / odhlášení) se krabičky načtou znovu.
+  const leitnerOwnerRef = useRef<string>(getStorageOwner());
+  useEffect(() => {
+    const owner = getStorageOwner();
+    if (owner === leitnerOwnerRef.current) return;
+    leitnerOwnerRef.current = owner;
+    setLeitnerBoxes(readScoped<Record<string, number>>(LEITNER_BOXES_KEY, {}));
+    setLeitnerReviews(readScoped<Record<string, string>>(LEITNER_REVIEWS_KEY, {}));
+    setIsLeitnerMode(readScopedRaw(LEITNER_ACTIVE_KEY) === 'true');
+  }, [progressRevision]);
 
   useEffect(() => {
-    localStorage.setItem('vscr_leitner_active', String(isLeitnerMode));
+    writeScopedRaw(LEITNER_ACTIVE_KEY, String(isLeitnerMode));
   }, [isLeitnerMode]);
-
-  useEffect(() => {
-    localStorage.setItem('vscr_leitner_boxes', JSON.stringify(leitnerBoxes));
-  }, [leitnerBoxes]);
 
   useEffect(() => {
     if (presetSubject) {
@@ -108,42 +150,87 @@ export default function Flashcards({
     [accessibleQuestions]
   );
 
-  const filteredQuestions = useMemo(() => {
+  // Krabičky a oblíbené se do skládání balíčku berou přes ref, ne přes
+  // závislosti.
+  //
+  // PROČ: dřív balíček závisel na `leitnerBoxes`. Označení kartičky jako
+  // „vím“ krabičky změnilo, balíček se přepočítal a efekt níže poslal index
+  // zpátky na nulu — čímž okamžitě zrušil `handleNext()` z
+  // handleLeitnerProgress. Ve zvolené krabičce se tak dril zasekl na první
+  // kartě a totéž zahazovalo i výsledek tlačítka „Zamíchat“.
+  const leitnerBoxesRef = useRef(leitnerBoxes);
+  useEffect(() => {
+    leitnerBoxesRef.current = leitnerBoxes;
+  }, [leitnerBoxes]);
+
+  const leitnerReviewsRef = useRef(leitnerReviews);
+  useEffect(() => {
+    leitnerReviewsRef.current = leitnerReviews;
+  }, [leitnerReviews]);
+
+  const favoritesRef = useRef(favorites);
+  useEffect(() => {
+    favoritesRef.current = favorites;
+  }, [favorites]);
+
+  /** Složí balíček podle právě nastavených filtrů. */
+  const buildDeck = useCallback((): Question[] => {
     let filtered = accessibleQuestions;
+
     if (selectedSubject !== 'all') {
       const normSel = normalizeSubject(selectedSubject);
       filtered = filtered.filter(q => q?.subject && (q.subject === selectedSubject || normalizeSubject(q.subject) === normSel));
     }
     if (showOnlyFavorites) {
-      filtered = filtered.filter(q => q?.id && (favorites || []).includes(q.id));
+      const favs = favoritesRef.current || [];
+      filtered = filtered.filter(q => q?.id && favs.includes(q.id));
     }
-    if (isLeitnerMode && selectedLeitnerBox !== 'all') {
+    if (isLeitnerMode && selectedLeitnerBox === 'due') {
       filtered = filtered.filter(q => {
-        const box = q?.id ? (leitnerBoxes[q.id] || 1) : 1;
+        if (!q?.id) return false;
+        const box = leitnerBoxesRef.current[q.id] || 1;
+        return isDueForReview(box, leitnerReviewsRef.current[q.id]);
+      });
+    } else if (isLeitnerMode && selectedLeitnerBox !== 'all') {
+      filtered = filtered.filter(q => {
+        const box = q?.id ? (leitnerBoxesRef.current[q.id] || 1) : 1;
         return box === selectedLeitnerBox;
       });
     }
     if (searchQuery.trim()) {
       const lowerQuery = searchQuery.toLowerCase();
-      filtered = filtered.filter(q => 
-        (q?.question || '').toLowerCase().includes(lowerQuery) || 
+      filtered = filtered.filter(q =>
+        (q?.question || '').toLowerCase().includes(lowerQuery) ||
         (q?.answer || '').toLowerCase().includes(lowerQuery) ||
         (q?.topic || '').toLowerCase().includes(lowerQuery)
       );
     }
     return filtered;
-  }, [accessibleQuestions, selectedSubject, showOnlyFavorites, isLeitnerMode, selectedLeitnerBox, leitnerBoxes, searchQuery, favorites]);
+  }, [accessibleQuestions, selectedSubject, showOnlyFavorites, isLeitnerMode, selectedLeitnerBox, searchQuery]);
 
-  // Sync shuffled array with filtered questions
-  useEffect(() => {
-    setShuffledQuestions(filteredQuestions);
+  /** Poskládá balíček znovu a začne od začátku. */
+  const resetDeck = useCallback(() => {
+    setShuffledQuestions(buildDeck());
     setCurrentCardIndex(0);
     setIsFlipped(false);
-  }, [filteredQuestions]);
+  }, [buildDeck]);
+
+  // Nový balíček jen při změně filtru — ne po každém označení kartičky.
+  useEffect(() => {
+    resetDeck();
+  }, [resetDeck]);
 
   const handleShuffle = () => {
-    const shuffled = [...shuffledQuestions].sort(() => Math.random() - 0.5);
-    setShuffledQuestions(shuffled);
+    setShuffledQuestions(prev => {
+      const shuffled = [...prev];
+      // Fisher–Yates. `sort(() => Math.random() - 0.5)` nedává rovnoměrné
+      // promíchání a v týhle aplikaci se používal na pěti místech.
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    });
     setCurrentCardIndex(0);
     setIsFlipped(false);
   };
@@ -184,18 +271,42 @@ export default function Flashcards({
     // Správná odpověď: posun o 1 box výše (až do Boxu 5), chyba: reset zpět do Boxu 1
     const nextBox = known ? Math.min(5, currentBox + 1) : 1;
 
-    setLeitnerBoxes(prev => ({
-      ...prev,
-      [currentQuestion.id]: nextBox
-    }));
+    const nextBoxes = { ...leitnerBoxes, [currentQuestion.id]: nextBox };
+    setLeitnerBoxes(nextBoxes);
+    leitnerBoxesRef.current = nextBoxes;
+    writeScoped(LEITNER_BOXES_KEY, nextBoxes);
 
-    handleNext();
+    // Datum opakování je to, co dělá z krabiček rozložené opakování: podle něj
+    // se kartička zase objeví ve frontě „ke zopakování dnes“.
+    const nextReviews = { ...leitnerReviews, [currentQuestion.id]: new Date().toISOString() };
+    setLeitnerReviews(nextReviews);
+    leitnerReviewsRef.current = nextReviews;
+    writeScoped(LEITNER_REVIEWS_KEY, nextReviews);
+
+    updateDailyStreak();
+
+    // Poslední kartička kola: balíček se poskládá znovu, takže se ve zvolené
+    // krabičce ukáže její nový obsah. Jinak se jen postoupí dál.
+    if (currentCardIndex >= shuffledQuestions.length - 1) {
+      resetDeck();
+    } else {
+      handleNext();
+    }
   };
 
   const handleResetLeitner = () => {
-    if (window.confirm('Opravdu chcete resetovat všechny kartičky zpět do Boxu 1?')) {
-      setLeitnerBoxes({});
-    }
+    setConfirmResetLeitner(true);
+  };
+
+  const doResetLeitner = () => {
+    setLeitnerBoxes({});
+    leitnerBoxesRef.current = {};
+    writeScoped(LEITNER_BOXES_KEY, {});
+    setLeitnerReviews({});
+    leitnerReviewsRef.current = {};
+    writeScoped(LEITNER_REVIEWS_KEY, {});
+    setConfirmResetLeitner(false);
+    resetDeck();
   };
 
   // Visibility toggle for lektor/admin
@@ -217,12 +328,23 @@ export default function Flashcards({
     onUpdateQuestion?.(updated);
   }, [onUpdateQuestion]);
 
-  // Keyboard navigation
+  // Klávesové zkratky.
+  //
+  // Mezerník se schválně NEODCHYTÁVÁ, když je fokus na ovládacím prvku.
+  // Dřív posluchač na `window` volal na mezerník preventDefault() vždy, když
+  // fokus nebyl v input/textarea/select — tím pádem zafokusované tlačítko
+  // („Vím“, „Nevím“, „Zamíchat“) nešlo mezerníkem zmáčknout, protože
+  // preventDefault na keydown zruší i vyvolání kliknutí. Uživatel klávesnice
+  // tak o celý dril přišel a jen se mu převracela kartička.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement).tagName.toLowerCase();
-      if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
-      if (editingQuestion || isHelpModalOpen) return;
+      if (editingQuestion || isHelpModalOpen || confirmResetLeitner) return;
+
+      const target = e.target as HTMLElement | null;
+      // Prvky, které si klávesy obsluhují samy.
+      if (target?.closest('input, textarea, select, button, a[href], [role="button"], [contenteditable="true"]')) {
+        return;
+      }
 
       if (e.code === 'Space') { e.preventDefault(); setIsFlipped(prev => !prev); }
       else if (e.code === 'ArrowRight') { if (currentCardIndex < shuffledQuestions.length - 1) { setCurrentCardIndex(prev => prev + 1); setIsFlipped(false); } }
@@ -231,25 +353,50 @@ export default function Flashcards({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentCardIndex, shuffledQuestions, toggleFavorite, editingQuestion, isHelpModalOpen]);
+  }, [currentCardIndex, shuffledQuestions, toggleFavorite, editingQuestion, isHelpModalOpen, confirmResetLeitner]);
 
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const currentQuestion = shuffledQuestions[currentCardIndex];
   const isCurrentHidden = currentQuestion ? isQuestionHidden(currentQuestion) : false;
 
-  // Box counts for Leitner (Box 1 až 5)
-  const box1Count = accessibleQuestions.filter(q => q?.id && (leitnerBoxes[q.id] || 1) === 1).length;
-  const box2Count = accessibleQuestions.filter(q => q?.id && (leitnerBoxes[q.id] || 1) === 2).length;
-  const box3Count = accessibleQuestions.filter(q => q?.id && (leitnerBoxes[q.id] || 1) === 3).length;
-  const box4Count = accessibleQuestions.filter(q => q?.id && (leitnerBoxes[q.id] || 1) === 4).length;
-  const box5Count = accessibleQuestions.filter(q => q?.id && (leitnerBoxes[q.id] || 1) === 5).length;
+  // Obsazenost krabiček a počet kartiček splatných k dnešnímu opakování.
+  // Jedním průchodem, ne šesti — dřív se pole procházelo pro každou krabičku
+  // zvlášť a bez memoizace při každém renderu.
+  const { boxCounts, dueCount } = useMemo(() => {
+    const counts = [0, 0, 0, 0, 0, 0];
+    let due = 0;
+    for (const q of accessibleQuestions) {
+      if (!q?.id) continue;
+      const box = leitnerBoxes[q.id] || 1;
+      if (box >= 1 && box <= 5) counts[box] += 1;
+      if (isDueForReview(box, leitnerReviews[q.id])) due += 1;
+    }
+    return { boxCounts: counts, dueCount: due };
+  }, [accessibleQuestions, leitnerBoxes, leitnerReviews]);
+
+  const [, box1Count, box2Count, box3Count, box4Count, box5Count] = boxCounts;
 
   return (
     <>
       {/* Leitner Explanation Modal */}
-      <LeitnerHelpModal 
-        isOpen={isHelpModalOpen} 
-        onClose={() => setIsHelpModalOpen(false)} 
+      <LeitnerHelpModal
+        isOpen={isHelpModalOpen}
+        onClose={() => setIsHelpModalOpen(false)}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmResetLeitner}
+        tone="danger"
+        title="Vrátit všechny kartičky do Boxu 1?"
+        description={
+          <>
+            Zahodí se tím <strong>celý váš postup v Leitnerových krabičkách</strong> — všechny
+            kartičky se vrátí na začátek, jako byste s drilem ještě nezačal. Vrátit to zpět nelze.
+          </>
+        }
+        confirmLabel="Vrátit do Boxu 1"
+        onConfirm={doResetLeitner}
+        onCancel={() => setConfirmResetLeitner(false)}
       />
 
       {/* In-place Question Edit Modal for Lektor/Admin */}
@@ -322,12 +469,43 @@ export default function Flashcards({
                     </button>
                   </div>
 
+                  {/* Fronta „ke zopakování dnes“ — jádro rozloženého opakování.
+                      Box 1 každý den, B2 po 3 dnech, B3 po týdnu, B4 po 14 dnech,
+                      B5 po měsíci (LEITNER_INTERVAL_DAYS). */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedLeitnerBox('due')}
+                    title="Kartičky, u kterých už uplynul odstup opakování pro jejich krabičku"
+                    className={`w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg border text-[11px] font-bold transition-all cursor-pointer ${
+                      selectedLeitnerBox === 'due'
+                        ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs'
+                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
+                    }`}
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <BrainCircuit className="w-3.5 h-3.5" />
+                      Ke zopakování dnes
+                    </span>
+                    <span
+                      className={`px-1.5 rounded-full ${
+                        selectedLeitnerBox === 'due'
+                          ? 'bg-white/20'
+                          : dueCount > 0
+                          ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300'
+                          : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
+                      }`}
+                    >
+                      {dueCount}
+                    </span>
+                  </button>
+
                   {/* 5-Box Grid (Box 1 až 5) */}
                   <div className="grid grid-cols-5 gap-1 text-[10px] font-bold">
                     <button
+                      type="button"
                       onClick={() => setSelectedLeitnerBox(1)}
                       title="Box 1: Denní opakování"
-                      className={`p-1 rounded-md border text-center transition-all ${
+                      className={`p-1 rounded-md border text-center transition-all cursor-pointer ${
                         selectedLeitnerBox === 1
                           ? 'bg-rose-500 text-white border-rose-600 shadow-xs'
                           : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-rose-300'
@@ -337,9 +515,10 @@ export default function Flashcards({
                       <span className="block text-[9px] opacity-80">{box1Count}</span>
                     </button>
                     <button
+                      type="button"
                       onClick={() => setSelectedLeitnerBox(2)}
                       title="Box 2: Každé 2-3 dny"
-                      className={`p-1 rounded-md border text-center transition-all ${
+                      className={`p-1 rounded-md border text-center transition-all cursor-pointer ${
                         selectedLeitnerBox === 2
                           ? 'bg-orange-500 text-white border-orange-600 shadow-xs'
                           : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-orange-300'
@@ -349,9 +528,10 @@ export default function Flashcards({
                       <span className="block text-[9px] opacity-80">{box2Count}</span>
                     </button>
                     <button
+                      type="button"
                       onClick={() => setSelectedLeitnerBox(3)}
                       title="Box 3: 1× týdně"
-                      className={`p-1 rounded-md border text-center transition-all ${
+                      className={`p-1 rounded-md border text-center transition-all cursor-pointer ${
                         selectedLeitnerBox === 3
                           ? 'bg-amber-500 text-white border-amber-600 shadow-xs'
                           : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-amber-300'
@@ -361,9 +541,10 @@ export default function Flashcards({
                       <span className="block text-[9px] opacity-80">{box3Count}</span>
                     </button>
                     <button
+                      type="button"
                       onClick={() => setSelectedLeitnerBox(4)}
                       title="Box 4: 1× za 14 dní"
-                      className={`p-1 rounded-md border text-center transition-all ${
+                      className={`p-1 rounded-md border text-center transition-all cursor-pointer ${
                         selectedLeitnerBox === 4
                           ? 'bg-blue-500 text-white border-blue-600 shadow-xs'
                           : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-300'
@@ -373,9 +554,10 @@ export default function Flashcards({
                       <span className="block text-[9px] opacity-80">{box4Count}</span>
                     </button>
                     <button
+                      type="button"
                       onClick={() => setSelectedLeitnerBox(5)}
                       title="Box 5: Trvalá paměť (1× za měsíc)"
-                      className={`p-1 rounded-md border text-center transition-all ${
+                      className={`p-1 rounded-md border text-center transition-all cursor-pointer ${
                         selectedLeitnerBox === 5
                           ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs'
                           : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-emerald-300'
@@ -388,12 +570,17 @@ export default function Flashcards({
 
                   <div className="flex justify-between items-center pt-1 text-[10px] text-indigo-700 dark:text-indigo-400">
                     <button
+                      type="button"
                       onClick={() => setSelectedLeitnerBox('all')}
-                      className={`underline ${selectedLeitnerBox === 'all' ? 'font-bold text-indigo-900 dark:text-white' : ''}`}
+                      className={`underline cursor-pointer ${selectedLeitnerBox === 'all' ? 'font-bold text-indigo-900 dark:text-white' : ''}`}
                     >
                       Všechny boxy
                     </button>
-                    <button onClick={handleResetLeitner} className="text-slate-400 hover:text-rose-500">
+                    <button
+                      type="button"
+                      onClick={handleResetLeitner}
+                      className="text-slate-400 hover:text-rose-500 cursor-pointer"
+                    >
                       Reset
                     </button>
                   </div>

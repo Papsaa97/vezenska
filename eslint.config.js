@@ -7,21 +7,64 @@
  * jí neprojdou jako chyba. Tahle třída vad se proto hledala ručně. Od teď na
  * ni upozorní CI při každém pull requestu.
  *
- * Záměrně JEN jsx-a11y. typescript-eslint je tu pouze jako parser, aby ESLint
- * rozuměl .tsx — jeho vlastní sada pravidel zapnutá není. Cílem není zavést
- * do hotového projektu kompletní styl kódu (to by znamenalo stovky
- * nesouvisejících změn v souborech, kterých se nikdo nedotkl), ale pohlídat
- * právě to, co se ručně hledá nejhůř.
+ * Z typescript-eslint je zapnutá jedna jediná věc nad parserem:
+ * `no-unused-vars`. Cílem není zavést do hotového projektu kompletní styl
+ * kódu (to by znamenalo stovky nesouvisejících změn v souborech, kterých se
+ * nikdo nedotkl), ale pohlídat to, co se ručně hledá nejhůř — a mrtvý kód do
+ * toho patří: nepoužitý import, stav, který se jen nastavuje, nebo proměnná
+ * zbylá po refaktoru neprojdou `tsc --noEmit` (`noUnusedLocals` v tsconfig
+ * projektu vypnuté je) a pak se čtou jako platná součást kódu.
+ *
+ * ROZSAH: `src/**` včetně `.ts`, k tomu `api/**` a `scripts/**`. Původně tu
+ * byl jen `src/**\/*.tsx`, takže celá vrstva `src/utils`, `src/hooks`
+ * a `src/data` — ani serverová část a údržbové skripty — se nelintovala vůbec.
  */
 import globals from 'globals';
 import tsParser from '@typescript-eslint/parser';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactHooks from 'eslint-plugin-react-hooks';
+
+/**
+ * Nepoužité proměnné se hlásí jako chyba, s jednou výjimkou: podtržítko.
+ *
+ * `catch (_error)` nebo `({ a, ..._zbytek })` je záměrné „vím o tom, nechci
+ * to“ — jinak by se muselo psát `eslint-disable`, a ten se v tomhle projektu
+ * používat nemá.
+ */
+const NEPOUZITE_PROMENNE = [
+  'error',
+  {
+    args: 'after-used',
+    argsIgnorePattern: '^_',
+    varsIgnorePattern: '^_',
+    caughtErrors: 'all',
+    caughtErrorsIgnorePattern: '^_',
+    destructuredArrayIgnorePattern: '^_',
+    ignoreRestSiblings: true,
+  },
+];
 
 export default [
   {
     // Sestavené a stažené soubory se nelintují.
     ignores: ['dist/**', 'node_modules/**', 'public/**', '.vercel/**'],
+  },
+  {
+    // Mrtvý kód se hledá v celém `src`, přístupnost jen tam, kde je JSX.
+    files: ['src/**/*.{ts,tsx}', 'api/**/*.ts', 'scripts/**/*.ts'],
+    languageOptions: {
+      parser: tsParser,
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: globals.browser,
+      parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+    plugins: { '@typescript-eslint': tsPlugin },
+    rules: {
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': NEPOUZITE_PROMENNE,
+    },
   },
   {
     files: ['src/**/*.tsx'],

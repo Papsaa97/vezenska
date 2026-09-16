@@ -12,20 +12,36 @@ import {
 } from 'lucide-react';
 import { profesniEtikaQuestions } from '../data/questions/profesniEtika';
 import PrintHeader from './common/PrintHeader';
-import PEConcepts from './professional-ethics/PEConcepts';
+import PEConcepts, { conceptsList } from './professional-ethics/PEConcepts';
 import PECodeOfEthics from './professional-ethics/PECodeOfEthics';
 import PEAnticorruption from './professional-ethics/PEAnticorruption';
 import PEConventions from './professional-ethics/PEConventions';
 import PESimulator from './professional-ethics/PESimulator';
 import PETest from './professional-ethics/PETest';
 
-export const ProfessionalEthics: React.FC = () => {
+interface ProfessionalEthicsProps {
+  /** Spustí cvičný test předmětu Profesní etika v modulu Test & Zkouška. */
+  onStartSubjectQuiz?: (subject: string) => void;
+}
+
+/** Přesný název předmětu v bance otázek — musí souhlasit s polem `subject`. */
+const ETHICS_SUBJECT = 'Profesní etika';
+
+export const ProfessionalEthics: React.FC<ProfessionalEthicsProps> = ({ onStartSubjectQuiz }) => {
   const [activeSubTab, setActiveSubTab] = useState<'concepts' | 'code' | 'anticorruption' | 'conventions' | 'simulator' | 'test'>('concepts');
 
-  /** Quick-start a test from the header button (navigates to test tab and triggers start inside PETest via prop) */
+  /**
+   * Tlačítko v záhlaví skutečně spustí test.
+   *
+   * Dřív jen přepnulo podzáložku a komentář u něj přiznával, že test
+   * nespouští — přitom slibovalo „Spustit e-Test (20 ot.)“.
+   */
   const handleStartQuickTest = () => {
+    if (onStartSubjectQuiz) {
+      onStartSubjectQuiz(ETHICS_SUBJECT);
+      return;
+    }
     setActiveSubTab('test');
-    // PETest manages its own state; switching to the tab is sufficient — it starts on mount via user action
   };
 
   return (
@@ -36,7 +52,7 @@ export const ProfessionalEthics: React.FC = () => {
           subject="Profesní etika & Deontologie"
           docTitle={
             activeSubTab === 'concepts'
-              ? 'Přehled 36 klíčových pojmů pro zkoušku ZOP A'
+              ? `Přehled ${conceptsList.length} klíčových pojmů pro zkoušku ZOP A`
               : activeSubTab === 'code'
               ? 'Etický kodex VS ČR (Příloha č. 6 k NGŘ č. 28/2018 Sb.)'
               : activeSubTab === 'anticorruption'
@@ -87,7 +103,7 @@ export const ProfessionalEthics: React.FC = () => {
               className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-emerald-500/20 cursor-pointer no-print"
             >
               <Award className="w-4 h-4" />
-              <span>Spustit e-Test (20 ot.)</span>
+              <span>Spustit test ({profesniEtikaQuestions.length} otázek v bance)</span>
             </button>
           </div>
         </div>
@@ -95,12 +111,12 @@ export const ProfessionalEthics: React.FC = () => {
         {/* Sub-navigation tabs */}
         <div className="flex items-center gap-2 mt-6 overflow-x-auto pb-1 border-t border-slate-800 pt-4 scrollbar-none no-print print:hidden">
           {([
-            { id: 'concepts', label: '36 Klíčových pojmů', Icon: BookOpen },
+            { id: 'concepts', label: `${conceptsList.length} klíčových pojmů`, Icon: BookOpen },
             { id: 'code', label: 'Etický kodex VS ČR', Icon: FileText },
             { id: 'anticorruption', label: 'Protikorupční program & Rizika', Icon: Calculator },
             { id: 'conventions', label: 'EVP & Lidská práva', Icon: Globe2 },
             { id: 'simulator', label: 'Trenažér etických dilemat', Icon: Sparkles },
-            { id: 'test', label: 'Zkušební test & 50 otázek', Icon: HelpCircle },
+            { id: 'test', label: `Zkušební test (${profesniEtikaQuestions.length} otázek)`, Icon: HelpCircle },
           ] as const).map(({ id, label, Icon }) => (
             <button
               key={id}
@@ -123,7 +139,9 @@ export const ProfessionalEthics: React.FC = () => {
       {activeSubTab === 'anticorruption' && <PEAnticorruption />}
       {activeSubTab === 'conventions' && <PEConventions />}
       {activeSubTab === 'simulator' && <PESimulator />}
-      {activeSubTab === 'test' && <PETest />}
+      {activeSubTab === 'test' && (
+        <PETest onStartSubjectQuiz={onStartSubjectQuiz ? () => onStartSubjectQuiz(ETHICS_SUBJECT) : undefined} />
+      )}
     </div>
   );
 };

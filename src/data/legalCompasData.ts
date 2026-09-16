@@ -70,21 +70,35 @@ Příslušník je povinen plnit služební povinnosti a úkoly vyplývající pr
     actNumber: 'Zákon č. 555/1992 Sb.',
     actTitle: 'Zákon o Vězeňské službě a justiční stráži České republiky',
     section: '§ 6 – § 14',
-    title: 'Povinnosti a oprávnění příslušníka (zjišťování totožnosti, zajištění, odebrání zbraně)',
+    title: 'Povinnosti a oprávnění příslušníka (zákrok, prohlídka, odnětí věcí, střežení objektů)',
     exactText: `§ 6 Povinnosti příslušníka:
 (1) Příslušník je při provádění služebního zákroku nebo úkonu povinen prokázat svou příslušnost k Vězeňské službě služebním stejnokrojem s identifikačním číslem, služebním průkazem nebo odznakem VS ČR.
 (2) Před provedením služebního zákroku je příslušník povinen, pokud to okolnosti dovolují, použít zákonnou výzvu „Jménem zákona!“.
 
-§ 7 Zjišťování totožnosti:
-Příslušník je oprávněn vyzvat k prokázání totožnosti osobu, která vstupuje do střeženého objektu, zdržuje se v zakázaném pásmu, je podezřelá ze spáchání trestného činu nebo přestupku, anebo osobu, proti které směřuje služební zákrok.
+§ 7 Povinnost zakročit:
+(1) Příslušník ve službě je povinen zakročit, páchá-li vězněná osoba trestný čin nebo kázeňský přestupek (popřípadě je-li z jejich páchání důvodné podezření), maří-li účel výkonu vazby, detence nebo trestu, anebo je-li narušován pořádek či ohrožována bezpečnost v prostorách Vězeňské služby, soudu, státního zastupitelství nebo ministerstva a při eskortách.
+(2) Zákrok příslušník provést nemusí, je-li pod vlivem léků či jiných látek závažně snižujících schopnost jednání, není-li k zákroku vyškolen, ač to jeho povaha vyžaduje, anebo brání-li tomu důležitý zájem služby; pak musí bez odkladu vyrozumět nadřízeného.
 
-§ 11 Zajištění osoby:
-Příslušník je oprávněn zajistit osobu, která ve střeženém objektu bezprostředně ohrožuje život, zdraví nebo majetek, ruší pořádek, pokusila se vnést nepovolené věci, nebo odmítá prokázat totožnost. Zajištění smí trvat nejdéle 24 hodin, pak musí být osoba propuštěna nebo předána Policii ČR.
+§ 10 Požadování vysvětlení:
+Příslušník je oprávněn požadovat vysvětlení od všech osob, které mohou přispět k objasnění skutečností důležitých pro odhalení trestného činu nebo kázeňského přestupku spáchaného během výkonu vazby, trestu nebo detence, anebo pro vypátrání prchající osoby.
 
-§ 13 Odebrání zbraně a věcí:
-Příslušník je oprávněn přesvědčit se, zda vstupující nebo předváděná osoba nemá u sebe zbraň nebo jinou nepovolenou věc, a takovou věc odebrat a vystavit o tom potvrzení.`,
-    explanation: 'Ustanovení upravují každodenní výkon strážní a dozorčí služby: prokazování příslušnosti, oprávnění kontrolovat totožnost na vchodech, odebrání nedovolených předmětů a limit zajištění osoby (max. 24 hodin).',
-    examTips: 'Zkušební chytáky: 1. Jak dlouho smí trvat zajištění osoby příslušníkem VS ČR? Max. 24 hodin. 2. Jak zní zákonná výzva? „Jménem zákona!“. 3. O odebrání věci se vždy vystavuje písemné potvrzení.',
+§ 11 Osobní prohlídka a jiné podobné úkony:
+(1) Příslušník je oprávněn provést u vězněné osoby osobní prohlídku a prohlídku jejích věcí, prohlídku těla, snímání daktyloskopických otisků a pořizování obrazových záznamů, popřípadě nařídit lékařskou prohlídku.
+(2) Lékařskou prohlídku provádí pouze lékař. Osobní prohlídku a prohlídku těla provádí osoba STEJNÉHO POHLAVÍ nebo lékař. Odběr krve provádí pouze lékař nebo odborně způsobilý zdravotnický pracovník.
+
+§ 12 Odnětí věcí:
+(1) Příslušník je oprávněn odejmout vězněné osobě věc, kterou má neoprávněně u sebe, anebo věc, která by mohla být prohlášena za propadlou nebo zabranou.
+(2) Nebyla-li věc prohlášena za propadlou nebo zabranou a není-li jí třeba pro další řízení, vrátí se osobě, které byla odňata, pokud tomu nebrání účel vazby, detence nebo trestu.
+
+§ 13 Střežení objektů, zjišťování totožnosti a odebrání zbraně:
+(1) Při střežení objektů je příslušník oprávněn zjišťovat totožnost osob, které do objektu vstupují nebo se v něm nacházejí, prohlížet jejich zavazadla a věci a prohlížet dopravní prostředky při vjezdu i výjezdu. Při důvodném podezření, že osoba má u sebe zbraň nebo jinou věc, kterou by mohla narušit výkon vazby, detence či trestu nebo bezpečnost v budovách soudů, státních zastupitelství nebo ministerstva, může provést osobní prohlídku a takovou věc odebrat.
+
+§ 14 Požádání o pomoc:
+Příslušník je při plnění služebních úkolů oprávněn v případě bezprostředního nebezpečí ohrožení života, zdraví nebo majetku požádat každého o pomoc. Kdo byl požádán, je povinen ji poskytnout, pokud tím nevystaví vážnému ohrožení sebe nebo osobu blízkou anebo pokud tomu nebrání jiné závažné okolnosti.
+
+POZOR na častý chyták: zákon č. 555/1992 Sb. NEZNÁ institut „zajištění osoby“ ani 24hodinovou lhůtu — to je oprávnění Policie ČR podle § 26 zákona č. 273/2008 Sb. Příslušník VS ČR osobu předává Policii ČR.`,
+    explanation: 'Ustanovení upravují každodenní výkon strážní a dozorčí služby: povinnost jednat s vězněnými osobami důstojně a přiměřeně, prokázat příslušnost a použít domluvu, výzvu či varování se slovy „jménem zákona“ (§ 6 odst. 3), povinnost zakročit a její výjimky (§ 7), požadování vysvětlení (§ 10), osobní prohlídku a prohlídku těla osobou stejného pohlaví (§ 11), odnětí neoprávněně držených věcí (§ 12), kontrolu totožnosti a zavazadel při střežení objektů (§ 13) a oprávnění požádat kohokoli o pomoc (§ 14).',
+    examTips: 'Zkušební chytáky: 1. Jak zní zákonná výzva? „Jménem zákona!“ (§ 6 odst. 3). 2. Kdo provádí osobní prohlídku a prohlídku těla? Osoba STEJNÉHO POHLAVÍ nebo lékař; odběr krve jen lékař či zdravotnický pracovník (§ 11 odst. 2). 3. Pozor: „zajištění osoby“ na 24 hodin zákon o Vězeňské službě NEZNÁ — je to oprávnění Policie ČR. 4. Kdy příslušník zakročit nemusí? Pod vlivem léků, bez potřebného vyškolení, nebo brání-li důležitý zájem služby — pak musí vyrozumět nadřízeného.',
     category: '555_1992'
   },
   {
@@ -93,7 +107,7 @@ Příslušník je oprávněn přesvědčit se, zda vstupující nebo předvádě
     actTitle: 'Zákon o Vězeňské službě a justiční stráži České republiky',
     section: '§ 17',
     title: 'Donucovací prostředky (Podmínky a taxativní výčet)',
-    exactText: `(1) K zajištění pořádku a bezpečnosti v místech výkonu zabezpečovací detence, vazby nebo trestu odnětí svobody, v místech střežených Vězeňskou službou nebo Justiční stráží nebo při eskortách je příslušník oprávněn použít donucovací prostředky proti osobám, které ohrožují život nebo zdraví, poškozují majetek nebo maří účel výkonu zabezpečovací detence, vazby nebo trestu odnětí svobody anebo neoprávněně narušují střežení nebo výkon služby.
+    exactText: `(1) Pokud je to nezbytné k zajištění pořádku a bezpečnosti, je příslušník při plnění svých úkolů oprávněn použít donucovací prostředky proti osobám, které ohrožují život nebo zdraví, ÚMYSLNĚ poškozují majetek nebo NÁSILÍM se snaží mařit účel výkonu zabezpečovací detence, vazby nebo trestu odnětí svobody, anebo narušují pořádek nebo bezpečnost v prostorách Vězeňské služby, ve věznici pro místní výkon trestu, v budovách soudů, jakož i jiných místech činnosti soudů, budovách státních zastupitelství nebo ministerstva, v zařízeních mimovězeňských poskytovatelů zdravotních služeb a v blízkosti střežených objektů.
 
 (2) Donucovacími prostředky jsou:
 a) hmaty, chvaty, údery a kopy sebeobrany,
@@ -114,13 +128,16 @@ n) vytlačování štítem,
 o) vytlačování vozidlem,
 p) prostředek k zamezení prostorové orientace.
 
-(3) Příslušník je oprávněn použít donucovací prostředek, který zvolí podle konkrétní situace tak, aby dosáhl účelu sledovaného služebním zákrokem a použitý donucovací prostředek a jeho intenzita byly přiměřené nebezpečnosti protiprávního jednání. Před použitím donucovacího prostředku je příslušník povinen vyzvat osobu, proti které zákrok směřuje, aby upustila od protiprávního jednání, s výstrahou, že bude použito donucovacích prostředků. Od výzvy s výstrahou lze upustit pouze v případě, je-li bezprostředně ohrožen život nebo zdraví příslušníka anebo jiné osoby a zákrok nesnese odkladu.
+(3) Příslušník rozhoduje, který z donucovacích prostředků použije podle konkrétní situace tak, aby dosáhl účelu sledovaného služebním zákrokem. Přitom je povinen dbát, aby použití donucovacího prostředku bylo přiměřené účelu zákroku a aby jím nebyla způsobena újma zřejmě nepřiměřená povaze a nebezpečnosti protiprávního jednání.
 
-(4) Při předvádění nebo eskortování osoby ve výkonu zabezpečovací detence, vazby nebo trestu odnětí svobody mimo objekt věznice nebo ústavu lze použít předváděcí řetízky, pouta a pouta s poutacím opaskem i bez splnění podmínek uvedených v odstavci 1, pokud je to ke splnění účelu úkonu nezbytné.
+(4) Při předvádění osoby ve výkonu zabezpečovací detence, vazby nebo trestu odnětí svobody mimo objekt ústavu lze použít donucovací prostředky pod písmeny b), c) a e) — předváděcí řetízky, pouta a pouta s poutacím opaskem — i bez splnění podmínek uvedených v odstavci 1, pokud je to ke splnění účelu úkonu nezbytné.
 
-(5) K omezení volnosti pohybu osoby ve výkonu zabezpečovací detence, vazby nebo trestu odnětí svobody, která fyzicky napadá jinou osobu nebo příslušníka, poškozuje majetek, pokusila se o útěk nebo se chová agresivně, lze použít připoutání k vhodnému předmětu, a to nejdéle po dobu 2 hodin od okamžiku připoutání.`,
-    explanation: 'Paragraf 17 je základním ustanovením pro použití síly a technických prostředků. Obsahuje taxativní (uzavřený) výčet všech 17 zákonných donucovacích prostředků pod písmeny a) až p), zásadu subsidiarity a proporcionality, povinnou zákonnou výzvu s výstrahou (a jedinou výjimku – bezprostřední ohrožení života/zdraví a zákrok nesnese odkladu), zvláštní režim pro eskorty (odst. 4) a časový limit pro připoutání k pevnému předmětu na max. 2 hodiny (odst. 5).',
-    examTips: 'Zásadní zkušební chytáky: 1. Úder střelnou zbraní, hrozba střelnou zbraní a varovný výstřel jsou DONUCOVACÍ PROSTŘEDKY dle § 17 odst. 2 písm. k), l), m), nikoliv použití zbraně! 2. Jak dlouho lze vězně připoutat k předmětu? Max. 2 hodiny (§ 17 odst. 5). 3. Kdy lze upustit od výzvy s výstrahou? Jen při bezprostředním ohrožení života/zdraví a zákrok nesnese odkladu.',
+(5) Je-li vzhledem k předchozímu chování obviněného, chovance nebo odsouzeného důvodná obava, že by se mohl chovat násilným způsobem, lze při jeho předvádění použít donucovací prostředky pod písmeny b), c) nebo e) i bez splnění podmínek podle odstavce 1. Příslušník je dále oprávněn omezit volný pohyb osoby, která fyzicky napadá příslušníka nebo jinou osobu, ohrožuje vlastní život, poškozuje majetek nebo se pokusí o útěk, PŘIPOUTÁNÍM K VHODNÉMU PŘEDMĚTU. Toto omezení musí být ukončeno v okamžiku, kdy je zřejmé, že osoba takové jednání nebude opakovat, NEJDÉLE však po uplynutí 2 HODIN od okamžiku připoutání.
+
+POZOR — výzva s výstrahou v § 17 NENÍ:
+Povinnost vyzvat osobu, aby upustila od protiprávního jednání, „s výstrahou, že bude použito střelné zbraně“, se vztahuje VÝHRADNĚ na použití střelné zbraně (§ 18 odst. 3). U donucovacích prostředků platí jen obecné pravidlo § 6 odst. 3: dovolují-li to okolnosti a povaha zákroku, je příslušník povinen prokázat svou příslušnost k Vězeňské službě a použít domluvy, výzvy nebo varování, přičemž před výzvou použije slova „jménem zákona“.`,
+    explanation: 'Paragraf 17 je základním ustanovením pro použití síly a technických prostředků. Obsahuje taxativní (uzavřený) výčet všech 17 zákonných donucovacích prostředků pod písmeny a) až p), zásadu přiměřenosti účelu zákroku (odst. 3), zvláštní režim pro předvádění, kde stačí řetízky, pouta a pouta s opaskem bez podmínek odst. 1 (odst. 4 a 5), a připoutání k vhodnému předmětu, které musí skončit, jakmile je zřejmé, že se jednání nebude opakovat, nejdéle však po 2 hodinách (odst. 5).',
+    examTips: 'Zásadní zkušební chytáky: 1. Úder střelnou zbraní, hrozba střelnou zbraní a varovný výstřel jsou DONUCOVACÍ PROSTŘEDKY dle § 17 odst. 2 písm. k), l), m), nikoliv použití zbraně! 2. Jak dlouho lze vězně připoutat k předmětu? Nejdéle 2 hodiny — a jen dokud trvá důvod (§ 17 odst. 5). 3. Pozor na záměnu: „výzva s výstrahou“ je institut § 18 odst. 3 u STŘELNÉ ZBRANĚ. U donucovacích prostředků zákon žádnou výstrahu nepředepisuje, platí obecná domluva/výzva/varování se slovy „jménem zákona“ podle § 6 odst. 3. 4. Kolik je donucovacích prostředků? 17, písmena a) až p) včetně „ch“.',
     category: '555_1992'
   },
   {
@@ -128,7 +145,7 @@ p) prostředek k zamezení prostorové orientace.
     actNumber: 'Zákon č. 555/1992 Sb.',
     actTitle: 'Zákon o Vězeňské službě a justiční stráži České republiky',
     section: '§ 18',
-    title: 'Použití střelné zbraně (Přesné a plné zákonné znění)',
+    title: 'Použití střelné zbraně (5 zákonných důvodů, výzva s výstrahou)',
     exactText: `(1) Příslušník je oprávněn použít střelnou zbraň pouze v těchto případech:
 a) aby v nutné obraně odvrátil přímo hrozící nebo trvající útok vedený proti jeho osobě anebo útok na život nebo zdraví jiné osoby,
 b) k překonání odporu směřujícího ke zmaření služebního zákroku, nelze-li tento odpor překonat jinak, a nezdaří-li se služební zákrok provést, bude ohrožen život nebo zdraví jiné osoby,
@@ -199,7 +216,7 @@ e) ke zneškodnění zvířete ohrožujícího život nebo zdraví osob.
     id: '169-typy-veznic',
     actNumber: 'Zákon č. 169/1999 Sb.',
     actTitle: 'Zákon o výkonu trestu odnětí svobody',
-    section: '§ 7, § 8, § 9, § 12',
+    section: '§ 8, § 9, § 11, § 12, § 12a, § 12b',
     title: 'Typy věznic, diferenciace a vnitřní prostupnost oddělení',
     exactText: `§ 8 Typy věznic (po novele č. 58/2017 Sb.):
 (1) Trest odnětí svobody se vykonává diferencovaně ve dvou základních typech věznic:
@@ -211,66 +228,88 @@ a) s nízkým stupněm zabezpečení,
 b) se středním stupněm zabezpečení,
 c) s vysokým stupněm zabezpečení.
 
-§ 9 Umisťování a přemisťování odsouzených:
-(1) O zařazení odsouzeného do konkrétního typu věznice rozhoduje SOUD v odsuzujícím rozsudku.
-(2) O umístění odsouzeného do konkrétního oddělení věznice s ostrahou (nízký, střední, vysoký stupeň zabezpečení) a o jeho přeřazení mezi těmito odděleními rozhoduje ŘEDITEL VĚZNICE na návrh odborné komise.
+§ 9 Zařazování odsouzených do typů věznic:
+O zařazení odsouzeného do konkrétního typu věznice rozhoduje SOUD v odsuzujícím rozsudku.
 
-§ 12 Zvláštní věznice a oddělení:
-Samostatně a odděleně od ostatních odsouzených se vykonává trest u žen, mladistvých, trvale pracovně nezařaditelných a osob s poruchami chování.`,
+§ 12a, § 12b Vnitřní členění věznice s ostrahou:
+O umístění odsouzeného do konkrétního oddělení věznice s ostrahou (nízký, střední, vysoký stupeň zabezpečení) a o jeho přeřazení mezi těmito odděleními rozhoduje ŘEDITEL VĚZNICE.
+
+§ 11, § 12 Přeřazování mezi typy věznic:
+Návrh na přeřazení odsouzeného do jiného TYPU věznice podává ředitel věznice (§ 11) nebo sám odsouzený (§ 12); rozhoduje o něm soud — ředitel věznice typ věznice změnit nemůže.`,
     explanation: 'Základní penologická struktura vězeňství v ČR: soud určuje pouze základní typ (ostraha vs. zvýšená ostraha), zatímco ředitel věznice má pravomoc flexibilně měnit vnitřní stupeň zabezpečení podle chování a plnění programu zacházení.',
-    examTips: 'Klíčový rozdíl: Soud rozhoduje o TYPU věznice (ostraha / zvýšená ostraha). Ředitel věznice rozhoduje o STUPNI zabezpečení v rámci věznice s ostrahou (nízký / střední / vysoký).',
+    examTips: 'Klíčový rozdíl: Soud rozhoduje o TYPU věznice (ostraha / zvýšená ostraha) — přeřazení mezi typy jen na návrh ředitele věznice (§ 11) nebo odsouzeného (§ 12). Ředitel věznice rozhoduje o STUPNI zabezpečení v rámci věznice s ostrahou (nízký / střední / vysoký, § 12a a § 12b).',
     category: '169_1999'
   },
   {
     id: '169-prava-povinnosti',
     actNumber: 'Zákon č. 169/1999 Sb.',
     actTitle: 'Zákon o výkonu trestu odnětí svobody',
-    section: '§ 16 – § 20',
-    title: 'Základní práva odsouzených (strava, ubytování, návštěvy, korespondence)',
-    exactText: `§ 16 Ubytování a stravování:
-(1) Odsouzenému se poskytuje pravidelná strava podle fyziologických potřeb organismu s přihlédnutím k jeho zdravotnímu stavu a náboženským zvyklostem (3x denně, z toho alespoň jedno teplé jídlo).
-(2) Ubytovací plocha pro jednoho odsouzeného v cele nebo ložnici činí nejméně 4 m². Každý odsouzený má samostatné lůžko, skříňku na osobní věci a židli.
+    section: '§ 16, § 17, § 19',
+    title: 'Základní práva odsouzených (sociální podmínky, návštěvy, korespondence)',
+    exactText: `§ 16 Sociální podmínky odsouzených a poskytování zdravotních služeb:
+(1) Odsouzeným se poskytuje pravidelná strava za podmínek a v hodnotách, které odpovídají požadavku udržení zdraví a přihlížejí k jejich zdravotnímu stavu, věku a obtížnosti vykonávané práce; v rozsahu, v jakém to umožňuje provoz věznice, se přihlíží ke kulturním a náboženským tradicím.
+(3) Každý odsouzený musí mít zabezpečeno lůžko a uzamykatelnou skříňku k uložení osobních věcí.
+(5) Odsouzeným se zabezpečuje denně osmihodinová doba ke spánku, doba potřebná k osobní hygieně a úklidu, stravování, nejméně jednohodinová vycházka a přiměřené osobní volno.
+(6) Odsouzený má právo na zdravotní služby v rozsahu a za podmínek stanovených zvláštním právním předpisem s přihlédnutím k omezením vyplývajícím z účelu trestu.
 
 § 17 Korespondence:
-(1) Odsouzený má právo přijímat a na svůj náklad odesílat korespondenci bez omezení.
-(2) Korespondence podléhá kontrole zaměstnanci VS ČR; kontrola korespondence mezi odsouzeným a jeho obhájcem, advokátem, státními orgány ČR a mezinárodními organizacemi je ZAKÁZÁNA.
+(1) Odsouzený má právo přijímat a na svůj náklad odesílat písemná sdělení bez omezení, pokud zákon nestanoví jinak.
+(2) Vězeňská služba je oprávněna provádět kontrolu korespondence a seznámit se s obsahem zasílaných písemností; zakládá-li obsah podezření, že je připravován nebo páchán trestný čin, korespondenci zadrží a předá orgánu činnému v trestním řízení.
+(3) Kontrola korespondence mezi odsouzeným a jeho obhájcem, advokátem, státními orgány ČR, diplomatickou misí nebo konzulárním úřadem cizího státu anebo mezinárodní organizací příslušnou k projednávání podnětů o ochraně lidských práv je NEPŘÍPUSTNÁ. Tato korespondence se odesílá a doručuje neprodleně.
 
-§ 19 Návštěvy odsouzených:
-(1) Odsouzený má právo přijímat návštěvy blízkých osob v celkovém rozsahu 3 HODINY ZA KALENDÁŘNÍ MĚSÍC.
-(2) Návštěvy se může současně zúčastnit nejvýše 4 osoby včetně nezletilých dětí.`,
-    explanation: 'Zákon garantuje minimální životní podmínky (4 m² plocha, 3x denně strava, 1 teplé jídlo), neomezenou korespondenci (s absolutní nedotknutelností advokátní pošty) a měsíční limit 3 hodiny návštěv pro max. 4 osoby.',
-    examTips: 'Čísla k zapamatování: Ubytovací plocha = min. 4 m². Návštěvy odsouzených = 3 hodiny za měsíc, max. 4 osoby. Advokátní korespondence se NIKDY neotvírá ani nekontroluje.',
+§ 19 Návštěvy:
+(1) Odsouzený má právo přijímat v čase určeném ředitelem věznice návštěvy blízkých osob na dobu 3 HODIN během jednoho kalendářního měsíce.
+(3) Nestanoví-li vnitřní řád věznice počet vyšší, mohou odsouzeného současně navštívit nejvýše 4 osoby včetně nezletilých dětí. Nezletilé děti do 15 let se mohou návštěvy zúčastnit pouze v doprovodu osoby starší 18 let.
+
+POZOR — ubytovací plocha není v zákoně, ale v prováděcí vyhlášce:
+Vyhláška MS č. 345/1999 Sb. (řád výkonu trestu), § 17 odst. 6: v ubytovací místnosti určené pro více odsouzených musí na jednoho odsouzeného připadat ubytovací plocha nejméně 4 m²; cela nebo ložnice pro jednu osobu nesmí mít plochu menší než 6 m². Podle odst. 7 lze za stanovených podmínek umístit odsouzeného i na plochu menší, nikoli však menší než 3 m².`,
+    explanation: 'Zákon garantuje stravu odpovídající udržení zdraví, lůžko a uzamykatelnou skříňku, osmihodinový spánek, nejméně hodinovou vycházku, neomezenou korespondenci (s absolutní nedotknutelností advokátní a úřední pošty) a 3 hodiny návštěv měsíčně pro max. 4 osoby. Ubytovací plocha 4 m² v zákoně NENÍ — stanoví ji § 17 odst. 6 vyhlášky MS č. 345/1999 Sb.',
+    examTips: 'Čísla k zapamatování: Návštěvy odsouzených = 3 hodiny za kalendářní měsíc, max. 4 osoby. Spánek 8 hodin, vycházka nejméně 1 hodina denně. Advokátní a úřední korespondence se NIKDY neotvírá ani nekontroluje. Chyták: ubytovací plocha 4 m² (a 6 m² u jednomístné cely) je ve VYHLÁŠCE 345/1999 Sb., § 17 odst. 6 — ne v zákoně 169/1999 Sb.',
     category: '169_1999'
   },
   {
     id: '169-kazenske-tresty',
     actNumber: 'Zákon č. 169/1999 Sb.',
     actTitle: 'Zákon o výkonu trestu odnětí svobody',
-    section: '§ 46 – § 54',
-    title: 'Kázeňská odpovědnost, kázeňské odměny a kázeňské tresty odsouzených',
-    exactText: `§ 46 Kázeňský přestupek:
-Kázeňským přestupkem je zaviněné porušení stanoveného pořádku nebo kázně při výkonu trestu.
+    section: '§ 45, § 46, § 49, § 64',
+    title: 'Kázeňské odměny, kázeňská odpovědnost a kázeňské tresty odsouzených',
+    exactText: `§ 45 Odměny:
+(1) Jestliže odsouzený svým chováním a jednáním nebo příkladným činem projevuje odpovědný přístup k plnění stanovených povinností a spolupracuje při naplňování účelu výkonu trestu, lze mu udělit odměnu.
+(2) Odměnami jsou:
+a) pochvala,
+b) mimořádné zvýšení doby trvání návštěv během jednoho kalendářního měsíce až na 5 hodin,
+c) povolení jednorázového nákupu potravin a věcí osobní potřeby odsouzenému, který jinak tyto nákupy nemůže provádět,
+d) zvýšení kapesného nejvýše o jednu třetinu až na dobu 3 kalendářních měsíců,
+e) věcná nebo peněžitá odměna až do výše 1 000 Kč,
+f) rozšíření osobního volna na sportovní, kulturní nebo jiné zájmové aktivity až na dobu 1 měsíce,
+g) povolení opustit věznici až na 24 hodin v souvislosti s návštěvou nebo s programem zacházení,
+h) přerušení výkonu trestu.
 
-§ 47 Kázeňské odměny:
-Za příkladné plnění povinností, pracovní výsledky nebo mimořádný čin lze udělit:
-a) pochvalu,
-b) prominutí dříve uloženého kázeňského trestu,
-c) věcnou nebo peněžitou odměnu (do výše 2 000 Kč),
-d) mimořádné opuštění věznice až na 5 dnů (přerušení výkonu trestu).
-
-§ 53 Kázeňské tresty (taxativní výčet):
+§ 46 Kázeňské tresty:
+(1) Kázeňským přestupkem je zaviněné porušení zákonem stanovené nebo na jeho základě uložené povinnosti, pořádku nebo kázně během výkonu trestu.
+(2) Za kázeňský přestupek lze odsouzenému uložit kázeňský trest. Kázeňský trest se neuloží, jestliže samotným projednáním kázeňského přestupku s odsouzeným lze dosáhnout sledovaného účelu.
+(3) Kázeňskými tresty jsou:
 a) důtka,
-b) zákaz přijetí balíčku (nejvýše na dobu 3 měsíců),
-c) zákaz nákupu potravin a věcí osobní potřeby s výjimkou hygienických potřeb (až na 2 měsíce),
-d) propadnutí věci,
-e) umístění do uzavřeného oddílu v mimopracovní době (až na 30 dnů),
-f) celodenní umístění do uzavřeného oddílu (až na 20 dnů),
-g) umístění do samovazby (až na 20 dnů; u mladistvých max. na 10 dnů).
+b) snížení kapesného nejvýše o jednu třetinu až na dobu 3 kalendářních měsíců,
+c) zákaz přijetí jednoho balíčku v kalendářním roce,
+d) pokuta až do výše 5 000 Kč,
+e) propadnutí věci,
+f) umístění do uzavřeného oddílu až na 28 dnů, s výjimkou doby stanovené k plnění určených úkolů programu zacházení,
+g) celodenní umístění do uzavřeného oddílu až na 20 dnů,
+h) umístění do samovazby až na 20 dnů,
+i) odnětí výhod vyplývajících z předchozí kázeňské odměny.
+(4) Výkon kázeňských trestů uvedených v odstavci 3 písm. f) a g) lze uložit též podmíněně se zkušební dobou až na 6 měsíců.
 
-§ 54 Výkon samovazby:
-Během samovazby je odsouzený umístěn na samostatné cele, neúčastní se hromadných aktivit, lůžko je přes den uzamčeno ke stěně a má právo pouze na 1 hodinu denně vycházky. Před nástupem do samovazby musí být vyšetřen LÉKAŘEM!`,
-    explanation: 'Kázeňský řád pro odsouzené. Nejpřísnějším trestem je samovazba na max. 20 dnů (u mladistvých 10 dnů), která obligatorně vyžaduje předchozí schválení a potvrzení lékaře o zdravotní způsobilosti.',
-    examTips: 'Otázky zkušební komise: 1. Jak dlouho může trvat samovazba u dospělého odsouzeného? Až 20 dnů (u mladistvého max. 10 dnů). 2. Kdo musí schválit nástup do samovazby? Lékař. 3. Jaké je maximum pro opuštění věznice jako odměna? Až 5 dnů.',
+§ 49 Umístění do uzavřeného oddílu a samovazby:
+(1) K uložení kázeňského trestu celodenního umístění do uzavřeného oddílu a umístění do samovazby je nezbytné předchozí posouzení lékaře, že odsouzený je zdravotně způsobilý podrobit se tomuto kázeňskému trestu.
+(2) Před nástupem tohoto trestu a nejméně jednou týdně v průběhu jeho výkonu musí být odsouzený prohlédnut lékařem.
+(3) Při samovazbě odsouzený nepracuje, neúčastní se programu zacházení, nesmí kouřit, číst denní tisk ani publikace kromě právnické, vzdělávací a náboženské literatury a nakupovat potraviny a věci osobní potřeby s výjimkou hygienických potřeb; odpočívat na lůžku smí jen v době určené vnitřním řádem.
+(4) S výkonem znovu uloženého trestu celodenního umístění do uzavřeného oddílu nebo samovazby nelze začít dříve než po uplynutí alespoň 10 dnů od výkonu některého z těchto trestů.
+
+§ 64 Kázeňské tresty ukládané mladistvým (jen některý z těchto):
+a) důtka, b) snížení kapesného nejvýše o jednu třetinu až na 2 kalendářní měsíce, c) zákaz přijetí jednoho balíčku v kalendářním roce, d) propadnutí věci, e) umístění do uzavřeného oddílu až na 14 dnů, f) celodenní umístění do uzavřeného oddílu až na 10 dnů, g) umístění do samovazby až na 10 dnů, h) odnětí výhod vyplývajících z předchozí kázeňské odměny.`,
+    explanation: 'Odměny (§ 45) a kázeňské tresty (§ 46 odst. 3) jsou dva samostatné taxativní výčty — pozor na záměnu: peněžitá ODMĚNA je až 1 000 Kč, kázeňská POKUTA až 5 000 Kč. Nejpřísnějším trestem je samovazba až na 20 dnů (u mladistvých 10 dnů dle § 64), která vyžaduje předchozí posouzení lékaře o zdravotní způsobilosti (§ 49). Prominutí trestu je § 53, zahlazení § 54, zvláštní mírnější výčet pro těhotné ženy a matky s dítětem § 66.',
+    examTips: 'Otázky zkušební komise: 1. Jak dlouho může trvat samovazba u dospělého odsouzeného? Až 20 dnů (u mladistvého max. 10 dnů). 2. Kdo musí posoudit zdravotní způsobilost před samovazbou? Lékař (§ 49 odst. 1). 3. Jaké je maximum pro opuštění věznice jako odměna? Až 24 hodin (§ 45 odst. 2 písm. g); delší opuštění je přerušení výkonu trestu podle § 56. 4. Nezaměňovat: odměna až 1 000 Kč vs. pokuta až 5 000 Kč. 5. Uzavřený oddíl až 28 dnů, celodenní uzavřený oddíl až 20 dnů, samovazba až 20 dnů.',
     category: '169_1999'
   },
 
@@ -281,25 +320,29 @@ Během samovazby je odsouzený umístěn na samostatné cele, neúčastní se hr
     id: '293-vazba-komplet',
     actNumber: 'Zákon č. 293/1993 Sb.',
     actTitle: 'Zákon o výkonu vazby',
-    section: '§ 1 – § 14, § 21 – § 25',
+    section: '§ 2, § 14, § 22, § 23',
     title: 'Zásady výkonu vazby, práva obviněného, koluzní režim a kázeňské tresty',
-    exactText: `§ 1 Účel a zásady výkonu vazby:
+    exactText: `§ 2 Zásady výkonu vazby:
 (1) Ve výkonu vazby se obviněný podrobuje jen těm omezením, která jsou nutná k zajištění účelu vazby a k zachování pořádku a bezpečnosti.
-(2) Vůči obviněnému platí presumpce neviny; obviněný NESMÍ být nucen k práci!
+(2) Vůči obviněnému platí presumpce neviny; obviněný NESMÍ být nucen k práci — práci může vykonávat jen na základě své žádosti.
 
-§ 8 Návštěvy obviněných:
-(1) Obviněný má právo přijmout návštěvu v rozsahu 90 MINUT JEDNOU ZA 2 TÝDNY. Současně se návštěvy mohou zúčastnit nejvýše 4 osoby včetně dětí.
-(2) Obviněný v KOLUZNÍ VAZBĚ [§ 67 písm. b) TrŘ] smí přijmout návštěvu pouze s PŘEDCHOZÍM PÍSEMNÝM SOUHLASEM příslušného orgánu činného v trestním řízení (státního zástupce nebo soudce).
+§ 14 Návštěvy obviněných:
+(1) Obviněný má právo na přijetí návštěvy v počtu nejvýše 4 osob JEDNOU ZA 2 TÝDNY v trvání DEVADESÁTI MINUT. V odůvodněných případech může ředitel věznice povolit více osob, kratší odstup i delší dobu.
+(2) U obviněných v KOLUZNÍ VAZBĚ [§ 67 písm. b) TrŘ] stanoví podmínky návštěvy (termín, okruh osob, přítomnost orgánu činného v trestním řízení) v přípravném řízení státní zástupce, v řízení před soudem příslušný soudce.
 
-§ 9 Kontakt s obhájcem:
-Obviněný má právo hovořit s obhájcem bez přítomnosti třetích osob a bez časového omezení.
-
-§ 23 Kázeňské tresty ve vazbě:
+§ 22 Kázeňské přestupky, kázeňské tresty a ochranná opatření zabrání věci:
+(2) Kázeňskými tresty jsou:
 a) důtka,
-b) zákaz nákupu věcí osobní potřeby s výjimkou hygienických potřeb (až na 3 týdny),
-c) umístění do samovazby (nejdéle na 14 DNŮ).`,
-    explanation: 'Vazba je zajišťovací institut pro osoby dosud neodsouzené. Obviněný nemůže být nucen pracovat. U koluzní vazby je návštěva a korespondence podmíněna souhlasem OČTŘ. Samovazba ve vazbě činí max. 14 dnů.',
-    examTips: 'Rozdíly vazba vs. trest: Návštěvy ve vazbě = 90 minut za 2 týdny (v trestu 3 hodiny měsíčně). Samovazba ve vazbě = max. 14 dnů (v trestu 20 dnů). Obviněný NESMÍ být nucen k práci.',
+b) pokuta do výše 5 000 Kč,
+c) zákaz nákupu potravin a věcí osobní potřeby (s výjimkou hygienických potřeb) až na dobu JEDNOHO MĚSÍCE,
+d) propadnutí věci,
+e) umístění do samovazby až na 10 DNÍ.
+(3) Uložený kázeňský trest musí být úměrný závažnosti přestupku; není-li stanoveno jinak, lze uložit jen jeden kázeňský trest.
+
+§ 23 Řízení o kázeňských přestupcích a o zabrání věci:
+O kázeňském přestupku a o zabrání věci se vede řízení; kázeňský trest lze uložit, jen je-li přestupek náležitě objasněn a vina prokázána.`,
+    explanation: 'Vazba je zajišťovací institut pro osoby dosud neodsouzené. Obviněný nemůže být nucen pracovat. U koluzní vazby stanoví podmínky návštěvy orgán činný v trestním řízení. Samovazba ve vazbě činí max. 10 dní a na rozdíl od výkonu trestu zná vazební kázeňský řád i pokutu do 5 000 Kč.',
+    examTips: 'Rozdíly vazba vs. trest: Návštěvy ve vazbě = 90 minut jednou za 2 týdny, nejvýše 4 osoby (v trestu 3 hodiny za kalendářní měsíc). Samovazba ve vazbě = max. 10 dní (v trestu 20 dnů). Zákaz nákupu ve vazbě až na 1 měsíc. Obviněný NESMÍ být nucen k práci — pracuje jen na vlastní žádost.',
     category: '293_1993'
   },
 

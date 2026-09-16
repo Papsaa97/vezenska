@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { FEEDBACK_CATEGORY_COLORS, feedbackCategoryLabel } from './FeedbackModal';
+import NoticeDialog, { Notice } from './common/NoticeDialog';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -43,6 +44,9 @@ export default function FeedbackManager({ onNewCountChange }: FeedbackManagerPro
   const [loadError, setLoadError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterValue>('all');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  /** Oznámení pro správce místo `alert()`. */
+  const [notice, setNotice] = useState<Notice | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
@@ -95,17 +99,38 @@ export default function FeedbackManager({ onNewCountChange }: FeedbackManagerPro
         .select();
 
       if (error) {
-        alert('Změna stavu selhala: ' + error.message);
+        setNotice({
+          tone: 'error',
+          title: 'Stav se nezměnil',
+          description: (
+            <>
+              Server změnu odmítl, hlášení zůstalo v původním stavu.
+              <span className="mt-2 block font-mono text-xs text-slate-500 dark:text-slate-400">{error.message}</span>
+            </>
+          ),
+        });
       } else if (!data || data.length === 0) {
-        alert(
-          'Změnu stavu se nepodařilo uložit do databáze (žádný řádek nebyl aktualizován). Zkontrolujte oprávnění RLS pro UPDATE v Supabase.'
-        );
+        setNotice({
+          tone: 'error',
+          title: 'Stav se nezměnil — chybí oprávnění',
+          description:
+            'Server změnu přijal, ale neaktualizoval žádný řádek. Bývá to politikou RLS pro UPDATE nad tabulkou user_feedback. Obraťte se na správce systému.',
+        });
       } else {
         setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, status: nextStatus } : i)));
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Neznámá chyba';
-      alert('Chyba při změně stavu: ' + msg);
+      setNotice({
+        tone: 'error',
+        title: 'Při změně stavu došlo k chybě',
+        description: (
+          <>
+            Hlášení zůstalo v původním stavu.
+            <span className="mt-2 block font-mono text-xs text-slate-500 dark:text-slate-400">{msg}</span>
+          </>
+        ),
+      });
     } finally {
       setUpdatingId(null);
     }
@@ -121,17 +146,38 @@ export default function FeedbackManager({ onNewCountChange }: FeedbackManagerPro
         .select();
 
       if (error) {
-        alert('Smazání selhalo: ' + error.message);
+        setNotice({
+          tone: 'error',
+          title: 'Hlášení se nesmazalo',
+          description: (
+            <>
+              Server mazání odmítl, hlášení v databázi zůstalo.
+              <span className="mt-2 block font-mono text-xs text-slate-500 dark:text-slate-400">{error.message}</span>
+            </>
+          ),
+        });
       } else if (!data || data.length === 0) {
-        alert(
-          'Položku se nepodařilo smazat z databáze (žádný řádek nebyl odstraněn). V Supabase chybí RLS oprávnění pro DELETE na tabulce user_feedback.'
-        );
+        setNotice({
+          tone: 'error',
+          title: 'Hlášení se nesmazalo — chybí oprávnění',
+          description:
+            'Server mazání přijal, ale neodstranil žádný řádek. Bývá to chybějící politikou RLS pro DELETE nad tabulkou user_feedback. Obraťte se na správce systému.',
+        });
       } else {
         setItems((prev) => prev.filter((i) => i.id !== id));
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Neznámá chyba';
-      alert('Chyba při mazání: ' + msg);
+      setNotice({
+        tone: 'error',
+        title: 'Při mazání došlo k chybě',
+        description: (
+          <>
+            Hlášení v databázi zůstalo.
+            <span className="mt-2 block font-mono text-xs text-slate-500 dark:text-slate-400">{msg}</span>
+          </>
+        ),
+      });
     } finally {
       setDeletingId(null);
       setConfirmDeleteId(null);
@@ -183,13 +229,13 @@ export default function FeedbackManager({ onNewCountChange }: FeedbackManagerPro
           </button>
         </div>
 
-        <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/60 w-fit">
+        <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/60 w-fit max-w-full overflow-x-auto">
           {filters.map((f) => (
             <button
               key={f.value}
               type="button"
               onClick={() => setFilter(f.value)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
                 filter === f.value
                   ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -360,6 +406,8 @@ export default function FeedbackManager({ onNewCountChange }: FeedbackManagerPro
           })}
         </div>
       )}
+
+      <NoticeDialog notice={notice} onClose={() => setNotice(null)} />
     </div>
   );
 }

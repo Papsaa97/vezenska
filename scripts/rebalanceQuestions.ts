@@ -1,7 +1,6 @@
-import { Project, SyntaxKind, ArrayLiteralExpression, ObjectLiteralExpression } from 'ts-morph';
+import { Project, SyntaxKind } from 'ts-morph';
 import * as path from 'path';
 import * as fs from 'fs';
-import { fileURLToPath } from 'url';
 
 const project = new Project();
 const baseDir = path.resolve(__dirname, '../src/data/questions');
@@ -25,7 +24,6 @@ for (const file of files) {
       const elements = initializer.getElements();
       for (const element of elements) {
         if (element.isKind(SyntaxKind.ObjectLiteralExpression)) {
-          const props = element.getProperties();
           const optionsProp = element.getProperty('options');
           const correctOptionProp = element.getProperty('correctOption');
 
@@ -38,8 +36,6 @@ for (const file of files) {
 
               const correctOptionStr = correctOptionProp.getInitializer()?.getText();
               const oldCorrectIdx = parseInt(correctOptionStr || '1', 10);
-
-              const correctAnswerText = optionStrings[oldCorrectIdx];
 
               // We want to randomly pick a new index from 0 to 3 to balance it out globally.
               // A pseudo-random assignment that distributes them evenly

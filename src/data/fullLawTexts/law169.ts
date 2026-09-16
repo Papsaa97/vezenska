@@ -1,6 +1,7 @@
 // =========================================================================
 // ZÁKON Č. 169/1999 SB. – VÝBĚR USTANOVENÍ PODSTATNÝCH PRO ZOP A
-// POZOR: nejde o úplné znění. Soubor obsahuje 24 z 85 paragrafů (10 kB).
+// POZOR: nejde o úplné znění. Jde o výběr z 111 paragrafů platného znění;
+// přesné pokrytí spočítá `npm run check:legal` proti osnově z e-Sbírky.
 // Úplné znění viz e-Sbírka.gov.cz — před zkouškou si ověřte tam.
 // Zákon ze dne 30. června 1999
 // o výkonu trestu odnětí svobody a o změně některých souvisejících zákonů
@@ -178,30 +179,106 @@ HLAVA V
 KÁZEŇSKÁ PRAVOMOC A KÁZEŇSKÉ TRESTY
 
 § 45
-Kázeňský přestupek
+Odměny
 
-Kázeňským přestupkem je zaviněné porušení povinnosti stanovené zákonem, prováděcí vyhláškou nebo vnitřním řádem věznice odsouzeným.
+(1) Jestliže odsouzený svým chováním a jednáním nebo příkladným činem projevuje odpovědný přístup k plnění stanovených povinností a spolupracuje při naplňování účelu výkonu trestu, lze mu udělit odměnu.
+
+(2) Odměnami jsou:
+a) pochvala,
+b) mimořádné zvýšení doby trvání návštěv během jednoho kalendářního měsíce až na 5 hodin,
+c) povolení jednorázového nákupu potravin a věcí osobní potřeby odsouzenému, který jinak tyto nákupy nemůže provádět,
+d) zvýšení kapesného nejvýše o jednu třetinu až na dobu 3 kalendářních měsíců,
+e) věcná nebo peněžitá odměna až do výše 1 000 Kč,
+f) rozšíření osobního volna na sportovní, kulturní nebo jiné zájmové aktivity až na dobu 1 měsíce,
+g) povolení opustit věznici až na 24 hodin v souvislosti s návštěvou nebo s programem zacházení,
+h) přerušení výkonu trestu.
 
 § 46
 Kázeňské tresty
 
-(1) Za kázeňský přestupek lze odsouzenému uložit pouze některý z těchto kázeňských trestů:
-a) písemná důtka,
-b) snížení kapesného až o jednu třetinu na dobu až 3 měsíců,
-c) zákaz nákupu potravin a věcí osobní potřeby (s výjimkou základních hygienických potřeb) až na dobu 3 měsíců,
-d) propadnutí věci nepovolené nebo použité k porušení řádu,
-e) umístění do uzavřeného oddělení v mimopracovní době až na 30 dnů,
-f) celodenní umístění do uzavřeného oddělení až na 20 dnů,
-g) samovazba až na 28 dnů (u mladistvých nejvýše na 14 dnů).
+(1) Kázeňským přestupkem je zaviněné porušení zákonem stanovené nebo na jeho základě uložené povinnosti, pořádku nebo kázně během výkonu trestu.
 
-(2) Kázeňský trest samovazby nelze uložit těhotné ženě a matce pečující o dítě.
+(2) Za kázeňský přestupek lze odsouzenému uložit kázeňský trest. Kázeňský trest se neuloží, jestliže samotným projednáním kázeňského přestupku s odsouzeným lze dosáhnout sledovaného účelu.
+
+(3) Kázeňskými tresty jsou:
+a) důtka,
+b) snížení kapesného nejvýše o jednu třetinu až na dobu 3 kalendářních měsíců,
+c) zákaz přijetí jednoho balíčku v kalendářním roce,
+d) pokuta až do výše 5 000 Kč,
+e) propadnutí věci,
+f) umístění do uzavřeného oddílu až na 28 dnů, s výjimkou doby stanovené k plnění určených úkolů programu zacházení,
+g) celodenní umístění do uzavřeného oddílu až na 20 dnů,
+h) umístění do samovazby až na 20 dnů,
+i) odnětí výhod vyplývajících z předchozí kázeňské odměny.
+
+(4) Výkon kázeňských trestů uvedených v odstavci 3 písm. f) a g) lze uložit též podmíněně se zkušební dobou až na 6 měsíců.
+
+§ 47
+Ukládání kázeňských trestů
+
+(1) Kázeňský trest lze uložit, jen jsou-li náležitě objasněny okolnosti kázeňského přestupku a prokázána vina odsouzeného. Před uložením kázeňského trestu musí být odsouzenému umožněno, aby se vyjádřil ke všem skutečnostem, které se mu kladou za vinu, a důkazům o nich.
+
+(2) Uložený kázeňský trest musí být úměrný závažnosti spáchaného kázeňského přestupku. Za kázeňský přestupek lze uložit jen jeden kázeňský trest; trest propadnutí věci lze uložit i vedle jiného kázeňského trestu.
+
+(3) Kázeňský trest nelze uložit, jestliže od spáchání kázeňského přestupku uplynula doba jednoho roku.
+
+§ 49
+Umístění do uzavřeného oddílu a samovazby
+
+(1) K uložení kázeňského trestu celodenního umístění do uzavřeného oddílu a umístění do samovazby je nezbytné předchozí posouzení lékaře, že odsouzený je zdravotně způsobilý podrobit se tomuto kázeňskému trestu.
+
+(2) Před nástupem tohoto kázeňského trestu a nejméně jednou týdně v průběhu jeho výkonu musí být odsouzený prohlédnut lékařem, který posoudí, zda je zdravotně způsobilý k jeho výkonu.
+
+(3) Při kázeňském trestu umístění do samovazby odsouzený nepracuje, neúčastní se programu zacházení, není mu dovoleno kouřit, číst denní tisk, knihy nebo jiné publikace kromě právnické, vzdělávací nebo náboženské literatury, a nakupovat potraviny a věci osobní potřeby s výjimkou hygienických potřeb. Odpočívat na lůžku smí jen v době určené vnitřním řádem. Stejně se postupuje při celodenním umístění do uzavřeného oddílu s tím rozdílem, že odsouzený vykonává úklidové práce a práce nezbytné k zajištění běžného provozu ve věznici.
+
+(4) S výkonem znovu uloženého kázeňského trestu celodenního umístění do uzavřeného oddílu nebo umístění do samovazby nelze začít dříve než po uplynutí alespoň 10 dnů od výkonu některého z těchto kázeňských trestů.
 
 § 52
-Řízení o kázeňském přestupku
+Stížnost proti rozhodnutí o uložení kázeňského trestu
 
-(1) Kázeňský přestupek musí být projednán bezodkladně, nejpozději do 30 dnů ode dne, kdy se o něm příslušný orgán dozvěděl.
+(1) Odsouzený má právo do 3 dnů ode dne oznámení rozhodnutí o uložení kázeňského trestu podat proti němu stížnost. Odkladný účinek má jen stížnost proti uložení kázeňského trestu propadnutí věci.
 
-(2) Před uložením kázeňského trestu musí být odsouzený vyslechnut, musí mu být umožněno nahlédnout do podkladů a navrhnout důkazy. Proti rozhodnutí o uložení kázeňského trestu má odsouzený právo podat stížnost do 3 dnů od jeho oznámení.
+(2) O stížnosti rozhodne do 5 pracovních dnů od jejího podání ředitel věznice nebo k tomu zmocněný zaměstnanec Vězeňské služby; o stížnosti proti rozhodnutí ředitele věznice rozhodne generální ředitel Vězeňské služby.
+
+§ 53
+Prominutí kázeňského trestu a upuštění od výkonu zbytku kázeňského trestu
+
+(1) Jestliže výkon kázeňského trestu, proti jehož uložení již nelze podat stížnost, není vzhledem k dalšímu chování a jednání odsouzeného potřebný, lze tento trest prominout.
+
+(2) Jestliže další výkon kázeňského trestu není potřebný, protože odsouzený projevuje účinnou snahu po nápravě, lze od výkonu jeho zbytku upustit.
+
+§ 54
+Zahlazení kázeňského trestu
+
+(1) Jestliže po výkonu kázeňského trestu odsouzený splní podmínky pro udělení kázeňské odměny, lze mu místo jejího udělení zahladit kázeňský trest.
+
+(2) Zahlazením kázeňského trestu se na odsouzeného hledí, jako by mu nebyl kázeňský trest uložen.
+
+§ 64
+Kázeňské tresty ukládané mladistvým
+
+(1) Za kázeňský přestupek lze mladistvému uložit jen některý z těchto kázeňských trestů:
+a) důtku,
+b) snížení kapesného nejvýše o jednu třetinu až na dobu 2 kalendářních měsíců,
+c) zákaz přijetí jednoho balíčku v kalendářním roce,
+d) propadnutí věci,
+e) umístění do uzavřeného oddílu až na 14 dnů, s výjimkou doby stanovené k plnění určených úkolů programu zacházení s mladistvými,
+f) celodenní umístění do uzavřeného oddílu až na 10 dnů,
+g) umístění do samovazby až na 10 dnů,
+h) odnětí výhod vyplývajících z předchozí kázeňské odměny.
+
+(2) Výkon kázeňských trestů uvedených v odstavci 1 písm. e) a f) lze uložit též podmíněně se zkušební dobou až na 6 měsíců.
+
+§ 66
+Kázeňské tresty ukládané odsouzeným ženám
+
+Těhotné ženě a ženě, která má ve výkonu trestu u sebe dítě, lze uložit za kázeňský přestupek jen některý z těchto kázeňských trestů:
+a) důtku,
+b) snížení kapesného nejvýše o jednu třetinu až na dobu 3 kalendářních měsíců,
+c) zákaz přijetí jednoho balíčku v kalendářním roce,
+d) pokutu až do výše 5 000 Kč,
+e) propadnutí věci,
+f) odnětí výhod vyplývajících z předchozí kázeňské odměny.
 
 HLAVA VI
 PŘERUŠENÍ A UKONČENÍ VÝKONU TRESTU

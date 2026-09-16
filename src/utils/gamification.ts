@@ -1,8 +1,11 @@
 import { QuizSessionRecord, MatchingRecord, UserRank, Badge } from '../types';
 import { VSCR_RANKS, RAW_BADGES } from '../data/gamificationData';
+import { readScoped, writeScoped } from './userScopedStorage';
 
 const MATCHING_HISTORY_KEY = 'vscr_matching_history';
 const STREAK_KEY = 'vscr_streak_info';
+export const COMPLETED_SCENARIOS_KEY = 'vscr_completed_scenarios';
+export const COMPLETED_DRILLS_KEY = 'vscr_completed_drills';
 
 export interface StreakInfo {
   currentStreak: number;
@@ -16,23 +19,29 @@ export function getTodayDateString(): string {
 }
 
 export function loadMatchingHistory(): MatchingRecord[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem(MATCHING_HISTORY_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    console.error('Error loading matching history', e);
-    return [];
-  }
+  return readScoped<MatchingRecord[]>(MATCHING_HISTORY_KEY, []);
 }
 
 export function saveMatchingHistory(history: MatchingRecord[]): void {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(MATCHING_HISTORY_KEY, JSON.stringify(history));
-  } catch (e) {
-    console.error('Error saving matching history', e);
-  }
+  writeScoped(MATCHING_HISTORY_KEY, history);
+}
+
+/** Splněné taktické scénáře přihlášeného uživatele. */
+export function loadCompletedScenarios(): string[] {
+  return readScoped<string[]>(COMPLETED_SCENARIOS_KEY, []);
+}
+
+export function saveCompletedScenarios(ids: string[]): void {
+  writeScoped(COMPLETED_SCENARIOS_KEY, ids);
+}
+
+/** Splněné zbraňové drily přihlášeného uživatele. */
+export function loadCompletedDrills(): string[] {
+  return readScoped<string[]>(COMPLETED_DRILLS_KEY, []);
+}
+
+export function saveCompletedDrills(ids: string[]): void {
+  writeScoped(COMPLETED_DRILLS_KEY, ids);
 }
 
 export function recordMatchingCompletion(record: Omit<MatchingRecord, 'id' | 'timestamp' | 'xpEarned'>): { record: MatchingRecord; newHistory: MatchingRecord[] } {
@@ -57,30 +66,32 @@ export function recordMatchingCompletion(record: Omit<MatchingRecord, 'id' | 'ti
   return { record: newRecord, newHistory };
 }
 
+/**
+ * Série bez zápisu.
+ *
+ * Dřív tahle funkce při prvním čtení rovnou uložila `currentStreak: 1`, takže
+ * nový uživatel měl sérii jeden den ještě předtím, než cokoli udělal. Čtení
+ * teď nic nezapisuje; sérii zakládá až `updateDailyStreak()`, kterou volá
+ * dokončená studijní aktivita.
+ */
 export function loadStreakInfo(): StreakInfo {
-  const defaultStreak: StreakInfo = { currentStreak: 1, lastActiveDate: getTodayDateString(), activeDaysCount: 1 };
-  if (typeof window === 'undefined') return defaultStreak;
-  try {
-    const raw = localStorage.getItem(STREAK_KEY);
-    if (!raw) {
-      saveStreakInfo(defaultStreak);
-      return defaultStreak;
-    }
-    return JSON.parse(raw);
-  } catch (e) {
-    return defaultStreak;
-  }
+  const stored = readScoped<StreakInfo | null>(STREAK_KEY, null);
+  if (stored && typeof stored.currentStreak === 'number') return stored;
+  return { currentStreak: 0, lastActiveDate: '', activeDaysCount: 0 };
 }
 
 export function saveStreakInfo(streak: StreakInfo): void {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(STREAK_KEY, JSON.stringify(streak));
-  } catch (e) {
-    console.error('Error saving streak', e);
-  }
+  writeScoped(STREAK_KEY, streak);
 }
 
+/**
+ * Zaznamená, že uživatel dnes studoval, a posune denní sérii.
+ *
+ * Volá se VÝHRADNĚ po dokončené aktivitě (test, pexeso, scénář, zbraňový
+ * dril, vygenerovaný úřední záznam) — ne při spuštění aplikace. Dřív ji
+ * spouštěl efekt na připojení App, takže „denní série“ měřila, kolik dní po
+ * sobě někdo aplikaci otevřel, ne kolik dní se učil.
+ */
 export function updateDailyStreak(): StreakInfo {
   const today = getTodayDateString();
   const current = loadStreakInfo();
@@ -89,27 +100,46 @@ export function updateDailyStreak(): StreakInfo {
     return current;
   }
 
-  const lastDate = new Date(current.lastActiveDate);
-  const now = new Date(today);
-  const diffDays = Math.round((now.getTime() - lastDate.getTime()) / (1000 * 3600 * 24));
-
-  let newStreak = 1;
-  if (diffDays === 1) {
-    newStreak = current.currentStreak + 1;
-  }
+  // Prázdné datum = dnes se studuje poprvé.
+  const diffDays = current.lastActiveDate
+    ? Math.round(
+        (new Date(today).getTime() - new Date(current.lastActiveDate).getTime()) / (1000 * 3600 * 24)
+      )
+    : Number.NaN;
 
   const updated: StreakInfo = {
-    currentStreak: newStreak,
+    currentStreak: diffDays === 1 ? current.currentStreak + 1 : 1,
     lastActiveDate: today,
-    activeDaysCount: (current.activeDaysCount || 1) + (diffDays > 0 ? 1 : 0)
+    activeDaysCount: (current.activeDaysCount || 0) + 1,
   };
 
   saveStreakInfo(updated);
   return updated;
 }
 
-export function calculateBaseXp(quizHistory: QuizSessionRecord[], matchingHistory: MatchingRecord[]): number {
-  let xp = 0;
+/** XP za jeden splněný taktický scénář. */
+export const SCENARIO_XP = 80;
+/** XP za jeden splněný zbraňový dril. */
+export const DRILL_XP = 40;
+
+/**
+ * Základní XP z odvedené práce.
+ *
+ * `extraXp` sem dodává volající — typicky XP za splněné scénáře a drily,
+ * které komponenta drží ve svém stavu (viz hooks/useLocalProgress).
+ *
+ * PROČ TO NEČTE Z localStorage SAMO: dřív ano, a React o tom neměl jak vědět.
+ * Memoizace v hlavičce tím pádem držela staré číslo celou session — po
+ * splněném scénáři se slíbených „+80 XP“ v liště neobjevilo, kdežto záložka
+ * Odznaky se připojila znovu a XP viděla. Ukázaly se dvě různá čísla.
+ * Hodnota předaná parametrem je normální závislost, kterou React uhlídá.
+ */
+export function calculateBaseXp(
+  quizHistory: QuizSessionRecord[],
+  matchingHistory: MatchingRecord[],
+  extraXp = 0
+): number {
+  let xp = extraXp;
 
   // 1. XP from quizzes
   quizHistory.forEach(session => {
@@ -129,28 +159,6 @@ export function calculateBaseXp(quizHistory: QuizSessionRecord[], matchingHistor
   matchingHistory.forEach(match => {
     xp += match.xpEarned || 80;
   });
-
-  // 3. XP from tactical scenarios (80 XP per completed scenario)
-  if (typeof window !== 'undefined') {
-    try {
-      const savedScenarios = JSON.parse(localStorage.getItem('vscr_completed_scenarios') || '[]');
-      if (Array.isArray(savedScenarios)) {
-        xp += savedScenarios.length * 80;
-      }
-    } catch {
-      // ignore JSON parse errors
-    }
-
-    // 4. XP from weapon drills (40 XP per completed drill)
-    try {
-      const savedDrills = JSON.parse(localStorage.getItem('vscr_completed_drills') || '[]');
-      if (Array.isArray(savedDrills)) {
-        xp += savedDrills.length * 40;
-      }
-    } catch {
-      // ignore
-    }
-  }
 
   return xp;
 }

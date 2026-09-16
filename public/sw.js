@@ -9,6 +9,25 @@
 const CACHE_PREFIX = 'vscr-akademie-';
 const _version = new URL(self.location.href).searchParams.get('v') || 'dev';
 const CACHE_NAME = `${CACHE_PREFIX}${_version}`;
+
+/**
+ * Mezipaměť úplných znění předpisů z e-Sbírky — ZÁMĚRNĚ BEZ VERZE BUILDU.
+ *
+ * Soubory v /data/esbirka/ nejsou kód aplikace. Mění je jen `npm run sync:laws`,
+ * tedy novela zákona, ne nasazení opravy tlačítka. Dokud ležely v mezipaměti
+ * pojmenované podle verze buildu, mazala je událost `activate` při každém
+ * nasazení: uživateli, který si v Právním kompasu stáhl 1,5 MB zákonů pro
+ * cestu bez signálu, zmizely znění pod rukama a hlášení „Uloženo offline
+ * (datum)“ dál tvrdilo, že je má — přitom se čtení offline rozpadlo.
+ *
+ * Verze v názvu (`-v1`) se zvedá jen při změně formátu ukládání, ne při
+ * nasazení aplikace.
+ */
+const SNAPSHOT_CACHE_NAME = 'vscr-esbirka-v1';
+
+/** Cesta, pod kterou leží stažená znění (viz src/utils/esbirka/snapshot.ts). */
+const SNAPSHOT_PATH_PREFIX = '/data/esbirka/';
+
 const CORE_ASSETS = [
   '/',
   '/index.html',
@@ -16,7 +35,9 @@ const CORE_ASSETS = [
   '/icon-192.png',
   '/icon-512.png',
   '/icon-192.svg',
-  '/icon-512.svg'
+  '/icon-512.svg',
+  '/icon-maskable-192.png',
+  '/icon-maskable-512.png'
 ];
 
 /**
@@ -87,8 +108,15 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          // Mazat jen vlastní mezipaměti, ne cizí na téže doméně.
-          .filter((name) => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME)
+          // Mazat jen vlastní mezipaměti kódu aplikace, ne cizí na téže doméně
+          // a ne stažená znění předpisů (SNAPSHOT_CACHE_NAME prefix nesdílí,
+          // podmínka je tu pro čitelnost záměru).
+          .filter(
+            (name) =>
+              name.startsWith(CACHE_PREFIX) &&
+              name !== CACHE_NAME &&
+              name !== SNAPSHOT_CACHE_NAME
+          )
           .map((name) => caches.delete(name))
       );
     }).then(() => {
@@ -114,6 +142,40 @@ self.addEventListener('fetch', (event) => {
     url.pathname.startsWith('/api/') ||
     url.hostname.includes('supabase.co')
   ) {
+    return;
+  }
+
+  // Úplná znění předpisů → vlastní neverzovaná mezipaměť, cache-first.
+  //
+  // Cache-first (a ne stale-while-revalidate jako u ostatních souborů) proto,
+  // že jde o stovky kilobajtů na jeden předpis. Stahovat je na pozadí při
+  // každém otevření zákona by na mobilních datech bylo bezohledné a novější
+  // znění se přinese až nasazení s novým `sync:laws` — o tom, že se změnilo,
+  // aplikace ví z manifestu, ne z mezipaměti.
+  if (url.pathname.startsWith(SNAPSHOT_PATH_PREFIX)) {
+    event.respondWith(
+      caches.open(SNAPSHOT_CACHE_NAME).then(async (cache) => {
+        const cached = await cache.match(request);
+        if (cached) return cached;
+        try {
+          const response = await fetch(request);
+          // Znění je JSON; kontrola typu brání uložení index.html, které
+          // vrací vercel.json na neznámou cestu (viz isCacheable).
+          if (response && response.status === 200 && response.type === 'basic') {
+            const contentType = response.headers.get('Content-Type') || '';
+            if (contentType.includes('json')) {
+              await cache.put(request, response.clone());
+            }
+          }
+          return response;
+        } catch (error) {
+          return new Response(
+            JSON.stringify({ chyba: 'Znění není stažené a zařízení je bez připojení.' }),
+            { status: 503, headers: { 'Content-Type': 'application/json; charset=utf-8' } }
+          );
+        }
+      })
+    );
     return;
   }
 

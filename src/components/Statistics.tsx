@@ -20,29 +20,23 @@ import {
   Rocket
 } from 'lucide-react';
 import {
-  ResponsiveContainer, 
-  AreaChart, 
-  Area, 
-  LineChart, 
-  Line, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  Tooltip, 
-  CartesianGrid, 
-  ReferenceLine, 
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  ReferenceLine,
   Cell,
   PieChart,
   Pie,
-  Legend,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar
+  Legend
 } from 'recharts';
 import { Question, QuizSessionRecord, TopicPerformance } from '../types';
+import ConfirmDialog from './common/ConfirmDialog';
 
 interface StatisticsProps {
   questions: Question[];
@@ -73,6 +67,7 @@ export default function Statistics({
 }: StatisticsProps) {
   const [timeFilter, setTimeFilter] = useState<'all' | '7d' | '30d'>('all');
   const [selectedSubjectFilter, setSelectedSubjectFilter] = useState<string>('all');
+  const [confirmClearHistory, setConfirmClearHistory] = useState(false);
 
   // Filter history based on time and subject
   const filteredHistory = useMemo(() => {
@@ -192,29 +187,43 @@ export default function Statistics({
     });
   }, [filteredHistory]);
 
-  // Confidence distribution (Self-assessment)
-  const confidenceData = useMemo(() => {
-    let knowCorrect = 0;
-    let knowIncorrect = 0; // Falešná jistota!
-    let guessCorrect = 0;
-    let guessIncorrect = 0;
+  /**
+   * Rozpad podle vlastní jistoty.
+   *
+   * Cvičný test nabízí TŘI úrovně (vím / tipuju / nevím) — dřív je graf
+   * sléval na dvě a odpověď označenou „nevím“, která náhodou vyšla, vykázal
+   * jako „šťastný tip“. Do grafu se navíc počítaly i pokusy z ostré zkoušky,
+   * kde se na jistotu nikdo neptal, takže každá chyba ve zkoušce vypadala
+   * jako falešná jistota.
+   *
+   * Do rozpadu proto jdou jen pokusy, u kterých jistota opravdu zadaná byla.
+   */
+  const { confidenceData, confidenceAttemptCount } = useMemo(() => {
+    const tally = {
+      know: { correct: 0, incorrect: 0 },
+      guess: { correct: 0, incorrect: 0 },
+      dont_know: { correct: 0, incorrect: 0 },
+    };
 
+    let counted = 0;
     allAttempts.forEach(a => {
-      if (a.confidence === 'know') {
-        if (a.isCorrect) knowCorrect++;
-        else knowIncorrect++;
-      } else {
-        if (a.isCorrect) guessCorrect++;
-        else guessIncorrect++;
-      }
+      const level = a.confidence;
+      if (level !== 'know' && level !== 'guess' && level !== 'dont_know') return;
+      counted += 1;
+      if (a.isCorrect) tally[level].correct += 1;
+      else tally[level].incorrect += 1;
     });
 
-    return [
-      { name: 'Pevné znalosti', value: knowCorrect, color: '#10b981' },
-      { name: 'Falešná jistota (Chyba při jistotě)', value: knowIncorrect, color: '#ef4444' },
-      { name: 'Šťastný tip', value: guessCorrect, color: '#3b82f6' },
-      { name: 'Mezery ve znalostech', value: guessIncorrect, color: '#f59e0b' }
+    const data = [
+      { name: 'Pevné znalosti (věděl jsem a bylo správně)', value: tally.know.correct, color: '#10b981' },
+      { name: 'Falešná jistota (byl jsem si jistý a spletl se)', value: tally.know.incorrect, color: '#ef4444' },
+      { name: 'Šťastný tip (tipoval jsem a vyšlo to)', value: tally.guess.correct, color: '#3b82f6' },
+      { name: 'Neúspěšný tip (tipoval jsem a nevyšlo to)', value: tally.guess.incorrect, color: '#f59e0b' },
+      { name: 'Náhoda při „nevím“ (přiznal jsem, že neznám)', value: tally.dont_know.correct, color: '#8b5cf6' },
+      { name: 'Mezera ve znalostech (nevěděl jsem a bylo špatně)', value: tally.dont_know.incorrect, color: '#64748b' },
     ].filter(item => item.value > 0);
+
+    return { confidenceData: data, confidenceAttemptCount: counted };
   }, [allAttempts]);
 
   // All available subjects for filter
@@ -227,7 +236,7 @@ export default function Statistics({
     if (total < 10) {
       return {
         text: 'Nedostatek dat pro predikci',
-        desc: 'Absolvujte alespoň 15-20 otázek pro přesný odhad připravenosti.',
+        desc: `Pro odhad připravenosti je potřeba alespoň 10 odpovědí — máte ${total}. Čím víc otázek, tím spolehlivější odhad.`,
         color: 'text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700'
       };
     }
@@ -388,13 +397,10 @@ export default function Statistics({
           {/* Action buttons */}
           {onClearHistory && history.length > 0 && (
             <button
-              onClick={() => {
-                if (window.confirm('Opravdu chcete vymazat celou historii statistik?')) {
-                  onClearHistory();
-                }
-              }}
+              type="button"
+              onClick={() => setConfirmClearHistory(true)}
               title="Vymazat historii testů"
-              className="p-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800/40 flex items-center gap-1"
+              className="p-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800/40 flex items-center gap-1 cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -750,7 +756,7 @@ export default function Statistics({
 
         {weakestTopics.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {weakestTopics.map((topic, idx) => (
+            {weakestTopics.map((topic) => (
               <div 
                 key={topic.topic} 
                 className="bg-slate-50 dark:bg-slate-800/60 p-5 rounded-xl border border-slate-200 dark:border-slate-700/80 flex flex-col justify-between hover:border-red-300 dark:hover:border-red-800/80 transition-all"
@@ -797,6 +803,44 @@ export default function Statistics({
             <p className="text-xs text-green-700 dark:text-green-400/80 max-w-md mx-auto mt-1">
               Ve všech testovaných tematických okruzích jste dosáhli úspěšnosti 75 % nebo vyšší.
             </p>
+          </div>
+        )}
+
+        {/* Nejlépe zvládnuté okruhy.
+            `strongestTopics` se dosud počítalo a nikde nezobrazovalo — přehled
+            tak ukazoval jen slabiny a nebylo z něj poznat, co už je hotové. */}
+        {strongestTopics.length > 0 && (
+          <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800">
+            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 mb-3">
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              Nejlépe zvládnuté okruhy
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {strongestTopics.map((topic) => (
+                <div
+                  key={topic.topic}
+                  className="bg-emerald-50/60 dark:bg-emerald-950/20 p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-900/40"
+                >
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300">
+                      {topic.subject}
+                    </span>
+                    <span className="text-xs font-extrabold text-emerald-700 dark:text-emerald-300">
+                      {topic.accuracy} %
+                    </span>
+                  </div>
+                  <p
+                    className="text-xs font-semibold text-slate-800 dark:text-slate-200 line-clamp-2"
+                    title={topic.topic}
+                  >
+                    {topic.topic}
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    {topic.correctAttempts} z {topic.totalAttempts} správně
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -856,7 +900,11 @@ export default function Statistics({
             Analýza jistoty a sebehodnocení
           </h2>
           <p className="text-xs text-slate-400 mb-2">
-            Zjištění tzv. falešné jistoty (kritické pro příslušníky ve výkonu služby)
+            Zjištění tzv. falešné jistoty (kritické pro příslušníky ve výkonu služby).
+            Počítá se z {confidenceAttemptCount}{' '}
+            {confidenceAttemptCount === 1 ? 'odpovědi' : confidenceAttemptCount < 5 ? 'odpovědí' : 'odpovědí'} ve
+            <strong> cvičných testech</strong>, kde jste jistotu označil — ostrá zkouška se na ni neptá,
+            takže do rozpadu nevstupuje.
           </p>
 
           <div className="h-56 w-full">
@@ -973,6 +1021,24 @@ export default function Statistics({
         )}
       </div>
 
+      <ConfirmDialog
+        isOpen={confirmClearHistory}
+        tone="danger"
+        title="Vymazat celou historii testů?"
+        description={
+          <>
+            Smaže se <strong>všech {history.length} záznamů</strong> o absolvovaných testech
+            i historie pexesa — a to i ze serveru, tedy na všech vašich zařízeních. Přijdete
+            tím o statistiky, XP z testů a hodnostní postup. Vrátit to zpět nelze.
+          </>
+        }
+        confirmLabel="Vymazat historii"
+        onConfirm={() => {
+          onClearHistory?.();
+          setConfirmClearHistory(false);
+        }}
+        onCancel={() => setConfirmClearHistory(false)}
+      />
     </div>
   );
 }

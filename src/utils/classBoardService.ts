@@ -444,6 +444,23 @@ export function getHiddenClassIds(): string[] {
   }
 }
 
+/**
+ * Zruší skrytí všech tříd.
+ *
+ * Dřív si tuhle akci nástěnka řešila sama přes `setHiddenClassIds([])`, což
+ * změnilo jen stav komponenty — klíč v localStorage zůstal a po obnovení
+ * stránky byly třídy zase skryté.
+ */
+export function clearHiddenClasses(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    localStorage.removeItem(HIDDEN_CLASSES_KEY);
+  } catch (err) {
+    console.warn('[ClassBoard] Chyba při mazání skrytých tříd:', err);
+  }
+  return [];
+}
+
 export function toggleHideClass(classId: string): string[] {
   if (typeof window === 'undefined') return [];
   const current = getHiddenClassIds();

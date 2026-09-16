@@ -41,6 +41,7 @@ projektu spusťte v tomto pořadí:
 | 27 | `026_smazani_duplicit_a_zruseni_zop.sql` | Maže 13 zdvojených otázek a ruší předmět ZOP — banka klesá na 364 |
 | 28 | `027_stitky_souboru_a_editovatelny_obsah.sql` | Štítky souborů (`material_tags`) a editovatelné bloky obsahu (`content_blocks`) |
 | 29 | `028_naprava_schematu_class_boards.sql` | Srovnává `class_boards` s aplikací — bez toho se nástěnka tříd neuloží na server |
+| 30 | `029_profily_nejsou_verejny_seznam.sql` | **Profil čte jeho vlastník a správce.** Dosud platilo `USING (true)`, takže si každý přihlášený mohl přes API vypsat celý jmenný seznam Akademie včetně e-mailů |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li

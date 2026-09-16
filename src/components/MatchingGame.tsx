@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { LayoutGrid, CheckCircle2, RotateCcw, Timer, AlertCircle, Sparkles, Trophy, ArrowRight, Zap, Award, Printer, Plus, Edit3, Trash2, Eye, EyeOff } from 'lucide-react';
+import { LayoutGrid, RotateCcw, Timer, Sparkles, Trophy, ArrowRight, Zap, Award, Printer, Plus, Edit3, Trash2, Eye, EyeOff } from 'lucide-react';
 import { MatchingCategory, MatchingRecord } from '../types';
 import DiagramGame from "./DiagramGame";
-import { recordMatchingCompletion, loadMatchingHistory } from '../utils/gamification';
+import { recordMatchingCompletion } from '../utils/gamification';
 import PrintHeader from './common/PrintHeader';
 import MatchingCategoryEditModal from './common/MatchingCategoryEditModal';
 import { useAuth } from '../context/AuthContext';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import {
   UploadCloud,
   Download,
@@ -12,10 +12,8 @@ import {
   ChevronDown,
   ChevronUp,
   Trash2,
-  HelpCircle,
   Sparkles,
   Layers,
-  ArrowRight,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useDialog } from '../hooks/useDialog';
@@ -83,7 +81,9 @@ export default function BulkQuestionImportModal({
   // Handle file reading
   const handleFile = useCallback((file: File) => {
     if (!file.name.endsWith('.txt') && !file.name.endsWith('.csv')) {
-      alert('Podporovány jsou pouze textové soubory s příponou .txt nebo .csv.');
+      // Hlášení jde do vlastního pruhu v modálu, ne do `alert()`: ten v PWA
+      // vypadá jako systémové okno s názvem domény a na iOS ho lze potlačit.
+      setErrorMessage('Podporovány jsou pouze textové soubory s příponou .txt nebo .csv.');
       return;
     }
 

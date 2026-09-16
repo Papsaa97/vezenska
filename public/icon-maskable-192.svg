@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <!--
+    MASKABLE varianta ikony 192×192 — viz komentář v icon-maskable-512.svg.
+    Kresba je zmenšená na 72 % a vycentrovaná, pozadí je bez zaoblení.
+  -->
+  <defs>
+    <linearGradient id="bgGradMask192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="shieldGradMask192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="goldGradMask192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="192" height="192" fill="url(#bgGradMask192)" />
+
+  <g transform="translate(96,96) scale(0.72) translate(-96,-96)">
+    <!-- Shield Emblem -->
+    <path d="M 96 28 L 144 48 C 144 96 126 132 96 156 C 66 132 48 96 48 48 Z" fill="url(#shieldGradMask192)" stroke="#60a5fa" stroke-width="3" />
+
+    <!-- Gold Accent Inner Shield Trim -->
+    <path d="M 96 38 L 134 54 C 134 94 120 122 96 142 C 72 122 58 94 58 54 Z" fill="none" stroke="url(#goldGradMask192)" stroke-width="2" />
+
+    <!-- Letter V -->
+    <text x="96" y="108" font-family="system-ui, -apple-system, sans-serif" font-size="52" font-weight="900" fill="#ffffff" text-anchor="middle" dominant-baseline="central">V</text>
+
+    <!-- VS ČR Text -->
+    <text x="96" y="172" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="800" fill="#fbbf24" text-anchor="middle" letter-spacing="2">AKADEMIE VS ČR</text>
+  </g>
+</svg>

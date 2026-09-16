@@ -94,14 +94,16 @@ export const matchingCategories: MatchingCategory[] = [
   },
   {
     id: 'kazenske_tresty',
-    title: 'Kázeňská řízení a tresty odsouzených (§ 46 zák. 169/1999 Sb.)',
+    title: 'Kázeňská řízení a tresty odsouzených (§ 46 odst. 3 zák. 169/1999 Sb.)',
     pairs: [
-      { id: 'kt1', left: 'Písemná důtka', right: 'Nejmírnější kázeňský trest za méně závažné porušení vězeňského řádu' },
-      { id: 'kt2', left: 'Snížení kapesného', right: 'Finanční postih až o jednu třetinu na dobu až 3 měsíců' },
+      { id: 'kt1', left: 'Důtka', right: 'Nejmírnější kázeňský trest za méně závažné porušení vězeňského řádu' },
+      { id: 'kt2', left: 'Snížení kapesného', right: 'Finanční postih až o jednu třetinu na dobu až 3 kalendářních měsíců' },
       { id: 'kt3', left: 'Propadnutí věci', right: 'Trvalé odebrání nedovoleného předmětu (např. nepovolený elektrospotřebič)' },
-      { id: 'kt4', left: 'Zákaz přijetí balíčku', right: 'Zákaz příjmu nárokového balíčku s potravinami až na dobu 1 roku' },
-      { id: 'kt5', left: 'Celodenní umístění do uzavřeného oddílu', right: 'Zpřísněný režim mimo pracovní dobu na dobu až 30 dnů' },
-      { id: 'kt6', left: 'Umístění do samovazby', right: 'Nejpřísnější trest: izolace na samovazbě až na 20 dnů (u mladistvých max. 10 dnů)' }
+      { id: 'kt4', left: 'Zákaz přijetí balíčku', right: 'Zákaz přijetí jednoho balíčku v kalendářním roce, nikoli roční zákaz' },
+      { id: 'kt5', left: 'Umístění do uzavřeného oddílu', right: 'Zpřísněný režim mimo dobu plnění úkolů programu zacházení až na 28 dnů' },
+      { id: 'kt6', left: 'Umístění do samovazby', right: 'Nejpřísnější trest: izolace na samovazbě až na 20 dnů (u mladistvých max. 10 dnů)' },
+      { id: 'kt7', left: 'Pokuta', right: 'Peněžitý kázeňský trest až do výše 5 000 Kč — nezaměňovat s odměnou do 1 000 Kč' },
+      { id: 'kt8', left: 'Odnětí výhod z předchozí odměny', right: 'Zrušení výhod, které odsouzený získal dřívější kázeňskou odměnou' }
     ]
   },
   {

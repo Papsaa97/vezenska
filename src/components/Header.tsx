@@ -32,30 +32,19 @@ import {
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord } from '../types';
 import { tacticalScenarios } from '../data/scenariosData';
-import { calculateBaseXp, evaluateBadges, getUserRank, loadStreakInfo } from '../utils/gamification';
+import { calculateBaseXp, evaluateBadges, getUserRank } from '../utils/gamification';
 import { AuthModal } from './AuthUI';
 import FeedbackModal from './FeedbackModal';
 import UserProfileModal from './UserProfileModal';
 import NotificationBell from './NotificationBell';
 import { useAuth } from '../context/AuthContext';
 import { resolveAvatarDisplay } from '../utils/avatar';
+import { useLocalProgress } from '../hooks/useLocalProgress';
 
-export type NavTab = 
-  | 'dashboard'
-  | 'subjects' 
-  | 'quiz' 
-  | 'assistant' 
-  | 'compass' 
-  | 'admin' 
-  | 'ethics' 
-  | 'scenarios' 
-  | 'weapons' 
-  | 'flashcards' 
-  | 'matching' 
-  | 'badges' 
-  | 'statistics' 
-  | 'library' 
-  | 'content-manager';
+import { NavTab, NAV_TAB_LABELS, NAV_TAB_SHORT_LABELS } from '../data/navTabs';
+
+// Typ záložky se re-exportuje, aby ho šlo brát i odsud (historické importy).
+export type { NavTab };
 
 interface HeaderProps {
   activeTab: NavTab;
@@ -135,9 +124,20 @@ export default function Header({
   const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const streakInfo = useMemo(() => loadStreakInfo(), []);
-  const baseXp = useMemo(() => calculateBaseXp(quizHistory, matchingHistory), [quizHistory, matchingHistory]);
-  
+  /** Tlačítko, které otevřelo právě zobrazené menu — po zavření se mu vrací fokus. */
+  const dropdownTriggerRef = useRef<HTMLElement | null>(null);
+  /** Panel otevřeného menu — kvůli přesunu fokusu a obsluze kláves. */
+  const dropdownPanelRef = useRef<HTMLDivElement | null>(null);
+
+  // Postup ze scénářů, drilů a denní série žije v localStorage, o kterém React
+  // neví — hook ho přinese jako stav, takže se čísla přepočítají po každém
+  // zápisu (dřív hlavička držela staré XP celou session).
+  const { streakInfo, extraXp } = useLocalProgress();
+  const baseXp = useMemo(
+    () => calculateBaseXp(quizHistory, matchingHistory, extraXp),
+    [quizHistory, matchingHistory, extraXp]
+  );
+
   const { totalXpWithBadges, unlockedCount } = useMemo(() => {
     return evaluateBadges(quizHistory, matchingHistory, streakInfo, baseXp);
   }, [quizHistory, matchingHistory, streakInfo, baseXp]);
@@ -172,11 +172,28 @@ export default function Header({
       : 'Student';
   const avatarDisplay = useMemo(() => resolveAvatarDisplay(profile?.avatar_url), [profile?.avatar_url]);
 
+  /**
+   * Zavře otevřené menu a vrátí fokus tlačítku, které ho otevřelo.
+   *
+   * Bez vrácení fokusu skončil uživatel s klávesnicí po zavření menu na
+   * začátku stránky a musel se k navigaci protabovat znovu.
+   */
+  const closeDropdown = (returnFocus = false) => {
+    if (returnFocus) {
+      const trigger = dropdownTriggerRef.current;
+      // Fokus se vrací až po odebrání panelu, jinak ho přepíše odcházející
+      // animace panelu.
+      window.setTimeout(() => trigger?.focus(), 0);
+    }
+    dropdownTriggerRef.current = null;
+    setOpenDropdown(null);
+    setDropdownPos(null);
+  };
+
   // Toggle Dropdowns
   const toggleDropdown = (type: DropdownType, e: React.MouseEvent<HTMLElement>) => {
     if (openDropdown === type) {
-      setOpenDropdown(null);
-      setDropdownPos(null);
+      closeDropdown();
     } else {
       const rect = e.currentTarget.getBoundingClientRect();
       const isProfile = type === 'profile';
@@ -192,6 +209,7 @@ export default function Header({
       }
       if (left < 12) left = 12;
 
+      dropdownTriggerRef.current = e.currentTarget;
       setDropdownPos({ top: rect.bottom + 8, left });
       setOpenDropdown(type);
     }
@@ -201,6 +219,7 @@ export default function Header({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        dropdownTriggerRef.current = null;
         setOpenDropdown(null);
         setDropdownPos(null);
       }
@@ -208,6 +227,60 @@ export default function Header({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  /**
+   * Obsluha klávesnice v otevřeném menu.
+   *
+   * Menu se dřív z klávesnice ovládat nedalo: Escape ho nezavřel a panel se
+   * vykresluje na konci hlavičky, takže se do něj tabovalo skrz celou
+   * navigaci. Teď se při otevření přesune fokus na první položku, šipky mezi
+   * položkami přecházejí, Home/End skáčou na kraje a Escape menu zavře
+   * a vrátí fokus tlačítku.
+   */
+  useEffect(() => {
+    if (!openDropdown) return;
+
+    const items = (): HTMLElement[] =>
+      Array.from(dropdownPanelRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []);
+
+    // Fokus na první položku až po vykreslení panelu.
+    const focusTimer = window.setTimeout(() => items()[0]?.focus(), 0);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeDropdown(true);
+        return;
+      }
+
+      const list = items();
+      if (list.length === 0) return;
+      const current = list.indexOf(document.activeElement as HTMLElement);
+
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        const posun = event.key === 'ArrowDown' ? 1 : -1;
+        const dalsi = current === -1 ? 0 : (current + posun + list.length) % list.length;
+        list[dalsi]?.focus();
+      } else if (event.key === 'Home') {
+        event.preventDefault();
+        list[0]?.focus();
+      } else if (event.key === 'End') {
+        event.preventDefault();
+        list[list.length - 1]?.focus();
+      } else if (event.key === 'Tab') {
+        // Tabulátor z menu odchází — menu se zavře, ale fokus se nevrací,
+        // aby uživatel pokračoval tam, kam tabuloval.
+        closeDropdown();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [openDropdown]);
 
   // Nav scroll gradient tracking
   const navScrollRef = useRef<HTMLElement>(null);
@@ -249,13 +322,18 @@ export default function Header({
             <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-500 rounded-xl flex items-center justify-center text-white font-black text-base sm:text-lg shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform border border-blue-400/30 shrink-0">
               V
             </div>
+            {/* Značka aplikace, ne nadpis stránky.
+                Dřív to byl <h1>, takže na každé obrazovce stály dva nadpisy
+                první úrovně — jeden tady a jeden v obsahu záložky. Nadpisem
+                stránky má být to, o čem stránka je; tohle je trvalý odkaz
+                na Nástěnku. */}
             <div className="flex flex-col">
-              <h1 className="text-white font-bold text-xs sm:text-sm lg:text-base tracking-tight flex items-center gap-1.5 sm:gap-2">
+              <span className="text-white font-bold text-xs sm:text-sm lg:text-base tracking-tight flex items-center gap-1.5 sm:gap-2">
                 AKADEMIE VS ČR
                 <span className="text-amber-400 font-bold text-[9px] sm:text-[10px] lg:text-xs px-1.5 sm:px-2 py-0.5 bg-amber-400/10 rounded-full border border-amber-400/30 tracking-wider">
                   ZOP A
                 </span>
-              </h1>
+              </span>
               <span className="text-[10px] text-slate-400 hidden xl:block tracking-wide">Výukový & zkušební systém</span>
             </div>
           </button>
@@ -294,7 +372,8 @@ export default function Header({
             </div>
           )}
 
-          <nav 
+          <nav
+            aria-label="Hlavní navigace modulů"
             ref={navScrollRef}
             onScroll={() => {
               checkNavScroll();
@@ -305,6 +384,8 @@ export default function Header({
             {/* 0. Dashboard - Nástěnka tříd ZOP */}
             <button
               onClick={() => { setActiveTab('dashboard'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              aria-current={activeTab === 'dashboard' ? 'page' : undefined}
               className={`px-2.5 lg:px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'dashboard' 
                   ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
@@ -312,12 +393,14 @@ export default function Header({
               }`}
             >
               <LayoutDashboard className="w-4 h-4" />
-              <span>Nástěnka</span>
+              <span>{NAV_TAB_SHORT_LABELS['dashboard']}</span>
             </button>
 
             {/* 1. Subjects - Primary Item */}
             <button
               onClick={() => { setActiveTab('subjects'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              aria-current={activeTab === 'subjects' ? 'page' : undefined}
               className={`px-2.5 lg:px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'subjects' 
                   ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
@@ -325,12 +408,14 @@ export default function Header({
               }`}
             >
               <FolderKanban className="w-4 h-4" />
-              <span>Předměty</span>
+              <span>{NAV_TAB_SHORT_LABELS['subjects']}</span>
             </button>
 
             {/* 2. Exam & Quiz - Primary Item */}
             <button
               onClick={() => { setActiveTab('quiz'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              aria-current={activeTab === 'quiz' ? 'page' : undefined}
               className={`px-2.5 lg:px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'quiz' 
                   ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
@@ -338,12 +423,14 @@ export default function Header({
               }`}
             >
               <GraduationCap className="w-4 h-4" />
-              <span>Test & Zkouška</span>
+              <span>{NAV_TAB_SHORT_LABELS['quiz']}</span>
             </button>
 
             {/* 3. AI Captain Exam Assistant - Primary Item */}
             <button
               onClick={() => { setActiveTab('assistant'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              aria-current={activeTab === 'assistant' ? 'page' : undefined}
               className={`px-2.5 lg:px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 border ${
                 activeTab === 'assistant' 
                   ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-indigo-400/40 shadow-sm shadow-indigo-500/25' 
@@ -352,12 +439,16 @@ export default function Header({
               title="AI vyhodnocení zadání a písemek od kapitánů z fotky či textu"
             >
               <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
-              <span>AI Asistent</span>
+              <span>{NAV_TAB_SHORT_LABELS['assistant']}</span>
             </button>
 
             {/* Tablet-only "Další" Dropdown Button (md/lg view) */}
             <button
               onClick={(e) => toggleDropdown('more', e)}
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={openDropdown === 'more'}
+              aria-controls="hlavicka-menu-dalsi"
               className={`flex xl:hidden px-2.5 lg:px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
                 isMoreActive
                   ? 'bg-amber-500 text-slate-950 shadow-sm shadow-amber-500/20'
@@ -378,6 +469,10 @@ export default function Header({
             <div className="relative shrink-0 hidden xl:block">
               <button
                 onClick={(e) => toggleDropdown('practice', e)}
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={openDropdown === 'practice'}
+              aria-controls="hlavicka-menu-vycvik"
                 className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                   isPracticeActive
                     ? 'bg-amber-500 text-slate-950 shadow-sm shadow-amber-500/20'
@@ -394,6 +489,10 @@ export default function Header({
             <div className="relative shrink-0 hidden xl:block">
               <button
                 onClick={(e) => toggleDropdown('drill', e)}
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={openDropdown === 'drill'}
+              aria-controls="hlavicka-menu-dril"
                 className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                   isDrillActive
                     ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20'
@@ -409,6 +508,8 @@ export default function Header({
             {/* 6. Badges */}
             <button
               onClick={() => { setActiveTab('badges'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              aria-current={activeTab === 'badges' ? 'page' : undefined}
               className={`hidden xl:flex px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'badges' 
                   ? 'bg-amber-500 text-slate-950 shadow-sm shadow-amber-500/20' 
@@ -416,7 +517,7 @@ export default function Header({
               }`}
             >
               <Award className="w-4 h-4" />
-              <span>Odznaky</span>
+              <span>{NAV_TAB_SHORT_LABELS['badges']}</span>
               {unlockedCount > 0 && (
                 <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-400 text-slate-950 font-black">
                   {unlockedCount}
@@ -427,6 +528,8 @@ export default function Header({
             {/* 7. Statistics */}
             <button
               onClick={() => { setActiveTab('statistics'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              aria-current={activeTab === 'statistics' ? 'page' : undefined}
               className={`hidden xl:flex px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'statistics' 
                   ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
@@ -434,12 +537,14 @@ export default function Header({
               }`}
             >
               <BarChart3 className="w-4 h-4" />
-              <span>Statistiky</span>
+              <span>{NAV_TAB_SHORT_LABELS['statistics']}</span>
             </button>
 
             {/* 8. Material Library */}
             <button
               onClick={() => { setActiveTab('library'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              aria-current={activeTab === 'library' ? 'page' : undefined}
               className={`hidden xl:flex px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'library'
                   ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
@@ -465,6 +570,10 @@ export default function Header({
           <div className="relative shrink-0">
             <button
               onClick={(e) => toggleDropdown('profile', e)}
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={openDropdown === 'profile'}
+              aria-controls="hlavicka-menu-profil"
               className={`cursor-pointer flex items-center gap-2 sm:gap-2.5 p-1 sm:px-2.5 sm:py-1.5 rounded-xl sm:rounded-2xl transition-all border shrink-0 ${
                 openDropdown === 'profile'
                   ? 'bg-slate-800 border-amber-400/70 ring-2 ring-amber-400/20 shadow-md'
@@ -550,6 +659,10 @@ export default function Header({
         {/* Practice Dropdown (Desktop) */}
         {openDropdown === 'practice' && dropdownPos && (
           <motion.div
+            ref={dropdownPanelRef}
+            id="hlavicka-menu-vycvik"
+            role="menu"
+            aria-label="Výcvik a praxe"
             initial={{ opacity: 0, y: 8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.96 }}
@@ -559,52 +672,64 @@ export default function Header({
           >
             <button
               onClick={() => { setActiveTab('scenarios'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              role="menuitem"
+              aria-current={activeTab === 'scenarios' ? 'page' : undefined}
               className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                 activeTab === 'scenarios' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-slate-800'
               }`}
             >
               <ShieldAlert className={`w-4 h-4 shrink-0 ${activeTab === 'scenarios' ? 'text-slate-950' : 'text-amber-400'}`} />
               <div>
-                <div className="font-bold">Taktické scénáře</div>
+                <div className="font-bold">{NAV_TAB_LABELS['scenarios']}</div>
                 <div className="text-[10px] opacity-75">{tacticalScenarios.length} modelových situací z praxe</div>
               </div>
             </button>
 
             <button
               onClick={() => { setActiveTab('weapons'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              role="menuitem"
+              aria-current={activeTab === 'weapons' ? 'page' : undefined}
               className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                 activeTab === 'weapons' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-slate-800'
               }`}
             >
               <Crosshair className={`w-4 h-4 shrink-0 ${activeTab === 'weapons' ? 'text-slate-950' : 'text-blue-400'}`} />
               <div>
-                <div className="font-bold">Zbraně & Střelba</div>
+                <div className="font-bold">{NAV_TAB_LABELS['weapons']}</div>
                 <div className="text-[10px] opacity-75">CZ 75 B & Scorpion EVO 3A1</div>
               </div>
             </button>
 
             <button
               onClick={() => { setActiveTab('admin'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              role="menuitem"
+              aria-current={activeTab === 'admin' ? 'page' : undefined}
               className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                 activeTab === 'admin' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-slate-800'
               }`}
             >
               <FileText className={`w-4 h-4 shrink-0 ${activeTab === 'admin' ? 'text-slate-950' : 'text-emerald-400'}`} />
               <div>
-                <div className="font-bold">Administrativa & ETŘ</div>
+                <div className="font-bold">{NAV_TAB_LABELS['admin']}</div>
                 <div className="text-[10px] opacity-75">Úřední záznamy, Č.j. a tiskopisy</div>
               </div>
             </button>
 
             <button
               onClick={() => { setActiveTab('ethics'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              role="menuitem"
+              aria-current={activeTab === 'ethics' ? 'page' : undefined}
               className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                 activeTab === 'ethics' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-slate-800'
               }`}
             >
               <HeartHandshake className={`w-4 h-4 shrink-0 ${activeTab === 'ethics' ? 'text-slate-950' : 'text-rose-400'}`} />
               <div>
-                <div className="font-bold">Profesní etika</div>
+                <div className="font-bold">{NAV_TAB_LABELS['ethics']}</div>
                 <div className="text-[10px] opacity-75">Kodex & protikorupční modul</div>
               </div>
             </button>
@@ -614,6 +739,10 @@ export default function Header({
         {/* Drill Dropdown (Desktop) */}
         {openDropdown === 'drill' && dropdownPos && (
           <motion.div
+            ref={dropdownPanelRef}
+            id="hlavicka-menu-dril"
+            role="menu"
+            aria-label="Znalosti a dril"
             initial={{ opacity: 0, y: 8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.96 }}
@@ -623,39 +752,48 @@ export default function Header({
           >
             <button
               onClick={() => { setActiveTab('compass'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              role="menuitem"
+              aria-current={activeTab === 'compass' ? 'page' : undefined}
               className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                 activeTab === 'compass' ? 'bg-blue-600 text-white font-bold' : 'text-slate-200 hover:bg-slate-800'
               }`}
             >
               <Scale className={`w-4 h-4 shrink-0 ${activeTab === 'compass' ? 'text-white' : 'text-blue-400'}`} />
               <div>
-                <div className="font-bold">Předpisy & § Kompas</div>
+                <div className="font-bold">{NAV_TAB_LABELS['compass']}</div>
                 <div className="text-[10px] opacity-75">Zákony 555/1992, 169/1999 & NGŘ</div>
               </div>
             </button>
 
             <button
               onClick={() => { setActiveTab('flashcards'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              role="menuitem"
+              aria-current={activeTab === 'flashcards' ? 'page' : undefined}
               className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                 activeTab === 'flashcards' ? 'bg-blue-600 text-white font-bold' : 'text-slate-200 hover:bg-slate-800'
               }`}
             >
               <Layers className={`w-4 h-4 shrink-0 ${activeTab === 'flashcards' ? 'text-white' : 'text-amber-400'}`} />
               <div>
-                <div className="font-bold">Kartičky (Dril)</div>
+                <div className="font-bold">{NAV_TAB_LABELS['flashcards']}</div>
                 <div className="text-[10px] opacity-75">3D otočné Leitnerovy boxy</div>
               </div>
             </button>
 
             <button
               onClick={() => { setActiveTab('matching'); setOpenDropdown(null); setDropdownPos(null); }}
+              type="button"
+              role="menuitem"
+              aria-current={activeTab === 'matching' ? 'page' : undefined}
               className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                 activeTab === 'matching' ? 'bg-blue-600 text-white font-bold' : 'text-slate-200 hover:bg-slate-800'
               }`}
             >
               <LayoutGrid className={`w-4 h-4 shrink-0 ${activeTab === 'matching' ? 'text-white' : 'text-emerald-400'}`} />
               <div>
-                <div className="font-bold">Poznávačka pojmů</div>
+                <div className="font-bold">{NAV_TAB_LABELS['matching']}</div>
                 <div className="text-[10px] opacity-75">Rychlé pexeso na čas</div>
               </div>
             </button>
@@ -665,6 +803,10 @@ export default function Header({
         {/* Tablet "Další" Dropdown (md/lg view) */}
         {openDropdown === 'more' && dropdownPos && (
           <motion.div
+            ref={dropdownPanelRef}
+            id="hlavicka-menu-dalsi"
+            role="menu"
+            aria-label="Další moduly a nástroje"
             initial={{ opacity: 0, y: 8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.96 }}
@@ -681,52 +823,64 @@ export default function Header({
 
               <button
                 onClick={() => { setActiveTab('scenarios'); setOpenDropdown(null); setDropdownPos(null); }}
+                type="button"
+                role="menuitem"
+                aria-current={activeTab === 'scenarios' ? 'page' : undefined}
                 className={`w-full p-2 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                   activeTab === 'scenarios' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-slate-800'
                 }`}
               >
                 <ShieldAlert className={`w-4 h-4 shrink-0 ${activeTab === 'scenarios' ? 'text-slate-950' : 'text-amber-400'}`} />
                 <div>
-                  <div className="font-bold">Taktické scénáře</div>
+                  <div className="font-bold">{NAV_TAB_LABELS['scenarios']}</div>
                   <div className="text-[10px] opacity-75">{tacticalScenarios.length} modelových situací z praxe</div>
                 </div>
               </button>
 
               <button
                 onClick={() => { setActiveTab('weapons'); setOpenDropdown(null); setDropdownPos(null); }}
+                type="button"
+                role="menuitem"
+                aria-current={activeTab === 'weapons' ? 'page' : undefined}
                 className={`w-full p-2 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                   activeTab === 'weapons' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-slate-800'
                 }`}
               >
                 <Crosshair className={`w-4 h-4 shrink-0 ${activeTab === 'weapons' ? 'text-slate-950' : 'text-blue-400'}`} />
                 <div>
-                  <div className="font-bold">Zbraně & Střelba</div>
+                  <div className="font-bold">{NAV_TAB_LABELS['weapons']}</div>
                   <div className="text-[10px] opacity-75">CZ 75 B & Scorpion EVO 3A1</div>
                 </div>
               </button>
 
               <button
                 onClick={() => { setActiveTab('admin'); setOpenDropdown(null); setDropdownPos(null); }}
+                type="button"
+                role="menuitem"
+                aria-current={activeTab === 'admin' ? 'page' : undefined}
                 className={`w-full p-2 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                   activeTab === 'admin' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-slate-800'
                 }`}
               >
                 <FileText className={`w-4 h-4 shrink-0 ${activeTab === 'admin' ? 'text-slate-950' : 'text-emerald-400'}`} />
                 <div>
-                  <div className="font-bold">Administrativa & ETŘ</div>
+                  <div className="font-bold">{NAV_TAB_LABELS['admin']}</div>
                   <div className="text-[10px] opacity-75">Úřední záznamy, Č.j. a tiskopisy</div>
                 </div>
               </button>
 
               <button
                 onClick={() => { setActiveTab('ethics'); setOpenDropdown(null); setDropdownPos(null); }}
+                type="button"
+                role="menuitem"
+                aria-current={activeTab === 'ethics' ? 'page' : undefined}
                 className={`w-full p-2 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                   activeTab === 'ethics' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-slate-800'
                 }`}
               >
                 <HeartHandshake className={`w-4 h-4 shrink-0 ${activeTab === 'ethics' ? 'text-slate-950' : 'text-rose-400'}`} />
                 <div>
-                  <div className="font-bold">Profesní etika</div>
+                  <div className="font-bold">{NAV_TAB_LABELS['ethics']}</div>
                   <div className="text-[10px] opacity-75">Kodex & protikorupční modul</div>
                 </div>
               </button>
@@ -741,39 +895,48 @@ export default function Header({
 
               <button
                 onClick={() => { setActiveTab('compass'); setOpenDropdown(null); setDropdownPos(null); }}
+                type="button"
+                role="menuitem"
+                aria-current={activeTab === 'compass' ? 'page' : undefined}
                 className={`w-full p-2 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                   activeTab === 'compass' ? 'bg-blue-600 text-white font-bold' : 'text-slate-200 hover:bg-slate-800'
                 }`}
               >
                 <Scale className={`w-4 h-4 shrink-0 ${activeTab === 'compass' ? 'text-white' : 'text-blue-400'}`} />
                 <div>
-                  <div className="font-bold">Předpisy & § Kompas</div>
+                  <div className="font-bold">{NAV_TAB_LABELS['compass']}</div>
                   <div className="text-[10px] opacity-75">Zákony 555/1992, 169/1999 & NGŘ</div>
                 </div>
               </button>
 
               <button
                 onClick={() => { setActiveTab('flashcards'); setOpenDropdown(null); setDropdownPos(null); }}
+                type="button"
+                role="menuitem"
+                aria-current={activeTab === 'flashcards' ? 'page' : undefined}
                 className={`w-full p-2 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                   activeTab === 'flashcards' ? 'bg-blue-600 text-white font-bold' : 'text-slate-200 hover:bg-slate-800'
                 }`}
               >
                 <Layers className={`w-4 h-4 shrink-0 ${activeTab === 'flashcards' ? 'text-white' : 'text-amber-400'}`} />
                 <div>
-                  <div className="font-bold">Kartičky (Dril)</div>
+                  <div className="font-bold">{NAV_TAB_LABELS['flashcards']}</div>
                   <div className="text-[10px] opacity-75">3D otočné Leitnerovy boxy</div>
                 </div>
               </button>
 
               <button
                 onClick={() => { setActiveTab('matching'); setOpenDropdown(null); setDropdownPos(null); }}
+                type="button"
+                role="menuitem"
+                aria-current={activeTab === 'matching' ? 'page' : undefined}
                 className={`w-full p-2 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                   activeTab === 'matching' ? 'bg-blue-600 text-white font-bold' : 'text-slate-200 hover:bg-slate-800'
                 }`}
               >
                 <LayoutGrid className={`w-4 h-4 shrink-0 ${activeTab === 'matching' ? 'text-white' : 'text-emerald-400'}`} />
                 <div>
-                  <div className="font-bold">Poznávačka pojmů</div>
+                  <div className="font-bold">{NAV_TAB_LABELS['matching']}</div>
                   <div className="text-[10px] opacity-75">Rychlé pexeso na čas</div>
                 </div>
               </button>
@@ -788,6 +951,9 @@ export default function Header({
 
               <button
                 onClick={() => { setActiveTab('badges'); setOpenDropdown(null); setDropdownPos(null); }}
+                type="button"
+                role="menuitem"
+                aria-current={activeTab === 'badges' ? 'page' : undefined}
                 className={`w-full p-2 rounded-xl text-left text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${
                   activeTab === 'badges' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-slate-800'
                 }`}
@@ -810,6 +976,9 @@ export default function Header({
 
               <button
                 onClick={() => { setActiveTab('statistics'); setOpenDropdown(null); setDropdownPos(null); }}
+                type="button"
+                role="menuitem"
+                aria-current={activeTab === 'statistics' ? 'page' : undefined}
                 className={`w-full p-2 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                   activeTab === 'statistics' ? 'bg-blue-600 text-white font-bold' : 'text-slate-200 hover:bg-slate-800'
                 }`}
@@ -823,13 +992,16 @@ export default function Header({
 
               <button
                 onClick={() => { setActiveTab('library'); setOpenDropdown(null); setDropdownPos(null); }}
+                type="button"
+                role="menuitem"
+                aria-current={activeTab === 'library' ? 'page' : undefined}
                 className={`w-full p-2 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                   activeTab === 'library' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-200 hover:bg-slate-800'
                 }`}
               >
                 <BookOpen className={`w-4 h-4 shrink-0 ${activeTab === 'library' ? 'text-white' : 'text-indigo-400'}`} />
                 <div>
-                  <div className="font-bold">Knihovna materiálů</div>
+                  <div className="font-bold">{NAV_TAB_LABELS['library']}</div>
                   <div className="text-[10px] opacity-75">Studijní texty a předpisy ke stažení</div>
                 </div>
               </button>
@@ -837,13 +1009,16 @@ export default function Header({
               {isPrivileged && (
                 <button
                   onClick={() => { setActiveTab('content-manager'); setOpenDropdown(null); setDropdownPos(null); }}
+                  type="button"
+                  role="menuitem"
+                  aria-current={activeTab === 'content-manager' ? 'page' : undefined}
                   className={`w-full p-2 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
                     activeTab === 'content-manager' ? 'bg-emerald-600 text-white font-bold' : 'text-emerald-300 hover:bg-slate-800'
                   }`}
                 >
                   <Settings2 className="w-4 h-4 shrink-0 text-emerald-400" />
                   <div>
-                    <div className="font-bold">Správa obsahu</div>
+                    <div className="font-bold">{NAV_TAB_LABELS['content-manager']}</div>
                     <div className="text-[10px] opacity-75">Administrace otázek a materiálů</div>
                   </div>
                 </button>
@@ -855,6 +1030,10 @@ export default function Header({
         {/* Profile & Rank Dropdown Popover */}
         {openDropdown === 'profile' && dropdownPos && (
           <motion.div
+            ref={dropdownPanelRef}
+            id="hlavicka-menu-profil"
+            role="menu"
+            aria-label="Profil, hodnost a nastavení"
             initial={{ opacity: 0, y: 8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.96 }}
@@ -921,6 +1100,9 @@ export default function Header({
 
               <button
                 onClick={() => { setActiveTab('badges'); setOpenDropdown(null); setDropdownPos(null); }}
+                type="button"
+                role="menuitem"
+                aria-current={activeTab === 'badges' ? 'page' : undefined}
                 className="w-full mt-1 py-1.5 px-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-lg text-amber-300 text-[11px] font-bold flex items-center justify-between transition-colors cursor-pointer"
               >
                 <span>Hodnostní žebříček a odznaky</span>
@@ -930,6 +1112,9 @@ export default function Header({
               {isPrivileged && (
                 <button
                   onClick={() => { setActiveTab('content-manager'); setOpenDropdown(null); setDropdownPos(null); }}
+                  type="button"
+                  role="menuitem"
+                  aria-current={activeTab === 'content-manager' ? 'page' : undefined}
                   className="w-full mt-1.5 py-1.5 px-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-lg text-emerald-300 text-[11px] font-bold flex items-center justify-between transition-colors cursor-pointer"
                 >
                   <div className="flex items-center gap-2">
@@ -946,6 +1131,8 @@ export default function Header({
               <div className="pt-1 space-y-1">
                 <button
                   onClick={() => { setIsProfileModalOpen(true); setOpenDropdown(null); setDropdownPos(null); }}
+                  type="button"
+                  role="menuitem"
                   className="w-full py-2 px-3 rounded-xl text-left text-xs font-semibold text-slate-200 hover:bg-slate-800 border border-transparent hover:border-slate-700 flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   <UserCog className="w-4 h-4 text-blue-400" />
@@ -953,6 +1140,8 @@ export default function Header({
                 </button>
                 <button
                   onClick={() => { signOut(); setOpenDropdown(null); setDropdownPos(null); }}
+                  type="button"
+                  role="menuitem"
                   className="w-full py-2 px-3 rounded-xl text-left text-xs font-semibold text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 border border-transparent hover:border-rose-900/50 flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" />
@@ -963,6 +1152,8 @@ export default function Header({
               <div className="pt-1">
                 <button
                   onClick={() => { setIsAuthModalOpen(true); setOpenDropdown(null); setDropdownPos(null); }}
+                  type="button"
+                  role="menuitem"
                   className="w-full py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-600/25 transition-colors cursor-pointer"
                 >
                   <LogIn className="w-4 h-4" />

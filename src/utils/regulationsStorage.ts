@@ -1,8 +1,30 @@
 import { VscrRegulation, VSCR_REGULATIONS_REGISTRY } from '../data/vscrRegulationsRegistry';
 
 const STORAGE_KEY = 'vscr_custom_regulations';
-const OFFLINE_CACHE_KEY = 'vscr_offline_regulations_cache';
 const OFFLINE_STATUS_KEY = 'vscr_offline_downloaded_at';
+
+/**
+ * Klíč, do kterého se dřív zapisovala druhá kopie všech předpisů.
+ *
+ * Nikdo ji nikdy nečetl — `getStoredRegulations()` čte STORAGE_KEY, který
+ * v localStorage leží stejně dlouho. Kopie tedy jen zabírala místo ve kvótě
+ * (u plné databáze předpisů stovky kilobajtů, a localStorage má typicky 5 MB),
+ * čímž mohla shodit ukládání koncepty a postupu. Zápis je odstraněn a klíč se
+ * při prvním použití modulu jednorázově uklidí.
+ */
+const LEGACY_OFFLINE_CACHE_KEY = 'vscr_offline_regulations_cache';
+
+/** Jednorázový úklid mrtvého klíče ze starších verzí aplikace. */
+export function purgeLegacyOfflineCache(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    if (localStorage.getItem(LEGACY_OFFLINE_CACHE_KEY) !== null) {
+      localStorage.removeItem(LEGACY_OFFLINE_CACHE_KEY);
+    }
+  } catch {
+    // Zaplněná nebo zakázaná localStorage — úklid není kritický.
+  }
+}
 
 /**
  * Loads all regulations (defaults merged with user-created or edited ones).
@@ -32,6 +54,11 @@ export function getStoredRegulations(): VscrRegulation[] {
     console.error('Failed to load regulations from storage:', e);
     return VSCR_REGULATIONS_REGISTRY;
   }
+}
+
+/** Je to předpis dodávaný s aplikací (lze ho vrátit na výchozí znění)? */
+export function isDefaultRegulation(regulationId: string): boolean {
+  return VSCR_REGULATIONS_REGISTRY.some((reg) => reg.id === regulationId);
 }
 
 /**
@@ -80,34 +107,39 @@ export function deleteRegulationFromStorage(regulationId: string): boolean {
 }
 
 /**
- * Downloads and caches all regulations for offline use.
+ * Zaznamená, kdy se naposled stahovala znění předpisů do zařízení.
+ *
+ * Samotná znění ukládá Service Worker do mezipaměti `vscr-esbirka-v1`
+ * (viz src/utils/esbirka/offline.ts) — tahle funkce si jen poznamená datum
+ * pro popisek v rozhraní. Dřív navíc zapisovala celou druhou kopii předpisů
+ * do klíče, který nikdo nečetl; viz LEGACY_OFFLINE_CACHE_KEY.
  */
-export function saveAllForOffline(): { success: boolean; count: number; timestamp: string } {
+export function recordOfflineDownload(): { success: boolean; count: number; timestamp: string } {
   if (typeof window === 'undefined') return { success: false, count: 0, timestamp: '' };
 
   try {
-    const all = getStoredRegulations();
-    localStorage.setItem(OFFLINE_CACHE_KEY, JSON.stringify(all));
     const now = new Date().toLocaleString('cs-CZ');
     localStorage.setItem(OFFLINE_STATUS_KEY, now);
-    return { success: true, count: all.length, timestamp: now };
+    return { success: true, count: getStoredRegulations().length, timestamp: now };
   } catch (e) {
-    console.error('Failed to cache regulations for offline:', e);
+    console.error('Datum stažení pro offline se nepodařilo uložit:', e);
     return { success: false, count: 0, timestamp: '' };
   }
 }
 
-/**
- * Gets offline download timestamp if available.
- */
+/** Kdy naposled uživatel spustil stahování znění (jen popisek, ne důkaz). */
 export function getOfflineStatus(): { isDownloaded: boolean; downloadedAt: string | null } {
   if (typeof window === 'undefined') return { isDownloaded: false, downloadedAt: null };
 
-  const downloadedAt = localStorage.getItem(OFFLINE_STATUS_KEY);
-  return {
-    isDownloaded: !!downloadedAt,
-    downloadedAt
-  };
+  try {
+    const downloadedAt = localStorage.getItem(OFFLINE_STATUS_KEY);
+    return {
+      isDownloaded: !!downloadedAt,
+      downloadedAt
+    };
+  } catch {
+    return { isDownloaded: false, downloadedAt: null };
+  }
 }
 
 /**

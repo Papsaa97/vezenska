@@ -25,20 +25,19 @@ import {
   Search,
   BookOpen,
   ChevronRight,
-  TrendingUp,
   FileText,
   HeartHandshake
 } from 'lucide-react';
-import { Badge, QuizSessionRecord, MatchingRecord, UserRank } from '../types';
+import { QuizSessionRecord, MatchingRecord, UserRank } from '../types';
 import { VSCR_RANKS } from '../data/gamificationData';
 import { 
   evaluateBadges, 
   getUserRank, 
   calculateBaseXp, 
-  loadStreakInfo, 
   getTierColor 
 } from '../utils/gamification';
 import { useDialog } from '../hooks/useDialog';
+import { useLocalProgress } from '../hooks/useLocalProgress';
 
 interface BadgesViewProps {
   quizHistory: QuizSessionRecord[];
@@ -161,9 +160,14 @@ export default function BadgesView({
     onClose: () => setShowRanksModal(false),
   });
 
-  const streakInfo = useMemo(() => loadStreakInfo(), []);
-  const baseXp = useMemo(() => calculateBaseXp(quizHistory, matchingHistory), [quizHistory, matchingHistory]);
-  
+  // Stejný důvod jako v Header: postup ze scénářů a drilů je v localStorage.
+  const { streakInfo, extraXp } = useLocalProgress();
+  const baseXp = useMemo(
+    () => calculateBaseXp(quizHistory, matchingHistory, extraXp),
+    [quizHistory, matchingHistory, extraXp]
+  );
+
+
   const { badges, totalXpWithBadges, unlockedCount } = useMemo(() => {
     return evaluateBadges(quizHistory, matchingHistory, streakInfo, baseXp);
   }, [quizHistory, matchingHistory, streakInfo, baseXp]);

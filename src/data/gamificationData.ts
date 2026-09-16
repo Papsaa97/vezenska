@@ -79,26 +79,14 @@ export const VSCR_RANKS: UserRank[] = [
     shortTitle: 'nprap.',
     category: 'praporcici',
     minXp: 4000,
-    maxXp: 5800,
+    maxXp: 8000,
     stars: 3,
     color: 'text-cyan-300',
     badgeBg: 'bg-cyan-950/60 border-cyan-800',
-    description: '3 stříbrné trojcípé hvězdy se stříbrnou kolejničkou. Velitel eskorty, instruktor výcviku.'
+    description: '3 stříbrné trojcípé hvězdy se stříbrnou kolejničkou. Velitel eskorty, instruktor výcviku. Nejvyšší praporčická hodnost.'
   },
   {
     level: 8,
-    name: 'Vrchní praporčík',
-    shortTitle: 'vprap.',
-    category: 'praporcici',
-    minXp: 5800,
-    maxXp: 8000,
-    stars: 4,
-    color: 'text-blue-300',
-    badgeBg: 'bg-blue-950/70 border-blue-700',
-    description: '4 stříbrné trojcípé hvězdy se stříbrnou kolejničkou. Nejvyšší praporčická hodnost, velitel směny.'
-  },
-  {
-    level: 9,
     name: 'Podporučík',
     shortTitle: 'ppor.',
     category: 'dustojnici',
@@ -110,7 +98,7 @@ export const VSCR_RANKS: UserRank[] = [
     description: '1 zlatá pěticípá hvězda. Důstojnický stupeň. Samostatný vychovatel, referent režimu.'
   },
   {
-    level: 10,
+    level: 9,
     name: 'Poručík',
     shortTitle: 'por.',
     category: 'dustojnici',
@@ -122,7 +110,7 @@ export const VSCR_RANKS: UserRank[] = [
     description: '2 zlaté pěticípé hvězdy. Speciální pedagog, právní a bezpečnostní rada věznice.'
   },
   {
-    level: 11,
+    level: 10,
     name: 'Nadporučík',
     shortTitle: 'npor.',
     category: 'dustojnici',
@@ -134,7 +122,7 @@ export const VSCR_RANKS: UserRank[] = [
     description: '3 zlaté pěticípé hvězdy. Zástupce vedoucího oddělení, lektor Akademie VS ČR.'
   },
   {
-    level: 12,
+    level: 11,
     name: 'Kapitán',
     shortTitle: 'kpt.',
     category: 'dustojnici',
@@ -146,7 +134,7 @@ export const VSCR_RANKS: UserRank[] = [
     description: '4 zlaté pěticípé hvězdy. Vedoucí oddělení výkonu vazby a trestu, zkušební komisař.'
   },
   {
-    level: 13,
+    level: 12,
     name: 'Major',
     shortTitle: 'mjr.',
     category: 'vyssi_dustojnici',
@@ -158,7 +146,7 @@ export const VSCR_RANKS: UserRank[] = [
     description: '1 zlatá pěticípá hvězda se zlatou lemovkou (kolejničkou). Vrchní komisař, vedoucí odboru.'
   },
   {
-    level: 14,
+    level: 13,
     name: 'Podplukovník',
     shortTitle: 'pplk.',
     category: 'vyssi_dustojnici',
@@ -170,7 +158,7 @@ export const VSCR_RANKS: UserRank[] = [
     description: '2 zlaté pěticípé hvězdy se zlatou kolejničkou. Zástupce ředitele věznice / ředitel odboru GŘ.'
   },
   {
-    level: 15,
+    level: 14,
     name: 'Plukovník',
     shortTitle: 'plk.',
     category: 'vyssi_dustojnici',
@@ -182,7 +170,7 @@ export const VSCR_RANKS: UserRank[] = [
     description: '3 zlaté pěticípé hvězdy se zlatou kolejničkou. Ředitel věznice / ředitel Akademie VS ČR.'
   },
   {
-    level: 16,
+    level: 15,
     name: 'Brigádní generál',
     shortTitle: 'brig. gen.',
     category: 'generalita',
@@ -260,7 +248,7 @@ export const RAW_BADGES: Omit<Badge, 'isUnlocked' | 'progressPercent' | 'current
   {
     id: 'badge-all-subjects',
     title: 'Všeuměl Akademie',
-    description: 'Vyzkoušej si test alespoň jednou ze všech 9 předmětů ZOP A.',
+    description: 'Vyzkoušej si test alespoň jednou z 9 různých předmětů ZOP A.',
     category: 'quiz',
     tier: 'platinum',
     iconName: 'Layers',

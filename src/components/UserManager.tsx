@@ -23,6 +23,7 @@ import { writeFailure } from '../utils/supabaseWrite';
 import { useAuth, useIsAdmin, UserRole } from '../context/AuthContext';
 import { getUserRank } from '../utils/gamification';
 import { useDialog } from '../hooks/useDialog';
+import NoticeDialog, { Notice } from './common/NoticeDialog';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -107,7 +108,6 @@ function calculateQuizXpForResult(row: QuizResultXpRow): number {
 // ─── Access guard ─────────────────────────────────────────────────────────────
 
 export default function UserManager() {
-  const { user } = useAuth();
   const isAdmin = useIsAdmin();
 
   // Přísný guard: pouze role 'admin' – studenti ani lektoři sem nesmí, bez ohledu na to, odkud je komponenta vykreslena.
@@ -139,6 +139,9 @@ function UserManagerInner() {
 
   const [updatingRoleId, setUpdatingRoleId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  /** Oznámení pro správce místo `alert()`. */
+  const [notice, setNotice] = useState<Notice | null>(null);
 
   const [editingUser, setEditingUser] = useState<UserProfileItem | null>(null);
   const [confirmDeleteUser, setConfirmDeleteUser] = useState<UserProfileItem | null>(null);
@@ -219,7 +222,16 @@ function UserManagerInner() {
     setUpdatingRoleId(target.id);
     const { error } = await updateRole(target.id, newRole);
     if (error) {
-      alert(error);
+      setNotice({
+        tone: 'error',
+        title: 'Role se nezměnila',
+        description: (
+          <>
+            Uživatel má dál roli <strong>{target.role}</strong>.
+            <span className="mt-2 block font-mono text-xs text-slate-500 dark:text-slate-400">{error}</span>
+          </>
+        ),
+      });
     } else {
       setUsers((prev) => prev.map((u) => (u.id === target.id ? { ...u, role: newRole } : u)));
     }
@@ -231,7 +243,16 @@ function UserManagerInner() {
     const { error } = await supabase.rpc('admin_delete_user', { target_user_id: target.id });
     setDeletingId(null);
     if (error) {
-      alert('Smazání uživatele selhalo: ' + error.message);
+      setNotice({
+        tone: 'error',
+        title: 'Uživatele se nepodařilo smazat',
+        description: (
+          <>
+            Účet zůstal v databázi beze změny.
+            <span className="mt-2 block font-mono text-xs text-slate-500 dark:text-slate-400">{error.message}</span>
+          </>
+        ),
+      });
       return;
     }
     setUsers((prev) => prev.filter((u) => u.id !== target.id));
@@ -421,6 +442,8 @@ function UserManagerInner() {
           />
         )}
       </AnimatePresence>
+
+      <NoticeDialog notice={notice} onClose={() => setNotice(null)} />
     </div>
   );
 }

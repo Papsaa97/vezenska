@@ -1,33 +1,24 @@
-import React, { useState, useRef, useEffect, useCallback, useId } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Sparkles, 
-  Camera, 
-  Upload, 
-  FileText, 
-  CheckCircle2, 
-  AlertCircle, 
-  Layers, 
-  GraduationCap, 
-  Printer, 
-  Trash2, 
-  Key, 
-  Save, 
-  HelpCircle, 
-  ChevronRight, 
-  ChevronDown, 
-  Volume2, 
-  VolumeX,
-  Play,
-  Pause,
+import React, { useState, useRef, useEffect, useId } from 'react';
+import { motion } from 'motion/react';
+import {
+  Sparkles,
+  Camera,
+  Upload,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  AlertTriangle,
+  Printer,
+  Trash2,
+  Key,
+  ChevronRight,
+  ChevronDown,
+  Volume2,
   Square,
   SkipForward,
   SkipBack,
   ExternalLink,
   BookOpen,
-  ArrowRight,
-  Shield,
-  RotateCcw,
   Plus
 } from 'lucide-react';
 import { Question } from '../types';
@@ -170,7 +161,7 @@ export default function CaptainExamAssistant({
       setExpandedQuestionIds(new Set(result.questions.map(q => q.id)));
 
       // Auto save to history
-      const saved = saveCustomExam({
+      saveCustomExam({
         title: result.title,
         subject: result.subject,
         questionCount: result.questions.length,
@@ -295,7 +286,7 @@ export default function CaptainExamAssistant({
             </div>
             <h1 className="text-xl sm:text-3xl font-bold tracking-tight">AI Vyhodnocení zadání od kapitánů</h1>
             <p className="text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
-              Vyfoťte papír s testem, nahrajte sken nebo vložte otázky. AI je přečte, vypracuje správné odpovědi dle zákonů VS ČR a připraví cvičný kvíz i tahák.
+              Vyfoťte papír s testem, nahrajte sken nebo vložte otázky. AI je přečte, navrhne odpovědi s odkazy na předpisy VS ČR a připraví cvičný kvíz i tahák.
             </p>
           </div>
 
@@ -313,6 +304,23 @@ export default function CaptainExamAssistant({
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Upozornění, že výstup modelu není ověřený.
+          Modul generuje citace paragrafů, takže bez tohohle textu vypadá jako
+          autorita. Není: model si paragraf i lhůtu umí vymyslet. */}
+      <div
+        role="note"
+        className="no-print flex items-start gap-3 rounded-2xl border border-amber-300 dark:border-amber-800/70 bg-amber-50 dark:bg-amber-950/30 px-4 py-3"
+      >
+        <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" />
+        <p className="text-xs leading-relaxed text-amber-900 dark:text-amber-200">
+          <strong>Odpovědi generuje jazykový model a nikdo je neověřil.</strong> Čísla paragrafů,
+          lhůty i výčty si model může vymyslet, i když zní přesvědčivě. Než se podle nich budete
+          učit, porovnejte je se zněním předpisu v <strong>Kompasu zákonů</strong> nebo na
+          e-Sbírce. Výsledky testů z těchto otázek se počítají do vašich statistik — berte je
+          jako procvičení formy, ne jako zdroj práva.
+        </p>
       </div>
 
       {/* Main Grid: Input Form & Saved Tests */}
@@ -592,6 +600,38 @@ export default function CaptainExamAssistant({
                 </button>
               )}
 
+              {/* Procvičení vyhodnocených otázek.
+                  Props `onStartCustomQuiz` a `onStartCustomFlashcards` tu byly
+                  od začátku, App.tsx je předávala a `handleStartCustomQuiz`
+                  i `handleStartCustomFlashcards` fungovaly — jen k nim nikdy
+                  nevzniklo tlačítko. Rozebraná zkouška od kapitána se tak dala
+                  jen přečíst nebo vytisknout, ne procvičit. */}
+              <button
+                type="button"
+                onClick={() => {
+                  stopSequence();
+                  onStartCustomQuiz(analyzedResult.questions);
+                }}
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-sm"
+                title="Spustit cvičný test právě z těchto vyhodnocených otázek"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Procvičit jako test</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  stopSequence();
+                  onStartCustomFlashcards(analyzedResult.questions);
+                }}
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-600 font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-sm"
+                title="Převést vyhodnocené otázky na kartičky pro opakování"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>Do kartiček</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => window.print()}
@@ -735,11 +775,18 @@ export default function CaptainExamAssistant({
                     <div className="bg-indigo-50/70 dark:bg-indigo-950/40 print:bg-transparent border border-indigo-200 dark:border-indigo-800 print:border-none rounded-xl print:rounded-none p-3.5 print:p-0 text-xs sm:text-sm space-y-1.5 print:space-y-0.5 text-slate-800 dark:text-slate-200 print:text-slate-700">
                       <div className="flex items-center gap-1.5 font-bold text-indigo-900 dark:text-indigo-300 print:hidden">
                         <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                        <span>Zákonné odůvodnění & Výklad VS ČR:</span>
+                        <span>Odůvodnění navržené modelem (neověřeno):</span>
                       </div>
-                      <p className="leading-relaxed print:leading-tight print:text-[7.5pt] print:text-slate-600">{q.rationale}</p>
+                      {q.rationale ? (
+                        <p className="leading-relaxed print:leading-tight print:text-[7.5pt] print:text-slate-600">{q.rationale}</p>
+                      ) : (
+                        <p className="leading-relaxed italic text-slate-500 dark:text-slate-400">
+                          Model k této otázce odůvodnění nedodal. Ověřte si odpověď v Kompasu zákonů.
+                        </p>
+                      )}
                       <div className="pt-1.5 print:pt-0 text-[11px] print:text-[7pt] text-indigo-700 dark:text-indigo-400 print:text-slate-500 font-medium">
-                        <strong>Pramen:</strong> {q.source}
+                        <strong>Pramen podle modelu:</strong>{' '}
+                        {q.source || <span className="italic font-normal">neuveden — dohledejte si ho</span>}
                       </div>
                     </div>
                   </div>
@@ -795,7 +842,7 @@ export default function CaptainExamAssistant({
             />
             <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-snug flex items-start gap-1.5 pt-0.5">
               <span className="mt-px shrink-0">🔒</span>
-              <span>Klíč se ukládá <strong>pouze lokálně v tomto prohlížeči</strong> (localStorage). Nikam se neodesílá — volání Gemini API probíhají přímo z vašeho prohlížeče.</span>
+              <span>Klíč se ukládá <strong>pouze lokálně v tomto prohlížeči</strong> (localStorage) — na server této aplikace se neposílá. Volání probíhají přímo z vašeho prohlížeče na Google, takže klíč (a zadání či fotka) jde jedině tam.</span>
             </p>
 
             <div className="flex items-center justify-end gap-2.5 pt-2">

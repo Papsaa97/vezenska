@@ -46,6 +46,8 @@ interface LegalReaderModalProps {
   handleCopy: (text: string, id: string) => void;
   handleSpeak: (text: string) => void;
   handleOpenEditModal: (reg: VscrRegulation) => void;
+  /** Smí uživatel studijní výběr upravovat? */
+  canEdit: boolean;
 }
 
 /** Barvy odznaku podle výsledku ověření. */
@@ -102,6 +104,7 @@ export default function LegalReaderModal({
   handleCopy,
   handleSpeak,
   handleOpenEditModal,
+  canEdit,
 }: LegalReaderModalProps) {
   const fontSizeClass = {
     sm: 'text-xs leading-relaxed',
@@ -715,19 +718,22 @@ export default function LegalReaderModal({
             </div>
 
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  const regToEdit = activeModalRegulation;
-                  setActiveModalRegulation(null);
-                  handleOpenEditModal(regToEdit);
-                }}
-                className="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer"
-                title="Upravit studijní výběr a metadata předpisu v aplikaci"
-              >
-                <Edit3 className="w-3.5 h-3.5" />
-                <span>Upravit výběr</span>
-              </button>
+              {/* Úprava studijního výběru patří lektorovi a správci. */}
+              {canEdit && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const regToEdit = activeModalRegulation;
+                    setActiveModalRegulation(null);
+                    handleOpenEditModal(regToEdit);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer"
+                  title="Upravit studijní výběr a metadata předpisu v aplikaci"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  <span>Upravit výběr</span>
+                </button>
+              )}
 
               <button
                 type="button"

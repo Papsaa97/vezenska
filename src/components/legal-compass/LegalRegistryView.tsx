@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Scale, Search, BookOpen, HelpCircle, Star, ArrowLeft,
-  Sparkles, CheckCircle2, ExternalLink, Download, Upload, Plus,
+  Sparkles, ExternalLink, Download, Upload, Plus,
   Edit3, Trash2, Wifi, Database, ShieldCheck, FileText, ChevronRight,
   ChevronLeft, Volume2, Copy, Check, Printer, AlertCircle,
 } from 'lucide-react';
@@ -62,10 +62,15 @@ interface LegalRegistryViewProps {
   registryTypesList: RegistryTypeItem[];
   selectedRegistryType: string;
   setSelectedRegistryType: (v: string) => void;
-  regulationsList: VscrRegulation[];
   handleSaveForOffline: () => void;
   /** Běží právě stahování úplných znění do zařízení? */
   offlineBusy: boolean;
+  /** Průběh probíhajícího stahování, `null` když se nestahuje. */
+  offlineProgress: { hotovo: number; celkem: number } | null;
+  /** Kolik znění je v mezipaměti zařízení. `null` = ještě se zjišťuje. */
+  cachedSnapshots: { ulozeno: number; celkem: number; zjistitelne: boolean } | null;
+  /** Smí uživatel předpisy zakládat, upravovat, mazat a importovat? */
+  canEdit: boolean;
   handleOpenNewEditor: () => void;
   handleExportJSON: () => void;
   handleOpenEditModal: (reg: VscrRegulation) => void;
@@ -103,9 +108,11 @@ export default function LegalRegistryView({
   registryTypesList,
   selectedRegistryType,
   setSelectedRegistryType,
-  regulationsList,
   handleSaveForOffline,
   offlineBusy,
+  offlineProgress,
+  cachedSnapshots,
+  canEdit,
   handleOpenNewEditor,
   handleExportJSON,
   handleOpenEditModal,
@@ -129,17 +136,48 @@ export default function LegalRegistryView({
               <span>Normativní báze Akademie VS ČR • Online &amp; Offline správa</span>
             </div>
 
-            {/* Offline Cache Status Badge */}
-            <div className="flex items-center gap-2">
-              {offlineStatus.isDownloaded ? (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                  <Database className="w-3 h-3 text-emerald-600" />
-                  <span>Uloženo offline ({offlineStatus.downloadedAt})</span>
+            {/* Offline Cache Status Badge
+                Odznak hlásí, co je OPRAVDU v mezipaměti zařízení, ne jen to, že
+                uživatel někdy v minulosti zmáčkl „Stáhnout pro offline“. Dřív
+                se řídil jen časovým údajem v localStorage, takže po smazání dat
+                webu (nebo dřív i po nasazení nové verze aplikace) tvrdil
+                „Uloženo offline“ nad prázdnou mezipamětí. */}
+            <div className="flex items-center gap-2" aria-live="polite">
+              {cachedSnapshots === null ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                  <Database className="w-3 h-3" />
+                  <span>Zjišťuji offline stav…</span>
                 </span>
-              ) : (
+              ) : !cachedSnapshots.zjistitelne ? (
+                <span
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
+                  title="Prohlížeč nezpřístupňuje mezipaměť (např. anonymní okno v Safari). O uložených zněních to neříká nic."
+                >
+                  <Database className="w-3 h-3" />
+                  <span>Offline stav nelze zjistit</span>
+                </span>
+              ) : cachedSnapshots.ulozeno === 0 ? (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
                   <Wifi className="w-3 h-3 text-amber-600" />
                   <span>Čerpá se online</span>
+                </span>
+              ) : cachedSnapshots.ulozeno < cachedSnapshots.celkem ? (
+                <span
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-800"
+                  title="Zbytek znění se načte ze sítě. Stažení lze spustit znovu."
+                >
+                  <Database className="w-3 h-3 text-amber-700 dark:text-amber-400" />
+                  <span>
+                    Offline částečně: {cachedSnapshots.ulozeno} z {cachedSnapshots.celkem} znění
+                  </span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                  <Database className="w-3 h-3 text-emerald-600" />
+                  <span>
+                    Uloženo offline: {cachedSnapshots.ulozeno} znění
+                    {offlineStatus.downloadedAt ? ` (${offlineStatus.downloadedAt})` : ''}
+                  </span>
                 </span>
               )}
             </div>
@@ -167,33 +205,71 @@ export default function LegalRegistryView({
                 title="Stáhne úplná znění předpisů z e-Sbírky do zařízení, aby šla číst bez připojení"
               >
                 <Download className={`w-3.5 h-3.5 ${offlineBusy ? 'animate-pulse' : ''}`} />
-                <span>{offlineBusy ? 'Stahuji…' : 'Stáhnout pro offline'}</span>
+                {/* Stahování 1,5 MB zákonů trvá na mobilních datech desítky
+                    sekund. Samotné „Stahuji…“ vypadalo zaseknutě, proto se
+                    hlásí, kolikáté znění se právě přenáší. */}
+                <span>
+                  {offlineBusy
+                    ? offlineProgress && offlineProgress.celkem > 0
+                      ? `Stahuji ${offlineProgress.hotovo} / ${offlineProgress.celkem}…`
+                      : 'Stahuji…'
+                    : 'Stáhnout pro offline'}
+                </span>
               </button>
+              {offlineBusy && offlineProgress && offlineProgress.celkem > 0 && (
+                <div
+                  className="w-32 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"
+                  role="progressbar"
+                  aria-label="Průběh stahování úplných znění"
+                  aria-valuemin={0}
+                  aria-valuemax={offlineProgress.celkem}
+                  aria-valuenow={offlineProgress.hotovo}
+                >
+                  <div
+                    className="h-full bg-emerald-600 transition-all"
+                    style={{
+                      width: `${Math.round((offlineProgress.hotovo / offlineProgress.celkem) * 100)}%`,
+                    }}
+                  />
+                </div>
+              )}
 
-              <button
-                onClick={handleOpenNewEditor}
-                className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
-                title="Přidat do databáze nový interní předpis nebo směrnici"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>+ Přidat předpis</span>
-              </button>
+              {/* Zakládání, záloha a import předpisů patří lektorovi a správci.
+                  Dřív je mohl použít kdokoli — i student si tak mohl přepsat
+                  text zákona, který se mu pak zobrazoval jako studijní výběr. */}
+              {canEdit && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleOpenNewEditor}
+                    className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    title="Přidat do databáze nový interní předpis nebo směrnici"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>+ Přidat předpis</span>
+                  </button>
 
-              <button
-                onClick={handleExportJSON}
-                className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
-                title="Zálohovat celou databázi do souboru JSON"
-              >
-                <Download className="w-3.5 h-3.5 text-blue-500" />
-              </button>
+                  <button
+                    type="button"
+                    onClick={handleExportJSON}
+                    className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
+                    title="Zálohovat celou databázi do souboru JSON"
+                    aria-label="Zálohovat databázi předpisů do JSON"
+                  >
+                    <Download className="w-3.5 h-3.5 text-blue-500" />
+                  </button>
 
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
-                title="Nahrát databázi předpisů ze záložního souboru JSON"
-              >
-                <Upload className="w-3.5 h-3.5 text-amber-500" />
-              </button>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
+                    title="Nahrát databázi předpisů ze záložního souboru JSON"
+                    aria-label="Importovat databázi předpisů z JSON"
+                  >
+                    <Upload className="w-3.5 h-3.5 text-amber-500" />
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -300,24 +376,30 @@ export default function LegalRegistryView({
                     </p>
                   </div>
 
-                  {/* Edit & Delete Action Buttons */}
-                  <div className="flex items-center gap-1 shrink-0 no-print">
-                    <button
-                      onClick={() => handleOpenEditModal(reg)}
-                      className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer"
-                      title="Upravit metadata nebo text předpisu"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </button>
+                  {/* Úprava a odebrání předpisu — jen lektor a správce. */}
+                  {canEdit && (
+                    <div className="flex items-center gap-1 shrink-0 no-print">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditModal(reg)}
+                        className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer"
+                        title="Upravit metadata nebo text předpisu"
+                        aria-label={`Upravit předpis ${reg.code}`}
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
 
-                    <button
-                      onClick={() => handleDeleteRegulation(reg.id, reg.code)}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer"
-                      title="Smazat nebo resetovat na výchozí znění"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteRegulation(reg.id, reg.code)}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer"
+                        title="Odebrat vlastní předpis nebo vrátit výchozí znění"
+                        aria-label={`Odebrat předpis ${reg.code} nebo vrátit výchozí znění`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Scope & Summary */}
@@ -717,7 +799,15 @@ export default function LegalRegistryView({
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-slate-400 text-sm p-8 text-center space-y-3">
             <Scale className="w-12 h-12 text-slate-300 dark:text-slate-700" />
-            <p>Vyberte zákonnou normu ze seznamu pro zobrazení přesného textu a metodického výkladu.</p>
+            {searchQuery.trim() || selectedCategory !== 'all' ? (
+              <p>
+                Zadanému hledání neodpovídá žádná norma. Zkuste jiný výraz nebo zrušte filtr
+                kategorie — dřív se tu místo toho ukázala první norma v databázi, která
+                s hledáním nesouvisela.
+              </p>
+            ) : (
+              <p>Vyberte zákonnou normu ze seznamu pro zobrazení přesného textu a metodického výkladu.</p>
+            )}
           </div>
         )}
       </section>

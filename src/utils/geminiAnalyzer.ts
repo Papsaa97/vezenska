@@ -158,7 +158,10 @@ export async function analyzeExamContent(
   }
   contents.push(promptText);
 
-  const modelsToTry = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash'];
+  // Existující modely, od nejschopnějšího. Dřív byl v seznamu i
+  // 'gemini-3.5-flash', který neexistuje — každé volání na něj skončilo 404 a
+  // jen prodloužilo čekání o jeden zbytečný okružní požadavek.
+  const modelsToTry = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
   let lastError: unknown = null;
 
   for (const modelName of modelsToTry) {
@@ -188,17 +191,45 @@ export async function analyzeExamContent(
         throw new Error('Ze zadání se nepodařilo extrahovat žádné otázky. Zkontrolujte prosím kvalitu fotky nebo textu.');
       }
 
-      parsed.questions = parsed.questions.map((q, idx) => ({
+      // Otázky bez použitelných možností se zahazují.
+      //
+      // Dřív se místo nich dosadily zástupné texty ['Správná možnost',
+      // 'Nesprávná možnost'] — vznikla tím otázka, jejíž správná odpověď byla
+      // doslova slovo „Správná možnost“, a ta se přes onStartCustomQuiz
+      // dostala do ostrého testu i do uložených výsledků a XP. Lepší je
+      // otázku vynechat a říct to.
+      const usable = parsed.questions.filter(
+        (q) => Array.isArray(q.options) && q.options.length >= 2 && Boolean(q.question)
+      );
+      const zahozeno = parsed.questions.length - usable.length;
+
+      if (usable.length === 0) {
+        throw new Error(
+          'Model nevrátil ani jednu otázku s použitelnými možnostmi. Zkuste prosím ostřejší fotku nebo zadání vložit jako text.'
+        );
+      }
+
+      parsed.questions = usable.map((q, idx) => ({
         id: q.id || `custom-q-${Date.now()}-${idx + 1}`,
         subject: q.subject || parsed.subject || 'Služební příprava',
         topic: q.topic || 'Zadání od kapitána',
-        question: q.question || 'Otázka bez znění',
-        answer: q.answer || (q.options && q.correctOption !== undefined ? q.options[q.correctOption] : ''),
-        options: q.options && q.options.length >= 2 ? q.options : ['Správná možnost', 'Nesprávná možnost'],
+        question: q.question,
+        answer: q.answer || (q.correctOption !== undefined ? q.options?.[q.correctOption] : '') || '',
+        options: q.options,
         correctOption: typeof q.correctOption === 'number' ? q.correctOption : 0,
-        rationale: q.rationale || 'Ověřeno dle interních norem VS ČR.',
-        source: q.source || 'Předpisy VS ČR'
+        // Chybějící odůvodnění se NEDOPLŇUJE.
+        //
+        // Dřív se sem dosadilo „Ověřeno dle interních norem VS ČR.“ — u výstupu
+        // jazykového modelu, který nikdo neověřil. Přesně to AGENTS.md zakazuje:
+        // nad neověřeným textem nesmí stát slovo „ověřeno“. Prázdné pole je
+        // poctivé a rozhraní ho umí zobrazit jako „model odůvodnění nedodal“.
+        rationale: q.rationale || '',
+        source: q.source || ''
       }));
+
+      if (zahozeno > 0) {
+        parsed.summary = `${parsed.summary || ''}\n\nPozn.: ${zahozeno} otázek se nepodařilo zpracovat do testové podoby (chyběly možnosti) a nejsou v seznamu.`.trim();
+      }
 
       return parsed;
     } catch (err: unknown) {

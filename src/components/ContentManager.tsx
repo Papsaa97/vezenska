@@ -130,11 +130,11 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
       </div>
 
       {/* Tabs Switcher */}
-      <div className="flex items-center gap-2 p-1.5 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/60 w-fit">
+      <div className="flex items-center gap-2 p-1.5 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/60 w-fit max-w-full overflow-x-auto">
         <button
           type="button"
           onClick={() => setActiveTab('materials')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
             activeTab === 'materials'
               ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs'
               : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -147,7 +147,7 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
         <button
           type="button"
           onClick={() => setActiveTab('questions')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
             activeTab === 'questions'
               ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 shadow-xs'
               : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -179,7 +179,7 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
           <button
             type="button"
             onClick={() => setActiveTab('users')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
               activeTab === 'users'
                 ? 'bg-white dark:bg-slate-700 text-amber-700 dark:text-amber-300 shadow-xs'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'

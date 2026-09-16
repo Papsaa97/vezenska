@@ -1,4 +1,4 @@
-import { Project, SyntaxKind, ArrayLiteralExpression, ObjectLiteralExpression } from 'ts-morph';
+import { Project, SyntaxKind } from 'ts-morph';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -22,7 +22,6 @@ for (const file of files) {
         if (element.isKind(SyntaxKind.ObjectLiteralExpression)) {
             // Check if rationale doesn't contain specific law mentions, try to append it.
             // Also ensure we have the 'explanation' field as requested.
-            let explanationText = "";
             let rationaleText = "";
             let sourceText = "";
 

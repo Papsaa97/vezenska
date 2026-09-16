@@ -1,22 +1,21 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { 
-  Scale, Search, BookOpen, ShieldCheck, 
-  FileText, CheckCircle2,
-  Download, Upload,
-  Edit3, Wifi, Database, AlertCircle, Printer
-} from 'lucide-react';
+import { Scale, BookOpen, ShieldCheck, FileText, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { legalDatabase, LegalArticle } from '../data/legalCompasData';
+import { legalDatabase } from '../data/legalCompasData';
 import { VscrRegulation, VSCR_REGULATIONS_REGISTRY } from '../data/vscrRegulationsRegistry';
 import { auditLegalDatabase, measureRegulationCoverage, AuditReport } from '../utils/legalIntegrity';
-import { prefetchAllSnapshots, formatMegabytes } from '../utils/esbirka/offline';
-import { speakText, isSpeechSupported } from '../utils/speech';
+import { prefetchAllSnapshots, formatMegabytes, countCachedSnapshots } from '../utils/esbirka/offline';
+import { speakText } from '../utils/speech';
+import ConfirmDialog from './common/ConfirmDialog';
+import { useAuth } from '../context/AuthContext';
 import {
   getStoredRegulations,
   saveRegulationToStorage,
   deleteRegulationFromStorage,
-  saveAllForOffline,
+  isDefaultRegulation,
+  recordOfflineDownload,
   getOfflineStatus,
+  purgeLegacyOfflineCache,
   exportRegulationsToJSON,
   importRegulationsFromJSON
 } from '../utils/regulationsStorage';
@@ -26,6 +25,16 @@ import LegalReaderModal from './legal-compass/LegalReaderModal';
 import LegalRegistryView from './legal-compass/LegalRegistryView';
 
 export default function LegalCompass() {
+  // Předpisy smí zakládat, upravovat, mazat a importovat jen lektor a správce.
+  //
+  // Dřív tu žádná kontrola role nebyla — `useAuth` se v tomhle modulu vůbec
+  // nepoužíval. Student si tak mohl přepsat nebo smazat text zákona 555/1992,
+  // který se mu pak zobrazoval jako studijní výběr, a neměl jak poznat, že už
+  // nečte to, co je v aplikaci. Úpravy žijí jen v localStorage, takže to nikoho
+  // dalšího neohrozilo, ale vlastní studijní materiál si nevratně poškodit šlo.
+  const { profile } = useAuth();
+  const canEditRegulations = profile?.role === 'lektor' || profile?.role === 'admin';
+
   const [viewMode, setViewMode] = useState<'articles' | 'registry'>('articles');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -43,12 +52,37 @@ export default function LegalCompass() {
   const [regulationsList, setRegulationsList] = useState<VscrRegulation[]>(() => getStoredRegulations());
   const [offlineStatus, setOfflineStatus] = useState(() => getOfflineStatus());
   const [offlineBusy, setOfflineBusy] = useState(false);
+
+  /**
+   * Kolik znění zařízení opravdu drží. `null` = ještě nezjištěno.
+   *
+   * Odznak se neopírá o datum v localStorage: to přežije i smazání dat webu,
+   * takže by tvrdil „Uloženo offline“ nad prázdnou mezipamětí.
+   */
+  const [cachedSnapshots, setCachedSnapshots] = useState<{
+    ulozeno: number;
+    celkem: number;
+    zjistitelne: boolean;
+  } | null>(null);
+
+  /** Průběh stahování znění: `null`, když se nestahuje. */
+  const [offlineProgress, setOfflineProgress] = useState<{ hotovo: number; celkem: number } | null>(
+    null
+  );
   const [pdfViewMode, setPdfViewMode] = useState<'paper' | 'dark'>('paper');
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
   
   // Editor Modal State
   const [showEditorModal, setShowEditorModal] = useState(false);
   const [editingRegulation, setEditingRegulation] = useState<Partial<VscrRegulation> | null>(null);
+
+  /** Předpis, u kterého čekáme na potvrzení odebrání / návratu k výchozímu. */
+  const [pendingDelete, setPendingDelete] = useState<
+    { id: string; code: string; isDefault: boolean } | null
+  >(null);
+
+  /** Potvrzení nahrazení místní databáze předpisů importem z JSON. */
+  const [pendingImport, setPendingImport] = useState<{ fileName: string; text: string } | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const detailContainerRef = useRef<HTMLDivElement>(null);
@@ -106,11 +140,19 @@ export default function LegalCompass() {
   const handleSaveForOffline = async () => {
     if (offlineBusy) return;
     setOfflineBusy(true);
+    setOfflineProgress({ hotovo: 0, celkem: 0 });
     showToast('Stahuji úplná znění předpisů do zařízení…', 'info');
 
-    const metaSaved = saveAllForOffline();
-    const result = await prefetchAllSnapshots();
+    const metaSaved = recordOfflineDownload();
+    // Stahování trvá u 1,5 MB zákonů na mobilních datech desítky sekund.
+    // Bez ukazatele průběhu vypadalo tlačítko jen zaseknuté — `onProgress`
+    // přitom `prefetchAllSnapshots` nabízela od začátku a nikdo ji nevyužil.
+    const result = await prefetchAllSnapshots((hotovo, celkem) => {
+      setOfflineProgress({ hotovo, celkem });
+    });
     setOfflineBusy(false);
+    setOfflineProgress(null);
+    setCachedSnapshots(await countCachedSnapshots());
 
     if (result.ulozeno === 0) {
       showToast('Nepodařilo se stáhnout žádné znění. Zkontrolujte připojení.', 'error');
@@ -120,10 +162,10 @@ export default function LegalCompass() {
     const stamp = new Date().toLocaleString('cs-CZ');
     setOfflineStatus({ isDownloaded: true, downloadedAt: stamp });
     const potize = result.selhalo > 0 ? ` ${result.selhalo} se nepodařilo stáhnout.` : '';
-    const metaPotize = metaSaved.success ? '' : ' Metadata předpisů se uložit nepodařilo.';
+    const metaPotize = metaSaved.success ? '' : ' Datum stažení se uložit nepodařilo.';
     showToast(
       `Uloženo ${result.ulozeno} úplných znění (${formatMegabytes(result.bajtu)}).${potize}${metaPotize} ` +
-        'Po aktualizaci aplikace je potřeba stáhnout znovu.',
+        'Znění zůstávají v zařízení i po aktualizaci aplikace.',
       result.selhalo > 0 ? 'info' : 'success'
     );
   };
@@ -133,6 +175,13 @@ export default function LegalCompass() {
     showToast('Databáze předpisů exportována do souboru JSON.');
   };
 
+  /**
+   * Import předpisů ze souboru JSON.
+   *
+   * Import místní databázi NAHRAZUJE, ne doplňuje — dřív to proběhlo bez
+   * jakéhokoli dotazu, takže si uživatel nevratně přepsal všechny své úpravy
+   * předpisů. Soubor se proto nejdřív přečte a teprve po potvrzení uloží.
+   */
   const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -140,18 +189,23 @@ export default function LegalCompass() {
     const reader = new FileReader();
     reader.onload = (event) => {
       const text = event.target?.result as string;
-      if (text) {
-        const res = importRegulationsFromJSON(text);
-        if (res.success) {
-          reloadRegulations();
-          showToast(res.message, 'success');
-        } else {
-          showToast(res.message, 'error');
-        }
-      }
+      if (text) setPendingImport({ fileName: file.name, text });
     };
+    reader.onerror = () => showToast('Soubor se nepodařilo přečíst.', 'error');
     reader.readAsText(file);
     if (e.target) e.target.value = '';
+  };
+
+  const confirmImport = () => {
+    if (!pendingImport) return;
+    const res = importRegulationsFromJSON(pendingImport.text);
+    if (res.success) {
+      reloadRegulations();
+      showToast(res.message, 'success');
+    } else {
+      showToast(res.message, 'error');
+    }
+    setPendingImport(null);
   };
 
   const handleOpenNewEditor = () => {
@@ -218,12 +272,29 @@ export default function LegalCompass() {
     }
   };
 
+  /**
+   * Odebrání vlastního předpisu / návrat k výchozímu znění.
+   *
+   * Dřív se na obojí ptal jediný `confirm()` s textem „smazat NEBO obnovit na
+   * výchozí znění?“ — jedno OK pro dvě různé akce a hlášení „odebrán/resetován“,
+   * ze kterého uživatel nepoznal, co se stalo. Dialog teď pojmenuje, co se
+   * opravdu provede, a rozlišuje podle toho, jestli jde o předpis z aplikace,
+   * nebo o vlastní přírůstek.
+   */
   const handleDeleteRegulation = (id: string, code: string) => {
-    if (window.confirm(`Opravdu chcete předpis ${code} smazat nebo obnovit na výchozí znění?`)) {
-      deleteRegulationFromStorage(id);
-      reloadRegulations();
-      showToast(`Předpis ${code} byl odebrán/resetován.`);
-    }
+    setPendingDelete({ id, code, isDefault: isDefaultRegulation(id) });
+  };
+
+  const confirmDeleteRegulation = () => {
+    if (!pendingDelete) return;
+    deleteRegulationFromStorage(pendingDelete.id);
+    reloadRegulations();
+    showToast(
+      pendingDelete.isDefault
+        ? `Předpis ${pendingDelete.code} byl vrácen na výchozí znění z aplikace.`
+        : `Vlastní předpis ${pendingDelete.code} byl odebrán z tohoto zařízení.`
+    );
+    setPendingDelete(null);
   };
 
   const filteredArticles = useMemo(() => {
@@ -249,8 +320,18 @@ export default function LegalCompass() {
     });
   }, [searchQuery, selectedCategory, savedFavorites]);
 
+  /**
+   * Zobrazený článek.
+   *
+   * Vybírá se jen z toho, co hledání a filtr propustily. Dřív se při vybraném
+   * článku mimo výsledky (nebo při prázdném hledání) spadlo na
+   * `legalDatabase[0]`, takže vpravo stál článek, který zadanému hledání
+   * vůbec neodpovídal.
+   */
   const currentArticle = useMemo(() => {
-    return legalDatabase.find(a => a.id === selectedArticleId) || filteredArticles[0] || legalDatabase[0];
+    const selected = filteredArticles.find(a => a.id === selectedArticleId);
+    if (selected) return selected;
+    return filteredArticles[0] ?? null;
   }, [selectedArticleId, filteredArticles]);
 
   const currentIndex = useMemo(() => {
@@ -290,10 +371,23 @@ export default function LegalCompass() {
     }, 10);
   };
 
+  /**
+   * Kopírování do schránky.
+   *
+   * Dřív se odznak „zkopírováno“ zobrazil vždy, i když zápis selhal — schránka
+   * je nedostupná bez HTTPS nebo bez svolení uživatele. Chyba se teď přizná,
+   * stejně jako v Administrativě.
+   */
   const handleCopy = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setCopiedId(id);
+        setTimeout(() => setCopiedId(null), 2000);
+      })
+      .catch(() => {
+        showToast('Zkopírování do schránky se nezdařilo — označte text a zkopírujte ho ručně.', 'error');
+      });
   };
 
   const handleSpeak = (text: string) => {
@@ -307,6 +401,18 @@ export default function LegalCompass() {
     setIsSpeaking(true);
     speakText(text, () => setIsSpeaking(false));
   };
+
+  // Ověření offline stavu proti mezipaměti + úklid mrtvého klíče ze starších verzí.
+  useEffect(() => {
+    purgeLegacyOfflineCache();
+    let zruseno = false;
+    countCachedSnapshots().then((pocet) => {
+      if (!zruseno) setCachedSnapshots(pocet);
+    });
+    return () => {
+      zruseno = true;
+    };
+  }, []);
 
   // Close modals on Escape key
   useEffect(() => {
@@ -495,9 +601,10 @@ export default function LegalCompass() {
         registryTypesList={registryTypesList}
         selectedRegistryType={selectedRegistryType}
         setSelectedRegistryType={setSelectedRegistryType}
-        regulationsList={regulationsList}
         handleSaveForOffline={handleSaveForOffline}
         offlineBusy={offlineBusy}
+        offlineProgress={offlineProgress}
+        cachedSnapshots={cachedSnapshots}
         handleOpenNewEditor={handleOpenNewEditor}
         handleExportJSON={handleExportJSON}
         handleOpenEditModal={handleOpenEditModal}
@@ -505,6 +612,7 @@ export default function LegalCompass() {
         setActiveModalRegulation={setActiveModalRegulation}
         setModalSearchQuery={setModalSearchQuery}
         fileInputRef={fileInputRef}
+        canEdit={canEditRegulations}
       />
 
       {/* Modal: Editor předpisů */}
@@ -539,8 +647,53 @@ export default function LegalCompass() {
         handleCopy={handleCopy}
         handleSpeak={handleSpeak}
         handleOpenEditModal={handleOpenEditModal}
+        canEdit={canEditRegulations}
       />
 
+      {/* Potvrzení odebrání předpisu / návratu k výchozímu znění */}
+      <ConfirmDialog
+        isOpen={pendingDelete !== null}
+        tone="danger"
+        title={
+          pendingDelete?.isDefault
+            ? `Vrátit ${pendingDelete.code} na výchozí znění?`
+            : `Odebrat vlastní předpis ${pendingDelete?.code ?? ''}?`
+        }
+        description={
+          pendingDelete?.isDefault ? (
+            <>
+              Vaše úpravy tohoto předpisu se zahodí a text se vrátí na podobu, kterou má
+              v aplikaci. Samotný předpis z registru nezmizí.
+            </>
+          ) : (
+            <>
+              Předpis jste si přidal sám, takže se odebere úplně — a protože vlastní předpisy
+              žijí <strong>jen v tomto prohlížeči</strong>, nikde jinde se nedá obnovit.
+            </>
+          )
+        }
+        confirmLabel={pendingDelete?.isDefault ? 'Vrátit výchozí znění' : 'Odebrat předpis'}
+        onConfirm={confirmDeleteRegulation}
+        onCancel={() => setPendingDelete(null)}
+      />
+
+      {/* Potvrzení importu, který místní úpravy nahrazuje */}
+      <ConfirmDialog
+        isOpen={pendingImport !== null}
+        tone="danger"
+        title="Nahradit místní úpravy předpisů importem?"
+        description={
+          <>
+            Soubor <strong>{pendingImport?.fileName}</strong> importem{' '}
+            <strong>nahradí všechny vaše dosavadní úpravy předpisů</strong> v tomto prohlížeči,
+            nepřidá se k nim. Co máte rozepsané, se ztratí. Doporučujeme si nejdřív udělat
+            export.
+          </>
+        }
+        confirmLabel="Nahradit a importovat"
+        onConfirm={confirmImport}
+        onCancel={() => setPendingImport(null)}
+      />
     </div>
   );
 }

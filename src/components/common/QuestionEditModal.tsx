@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useId } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Save, Edit3, Eye, EyeOff, AlertCircle, Loader2, Sparkles, BookOpen } from 'lucide-react';
+import { X, Save, Edit3, Eye, EyeOff, AlertCircle, Loader2, Sparkles } from 'lucide-react';
 import { Question } from '../../types';
 import { updateQuestionInSupabase, isQuestionHidden } from '../../utils/questionActions';
 import { useDialog } from '../../hooks/useDialog';
