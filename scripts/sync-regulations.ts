@@ -31,16 +31,21 @@ import mammoth from 'mammoth';
 
 import { VSCR_REGULATIONS_REGISTRY } from '../src/data/vscrRegulationsRegistry';
 import {
+  configureServerCredentials,
   fetchContents,
   fetchDocumentId,
   fetchHistory,
   fetchVersionDetail,
   pickCurrentVersion,
 } from '../src/utils/esbirka/client';
+import {
+  buildAuthHeaders,
+  describeServerConfig,
+  readServerConfig,
+} from '../src/utils/esbirka/serverConfig';
 import { downloadOfficialDocument } from '../src/utils/esbirka/files';
 import {
   buildEli,
-  buildOfficialPdfUrl,
   buildPortalUrl,
   buildSnapshotSlug,
   normalizeSectionLabel,
@@ -178,7 +183,6 @@ async function syncOne(target: SyncTarget): Promise<EsbirkaSnapshot> {
     ucinnostOd: current?.datumUcinnostiZneniOd ?? detail.datumUcinnostiZneniOd,
     novely: (current?.novely ?? []).map((n) => n.kodDokumentuSbirky),
     portalUrl: buildPortalUrl(ref, current?.datumUcinnostiZneniOd),
-    pdfUrl: buildOfficialPdfUrl(dokumentId),
     stazenoDne: new Date().toISOString(),
     pocetZnaku: text.length,
     paragrafy: collectSections(osnova),
@@ -252,8 +256,16 @@ function hasSameContent(previous: EsbirkaSnapshot, current: EsbirkaSnapshot): bo
 /** Co se u předpisu změnilo proti tomu, co bylo stažené předtím. */
 interface SyncChange {
   code: string;
-  /** `nove` = předpis přibyl, `zmenene` = vyšla novela nebo se změnil text. */
-  druh: 'nove' | 'zmenene';
+  /**
+   * `nove`    — předpis přibyl,
+   * `zmenene` — vyšla novela nebo se změnil text zákona,
+   * `tvar`    — znění i text jsou stejné, změnil se jen tvar uložených dat
+   *             (přibylo/ubylo pole, jinak se skládá odkaz). Není to změna
+   *             práva, ale soubor se přepsal, takže to hlášení musí přiznat —
+   *             jinak by automat otevřel pull request s rozdílem a v těle
+   *             tvrdil, že se nic nezměnilo.
+   */
+  druh: 'nove' | 'zmenene' | 'tvar';
   predtim?: { cisloZneni: number; ucinnostOd: string; pocetZnaku: number };
   nyni: { cisloZneni: number; ucinnostOd: string; pocetZnaku: number };
   novely: string[];
@@ -292,10 +304,22 @@ function buildMarkdownSummary(
 ): string {
   const lines: string[] = [];
 
+  const pravni = changes.filter((c) => c.druh !== 'tvar');
+  const tvarove = changes.filter((c) => c.druh === 'tvar');
+
   if (changes.length === 0) {
     lines.push('Žádné znění se nezměnilo — e-Sbírka vede u všech sledovaných předpisů totéž, co už je v repozitáři.');
+  } else if (pravni.length === 0) {
+    lines.push(
+      `Žádný předpis nezměnil znění. U ${tvarove.length} z ${celkem} se ale změnil tvar uložených dat, ` +
+        'takže se soubory přepsaly — projděte prosím rozdíl.'
+    );
   } else {
-    lines.push(`Změnilo se ${changes.length} z ${celkem} sledovaných předpisů.`);
+    lines.push(`Změnilo se ${pravni.length} z ${celkem} sledovaných předpisů.`);
+    if (tvarove.length > 0) {
+      lines.push('');
+      lines.push(`U dalších ${tvarove.length} se změnil jen tvar uložených dat, ne znění.`);
+    }
     lines.push('');
     lines.push('| Předpis | Bylo | Je | Novely | Změna textu |');
     lines.push('| --- | --- | --- | --- | --- |');
@@ -304,11 +328,14 @@ function buildMarkdownSummary(
         ? `znění č. ${ch.predtim.cisloZneni} od ${ch.predtim.ucinnostOd}`
         : '— (nově sledováno)';
       const je = `znění č. ${ch.nyni.cisloZneni} od ${ch.nyni.ucinnostOd}`;
-      const rozdil = ch.predtim
-        ? `${ch.nyni.pocetZnaku - ch.predtim.pocetZnaku >= 0 ? '+' : ''}${(
-            ch.nyni.pocetZnaku - ch.predtim.pocetZnaku
-          ).toLocaleString('cs-CZ')} znaků`
-        : `${ch.nyni.pocetZnaku.toLocaleString('cs-CZ')} znaků`;
+      const rozdil =
+        ch.druh === 'tvar'
+          ? 'beze změny textu (jen tvar dat)'
+          : ch.predtim
+            ? `${ch.nyni.pocetZnaku - ch.predtim.pocetZnaku >= 0 ? '+' : ''}${(
+                ch.nyni.pocetZnaku - ch.predtim.pocetZnaku
+              ).toLocaleString('cs-CZ')} znaků`
+            : `${ch.nyni.pocetZnaku.toLocaleString('cs-CZ')} znaků`;
       lines.push(`| ${ch.code} | ${bylo} | ${je} | ${ch.novely.join(', ') || '—'} | ${rozdil} |`);
     }
   }
@@ -333,9 +360,18 @@ async function main(): Promise<void> {
     ?.slice('--summary-file='.length);
   const targets = collectTargets(filters);
 
+  // Kořen API i případný přístupový klíč se berou z prostředí. Bez nich se
+  // volá backend veřejného portálu, který klíč nevyžaduje — tedy dnešní stav.
+  const serverConfig = readServerConfig();
+  configureServerCredentials({
+    apiRoot: serverConfig.apiRoot,
+    headers: buildAuthHeaders(serverConfig),
+  });
+
   console.log('===========================================================');
   console.log('STAŽENÍ ÚPLNÝCH ZNĚNÍ Z e-Sbírka.gov.cz (REST API)');
   console.log('===========================================================');
+  console.log(describeServerConfig(serverConfig));
   console.log(`Předpisů ke stažení: ${targets.length}`);
   if (filters.length > 0) console.log(`Filtr: ${filters.join(', ')}`);
   console.log('');
@@ -367,7 +403,27 @@ async function main(): Promise<void> {
       const { osnova: _osnova, text: _text, ...summary } = snapshot;
       summaries.push(summary);
 
-      const change = beze_zmeny ? null : describeChange(target.code, previous, snapshot);
+      // Když se obsah liší, ale číslo znění ani text ne, je to změna tvaru dat.
+      // Musí se vypsat taky — soubor se přepsal a rozdíl bude vidět v gitu.
+      const change = beze_zmeny
+        ? null
+        : (describeChange(target.code, previous, snapshot) ?? {
+            code: target.code,
+            druh: 'tvar',
+            predtim: previous
+              ? {
+                  cisloZneni: previous.cisloZneni,
+                  ucinnostOd: previous.ucinnostOd,
+                  pocetZnaku: previous.pocetZnaku,
+                }
+              : undefined,
+            nyni: {
+              cisloZneni: snapshot.cisloZneni,
+              ucinnostOd: snapshot.ucinnostOd,
+              pocetZnaku: snapshot.pocetZnaku,
+            },
+            novely: snapshot.novely,
+          });
       if (change) changes.push(change);
 
       console.log(
@@ -375,7 +431,15 @@ async function main(): Promise<void> {
           `od ${snapshot.ucinnostOd}  ` +
           `${String(snapshot.paragrafy.length).padStart(3)} §  ` +
           `${(snapshot.pocetZnaku / 1024).toFixed(0).padStart(4)} kB  ` +
-          `${change ? (change.druh === 'nove' ? 'NOVÉ' : 'ZMĚNA') : 'beze změny'}`
+          `${
+            change
+              ? change.druh === 'nove'
+                ? 'NOVÉ'
+                : change.druh === 'tvar'
+                  ? 'tvar dat'
+                  : 'ZMĚNA'
+              : 'beze změny'
+          }`
       );
     } catch (error) {
       console.log(`SELHALO — ${(error as Error).message}`);
@@ -391,7 +455,20 @@ async function main(): Promise<void> {
     }
   }
 
+  // Přehled musí zůstat úplný i při běhu s filtrem. Předpisy, které se teď
+  // nesynchronizovaly, se do něj vrátí ze souborů na disku — jinak by
+  // `npm run sync:laws -- 555/1992` vyhodil zbylých osm znění z aplikace
+  // a ta by u nich přestala vědět, že úplné znění vůbec má.
   if (summaries.length > 0) {
+    const synced = new Set(summaries.map((s) => s.slug));
+    for (const target of collectTargets([])) {
+      if (synced.has(target.slug)) continue;
+      const previous = readPreviousSnapshot(target.slug);
+      if (!previous) continue;
+      const { osnova: _osnova, text: _text, ...summary } = previous;
+      summaries.push(summary);
+    }
+
     writeManifest(summaries);
     console.log('');
     console.log(`V přehledu je ${summaries.length} znění (public/data/esbirka/).`);

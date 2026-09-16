@@ -7,6 +7,7 @@
  * serverless funkce `api/esbirka.ts`) žádné omezení není. Modul si proto sám
  * vybere dopravu: v Node jde přímo, v prohlížeči na `/api/esbirka`.
  */
+import { awaitRequestSlot } from './pace.js';
 import type {
   EsbirkaContents,
   EsbirkaDownloadLinks,
@@ -28,7 +29,9 @@ export type EsbirkaEndpoint =
   | 'historie'
   | 'dalsi-informace'
   | 'odkazy-ke-stazeni'
-  | 'obsah';
+  | 'obsah'
+  /** Požádá o vygenerování úředního souboru. Vrací id, ne samotný soubor. */
+  | 'stahni';
 
 export interface EsbirkaQuery {
   endpoint: EsbirkaEndpoint;
@@ -38,6 +41,8 @@ export interface EsbirkaQuery {
   dokumentId?: number;
   /** Id nadřazeného uzlu osnovy — používá `obsah` pro načtení potomků. */
   uzel?: string;
+  /** Formát úředního souboru — používá `stahni`. */
+  format?: 'PDF' | 'DOCX';
 }
 
 /** Chyba volání API. Nese HTTP stav, aby volající poznal výpadek od 404. */
@@ -57,8 +62,18 @@ export class EsbirkaError extends Error {
  * Sdílí ji klient v Node i proxy — díky tomu nemůže vzniknout stav, kdy proxy
  * pouští jinou množinu adres, než jakou klient umí zavolat.
  */
-export function buildUpstreamUrl(query: EsbirkaQuery): string {
-  const docs = `${ESBIRKA_API_ROOT}/dokumenty-sbirky`;
+export function buildUpstreamUrl(query: EsbirkaQuery, apiRoot: string = ESBIRKA_API_ROOT): string {
+  const docs = `${apiRoot}/dokumenty-sbirky`;
+
+  if (query.endpoint === 'stahni') {
+    if (!Number.isFinite(query.dokumentId)) {
+      throw new EsbirkaError('stahni vyžaduje číselné dokumentId', 400);
+    }
+    if (query.format !== 'PDF' && query.format !== 'DOCX') {
+      throw new EsbirkaError('stahni vyžaduje formát PDF nebo DOCX', 400);
+    }
+    return `${apiRoot}/stahni/informativni-zneni/${query.dokumentId}/${query.format}`;
+  }
 
   if (query.endpoint === 'detail-zneni') {
     if (!Number.isFinite(query.dokumentId)) {
@@ -89,12 +104,32 @@ function buildProxyUrl(query: EsbirkaQuery): string {
   if (query.eli) params.set('eli', query.eli);
   if (query.dokumentId !== undefined) params.set('dokumentId', String(query.dokumentId));
   if (query.uzel) params.set('uzel', query.uzel);
+  if (query.format) params.set('format', query.format);
   return `${ESBIRKA_PROXY_PATH}?${params.toString()}`;
 }
 
 /** V prohlížeči se musí jít přes proxy, na serveru se jde přímo. */
 function isBrowser(): boolean {
   return typeof window !== 'undefined' && typeof window.document !== 'undefined';
+}
+
+/**
+ * Přihlašovací údaje pro přímá volání ze serveru (skripty, proxy).
+ *
+ * Tenhle modul si je sám z prostředí NEČTE — běží i v prohlížeči a žádné
+ * tajemství se do něj nesmí dostat. Serverový kód je nastaví jednou při
+ * startu přes `configureServerCredentials()`; větev pro prohlížeč je nikdy
+ * nepoužije, protože ta jde přes `/api/esbirka`, kde klíč doplní až proxy.
+ */
+let serverCredentials: { apiRoot: string; headers: Record<string, string> } | null = null;
+
+export function configureServerCredentials(
+  credentials: { apiRoot: string; headers: Record<string, string> } | null
+): void {
+  if (isBrowser()) {
+    throw new EsbirkaError('Přihlašovací údaje k e-Sbírce nepatří do prohlížeče.', 500);
+  }
+  serverCredentials = credentials;
 }
 
 /**
@@ -132,7 +167,9 @@ export async function fetchEsbirkaRaw(
   options: EsbirkaRequestOptions = {}
 ): Promise<string> {
   const viaProxy = isBrowser();
-  const url = viaProxy ? buildProxyUrl(query) : buildUpstreamUrl(query);
+  const url = viaProxy
+    ? buildProxyUrl(query)
+    : buildUpstreamUrl(query, serverCredentials?.apiRoot);
   const timeoutMs = options.timeoutMs ?? 15000;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -140,8 +177,15 @@ export async function fetchEsbirkaRaw(
   options.signal?.addEventListener('abort', onAbort);
 
   try {
+    // Tempo se drží jen u přímých volání ze serveru — tam chodí dávky stovek
+    // požadavků. V prohlížeči jde o jednotlivá kliknutí, brzdit je nemá smysl.
+    if (!viaProxy) await awaitRequestSlot();
+
     const response = await fetch(url, {
-      headers: { Accept: 'application/json' },
+      // Klíč se přidává jen u přímých volání ze serveru. V prohlížeči se jde
+      // přes vlastní proxy a ta si hlavičku doplní sama — do klientského
+      // kódu se tajemství nedostane.
+      headers: viaProxy ? { Accept: 'application/json' } : (serverCredentials?.headers ?? { Accept: 'application/json' }),
       signal: controller.signal,
     });
     const body = await response.text();

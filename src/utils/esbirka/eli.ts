@@ -51,13 +51,19 @@ export function buildPortalUrl(ref: SbiratkaRef, ucinnostOd?: string): string {
 }
 
 /**
- * Přímý odkaz na stažení PDF oficiálního informativního znění.
+ * Adresa hotového souboru v souborové službě e-Sbírky.
  *
- * `dokumentId` vrací endpoint `id` nebo `detail-zneni`. Je to tentýž soubor,
- * jaký nabízí tlačítko „Stáhnout PDF“ na portálu.
+ * POZOR NA DVOUKROKOVOST: stažení úředního souboru NENÍ jedna adresa. Nejdřív
+ * se o soubor požádá (endpoint `stahni`), což vrátí `id` požadavku, a teprve
+ * tohle `id` ukazuje na hotový soubor. Dřívější verze aplikace dávala do
+ * odkazu rovnou adresu pro požádání — uživateli se tak místo zákona otevřel
+ * kus JSONu `{"pozadavekId":…,"stavPozadavku":"OK"}`.
+ *
+ * Na tuhle adresu se odkazuje přímo z prohlížeče (navigace, ne fetch), takže
+ * se jí netýká omezení CORS. Přístupový klíč se sem nepřidává a přidávat nesmí.
  */
-export function buildOfficialPdfUrl(dokumentId: number): string {
-  return `https://e-sbirka.gov.cz/sbr-externi/stahni/informativni-zneni/${dokumentId}/PDF`;
+export function buildFileUrl(fileId: string): string {
+  return `https://e-sbirka.gov.cz/souborove-sluzby/soubory/${encodeURIComponent(fileId)}`;
 }
 
 /**

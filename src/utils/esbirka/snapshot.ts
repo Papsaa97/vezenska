@@ -38,8 +38,6 @@ export interface EsbirkaSnapshotSummary {
   novely: string[];
   /** Odkaz na znění na portálu e-Sbírky. */
   portalUrl: string;
-  /** Přímý odkaz na oficiální PDF téhož znění. */
-  pdfUrl: string;
   /** Kdy skript znění stáhl (ISO 8601). */
   stazenoDne: string;
   /** Délka textu ve znacích. */
