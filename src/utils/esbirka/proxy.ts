@@ -12,13 +12,15 @@
  * (endpoint z pevného výčtu, ELI podle regulárního výrazu, id jen číslice)
  * a výsledná adresa vždy míří na `ESBIRKA_API_ROOT`.
  */
+// Přípona `.js` je tu nutná, ne kosmetická — tenhle modul se dostane do
+// serverless funkce, která běží jako ESM a nesbaluje se. Viz api/esbirka.ts.
 import {
   buildUpstreamUrl,
   ESBIRKA_API_ROOT,
   EsbirkaError,
   type EsbirkaEndpoint,
   type EsbirkaQuery,
-} from './client';
+} from './client.js';
 
 const ALLOWED_ENDPOINTS: readonly EsbirkaEndpoint[] = [
   'id',

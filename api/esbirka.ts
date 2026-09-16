@@ -12,7 +12,13 @@
  * Klient s tím počítá — ověřování proti e-Sbírce se v takovém případě označí
  * za nedostupné, nikdy se netváří jako úspěšné.
  */
-import { handleEsbirkaProxy } from '../src/utils/esbirka/proxy';
+// POZOR NA PŘÍPONU `.js`: `package.json` má `"type": "module"`, takže funkce
+// běží jako ESM, a Vercel ji nesbaluje do jednoho souboru — jen ji přeloží
+// a zachová cesty. Node v ESM bezpříponový relativní import nerozřeší a funkce
+// spadne na ERR_MODULE_NOT_FOUND (v prohlížeči se to projeví jako HTTP 500).
+// Zápis se `.js` je správně i pro TypeScript: ukazuje na výsledek překladu
+// `proxy.ts`, a Vite i tsc si ho přeloží zpět na zdrojový soubor.
+import { handleEsbirkaProxy } from '../src/utils/esbirka/proxy.js';
 
 /** Minimální tvar požadavku, který Vercel Node runtime předává. */
 interface VercelLikeRequest {
