@@ -58,6 +58,13 @@ Fyzická osoba, která datovou schránku nemá, si ji může nechat zřídit zda
 na žádost — na kterémkoli Czech POINTu nebo online s Identitou občana
 (rozcestník <https://chcidatovku.gov.cz>).
 
+**Aplikace má být předána Akademii VS ČR.** To je potřeba do žádosti napsat,
+ne to nechat vyjít najevo později. Dnes je to projekt fyzické osoby a formulář
+to tak popisuje; po předání se ale stane systémem, který provozuje organizace,
+a klíč vydaný fyzické osobě by v něm zůstat neměl. Co s tím udělat, je
+v části „Co udělat s klíčem“ — a jestli takový záměr registraci vůbec brání,
+je první z otázek na podporu níže.
+
 **Kdyby žádost jako fyzická osoba neprošla**, druhá cesta je podat ji jménem
 organizace: hlavní schránka VS ČR je `b86abcb` (IČO 00212423), Akademie má
 vlastní `dya227n` vedenou jako vedlejší pod týmž IČO. To už je ale úřední
@@ -121,8 +128,14 @@ popis použití musí odpovídat tomu, jak se aplikace opravdu používá.
 
 > Vyvíjím a provozuji studijní webovou aplikaci pro přípravu na zkoušku odborné
 > způsobilosti (ZOP A) příslušníků Vězeňské služby ČR. Žádám jako fyzická osoba
-> za sebe; nejde o žádost jménem Vězeňské služby ČR ani Akademie VS ČR a
-> aplikace není jejich informačním systémem.
+> za sebe: aplikaci vyvíjím vlastním nákladem a ve svém volném čase, nejde
+> o podání jménem Vězeňské služby ČR ani Akademie VS ČR a aplikace dnes není
+> jejich informačním systémem.
+>
+> Hotovou aplikaci hodlám předat Akademii VS ČR Stráž pod Ralskem pro její
+> potřeby. Uvádím to předem, aby bylo zřejmé, kam projekt směřuje: dojde-li
+> k předání, oznámím to a o klíč pro další provoz požádá Akademie vlastním
+> jménem, případně požádám o odpovídající změnu registrace.
 >
 > Aplikace zobrazuje konsolidovaná znění předpisů, podle nichž se ve výkonu
 > služby postupuje — zákona č. 555/1992 Sb., o Vězeňské službě a justiční
@@ -139,9 +152,10 @@ popis použití musí odpovídat tomu, jak se aplikace opravdu používá.
 > stranám; zobrazují se v aplikaci s uvedením zdroje a s upozorněním, že
 > informativní znění není právně závazné — závazná je částka Sbírky zákonů.
 
-Je-li aplikace veřejně dostupná nebo ji používá i někdo další, patří to do
-textu — třeba větou: *„Aplikace je dostupná na veřejné adrese a používají ji
-i další zájemci o přípravu na ZOP A.“* Kapacitní čísla níže s tím počítají.
+Odstavec o předání Akademii tam nechte, i kdyby termín ještě nebyl jistý.
+Zamlčet ho by se nevyplatilo: aplikace se veřejně hlásí titulkem „Akademie
+VS ČR – Studijní portál ZOP A“, takže si té vazby posuzovatel stejně všimne,
+a formulář se podepisuje prohlášením o pravdivosti údajů.
 
 ### Odkud jsou čísla
 
@@ -195,9 +209,11 @@ nebo +420 225 515 900 ještě před odesláním žádosti:
    Dokumentace je ale o dva a půl roku starší než text portálu, takže z její
    neúplnosti nejde nic bezpečně usuzovat. Bez vydaného klíče to nejde
    vyzkoušet — 401 přijde dřív než routování.
-4. **Smí klíč vydaný fyzické osobě používat aplikace, ke které mají přístup
-   i další lidé?** Odpověď patří i do „Důvodu žádosti“, aby se pak podmínky
-   užití nerozešly s tím, co aplikace dělá.
+4. **Co s klíčem, až aplikaci převezme Akademie VS ČR?** Přejde registrace
+   na ni, nebo musí požádat vlastním jménem a tenhle klíč se zruší? Odpověď
+   určuje, co se bude dít s proměnnou `ESBIRKA_API_KEY` při předání — a jestli
+   nemá o klíč rovnou žádat Akademie. Souvisí s tím i to, **smí-li klíč vydaný
+   fyzické osobě používat aplikace, ke které mají přístup i další lidé.**
 5. **Jaké limity se k našim číslům přidělí** a co se stane při jejich
    překročení (odpověď 429? zablokování klíče?).
 6. **Platnost a obnova klíče** — na jak dlouho se vydává, jde rotovat, co dělat
@@ -234,6 +250,23 @@ a ověřuje měření — query parametr ani `Authorization: Bearer` server nep�
 > limitů i odpovědnost za to, co s klíčem aplikace dělá, zůstávají žadateli —
 > i když ji používá někdo další. Klíč proto nikomu nepředávejte a držte ho jen
 > v proměnných prostředí, ne v repozitáři.
+
+### Při předání aplikace Akademii
+
+Osobní klíč **nepatří k předávanému systému**. Aplikace je stavěná tak, že to
+nic nerozbije — bez `ESBIRKA_API_KEY` volá backend portálu přesně jako dnes.
+Při předání tedy:
+
+1. Smazat `ESBIRKA_API_KEY` a `ESBIRKA_API_ROOT` z nastavení Vercelu
+   (produkce i preview) a z GitHub Actions secrets.
+2. Nechat Akademii požádat o vlastní klíč — stejným formulářem, ze schránky
+   `dya227n` nebo `b86abcb`; kapacitní čísla v tomto dokumentu zůstávají
+   v platnosti, mění se jen „Informace o klientovi“.
+3. Do té doby aplikace běží bez klíče. Funkčně se nic nemění.
+
+Kdyby osobní klíč v předaném systému zůstal, provozovala by organizace
+integraci na cizí registraci a za dodržení limitů by dál odpovídal ten, kdo
+už s aplikací nemá nic společného.
 
 ## Zdroje
 
