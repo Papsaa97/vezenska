@@ -127,7 +127,7 @@ popis použití musí odpovídat tomu, jak se aplikace opravdu používá.
 > Aplikace zobrazuje konsolidovaná znění předpisů, podle nichž se ve výkonu
 > služby postupuje — zákona č. 555/1992 Sb., o Vězeňské službě a justiční
 > stráži, zákona č. 169/1999 Sb., o výkonu trestu odnětí svobody, zákona
-> č. 293/1993 Sb., o výkonu vazby, a dalších sedmi předpisů.
+> č. 293/1993 Sb., o výkonu vazby, a dalších šesti předpisů.
 >
 > Texty se dosud do aplikace vkládaly ručně, což vedlo k tomu, že se rozešly
 > s platným zněním. Napojení na REST API e-Sbírky to má nahradit: jednou týdně
