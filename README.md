@@ -102,9 +102,11 @@ offline** skutečně stáhne znění do zařízení.
   a `npm run build` a teprve pak se založí (nebo aktualizuje) draft pull request
   na větvi `automat/esbirka-sync`. V těle je tabulka „bylo → je“ s čísly znění,
   novelami a změnou délky textu.
-- Kontroly běží uvnitř workflow schválně: na pull requestu založeném přes
-  `GITHUB_TOKEN` se `ci.yml` nespustí (GitHub tak brání smyčkám), takže by změna
-  jinak přišla k posouzení neověřená.
+- Kontroly běží uvnitř workflow schválně: pull request založený přes
+  `GITHUB_TOKEN` nespouští další workflow sám od sebe (GitHub tak brání
+  smyčkám). `ci.yml` se na něm zařadí do fronty, ale zůstane ve stavu
+  `action_required`, dokud ho někdo ručně nepustí — bez kontrol uvnitř
+  synchronizace by tedy změna přišla k posouzení neověřená.
 
 Aby workflow mohlo pull request založit, musí být v **Settings → Actions →
 General → Workflow permissions** zaškrtnuté *Allow GitHub Actions to create and

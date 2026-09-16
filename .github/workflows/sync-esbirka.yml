@@ -10,9 +10,11 @@ name: Synchronizace předpisů z e-Sbírky
 # prázdné pull requesty s pouhou změnou data stažení nevznikají.
 #
 # POZOR NA CI: pull request založený přes GITHUB_TOKEN nespouští další
-# workflow (GitHub to záměrně blokuje proti smyčkám), takže `ci.yml` na něm
-# neproběhne. Kontroly proto běží rovnou tady a jejich výsledek je v těle
-# pull requestu; bez nich by se změna dostala k posouzení neověřená.
+# workflow sám od sebe (GitHub to blokuje proti smyčkám). Ověřeno na zkušebním
+# běhu: `ci.yml` se na takovém pull requestu sice zařadí do fronty, ale skončí
+# ve stavu `action_required` a čeká, až ho někdo ručně pustí. Kontroly proto
+# běží rovnou tady a jejich výsledek je v těle pull requestu; jinak by se
+# změna dostala k posouzení neověřená.
 #
 # PŘEDPOKLAD NASTAVENÍ: Settings → Actions → General → Workflow permissions
 # musí mít zaškrtnuté „Allow GitHub Actions to create and approve pull
@@ -112,10 +114,17 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Z výpisu kontroly jen porovnání s e-Sbírkou a závěr. Kdyby se
-          # výpis změnil a značka se nenašla, vezme se prostě jeho konec.
-          VYPIS="$(sed -n '/POKRYTÍ PŘEDPISU/,$p' "$RUNNER_TEMP/check-legal.log" | head -80)"
-          if [ -z "$VYPIS" ]; then VYPIS="$(tail -40 "$RUNNER_TEMP/check-legal.log")"; fi
+          # Z výpisu kontroly se do těla berou dvě části: tabulka pokrytí
+          # a závěrečný verdikt. Dřív se bralo prvních 80 řádků od tabulky dál,
+          # jenže mezi nimi leží dlouhý rozpis doslovnosti — výpis se utnul
+          # uprostřed něj a verdikt, na který se odkazuje, v těle vůbec nebyl.
+          LOG="$RUNNER_TEMP/check-legal.log"
+          POKRYTI="$(sed -n '/POKRYTÍ PŘEDPISU/,/DOSLOVNOST TEXTŮ/p' "$LOG" | head -40)"
+          ZAVER="$(sed -n '/KONTROLA TVARU DAT/,$p' "$LOG" | head -12)"
+          DRIFT="$(grep -c 'doslovných' "$LOG" || true)"
+          if [ -z "$POKRYTI" ] && [ -z "$ZAVER" ]; then
+            POKRYTI="$(tail -40 "$LOG")"
+          fi
 
           {
             echo "Automatická synchronizace s [veřejným REST API e-Sbírky](https://e-sbirka.gov.cz/restful-api)."
@@ -125,7 +134,7 @@ jobs:
             echo
             echo "## Ověření"
             echo
-            echo "Kontroly proběhly v tomto běhu, protože na pull requestu založeném přes \`GITHUB_TOKEN\` se \`ci.yml\` nespouští:"
+            echo "Kontroly proběhly v tomto běhu, protože na pull requestu založeném přes \`GITHUB_TOKEN\` se \`ci.yml\` sám nespustí (čeká ve stavu \`action_required\` na ruční schválení):"
             echo
             echo "- \`npm run lint\` (typová kontrola + přístupnost) — prošlo"
             echo "- \`npm run check:legal\` — prošlo, výpis níže"
@@ -134,7 +143,14 @@ jobs:
             echo "<details><summary>Výpis <code>npm run check:legal</code></summary>"
             echo
             echo '```'
-            printf '%s\n' "$VYPIS"
+            printf '%s\n' "$POKRYTI"
+            if [ "${DRIFT:-0}" -gt 0 ]; then
+              echo "…"
+              echo "Doslovnost: ${DRIFT} položek Paragrafového výkladu má věty, které se"
+              echo "v úředním znění doslova nenašly. Celý rozpis je ve výpisu běhu."
+            fi
+            echo "…"
+            printf '%s\n' "$ZAVER"
             echo '```'
             echo
             echo "</details>"
