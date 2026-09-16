@@ -10,6 +10,8 @@
  *   2. jakmile je stav `OK`, stáhne se soubor podle vráceného `id`.
  */
 import { EsbirkaError } from './client';
+import { awaitRequestSlot } from './pace';
+import { buildAuthHeaders, readServerConfig } from './serverConfig';
 
 /** Kořen souborové služby e-Sbírky. */
 export const ESBIRKA_FILES_ROOT = 'https://e-sbirka.gov.cz/souborove-sluzby';
@@ -35,8 +37,9 @@ async function getJson<T>(url: string, timeoutMs: number): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
+    await awaitRequestSlot();
     const response = await fetch(url, {
-      headers: { Accept: 'application/json' },
+      headers: buildAuthHeaders(readServerConfig()),
       signal: controller.signal,
     });
     if (!response.ok) {
@@ -97,7 +100,9 @@ export async function downloadOfficialDocument(
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
+    await awaitRequestSlot();
     const response = await fetch(`${ESBIRKA_FILES_ROOT}/soubory/${fileId}`, {
+      headers: buildAuthHeaders(readServerConfig()),
       signal: controller.signal,
     });
     if (!response.ok) {

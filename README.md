@@ -133,6 +133,33 @@ konkrétních endpointů a ELI ve tvaru `/eli/cz/sb/{rok}/{číslo}`; nic jinéh
 neodejde. Na čistě statickém nasazení (`render.yaml`) funkce neběží a ověřování
 se poctivě označí za nedostupné.
 
+### Přístupový klíč
+
+Aplikace volá `https://e-sbirka.gov.cz/sbr-externi` — backend veřejného portálu,
+který klíč nevyžaduje. Dokumentované **Veřejné API** e-Sbírky ale běží na
+`https://api.e-sbirka.gov.cz` a bez klíče vrací `401 NEPLATNY_API_KLIC`; klíč
+přiděluje Ministerstvo vnitra po registraci.
+
+Aplikace je na to připravená — stačí vyplnit dvě proměnné prostředí, v kódu se
+nemění nic:
+
+| Proměnná | Výchozí stav |
+|---|---|
+| `ESBIRKA_API_KEY` | nevyplněno = žádný klíč se neposílá |
+| `ESBIRKA_API_ROOT` | nevyplněno = `https://e-sbirka.gov.cz/sbr-externi` |
+
+Ani jedna nemá prefix `VITE_` — klíč se čte výhradně na serveru
+(`src/utils/esbirka/serverConfig.ts`) a do klientského balíku se nedostane.
+
+**Postup registrace a obsah žádosti je v [`docs/esbirka-registrace.md`](docs/esbirka-registrace.md).**
+Jestli se registrační povinnost vztahuje i na dnešní použití backendu portálu,
+nevíme — dokument to říká otevřeně a navrhuje, na co se předem zeptat.
+
+Synchronizace drží mezi požadavky odstup 200 ms (`src/utils/esbirka/pace.ts`),
+tedy nejvýš 5 požadavků za sekundu. Jeden běh je 402 požadavků a trvá přes
+80 sekund. Tahle čísla jsou zároveň to, co se uvádí v registrační žádosti —
+když se jedno změní, musí se změnit i druhé.
+
 > **Právní závaznost:** e-Sbírka poskytuje *informativní* znění. Závazné je znění
 > vyhlášené ve Sbírce zákonů. Aplikace to u každého textu uvádí, včetně čísla
 > znění, data účinnosti a data stažení.

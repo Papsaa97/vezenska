@@ -15,6 +15,7 @@ import {
   type TextBlock,
 } from '../../utils/esbirka/reader';
 import { freshnessLabel, type FreshnessState } from '../../utils/esbirka/status';
+import { fetchOfficialFileUrl } from '../../utils/esbirka/officialFile';
 import PrintHeader from '../common/PrintHeader';
 import { useDialog } from '../../hooks/useDialog';
 
@@ -111,6 +112,8 @@ export default function LegalReaderModal({
   const esbirka = useEsbirkaRegulation(activeModalRegulation);
   const { maUplneZneni, nacistUplneZneni, overitAktualnost } = esbirka;
   const [sourceMode, setSourceMode] = useState<SourceMode>('vyber');
+  const [fileState, setFileState] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [fileError, setFileError] = useState<string | null>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
 
   // Po otevření předpisu se úplné znění vyžádá rovnou: je to ten text, kvůli
@@ -166,6 +169,26 @@ export default function LegalReaderModal({
     }
     return found;
   }, [showingOfficial, blocks, activeText]);
+
+  /**
+   * Otevře úřední PDF daného znění.
+   *
+   * Nejde to udělat prostým odkazem: e-Sbírka soubor nejdřív vygeneruje
+   * a vrátí jen jeho id. Dřív tu odkaz mířil rovnou na adresu pro požádání,
+   * takže se čtenáři místo zákona otevřel JSON.
+   */
+  const openOfficialFile = useCallback(async (dokumentId: number) => {
+    setFileState('loading');
+    setFileError(null);
+    try {
+      const url = await fetchOfficialFileUrl(dokumentId, 'PDF');
+      setFileState('idle');
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      setFileState('error');
+      setFileError((error as Error).message);
+    }
+  }, []);
 
   const jumpToSection = useCallback((key: string) => {
     const target = bodyRef.current?.querySelector(`#${CSS.escape(key)}`);
@@ -434,18 +457,37 @@ export default function LegalReaderModal({
                 )}
 
                 {summary && (
-                  <a
-                    href={summary.pdfUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-colors shrink-0 border border-slate-200 dark:border-slate-700"
-                    title="Stáhnout úřední PDF informativního znění z e-Sbírky"
+                  <button
+                    type="button"
+                    onClick={() => openOfficialFile(summary.dokumentId)}
+                    disabled={fileState === 'loading'}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-colors shrink-0 border border-slate-200 dark:border-slate-700 cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+                    title="Nechat e-Sbírku vygenerovat úřední PDF tohoto znění a otevřít ho"
                   >
-                    <Download className="w-3.5 h-3.5 text-red-500" />
-                    <span className="hidden sm:inline">Úřední PDF</span>
-                  </a>
+                    {fileState === 'loading' ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Download className="w-3.5 h-3.5 text-red-500" />
+                    )}
+                    <span className="hidden sm:inline">
+                      {fileState === 'loading' ? 'Připravuji…' : 'Úřední PDF'}
+                    </span>
+                  </button>
                 )}
               </div>
+
+              {fileState === 'error' && fileError && (
+                <div
+                  role="status"
+                  className="flex items-start gap-2 px-3 py-2 rounded-xl border text-[11px] font-semibold bg-rose-50 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                  <span>
+                    <strong className="uppercase tracking-wide">Úřední PDF se nepodařilo získat:</strong>{' '}
+                    {fileError}
+                  </span>
+                </div>
+              )}
 
               {/* Výsledek ověření proti e-Sbírce */}
               {esbirka.freshness && (

@@ -27,8 +27,7 @@ export const ESBIRKA_SNAPSHOTS: Record<string, EsbirkaSnapshotSummary> = {
       "285/2025 Sb."
     ],
     "portalUrl": "https://e-sbirka.gov.cz/sb/1961/141/2026-01-01?zalozka=text",
-    "pdfUrl": "https://e-sbirka.gov.cz/sbr-externi/stahni/informativni-zneni/2055613/PDF",
-    "stazenoDne": "2026-09-16T06:37:00.456Z",
+    "stazenoDne": "2026-09-16T10:07:23.935Z",
     "pocetZnaku": 656185,
     "paragrafy": [
       "§ 1",
@@ -609,8 +608,7 @@ export const ESBIRKA_SNAPSHOTS: Record<string, EsbirkaSnapshotSummary> = {
       "270/2025 Sb."
     ],
     "portalUrl": "https://e-sbirka.gov.cz/sb/1992/555/2026-01-01?zalozka=text",
-    "pdfUrl": "https://e-sbirka.gov.cz/sbr-externi/stahni/informativni-zneni/2054655/PDF",
-    "stazenoDne": "2026-09-16T06:35:46.963Z",
+    "stazenoDne": "2026-09-16T10:06:09.059Z",
     "pocetZnaku": 53213,
     "paragrafy": [
       "§ 1",
@@ -676,8 +674,7 @@ export const ESBIRKA_SNAPSHOTS: Record<string, EsbirkaSnapshotSummary> = {
       "270/2025 Sb."
     ],
     "portalUrl": "https://e-sbirka.gov.cz/sb/1993/293/2026-01-01?zalozka=text",
-    "pdfUrl": "https://e-sbirka.gov.cz/sbr-externi/stahni/informativni-zneni/2054663/PDF",
-    "stazenoDne": "2026-09-16T06:35:57.764Z",
+    "stazenoDne": "2026-09-16T10:06:19.840Z",
     "pocetZnaku": 58872,
     "paragrafy": [
       "§ 1",
@@ -745,8 +742,7 @@ export const ESBIRKA_SNAPSHOTS: Record<string, EsbirkaSnapshotSummary> = {
       "360/2024 Sb."
     ],
     "portalUrl": "https://e-sbirka.gov.cz/sb/1994/109/2025-01-01?zalozka=text",
-    "pdfUrl": "https://e-sbirka.gov.cz/sbr-externi/stahni/informativni-zneni/393099/PDF",
-    "stazenoDne": "2026-09-16T06:37:13.123Z",
+    "stazenoDne": "2026-09-16T10:09:10.554Z",
     "pocetZnaku": 63156,
     "paragrafy": [
       "§ 1",
@@ -849,8 +845,7 @@ export const ESBIRKA_SNAPSHOTS: Record<string, EsbirkaSnapshotSummary> = {
       "270/2025 Sb."
     ],
     "portalUrl": "https://e-sbirka.gov.cz/sb/1999/169/2026-01-01?zalozka=text",
-    "pdfUrl": "https://e-sbirka.gov.cz/sbr-externi/stahni/informativni-zneni/2054683/PDF",
-    "stazenoDne": "2026-09-16T06:35:54.411Z",
+    "stazenoDne": "2026-09-16T10:06:16.513Z",
     "pocetZnaku": 115161,
     "paragrafy": [
       "§ 1",
@@ -978,8 +973,7 @@ export const ESBIRKA_SNAPSHOTS: Record<string, EsbirkaSnapshotSummary> = {
       "360/2024 Sb."
     ],
     "portalUrl": "https://e-sbirka.gov.cz/sb/1999/345/2025-01-01?zalozka=text",
-    "pdfUrl": "https://e-sbirka.gov.cz/sbr-externi/stahni/informativni-zneni/393105/PDF",
-    "stazenoDne": "2026-09-16T06:37:06.016Z",
+    "stazenoDne": "2026-09-16T10:07:29.466Z",
     "pocetZnaku": 91143,
     "paragrafy": [
       "§ 1",
@@ -1101,8 +1095,7 @@ export const ESBIRKA_SNAPSHOTS: Record<string, EsbirkaSnapshotSummary> = {
       "300/2025 Sb."
     ],
     "portalUrl": "https://e-sbirka.gov.cz/sb/2003/361/2026-01-01?zalozka=text",
-    "pdfUrl": "https://e-sbirka.gov.cz/sbr-externi/stahni/informativni-zneni/2056763/PDF",
-    "stazenoDne": "2026-09-16T06:36:19.030Z",
+    "stazenoDne": "2026-09-16T10:06:42.361Z",
     "pocetZnaku": 273067,
     "paragrafy": [
       "§ 1",
@@ -1361,8 +1354,7 @@ export const ESBIRKA_SNAPSHOTS: Record<string, EsbirkaSnapshotSummary> = {
       "270/2025 Sb."
     ],
     "portalUrl": "https://e-sbirka.gov.cz/sb/2008/129/2026-01-01?zalozka=text",
-    "pdfUrl": "https://e-sbirka.gov.cz/sbr-externi/stahni/informativni-zneni/2054785/PDF",
-    "stazenoDne": "2026-09-16T06:36:04.103Z",
+    "stazenoDne": "2026-09-16T10:06:26.815Z",
     "pocetZnaku": 77916,
     "paragrafy": [
       "§ 1",
@@ -1443,8 +1435,7 @@ export const ESBIRKA_SNAPSHOTS: Record<string, EsbirkaSnapshotSummary> = {
       "270/2025 Sb."
     ],
     "portalUrl": "https://e-sbirka.gov.cz/sb/2009/40/2026-01-01?zalozka=text",
-    "pdfUrl": "https://e-sbirka.gov.cz/sbr-externi/stahni/informativni-zneni/2057115/PDF",
-    "stazenoDne": "2026-09-16T06:36:37.612Z",
+    "stazenoDne": "2026-09-16T10:07:00.785Z",
     "pocetZnaku": 455681,
     "paragrafy": [
       "§ 1",
