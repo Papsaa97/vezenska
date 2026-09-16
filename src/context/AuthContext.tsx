@@ -277,10 +277,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Zařazení do třídy je předvolba, nikoli oprávnění — lokální fallback je tu v pořádku.
     // Oprávnění velitele třídy se ověřuje v RLS politikách přes public.my_class().
-    const effectiveClass = profileData?.user_class?.trim() || localClass?.trim() || 'ZOP A11';
+    //
+    // Nezadaná třída je prázdný řetězec. Dřív se tu dosazovala „ZOP A11", takže
+    // každý účet vypadal, že do té třídy patří, a hodnota se odsud šířila dál do
+    // prohlížeče i do databáze.
+    const effectiveClass = profileData?.user_class?.trim() || localClass?.trim() || '';
 
     if (typeof window !== 'undefined') {
-      localStorage.setItem(LOCAL_CLASS_KEY, effectiveClass);
+      if (effectiveClass) {
+        localStorage.setItem(LOCAL_CLASS_KEY, effectiveClass);
+      } else {
+        localStorage.removeItem(LOCAL_CLASS_KEY);
+      }
       localStorage.setItem(LOCAL_CLASS_OWNER_KEY, userId);
       // Zbytek po dřívějším ukládání role do prohlížeče — odstraníme, ať se na něj
       // nemůže nic omylem navázat a ať starým instalacím nezůstane v úložišti.
@@ -319,7 +327,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           id: userId,
           email: userEmail,
           full_name: effectiveFullName,
-          user_class: resolvedProfile.user_class || 'ZOP A11',
+          // Třída se zakládanému profilu nevyplňuje — vybere si ji uživatel sám.
+          ...(resolvedProfile.user_class ? { user_class: resolvedProfile.user_class } : {}),
           ...(resolvedProfile.avatar_url ? { avatar_url: resolvedProfile.avatar_url } : {}),
         },
         { onConflict: 'id' }
@@ -365,7 +374,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         pruneLocalPrefs(currentUser.id);
         const localClass = typeof window !== 'undefined' ? localStorage.getItem(LOCAL_CLASS_KEY) : null;
         const initialRole: UserRole = isKnownAdmin(currentUser.email) ? 'admin' : 'student';
-        const initialClass = localClass?.trim() || 'ZOP A11';
+        const initialClass = localClass?.trim() || '';
 
         // Jméno a fotka se do doběhnutí dotazu na profiles neberou z prohlížeče,
         // ze stejného důvodu jako role: cizí hodnota by na okamžik vypadala jako
@@ -453,7 +462,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             email,
             full_name: fullName,
             role: 'student',
-            user_class: 'ZOP A11',
+            // Bez třídy. Registrace nemá jak vědět, do které třídy člověk nastupuje;
+            // dosazená „ZOP A11" se pak tvářila jako jeho skutečné zařazení.
           },
           { onConflict: 'id' }
         );
@@ -512,8 +522,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const effectiveAvatar =
         data.avatarUrl !== undefined ? data.avatarUrl : (profile?.avatar_url || null);
 
+      // Třída se NEDOPLŇUJE. Dřív tu stálo `profile?.user_class || 'ZOP A11'`,
+      // takže každé uložení profilu — i pouhá změna jména nebo fotky — zapsalo
+      // účtu třídu ZOP A11, i když si ji uživatel nikdy nevybral. Tímhle se
+      // třída rozlezla do všech profilů v databázi. Když ji volající neposílá,
+      // zůstává, jaká byla; prázdná hodnota znamená „třída nezadaná".
       const effectiveClass =
-        data.userClass !== undefined ? data.userClass : (profile?.user_class || 'ZOP A11');
+        data.userClass !== undefined ? data.userClass.trim() : (profile?.user_class ?? '');
 
       // Optimistická aktualizace pro okamžitý efekt v UI; při chybě ji vrátíme zpět.
       setProfile({
@@ -526,10 +541,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user_class: effectiveClass,
       });
 
+      // Do databáze jdou jen pole, která volající opravdu mění. Posílat vždy
+      // i `user_class` znamenalo přepsat třídu při každém uložení jména.
       const updates: Record<string, string | null> = {
         full_name: effectiveFullName,
-        user_class: effectiveClass,
       };
+      if (data.userClass !== undefined) {
+        updates.user_class = effectiveClass || null;
+      }
       if (data.avatarUrl !== undefined) {
         updates.avatar_url = effectiveAvatar;
       }
@@ -561,7 +580,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // v prohlížeči nedrží hodnoty, které na serveru nikdy neskončily. Ukládá se
       // jedině předvolba třídy, a to spolu s účtem, kterému patří — jméno ani
       // fotka v prohlížeči nemají co dělat, viz pruneLocalPrefs().
-      if (typeof window !== 'undefined' && user) {
+      if (typeof window !== 'undefined' && user && data.userClass !== undefined) {
         localStorage.setItem(LOCAL_CLASS_KEY, effectiveClass);
         localStorage.setItem(LOCAL_CLASS_OWNER_KEY, user.id);
       }

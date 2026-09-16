@@ -40,6 +40,7 @@ projektu spusťte v tomto pořadí:
 | 26 | `025_zruseni_bezpecnostni_sluzby.sql` | Ruší předmět Bezpečnostní služba — 34 otázek do Služební přípravy, 2 jinam |
 | 27 | `026_smazani_duplicit_a_zruseni_zop.sql` | Maže 13 zdvojených otázek a ruší předmět ZOP — banka klesá na 364 |
 | 28 | `027_stitky_souboru_a_editovatelny_obsah.sql` | Štítky souborů (`material_tags`) a editovatelné bloky obsahu (`content_blocks`) |
+| 29 | `028_naprava_schematu_class_boards.sql` | Srovnává `class_boards` s aplikací — bez toho se nástěnka tříd neuloží na server |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
@@ -418,3 +419,54 @@ obsahu má jiný tvar; kontroluje ho aplikace při zápisu i při čtení
 (`src/utils/contentLibrary.ts`). Sloupec `kind` má omezení `CHECK` na výčet
 `subject`, `matching_category`, `scenario` — nový druh obsahu znamená novou
 migraci, která výčet rozšíří.
+
+## Náprava schématu nástěnky tříd (`028`)
+
+**Spusť na každé instalaci, která vznikla dřív než `class_boards.sql`.** Tabulka
+`public.class_boards` v takovém projektu pochází ze starší verze aplikace a od
+té doby se s ní rozešla:
+
+| Sloupec v databázi | Co posílá aplikace |
+|---|---|
+| `announcements` | `info_text` |
+| `schedule_image_url` | `schedule_url` |
+| chybí | `schedule_storage_path` |
+| chybí | `course_start_date`, `course_end_date` |
+| chybí | `updated_by` |
+| `id UUID` | `id TEXT` (`class-1758…-x7a2`) |
+
+Důsledek je nenápadný, ale úplný: **každé uložení nástěnky skončilo chybou**
+(`column "info_text" does not exist`, u id `invalid input syntax for type uuid`).
+Aplikace na to upozorní pruhem „změna je zatím jen v tomto zařízení", takže to
+nevypadá jako porucha — jenže rozvrh, ústrojová kázeň ani služby se nikdy
+nedostaly na server a ostatní je neviděli. Čtení dopadalo stejně: i kdyby
+v tabulce řádky byly, přišly by bez textu hlášení a bez rozvrhu.
+
+Migrace sloupce **přejmenuje** (obsah zůstává), chybějící doplní a převede `id`
+na `TEXT`. Nemaže nic kromě `linked_materials` — a ten jen tehdy, když je
+prokazatelně prázdný; s obsahem ho ponechá a upozorní v logu. RLS politiky se
+nemění, jsou v pořádku z migrací `013` a `019`.
+
+Na konci skript zkusí vložit a hned smazat jeden řádek. Projde-li to bez chyby,
+tvar tabulky sedí. Že zápis projde i z aplikace, ukáže až uložení třídy
+přihlášeným lektorem — v SQL Editoru běží vše jako `postgres`, na kterého se RLS
+nevztahuje.
+
+### Sloupec `linked_materials` mizí
+
+Ručně vkládané odkazy na materiály nahradily štítky souborů z migrace `027`:
+soubor se ke třídě přiřadí ve správci souborů a na nástěnce se objeví sám.
+Odpovídající blok „Odkazy vložené ručně" je z nástěnky pryč.
+
+### Třída `ZOP A11` v profilech
+
+Samostatný nález, který migrace **neřeší** — je to data, ne schéma. Aplikace
+dosazovala `ZOP A11` jako výchozí třídu na čtyřech místech (registrace,
+zakládání profilu, načtení profilu, uložení jména), takže se zapsala i účtům,
+které si třídu nikdy nevybraly. Kód už ji nedosazuje nikde; hodnoty, které
+v databázi zůstaly, smaže tenhle dotaz — po něm si každý zvolí třídu sám:
+
+```sql
+-- Zvaž, komu třídu opravdu chceš nechat. Tohle ji smaže všem najednou:
+UPDATE public.profiles SET user_class = NULL WHERE user_class = 'ZOP A11';
+```
