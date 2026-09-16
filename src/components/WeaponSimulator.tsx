@@ -1,24 +1,25 @@
-import React, { useState } from 'react';
-import { 
-  Crosshair, 
-  ShieldCheck, 
-  CheckCircle2, 
-  RotateCcw, 
-  AlertTriangle, 
-  ArrowRight, 
-  BookOpen, 
-  Layers, 
-  Zap, 
-  Sparkles, 
+import React, { useState, useEffect } from 'react';
+import {
+  Crosshair,
+  ShieldCheck,
+  CheckCircle2,
+  RotateCcw,
+  AlertTriangle,
+  ArrowRight,
+  BookOpen,
+  Layers,
+  Zap,
+  Sparkles,
   Award,
   AlertOctagon,
   Wrench,
-  ShieldAlert,
   HelpCircle,
+  Info,
   XCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { updateDailyStreak } from '../utils/gamification';
+import { loadCompletedDrills, saveCompletedDrills, updateDailyStreak } from '../utils/gamification';
+import { useProgressRevision } from '../hooks/useProgressRevision';
 
 interface WeaponSimulatorProps {
   onNavigateToBadges?: () => void;
@@ -385,17 +386,14 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
   const [currentDrillIndex, setCurrentDrillIndex] = useState<number>(0);
   const [selectedDrillOption, setSelectedDrillOption] = useState<number | null>(null);
   const [isDrillAnswered, setIsDrillAnswered] = useState<boolean>(false);
-  const [completedDrills, setCompletedDrills] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('vscr_completed_drills');
-        return saved ? JSON.parse(saved) : [];
-      } catch {
-        return [];
-      }
-    }
-    return [];
-  });
+  const [completedDrills, setCompletedDrills] = useState<string[]>(loadCompletedDrills);
+
+  // Postup se přečte znovu při každé změně úložiště — i po přihlášení, kdy se
+  // vlastník klíče změní z „anon“ na id účtu.
+  const progressRevision = useProgressRevision();
+  useEffect(() => {
+    setCompletedDrills(loadCompletedDrills());
+  }, [progressRevision]);
 
   const currentWeapon = weapons.find(w => w.id === selectedWeaponId)!;
   const stepsToUse = activeMode === 'safety' ? currentWeapon.safetySteps : currentWeapon.disassemblySteps;
@@ -446,17 +444,12 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
     const drill = stoppageDrills[currentDrillIndex];
     if (drill.options[index].isCorrect) {
       setCompletedDrills(prev => {
-        if (!prev.includes(drill.id)) {
-          const next = [...prev, drill.id];
-          try {
-            localStorage.setItem('vscr_completed_drills', JSON.stringify(next));
-            window.dispatchEvent(new Event('storage'));
-          } catch {
-            // ignore
-          }
-          return next;
-        }
-        return prev;
+        if (prev.includes(drill.id)) return prev;
+        const next = [...prev, drill.id];
+        // Zápis mimo updater — ten musí být čistá funkce (StrictMode ho ve
+        // vývoji spouští dvakrát).
+        queueMicrotask(() => saveCompletedDrills(next));
+        return next;
       });
       updateDailyStreak();
     }
@@ -585,6 +578,23 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
 
       {activeMode === 'troubleshooting' ? (
         <div className="flex flex-col gap-5">
+          {/* Závady jsou společné pro obě zbraně.
+              Dřív se týchž pět závad zobrazovalo pod hlavičkou vybrané zbraně,
+              takže to vypadalo, že jsou pro ni specifické. Nejsou — a vymýšlet
+              si zvláštní sadu pro Scorpion by znamenalo psát obsah bez
+              podkladu, což je přesně to, co se v téhle aplikaci nemá dělat. */}
+          <div
+            role="note"
+            className="flex items-start gap-2.5 rounded-xl border border-slate-200 dark:border-slate-700/70 bg-slate-50 dark:bg-slate-800/50 px-3.5 py-2.5 text-xs text-slate-600 dark:text-slate-300"
+          >
+            <Info className="w-4 h-4 mt-px shrink-0 text-blue-500" />
+            <span>
+              Tyto závady a postupy jejich odstranění jsou <strong>společné pro pistoli CZ 75 B
+              i samopal CZ Scorpion EVO 3 A1</strong> — nejde o sadu vázanou na zbraň zvolenou
+              výše. Konkrétní hmaty si vždy ověřte podle návodu k dané zbrani a pokynů instruktora.
+            </span>
+          </div>
+
           {/* Drills Selector Bar */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
             {stoppageDrills.map((drill, idx) => {

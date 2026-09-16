@@ -12,7 +12,7 @@ interface Concept {
   badge: string;
 }
 
-const conceptsList: Concept[] = [
+export const conceptsList: Concept[] = [
   { id: 1, term: 'Etika', category: 'normative', shortDef: 'Praktická filozofická disciplína, věda o správném způsobu života a teorie normativních systémů.', detail: 'Hledá a formuluje pravidla pro harmonické, spravedlivé a vzájemně prospěšné soužití lidí ve společnosti. Směřuje k neměnným etickým pravidlům a zkoumá směřování k nejvyššímu etickému cíli (dobru).', badge: 'Základní pojem' },
   { id: 2, term: 'Etický cíl', category: 'normative', shortDef: 'Ideový směr zaměřený k absolutnímu dobru.', detail: 'Nemá materiální podstatu, není to dosažitelný bod, ale směr a celoživotní kompas. Podle směru k etickému cíli řadíme hodnoty do hodnotových žebříčků a poměřujeme své úmysly a činy.', badge: 'Axiologie' },
   { id: 3, term: 'Axiologie', category: 'normative', shortDef: 'Etická disciplína zabývající se vědou o hodnotách (z řeckého axia = hodnota).', detail: 'Zkoumá procesy vzniku hodnot, jejich třídění na materiální a nemateriální a uspořádání do hodnotových žebříčků. U zralého člověka stojí nejvýše nemateriální hodnoty (život, spravedlnost, čest).', badge: 'Axiologie' },

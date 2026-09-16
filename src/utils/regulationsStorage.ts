@@ -34,6 +34,11 @@ export function getStoredRegulations(): VscrRegulation[] {
   }
 }
 
+/** Je to předpis dodávaný s aplikací (lze ho vrátit na výchozí znění)? */
+export function isDefaultRegulation(regulationId: string): boolean {
+  return VSCR_REGULATIONS_REGISTRY.some((reg) => reg.id === regulationId);
+}
+
 /**
  * Saves or updates a regulation in local storage.
  */

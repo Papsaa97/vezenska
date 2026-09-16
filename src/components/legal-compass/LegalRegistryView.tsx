@@ -717,7 +717,15 @@ export default function LegalRegistryView({
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-slate-400 text-sm p-8 text-center space-y-3">
             <Scale className="w-12 h-12 text-slate-300 dark:text-slate-700" />
-            <p>Vyberte zákonnou normu ze seznamu pro zobrazení přesného textu a metodického výkladu.</p>
+            {searchQuery.trim() || selectedCategory !== 'all' ? (
+              <p>
+                Zadanému hledání neodpovídá žádná norma. Zkuste jiný výraz nebo zrušte filtr
+                kategorie — dřív se tu místo toho ukázala první norma v databázi, která
+                s hledáním nesouvisela.
+              </p>
+            ) : (
+              <p>Vyberte zákonnou normu ze seznamu pro zobrazení přesného textu a metodického výkladu.</p>
+            )}
           </div>
         )}
       </section>

@@ -14,6 +14,7 @@ import { supabase } from '../lib/supabase';
 
 export type { UserRole, UserProfile, UpdateProfileInput, ProfileUpdateResult } from '../types/auth';
 import type { UserRole, UserProfile, UpdateProfileInput, ProfileUpdateResult } from '../types/auth';
+import { setStorageOwner } from '../utils/userScopedStorage';
 
 /**
  * Seznam e-mailových adres garantovaných správců systému — bootstrap pro případ,
@@ -159,6 +160,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [roleSyncWarning, setRoleSyncWarning] = useState<string | null>(null);
+
+  // Postup v prohlížeči (pexeso, série, scénáře, drily, kartičky, oblíbené) se
+  // ukládá pod klíč konkrétního účtu — viz utils/userScopedStorage. Bez tohohle
+  // efektu by zůstal ve společném jmenném prostoru „anon“ a na sdíleném počítači
+  // by si studenti navzájem dědili sérii i splněné scénáře.
+  //
+  // Nastavuje se co nejdřív, hned jak je známé id relace: teprve pak smí
+  // cokoli postup čítat.
+  useEffect(() => {
+    setStorageOwner(user?.id ?? null);
+  }, [user?.id]);
 
   // Náhled cizí role. Schválně jen ve stavu komponenty, ne v localStorage:
   // načtení stránky ho tím pádem vždycky vypne, takže se v něm nejde zaseknout.

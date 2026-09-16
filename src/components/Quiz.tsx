@@ -6,6 +6,7 @@ import { normalizeSubject } from './SubjectsHub';
 import { speakText, isSpeechSupported } from '../utils/speech';
 import { getSubjectInfo } from '../data/questions/subjectsInfo';
 import PrintHeader from './common/PrintHeader';
+import ConfirmDialog from './common/ConfirmDialog';
 
 interface QuizProps {
   questions: Question[];
@@ -19,6 +20,27 @@ interface QuizProps {
 
 type GameState = 'setup' | 'playing' | 'results';
 type Confidence = 'know' | 'guess' | 'dont_know';
+
+/** Počet otázek ostré zkoušky a její časový limit v minutách. */
+const EXAM_QUESTION_COUNT = 50;
+const EXAM_TIME_LIMIT_MINUTES = 45;
+
+/**
+ * Rovnoměrné promíchání (Fisher–Yates).
+ *
+ * `sort(() => Math.random() - 0.5)` rovnoměrnou permutaci nedává — výsledek
+ * závisí na tom, jak řadicí algoritmus prvky porovnává, takže některá pořadí
+ * vycházejí výrazně častěji. V aplikaci to bylo na pěti místech včetně skládání
+ * ostré zkoušky.
+ */
+function shuffleArray<T>(items: T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
 
 interface SessionStats {
   correct: number;
@@ -50,10 +72,21 @@ export default function Quiz({
   const [isMistakesMode, setIsMistakesMode] = useState<boolean>(false);
   const [mistakeHistory, setMistakeHistory] = useState<Set<string>>(new Set());
 
+  /**
+   * Proč se test nespustil. Zobrazuje se v nastavení testu.
+   *
+   * Dřív to byl `alert()`: v PWA v režimu standalone systémové okno s názvem
+   * domény, které blokuje vlákno a nedá se stylovat ani přeložit.
+   */
+  const [setupError, setSetupError] = useState<string | null>(null);
+
+  /** Čeká se na potvrzení odevzdání ostré zkoušky. */
+  const [confirmSubmitExam, setConfirmSubmitExam] = useState<boolean>(false);
+
   // Special State Exam Mode (50 questions, 45 min, komisionální zkouška ZOP A)
   const [isExamMode, setIsExamMode] = useState<boolean>(false);
   const [examStudentName, setExamStudentName] = useState<string>('Frekventant ZOP A');
-  const [examGlobalTimeLeft, setExamGlobalTimeLeft] = useState<number>(45 * 60); // 45 minutes
+  const [examGlobalTimeLeft, setExamGlobalTimeLeft] = useState<number>(EXAM_TIME_LIMIT_MINUTES * 60);
   const [flaggedQuestions, setFlaggedQuestions] = useState<Set<string>>(new Set());
   const [reviewFilter, setReviewFilter] = useState<'mistakes' | 'all'>('mistakes');
 
@@ -128,35 +161,44 @@ export default function Quiz({
   };
 
   const startExamMode = () => {
-    // Generate 50 questions proportionally from all subjects (including newly separated Zbraně, Taktika, ZOP)
+    setSetupError(null);
+
+    // Zkouška se skládá poměrně ze všech předmětů, které banka obsahuje.
     const uniqueSubjects = Array.from(
       new Set((questions || []).map(q => q?.subject).filter((s): s is string => Boolean(s)))
     );
-    let examSelected: Question[] = [];
-    const perSubjectTarget = Math.max(2, Math.floor(50 / (uniqueSubjects.length || 1)));
+    const usable = (questions || []).filter(q => q?.options && q.options.length > 0);
+
+    const picked: Question[] = [];
+    const perSubjectTarget = Math.max(1, Math.floor(EXAM_QUESTION_COUNT / (uniqueSubjects.length || 1)));
 
     uniqueSubjects.forEach((subName) => {
-      const subQuestions = (questions || []).filter(q => q?.subject === subName && q?.options && q.options.length > 0);
-      const shuffled = [...subQuestions].sort(() => Math.random() - 0.5);
-      examSelected.push(...shuffled.slice(0, perSubjectTarget));
+      const subQuestions = usable.filter(q => q?.subject === subName);
+      picked.push(...shuffleArray(subQuestions).slice(0, perSubjectTarget));
     });
 
-    // If still less than 50, fill from remaining
-    if (examSelected.length < 50) {
-      const remaining = (questions || []).filter(q => !examSelected.some(eq => eq.id === q?.id) && q?.options && q.options.length > 0);
-      const extra = [...remaining].sort(() => Math.random() - 0.5).slice(0, 50 - examSelected.length);
-      examSelected.push(...extra);
+    // Doplnění na cílový počet z toho, co ještě nebylo vybráno.
+    if (picked.length < EXAM_QUESTION_COUNT) {
+      const used = new Set(picked.map(q => q.id));
+      const remaining = usable.filter(q => !used.has(q.id));
+      picked.push(...shuffleArray(remaining).slice(0, EXAM_QUESTION_COUNT - picked.length));
     }
 
+    // Strop na cílový počet.
+    //
+    // Dřív tu žádný nebyl: `Math.max(2, floor(50 / početPředmětů))` dá při více
+    // než 25 předmětech dvě otázky na předmět, tedy přes 50 dohromady — a
+    // „zkouška na 50 otázek / 45 minut“ jich měla víc. Lektor smí předměty
+    // zakládat, takže to nebyl jen teoretický stav.
+    const examSelected = shuffleArray(picked).slice(0, EXAM_QUESTION_COUNT);
+
     if (examSelected.length === 0) {
-      alert('V databázi nejsou dostupné žádné testové otázky pro spuštění zkoušky.');
+      setSetupError('V bance nejsou žádné testové otázky s možnostmi, ze kterých by šlo zkoušku složit. Zkuste to prosím po obnovení připojení nebo se obraťte na lektora.');
       return;
     }
 
-    // Shuffle full exam and shuffle options of every question
-    const randomizedExam = examSelected
-      .sort(() => Math.random() - 0.5)
-      .map(q => shuffleQuestionOptions(q));
+    // Pořadí už je promíchané výše; zbývá promíchat možnosti u každé otázky.
+    const randomizedExam = examSelected.map(q => shuffleQuestionOptions(q));
 
     setIsExamMode(true);
     setQuizQuestions(randomizedExam);
@@ -170,17 +212,18 @@ export default function Quiz({
     setTimedOutMap({});
     setGameState('playing');
     setQuizStartTime(Date.now());
-    setExamGlobalTimeLeft(45 * 60);
+    setExamGlobalTimeLeft(EXAM_TIME_LIMIT_MINUTES * 60);
   };
 
   const startQuiz = () => {
+    setSetupError(null);
     setIsExamMode(false);
     let pool = questions || [];
     
     if (isMistakesMode) {
       pool = (questions || []).filter(q => q?.id && mistakeHistory.has(q.id));
       if (pool.length === 0) {
-        alert('Nemáte žádné zaznamenané chyby k procvičení.');
+        setSetupError('V téhle session nemáte zaznamenanou žádnou chybu k procvičení. Odpovězte nejdřív na několik otázek ve cvičném testu.');
         return;
       }
     } else {
@@ -192,17 +235,15 @@ export default function Quiz({
     
     pool = pool.filter(q => q?.options && q.options.length > 0 && (q.correctOption !== undefined || q.correct_index !== undefined));
     
-    let finalQuestions = [...pool];
-    if (isRandomOrder) {
-      finalQuestions.sort(() => Math.random() - 0.5);
-    }
+    // Pořadí se míchá Fisher–Yatesem, ne `sort` s náhodným komparátorem.
+    const finalQuestions = isRandomOrder ? shuffleArray(pool) : [...pool];
     
     const selected = finalQuestions
       .slice(0, questionCount === 0 ? pool.length : Math.min(questionCount, pool.length))
       .map(q => shuffleQuestionOptions(q));
     
     if (selected.length === 0) {
-      alert('Pro zvolený výběr nejsou dostupné žádné testové otázky.');
+      setSetupError('Pro zvolený výběr předmětů nejsou k dispozici žádné testové otázky. Vyberte prosím jiný předmět nebo zvolte „Všechny předměty“.');
       return;
     }
     
@@ -364,7 +405,15 @@ export default function Quiz({
         // takže mimo tenhle prohlížeč nic neznamená. Prázdný řetězec znamená
         // „nevybráno" a server ho vyhodnotí jako chybu — stejně jako klient níže.
         selectedText: selected >= 0 ? (q.options?.[selected] ?? '') : '',
-        confidence: confidences[q.id] || 'know',
+        // Jistota se zaznamená jen tam, kde se na ni aplikace opravdu zeptala,
+        // tedy ve cvičném režimu.
+        //
+        // Dřív se chybějící hodnota doplnila na 'know'. V ostré zkoušce se ale
+        // paleta jistoty nezobrazuje vůbec, takže 50otázková zkouška přispěla
+        // do grafu 50 odpověďmi „vím“ — a KAŽDÁ chyba ve zkoušce se vykázala
+        // jako „falešná jistota“. Nevyplněná jistota teď zůstane nevyplněná
+        // a statistika takové pokusy do rozpadu jistoty nepočítá.
+        confidence: confidences[q.id],
         timedOut: wasTimedOut
       };
     });
@@ -489,12 +538,9 @@ export default function Quiz({
                 <span>Nevyplněno</span>
               </div>
               <button
-                onClick={() => {
-                  if (window.confirm('Opravdu chcete test ukončit a odevzdat zkušební komisi?')) {
-                    finishExam();
-                  }
-                }}
-                className="w-full mt-3 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-1.5"
+                type="button"
+                onClick={() => setConfirmSubmitExam(true)}
+                className="w-full mt-3 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Award className="w-4 h-4" />
                 <span>Odevzdat zkoušku ZOP A</span>
@@ -515,7 +561,7 @@ export default function Quiz({
           </div>
           <h4 className="font-bold text-sm mb-1.5">Ostrá zkouška ZOP A</h4>
           <p className="text-[11px] text-slate-300 leading-relaxed mb-3">
-            Komisionální simulace: 50 otázek ze všech 9 předmětů ZOP A, 45 min limit, závěrečný protokol.
+            Komisionální simulace: {EXAM_QUESTION_COUNT} otázek poměrně ze všech předmětů v bance, limit {EXAM_TIME_LIMIT_MINUTES} min, závěrečný protokol.
           </p>
           <button
             onClick={startExamMode}
@@ -660,18 +706,32 @@ export default function Quiz({
             </div>
             <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg leading-relaxed mb-6">
               Vyberte si režim: buď <strong>Ostrou závěrečnou zkoušku</strong> (50 otázek, 45 minut, generování protokolu) nebo <strong>Cvičný kvíz</strong> pro jednotlivé předměty.
+              {' '}Parametry ostré zkoušky jsou <strong>nastavení této aplikace</strong>, ne citace zkušebního řádu — ověřte si je u svého lektora.
             </p>
+
+            {setupError && (
+              <div
+                role="alert"
+                className="mb-4 flex items-start gap-2.5 rounded-xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 px-3.5 py-2.5 text-xs text-amber-900 dark:text-amber-200 max-w-lg"
+              >
+                <ShieldAlert className="w-4 h-4 mt-px shrink-0 text-amber-600 dark:text-amber-400" />
+                <span>{setupError}</span>
+              </div>
+            )}
+
             <div className="flex flex-col sm:flex-row gap-3">
               <button
+                type="button"
                 onClick={startExamMode}
-                className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm"
+                className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm cursor-pointer"
               >
                 <Award className="w-4 h-4" />
                 <span>Ostrá zkouška (50 otázek, 45 min)</span>
               </button>
               <button
+                type="button"
                 onClick={startQuiz}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm"
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" />
                 <span>Cvičný test podle filtrů</span>
@@ -1372,16 +1432,15 @@ export default function Quiz({
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => {
                     if (currentIndex < quizQuestions.length - 1) {
                       setCurrentIndex(prev => prev + 1);
                     } else {
-                      if (window.confirm('Dosáhli jste konce testu. Přejete si zkoušku odevzdat?')) {
-                        finishExam();
-                      }
+                      setConfirmSubmitExam(true);
                     }
                   }}
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5"
+                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>{currentIndex === quizQuestions.length - 1 ? 'Odevzdat test' : 'Další'}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -1409,10 +1468,39 @@ export default function Quiz({
     );
   };
 
+  const unansweredCount = quizQuestions.length - Object.keys(answers).length;
+
   return (
     <>
       {renderAside()}
       {renderSection()}
+
+      <ConfirmDialog
+        isOpen={confirmSubmitExam}
+        tone="danger"
+        title="Odevzdat zkoušku zkušební komisi?"
+        description={
+          unansweredCount > 0 ? (
+            <>
+              Máte <strong>{unansweredCount}</strong> z {quizQuestions.length}{' '}
+              {unansweredCount === 1 ? 'otázku' : unansweredCount < 5 ? 'otázky' : 'otázek'} bez
+              odpovědi — ty se vyhodnotí jako chyba. Po odevzdání už nelze nic doplnit.
+            </>
+          ) : (
+            <>
+              Zodpověděl jste všech {quizQuestions.length} otázek. Po odevzdání se zkouška
+              uzavře, vyhodnotí a uloží do vašich statistik — měnit odpovědi už nebude možné.
+            </>
+          )
+        }
+        confirmLabel="Odevzdat zkoušku"
+        cancelLabel="Vrátit se k otázkám"
+        onConfirm={() => {
+          setConfirmSubmitExam(false);
+          finishExam();
+        }}
+        onCancel={() => setConfirmSubmitExam(false)}
+      />
     </>
   );
 }

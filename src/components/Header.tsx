@@ -32,13 +32,14 @@ import {
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord } from '../types';
 import { tacticalScenarios } from '../data/scenariosData';
-import { calculateBaseXp, evaluateBadges, getUserRank, loadStreakInfo } from '../utils/gamification';
+import { calculateBaseXp, evaluateBadges, getUserRank } from '../utils/gamification';
 import { AuthModal } from './AuthUI';
 import FeedbackModal from './FeedbackModal';
 import UserProfileModal from './UserProfileModal';
 import NotificationBell from './NotificationBell';
 import { useAuth } from '../context/AuthContext';
 import { resolveAvatarDisplay } from '../utils/avatar';
+import { useLocalProgress } from '../hooks/useLocalProgress';
 
 export type NavTab = 
   | 'dashboard'
@@ -135,9 +136,15 @@ export default function Header({
   const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const streakInfo = useMemo(() => loadStreakInfo(), []);
-  const baseXp = useMemo(() => calculateBaseXp(quizHistory, matchingHistory), [quizHistory, matchingHistory]);
-  
+  // Postup ze scénářů, drilů a denní série žije v localStorage, o kterém React
+  // neví — hook ho přinese jako stav, takže se čísla přepočítají po každém
+  // zápisu (dřív hlavička držela staré XP celou session).
+  const { streakInfo, extraXp } = useLocalProgress();
+  const baseXp = useMemo(
+    () => calculateBaseXp(quizHistory, matchingHistory, extraXp),
+    [quizHistory, matchingHistory, extraXp]
+  );
+
   const { totalXpWithBadges, unlockedCount } = useMemo(() => {
     return evaluateBadges(quizHistory, matchingHistory, streakInfo, baseXp);
   }, [quizHistory, matchingHistory, streakInfo, baseXp]);

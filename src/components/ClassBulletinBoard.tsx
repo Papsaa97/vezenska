@@ -39,8 +39,10 @@ import {
   setMyClass,
   getHiddenClassIds,
   toggleHideClass,
+  clearHiddenClasses,
 } from '../utils/classBoardService';
 import PrintHeader from './common/PrintHeader';
+import ConfirmDialog from './common/ConfirmDialog';
 import ClassDetailExpanded from './class-bulletin/ClassDetailExpanded';
 import ClassCardCompact from './class-bulletin/ClassCardCompact';
 import ClassEditModal from './class-bulletin/ClassEditModal';
@@ -50,6 +52,16 @@ import SectionModal from './class-bulletin/SectionModal';
 import GlobalAnnouncementModal from './class-bulletin/GlobalAnnouncementModal';
 import DeleteConfirmModal from './class-bulletin/DeleteConfirmModal';
 import ScheduleLightbox from './class-bulletin/ScheduleLightbox';
+
+/** Dnešní datum ve tvaru „pondělí 16. září 2026“. */
+function formatToday(): string {
+  return new Date().toLocaleDateString('cs-CZ', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -99,6 +111,8 @@ export default function ClassBulletinBoard() {
   // Potvrzení smazání
   const [deleteConfirmItem, setDeleteConfirmItem] = useState<ClassBoardItem | null>(null);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  /** Id celoškolního hlášení, u kterého se ptáme na potvrzení smazání. */
+  const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
   // Lightbox pro rozvrh
   const [lightboxItem, setLightboxItem] = useState<ClassBoardItem | null>(null);
@@ -204,6 +218,12 @@ export default function ClassBulletinBoard() {
     });
   }, [classes, searchQuery]);
 
+  /** Třídy, které jsou v mřížce opravdu vidět (po filtru i po skrytí). */
+  const visibleGridClasses = useMemo(
+    () => filteredClasses.filter((c) => !hiddenClassIds.includes(c.id)),
+    [filteredClasses, hiddenClassIds]
+  );
+
   /**
    * Nástěnka zvolené třídy.
    *
@@ -234,15 +254,17 @@ export default function ClassBulletinBoard() {
     [isPrivileged, profile]
   );
 
-  // Formátování dnešního data v češtině
-  const todayFormatted = useMemo(() => {
-    const d = new Date();
-    return d.toLocaleDateString('cs-CZ', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
+  /**
+   * Dnešní datum v češtině.
+   *
+   * Přepočítává se každou minutu, ne jednou při připojení komponenty.
+   * Informační tabule běžně visí na obrazovce v učebně celý den — po půlnoci
+   * pak ukazovala včerejší datum jako „dnes“.
+   */
+  const [todayFormatted, setTodayFormatted] = useState(() => formatToday());
+  useEffect(() => {
+    const id = window.setInterval(() => setTodayFormatted(formatToday()), 60_000);
+    return () => clearInterval(id);
   }, []);
 
   const formatUpdateTime = (isoStr: string): string => {
@@ -292,7 +314,12 @@ export default function ClassBulletinBoard() {
       setDeleteConfirmItem(null);
     } catch (err) {
       console.error('[ClassBulletinBoard] Smazání třídy selhalo:', err);
-      alert('Smazání se nezdařilo.');
+      // Hlášení jde do stejného pruhu jako ostatní potíže se synchronizací,
+      // ne do nativního alert(), který v PWA vypadá jako systémová chyba.
+      setSyncNotice(
+        `Třídu se nepodařilo smazat (${err instanceof Error ? err.message : String(err)}). ` +
+          'Zkontrolujte připojení a zkuste to prosím znovu.'
+      );
     } finally {
       setIsDeleting(false);
     }
@@ -395,12 +422,15 @@ export default function ClassBulletinBoard() {
   };
 
   const handleDeleteGlobalAnnouncement = async (id: string) => {
-    if (!confirm('Opravdu chcete smazat toto celoškolní hlášení?')) return;
     reportWrite(await deleteGlobalAnnouncement(id));
     setGlobalAnnouncements((prev) => prev.filter((x) => x.id !== id));
+    setDeleteAnnouncementId(null);
   };
 
-  // Tisk rozvrhu
+  // Tisk rozvrhu.
+  //
+  // `printingItem` se po tisku musí uklidit — dřív zůstal nastavený navždy,
+  // takže každý další Ctrl+P kdekoli v aplikaci vytiskl rozvrh té třídy.
   const handlePrintSchedule = (item: ClassBoardItem) => {
     setPrintingItem(item);
     setTimeout(() => {
@@ -408,18 +438,35 @@ export default function ClassBulletinBoard() {
     }, 150);
   };
 
-  // Klávesa Escape
+  useEffect(() => {
+    if (!printingItem) return;
+    const clear = () => setPrintingItem(null);
+    window.addEventListener('afterprint', clear);
+    // Záloha pro prohlížeče, které `afterprint` neposílají (starší WebKit).
+    const fallback = window.setTimeout(clear, 20_000);
+    return () => {
+      window.removeEventListener('afterprint', clear);
+      clearTimeout(fallback);
+    };
+  }, [printingItem]);
+
+  // Klávesa Escape zavře JEN nejvýše položený dialog.
+  //
+  // Dřív procházela všechny podmínky bez `else`, takže jedno stisknutí zavřelo
+  // všechno otevřené — kdo si nad rozepsanou třídou otevřel lightbox s
+  // rozvrhem, přišel Escapem i o formulář.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (lightboxItem) setLightboxItem(null);
-        if (isEditModalOpen) setIsEditModalOpen(false);
-        if (deleteConfirmItem) setDeleteConfirmItem(null);
-        if (uniformModalItem) setUniformModalItem(null);
-        if (dutyModalItem) setDutyModalItem(null);
-        if (sectionModalItem) setSectionModalItem(null);
-        if (isGlobalAnnouncementModalOpen) setIsGlobalAnnouncementModalOpen(false);
-      }
+      if (e.key !== 'Escape') return;
+
+      if (lightboxItem) setLightboxItem(null);
+      else if (deleteAnnouncementId) setDeleteAnnouncementId(null);
+      else if (deleteConfirmItem) setDeleteConfirmItem(null);
+      else if (uniformModalItem) setUniformModalItem(null);
+      else if (dutyModalItem) setDutyModalItem(null);
+      else if (sectionModalItem) setSectionModalItem(null);
+      else if (isGlobalAnnouncementModalOpen) setIsGlobalAnnouncementModalOpen(false);
+      else if (isEditModalOpen) setIsEditModalOpen(false);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -427,6 +474,7 @@ export default function ClassBulletinBoard() {
     lightboxItem,
     isEditModalOpen,
     deleteConfirmItem,
+    deleteAnnouncementId,
     uniformModalItem,
     dutyModalItem,
     sectionModalItem,
@@ -644,7 +692,14 @@ export default function ClassBulletinBoard() {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                // Hledání má smysl jen v mřížce všech tříd — v podrobném
+                // přehledu jedné třídy nemělo pole žádný efekt a ukazatel
+                // vedle něj hlásil „1 podrobná (X)“. Psaní teď na mřížku
+                // samo přepne.
+                if (e.target.value.trim() && viewMode !== 'grid') setViewMode('grid');
+              }}
               placeholder="Hledat třídu, službu, osobu…"
               className="w-full pl-9 pr-8 py-2 text-xs sm:text-sm rounded-xl bg-slate-900/80 border border-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
             />
@@ -666,7 +721,10 @@ export default function ClassBulletinBoard() {
                 ? selectedMyClass
                   ? `1 podrobná (${selectedMyClass})`
                   : 'třída nevybrána'
-                : `${filteredClasses.length} tříd`}
+                : /* Počítá se to, co je opravdu na obrazovce. Dřív se ukazoval
+                     `filteredClasses.length`, do kterého se počítaly i skryté
+                     třídy, takže číslo nesouhlasilo s počtem dlaždic. */
+                  `${visibleGridClasses.length} z ${classes.length} tříd`}
             </span>
           </div>
         </div>
@@ -749,8 +807,8 @@ export default function ClassBulletinBoard() {
                         <Edit2 className="w-3 h-3" />
                       </button>
                       <button
-                        onClick={() => handleDeleteGlobalAnnouncement(ann.id)}
-                        className="p-1 rounded text-slate-400 hover:text-red-400"
+                        onClick={() => setDeleteAnnouncementId(ann.id)}
+                        className="p-1 rounded text-slate-400 hover:text-red-400 cursor-pointer"
                         title="Smazat"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -847,7 +905,7 @@ export default function ClassBulletinBoard() {
             <span>Dlaždice jednotlivých tříd ZOP:</span>
             {hiddenClassIds.length > 0 && (
               <button
-                onClick={() => setHiddenClassIds([])}
+                onClick={() => setHiddenClassIds(clearHiddenClasses())}
                 className="text-blue-500 hover:text-blue-400 font-semibold cursor-pointer"
               >
                 Zobrazit všechny skryté třídy ({hiddenClassIds.length})
@@ -856,8 +914,7 @@ export default function ClassBulletinBoard() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredClasses
-              .filter((c) => !hiddenClassIds.includes(c.id))
+            {visibleGridClasses
               .map((item) => (
                 <ClassCardCompact
                   key={item.id}
@@ -960,6 +1017,24 @@ export default function ClassBulletinBoard() {
           />
         )}
       </AnimatePresence>
+
+      {/* ─── Potvrzení smazání celoškolního hlášení ──────────────────────── */}
+      <ConfirmDialog
+        isOpen={deleteAnnouncementId !== null}
+        tone="danger"
+        title="Smazat celoškolní hlášení?"
+        description={
+          <>
+            Hlášení <strong>„{globalAnnouncements.find((a) => a.id === deleteAnnouncementId)?.title ?? ''}“</strong>{' '}
+            zmizí všem posluchačům. Vrátit to zpět nelze — hlášení by se muselo napsat znovu.
+          </>
+        }
+        confirmLabel="Smazat hlášení"
+        onConfirm={() => {
+          if (deleteAnnouncementId) void handleDeleteGlobalAnnouncement(deleteAnnouncementId);
+        }}
+        onCancel={() => setDeleteAnnouncementId(null)}
+      />
 
       {/* ─── Lightbox pro rozvrh ─────────────────────────────────────────── */}
       <AnimatePresence>

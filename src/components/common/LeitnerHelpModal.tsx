@@ -67,8 +67,16 @@ export default function LeitnerHelpModal({ isOpen, onClose }: LeitnerHelpModalPr
               {/* Introduction */}
               <div className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-2">
                 <p>
-                  <strong>Leitnerův systém</strong> je vědecky ověřená metoda učení s rozloženým opakováním (<em>Spaced Repetition</em>). 
-                  Kartičky jsou roztříděny do <strong>5 krabiček (Box 1 až 5)</strong> podle toho, jak spolehlivě si je pamatujete.
+                  <strong>Leitnerův systém</strong> je metoda učení s rozloženým opakováním (<em>Spaced
+                  Repetition</em>). Kartičky jsou roztříděny do <strong>5 krabiček (Box 1 až 5)</strong>{' '}
+                  podle toho, jak spolehlivě si je pamatujete. Odpovíte-li správně, kartička jde
+                  o krabičku výš a příště se ozve později; chyba ji vrátí do Boxu 1.
+                </p>
+                <p>
+                  Odstupy níže <strong>hlídá aplikace za vás</strong>: u každé kartičky si pamatuje
+                  datum posledního opakování a ty splatné shrne do fronty{' '}
+                  <strong>„Ke zopakování dnes“</strong> v panelu krabiček. Nemusíte si tedy rozvrh
+                  držet v hlavě — stačí každý den projít, co je ve frontě.
                 </p>
               </div>
 
@@ -95,7 +103,7 @@ export default function LeitnerHelpModal({ isOpen, onClose }: LeitnerHelpModalPr
                     <span className="px-2 py-1 rounded-md font-bold bg-orange-500 text-white shrink-0">Box 2</span>
                     <div className="flex-1">
                       <div className="font-bold text-orange-950 dark:text-orange-200 flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5" /> Každé 2 až 3 dny
+                        <Clock className="w-3.5 h-3.5" /> Po 3 dnech
                       </div>
                       <div className="text-orange-800/80 dark:text-orange-300/80 text-[11px]">
                         První úspěšné zopakování. Začátek upevňování znalosti.

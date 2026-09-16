@@ -4,6 +4,8 @@ import { ShieldAlert, CheckCircle2, XCircle, ArrowRight, RotateCcw, Award, BookO
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
 import { useEditableContent } from '../hooks/useEditableContent';
+import { useProgressRevision } from '../hooks/useProgressRevision';
+import { loadCompletedScenarios, saveCompletedScenarios, updateDailyStreak } from '../utils/gamification';
 import ScenarioEditModal from './common/ScenarioEditModal';
 
 export default function Scenarios() {
@@ -28,34 +30,16 @@ export default function Scenarios() {
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [selectedChoice, setSelectedChoice] = useState<ScenarioChoice | null>(null);
-  const [completedScenarios, setCompletedScenarios] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('vscr_completed_scenarios');
-        return saved ? JSON.parse(saved) : [];
-      } catch {
-        return [];
-      }
-    }
-    return [];
-  });
+  const [completedScenarios, setCompletedScenarios] = useState<string[]>(loadCompletedScenarios);
   const [score, setScore] = useState<{ correct: number; total: number }>({ correct: 0, total: 0 });
   const [activeCategory, setActiveCategoryFilter] = useState<string>('all');
 
+  // Postup se přečte znovu, kdykoli se úložiště změní — i po přihlášení, kdy
+  // se vlastník klíče změní z „anon“ na id účtu.
+  const progressRevision = useProgressRevision();
   useEffect(() => {
-    const handleStorageUpdate = () => {
-      try {
-        const saved = localStorage.getItem('vscr_completed_scenarios');
-        if (saved) {
-          setCompletedScenarios(JSON.parse(saved));
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    window.addEventListener('storage', handleStorageUpdate);
-    return () => window.removeEventListener('storage', handleStorageUpdate);
-  }, []);
+    setCompletedScenarios(loadCompletedScenarios());
+  }, [progressRevision]);
 
   const categories = useMemo(
     () => Array.from(new Set(scenarios.map(s => s.category))),
@@ -90,17 +74,15 @@ export default function Scenarios() {
 
   const markScenarioCompleted = (scenarioId: string) => {
     setCompletedScenarios(prev => {
-      if (!prev.includes(scenarioId)) {
-        const next = [...prev, scenarioId];
-        try {
-          localStorage.setItem('vscr_completed_scenarios', JSON.stringify(next));
-          window.dispatchEvent(new Event('storage'));
-        } catch (e) {
-          console.error(e);
-        }
-        return next;
-      }
-      return prev;
+      if (prev.includes(scenarioId)) return prev;
+      const next = [...prev, scenarioId];
+      // Zápis je vedlejší efekt a updater setState musí být čistá funkce —
+      // StrictMode ho ve vývoji spouští dvakrát. Proto až po vyhodnocení.
+      queueMicrotask(() => {
+        saveCompletedScenarios(next);
+        updateDailyStreak();
+      });
+      return next;
     });
   };
 
@@ -108,6 +90,7 @@ export default function Scenarios() {
     setSelectedScenario(scenario);
     setCurrentStepIndex(0);
     setSelectedChoice(null);
+    setScore({ correct: 0, total: 0 });
   };
 
   const handleChoose = (choice: ScenarioChoice) => {
@@ -145,6 +128,7 @@ export default function Scenarios() {
   const handleResetScenario = () => {
     setCurrentStepIndex(0);
     setSelectedChoice(null);
+    setScore({ correct: 0, total: 0 });
   };
 
   const handleBackToList = () => {
@@ -154,6 +138,7 @@ export default function Scenarios() {
     setSelectedScenario(null);
     setCurrentStepIndex(0);
     setSelectedChoice(null);
+    setScore({ correct: 0, total: 0 });
   };
 
   if (!selectedScenario) {
@@ -402,13 +387,26 @@ export default function Scenarios() {
         </button>
 
         <div className="flex items-center gap-2">
+          {/* Skóre rozhodnutí. Dřív se počítalo do stavu `score` a nikde se
+              nezobrazilo, takže po scénáři nebylo poznat, kolik rozhodnutí
+              bylo správně. */}
+          {score.total > 0 && (
+            <span
+              className="text-xs font-semibold px-2.5 py-1 rounded-md border bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700"
+              title="Správná rozhodnutí v tomto průchodu scénářem"
+            >
+              Rozhodnutí: <strong>{score.correct}</strong> / {score.total}
+            </span>
+          )}
           <span className="text-xs font-semibold px-2.5 py-1 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 rounded-md border border-blue-200 dark:border-blue-800">
             Krok {currentStepIndex + 1} z {selectedScenario.steps.length}
           </span>
           <button
+            type="button"
             onClick={handleResetScenario}
             title="Resetovat scénář"
-            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            aria-label="Resetovat scénář a začít znovu"
+            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
