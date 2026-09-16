@@ -603,8 +603,8 @@ export const ESBIRKA_SNAPSHOTS: Record<string, EsbirkaSnapshotSummary> = {
     "citace": "555/1992 Sb.",
     "nazev": "Zákon České národní rady o Vězeňské službě a justiční stráži České republiky",
     "dokumentId": 2054655,
-    "cisloZneni": 25,
-    "ucinnostOd": "2026-01-01",
+    "cisloZneni": 24,
+    "ucinnostOd": "2025-08-01",
     "novely": [
       "270/2025 Sb."
     ],
