@@ -1,5 +1,5 @@
 import React, { useId } from 'react';
-import { Check, AlertTriangle, Info, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { Check, AlertTriangle, Info, CheckCircle2, ShieldAlert, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AuditReport } from '../../utils/legalIntegrity';
 import { useDialog } from '../../hooks/useDialog';
@@ -24,11 +24,15 @@ export default function LegalAuditModal({
     onClose: () => setShowIntegrityModal(false),
   });
 
-  // Předpisy, u kterých je z počtu nadpisů § a rozsahu číselné řady zřejmé,
-  // že jde o výběr ustanovení. Práh 60 % je stejný jako ve skriptu.
-  const selections = (auditReport.regulationCoverage ?? []).filter(
-    (c) => c.highestSection > 0 && c.sectionHeadings / c.highestSection < 0.6
-  );
+  const coverage = auditReport.regulationCoverage ?? [];
+  // Předpisy s úředním zněním se řadí podle toho, kolik paragrafů výběru chybí.
+  const porovnane = coverage
+    .filter((c) => c.maUplneZneni)
+    .slice()
+    .sort((a, b) => b.chybejiciParagrafy.length - a.chybejiciParagrafy.length);
+  // Předpisy bez úředního znění — u nich se o úplnosti nedá říct nic.
+  const bezZneni = coverage.filter((c) => !c.maUplneZneni);
+  const sectionIssues = auditReport.articleSectionIssues ?? [];
 
   return (
     <AnimatePresence>
@@ -66,14 +70,16 @@ export default function LegalAuditModal({
                 </div>
                 <div>
                   <h3 id={titleId} className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                    Kontrola tvaru dat předpisů a paragrafů
+                    Kontrola dat a porovnání s e-Sbírkou
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Automatická kontrola databáze ZOP VS ČR
+                    Tvar dat Právního kompasu a pokrytí předpisů podle úředních znění
                   </p>
                 </div>
               </div>
               <button
+                type="button"
+                aria-label="Zavřít kontrolní okno"
                 onClick={() => setShowIntegrityModal(false)}
                 className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-lg font-light"
               >
@@ -114,25 +120,114 @@ export default function LegalAuditModal({
               </div>
             )}
 
+            {/* Paragrafy, které úřední znění nezná — nejzávažnější nález */}
+            {sectionIssues.length > 0 && (
+              <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-xs text-rose-900 dark:text-rose-200 space-y-2">
+                <div className="font-bold flex items-center gap-1.5 text-rose-700 dark:text-rose-300">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span>
+                    {sectionIssues.length}{' '}
+                    {sectionIssues.length === 1 ? 'položka odkazuje' : 'položek odkazuje'} na paragraf, který
+                    v platném znění není
+                  </span>
+                </div>
+                <ul className="space-y-1 max-h-40 overflow-y-auto pr-1">
+                  {sectionIssues.map((iss) => (
+                    <li key={iss.id}>
+                      <strong>{iss.id}</strong> — {iss.actNumber}, uvedeno „{iss.section}“; e-Sbírka nezná{' '}
+                      {iss.neznameParagrafy.join(', ')}.
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Porovnání s úředním zněním z e-Sbírky */}
+            <div className="space-y-2">
+              <div className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <span>Pokrytí předpisu studijním výběrem</span>
+                <a
+                  href="https://e-sbirka.gov.cz/restful-api"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 normal-case"
+                >
+                  zdroj: e-Sbírka <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+
+              {porovnane.length === 0 ? (
+                <p className="text-[11px] text-slate-500">
+                  Žádné úřední znění není stažené. Doplní ho příkaz <code>npm run sync:laws</code>.
+                </p>
+              ) : (
+                <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+                  {porovnane.map((c) => {
+                    const podil = c.uredniParagrafu
+                      ? Math.round((c.vyberParagrafu.length / c.uredniParagrafu) * 100)
+                      : 0;
+                    return (
+                      <div
+                        key={c.code}
+                        className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-[11px] space-y-1"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-100 truncate">
+                            {c.code}
+                          </span>
+                          <span
+                            className={`shrink-0 font-bold px-1.5 py-0.5 rounded text-[10px] ${
+                              podil >= 90
+                                ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300'
+                                : 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300'
+                            }`}
+                          >
+                            {c.vyberParagrafu.length} z {c.uredniParagrafu} § ({podil} %)
+                          </span>
+                        </div>
+                        <div className="text-slate-500 dark:text-slate-400">
+                          Úřední znění č. {c.cisloZneni} účinné od {c.ucinnostOd}
+                          {c.chybejiciParagrafy.length > 0 && (
+                            <>
+                              {' '}• ve výběru chybí {c.chybejiciParagrafy.length} §
+                              {c.chybejiciParagrafy.length <= 12 && (
+                                <> ({c.chybejiciParagrafy.join(', ')})</>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             {/* Co kontrola neověřuje — dřív tu stálo, že je vše "100% kompletní" */}
             <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-600 dark:text-slate-300 space-y-1.5">
               <div className="font-bold flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
                 <Info className="w-3.5 h-3.5" />
-                <span>Co tato kontrola neověřuje</span>
+                <span>Jak číst výsledek</span>
               </div>
               <p>
-                Kontroluje se <strong>tvar dat</strong>, nikoli soulad s platným zněním. Neověřuje, že text odpovídá aktuální Sbírce zákonů, ani že je úplný — k porovnání chybí závazný zdroj.
+                Kontrola tvaru dat hlídá jen <strong>úplnost a čitelnost polí</strong>. O tom, jestli text
+                odpovídá platnému znění, rozhoduje porovnání s e-Sbírkou výše — a to je porovnání seznamu
+                paragrafů, ne doslovného znění vět. <strong>Studijní výběr je výběr</strong>: chybějící
+                paragrafy nejsou vada, ale je dobré o nich vědět.
               </p>
-              {selections.length > 0 && (
+              {bezZneni.length > 0 && (
                 <p>
-                  U těchto předpisů jde o <strong>výběr klíčových ustanovení</strong>, ne o úplné znění:{' '}
-                  {selections.map((c) => c.code).join(', ')}. Před zkouškou porovnejte s oficiálním zněním na e-Sbírce.
+                  U těchto předpisů se úplnost porovnat nedá, protože se ve Sbírce zákonů nevyhlašují:{' '}
+                  {bezZneni.map((c) => c.code).join(', ')}.
                 </p>
               )}
+              <p>
+                Právně závazné je znění ve Sbírce zákonů; znění z e-Sbírky je informativní.
+              </p>
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                 <div className="text-xl font-extrabold text-blue-600 dark:text-blue-400">
                   {auditReport.totalArticles}
@@ -155,6 +250,14 @@ export default function LegalAuditModal({
                 </div>
                 <div className="text-[11px] font-semibold text-slate-500 mt-0.5">
                   Znaků textu
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <div className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400">
+                  {auditReport.snapshotsAvailable}
+                </div>
+                <div className="text-[11px] font-semibold text-slate-500 mt-0.5">
+                  Úplných znění z e-Sbírky
                 </div>
               </div>
             </div>

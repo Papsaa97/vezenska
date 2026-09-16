@@ -1,78 +1,206 @@
+/**
+ * Kontrola dat Právního kompasu proti úředním zněním z e-Sbírky.
+ * Spuštění: `npm run check:legal` (běží i v `npm test` a v CI).
+ *
+ * Kontrola má dvě části:
+ *   1. TVAR DAT — prázdná či podezřele krátká pole, duplicitní identifikátory,
+ *      text useknutý uprostřed věty. Nález tady shodí build.
+ *   2. POROVNÁNÍ S e-SBÍRKOU — existuje citovaný paragraf v platném znění?
+ *      Kolik paragrafů předpisu studijní výběr vynechává? A je text, který se
+ *      v aplikaci zobrazuje jako „doslovné znění zákona“, opravdu doslovný?
+ *      Tohle se opírá o data stažená příkazem `npm run sync:laws`.
+ *
+ * Neexistující paragraf je vada a shodí build: aplikace by učila odkaz, který
+ * v zákoně není. Chybějící paragrafy ve výběru vada nejsou — výběr je výběr —
+ * a vypisují se jen informativně. Nedoslovné věty se hlásí jako varování:
+ * rozhodnout, jestli jde o legitimní zkrácení nebo o přepsaný obsah, musí
+ * člověk.
+ */
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { legalDatabase } from '../src/data/legalCompasData';
 import { auditLegalDatabase, measureRegulationCoverage } from '../src/utils/legalIntegrity';
 import { VSCR_REGULATIONS_REGISTRY } from '../src/data/vscrRegulationsRegistry';
+import { ESBIRKA_SNAPSHOTS } from '../src/data/esbirka/snapshotManifest';
+import { buildSnapshotSlug, parseSbiratkaRef } from '../src/utils/esbirka/eli';
+import { buildShingleIndex, compareWithOfficialText } from '../src/utils/esbirka/verbatim';
+import type { EsbirkaSnapshot } from '../src/utils/esbirka/snapshot';
 
-// Pokrytí plných textů předpisů, které aplikace zobrazuje v Právním kompasu.
-// Dřívější verze skriptu je nekontrolovala vůbec, přesto hlásila, že jsou
-// "všechny texty, paragrafy a odstavce 100% kompletní".
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const SNAPSHOT_DIR = path.join(ROOT, 'public', 'data', 'esbirka');
+
+/** Načte stažené znění z disku. Index úseků se staví jen jednou na předpis. */
+const indexCache = new Map<string, Set<string> | null>();
+function officialIndex(actNumber: string): Set<string> | null {
+  const ref = parseSbiratkaRef(actNumber);
+  if (!ref) return null;
+  const slug = buildSnapshotSlug(ref);
+  if (indexCache.has(slug)) return indexCache.get(slug) ?? null;
+
+  let index: Set<string> | null = null;
+  try {
+    const raw = readFileSync(path.join(SNAPSHOT_DIR, `${slug}.json`), 'utf8');
+    index = buildShingleIndex((JSON.parse(raw) as EsbirkaSnapshot).text);
+  } catch {
+    index = null;
+  }
+  indexCache.set(slug, index);
+  return index;
+}
+
 const coverage = VSCR_REGULATIONS_REGISTRY
   .filter((reg) => typeof reg.fullLegalText === 'string' && reg.fullLegalText.length > 0)
-  .map((reg) => measureRegulationCoverage(reg.code, reg.shortTitle, reg.fullLegalText));
+  .map((reg) => measureRegulationCoverage(reg));
 
 const result = auditLegalDatabase(legalDatabase, coverage);
 
 console.log('====================================================');
-console.log('KONTROLA TVARU DAT PŘEDPISŮ A PARAGRAFŮ (VS ČR ZOP)');
+console.log('KONTROLA DAT PRÁVNÍHO KOMPASU (VS ČR ZOP)');
 console.log('====================================================');
 console.log(`Datum a čas kontroly: ${result.timestamp}`);
-console.log(`Prověřeno položek v databázi Právního kompasu: ${result.totalArticles}`);
+console.log(`Prověřeno položek Paragrafového výkladu: ${result.totalArticles}`);
 console.log(`Celkový počet slov v textu: ${result.totalWords.toLocaleString('cs-CZ')}`);
 console.log(`Celkový počet znaků: ${result.totalCharacters.toLocaleString('cs-CZ')}`);
 console.log('Rozpad podle kategorií předpisů:', result.categories);
 
+const snapshotCount = Object.keys(ESBIRKA_SNAPSHOTS).length;
 console.log('----------------------------------------------------');
-console.log('CO TATO KONTROLA OVĚŘUJE');
-console.log('  - unikátnost identifikátorů a vyplněnost kategorie');
-console.log('  - že u každé položky není prázdné ani podezřele krátké pole');
-console.log('    (přesné znění, výklad, zkušební chytáky)');
-console.log('  - že text nekončí uprostřed věty a nemá nespárované uvozovky');
-console.log('');
-console.log('CO TATO KONTROLA NEOVĚŘUJE');
-console.log('  - že text odpovídá platnému znění předpisu ve Sbírce zákonů');
-console.log('  - že je znění úplné — k porovnání chybí závazný zdroj');
-console.log('  Pro jistotu vždy porovnejte s oficiálním zněním (e-Sbírka).');
+if (snapshotCount === 0) {
+  console.log('POZOR: není stažené žádné úřední znění z e-Sbírky.');
+  console.log('Porovnání s platným zněním se proto nekoná. Spusťte: npm run sync:laws');
+} else {
+  const nejstarsi = Object.values(ESBIRKA_SNAPSHOTS)
+    .map((s) => s.stazenoDne)
+    .sort()[0];
+  console.log(`Úřední znění z e-Sbírky: ${snapshotCount} předpisů (nejstarší stažení ${nejstarsi.slice(0, 10)})`);
+}
 
-if (coverage.length > 0) {
+const porovnane = coverage.filter((c) => c.maUplneZneni);
+if (porovnane.length > 0) {
   console.log('----------------------------------------------------');
-  console.log('ROZSAH PLNÝCH TEXTŮ PŘEDPISŮ (informativně, není to verdikt o úplnosti)');
-  const withGaps = coverage.filter((c) => c.missingFromSequence.length > 0);
-  coverage
+  console.log('POKRYTÍ PŘEDPISU STUDIJNÍM VÝBĚREM (porovnáno s osnovou z e-Sbírky)');
+  porovnane
     .slice()
-    .sort((a, b) => b.missingFromSequence.length - a.missingFromSequence.length)
+    .sort((a, b) => b.chybejiciParagrafy.length - a.chybejiciParagrafy.length)
     .forEach((c) => {
-      const gaps = c.missingFromSequence.length;
-      const range = c.highestSection ? `§ 1–${c.highestSection}` : 'bez § nadpisů';
-      const note = gaps > 0 ? `v řadě chybí ${gaps}` : 'řada souvislá';
+      const podil = c.uredniParagrafu
+        ? Math.round((c.vyberParagrafu.length / c.uredniParagrafu) * 100)
+        : 0;
       console.log(
-        `  ${c.code.padEnd(18)} ${String(c.characters).padStart(7)} znaků  ` +
-        `${String(c.sectionHeadings).padStart(3)} nadpisů §  ${range.padEnd(12)} ${note}`
+        `  ${c.code.padEnd(28)} ` +
+          `${String(c.vyberParagrafu.length).padStart(3)} z ${String(c.uredniParagrafu).padEnd(3)} § ` +
+          `(${String(podil).padStart(3)} %)  ` +
+          `výběr ${String(Math.round(c.vyberZnaku / 1024)).padStart(3)} kB / ` +
+          `úřední ${String(Math.round(c.uredniZnaku / 1024)).padStart(3)} kB  ` +
+          `znění č. ${c.cisloZneni} od ${c.ucinnostOd}`
       );
     });
-  if (withGaps.length > 0) {
-    console.log('');
-    console.log('  Mezera v číselné řadě může být legitimní (zrušený paragraf), sama o sobě');
-    console.log('  tedy chybu neznamená. Velký podíl chybějících čísel spolu s malým počtem');
-    console.log('  znaků ale ukazuje, že jde spíš o výběr ustanovení než o úplné znění:');
-    withGaps
-      .filter((c) => c.highestSection > 0 && c.sectionHeadings / c.highestSection < 0.6)
-      .forEach((c) => {
-        console.log(
-          `    ${c.code} — ${c.sectionHeadings} nadpisů § při rozsahu do § ${c.highestSection} ` +
-          `(${c.characters.toLocaleString('cs-CZ')} znaků)`
-        );
-      });
-  }
+}
+
+const bezZneni = coverage.filter((c) => !c.maUplneZneni);
+if (bezZneni.length > 0) {
+  console.log('');
+  console.log('  Bez úředního znění (ve Sbírce zákonů se nevyhlašují, porovnat nelze):');
+  bezZneni.forEach((c) => console.log(`    ${c.code}`));
+}
+
+const neznameVeVyberu = porovnane.filter((c) => c.neznameParagrafy.length > 0);
+if (neznameVeVyberu.length > 0) {
+  console.log('');
+  console.log('  Paragrafy citované ve výběru, které platné znění nezná');
+  console.log('  (může jít o zrušené ustanovení nebo o odkaz na jiný předpis):');
+  neznameVeVyberu.forEach((c) =>
+    console.log(`    ${c.code}: ${c.neznameParagrafy.join(', ')}`)
+  );
+}
+
+// Novely uvedené v registru vs. novely aktuálního znění podle e-Sbírky.
+const zastaraleNovely = VSCR_REGULATIONS_REGISTRY.map((reg) => {
+  const ref = parseSbiratkaRef(reg.code);
+  if (!ref) return null;
+  const snapshot = ESBIRKA_SNAPSHOTS[buildSnapshotSlug(ref)];
+  if (!snapshot || snapshot.novely.length === 0) return null;
+  const ocekavane = snapshot.novely.join(', ');
+  if ((reg.lastAmendment || '') === ocekavane) return null;
+  return { code: reg.code, uvedeno: reg.lastAmendment || '(nevyplněno)', ocekavane };
+}).filter((item): item is NonNullable<typeof item> => item !== null);
+
+if (zastaraleNovely.length > 0) {
+  console.log('----------------------------------------------------');
+  console.log('NOVELY V REGISTRU NEODPOVÍDAJÍ e-SBÍRCE (varování)');
+  zastaraleNovely.forEach((z) => {
+    console.log(`  ${z.code}`);
+    console.log(`     v registru: ${z.uvedeno}`);
+    console.log(`     e-Sbírka:   ${z.ocekavane}`);
+  });
+}
+
+// Doslovnost textů, které se v aplikaci vydávají za znění zákona.
+const verbatim = legalDatabase
+  .map((art) => {
+    const index = officialIndex(art.actNumber);
+    if (!index) return null;
+    const result = compareWithOfficialText(art.exactText, index);
+    if (result.celkem === 0 || result.neshodne.length === 0) return null;
+    return { art, result };
+  })
+  .filter((item): item is NonNullable<typeof item> => item !== null)
+  .sort((a, b) => b.result.neshodne.length - a.result.neshodne.length);
+
+if (verbatim.length > 0) {
+  console.log('----------------------------------------------------');
+  console.log('DOSLOVNOST TEXTŮ OZNAČENÝCH JAKO ZNĚNÍ ZÁKONA (varování, ne chyba)');
+  console.log('Věta se hledá v úředním znění po pěti slovech; co se nenajde, je');
+  console.log('buď krácení, nebo přepsání vlastními slovy. Druhé je vada obsahu.');
+  verbatim.forEach(({ art, result }) => {
+    console.log(
+      `  ${art.id} (${art.actNumber}, ${art.section}) — ` +
+        `doslovných ${result.doslovnych} z ${result.celkem} vět`
+    );
+    result.neshodne.slice(0, 3).forEach((n) => {
+      const nahled = n.veta.length > 110 ? `${n.veta.slice(0, 110)}…` : n.veta;
+      console.log(`      shoda ${Math.round(n.shoda * 100)} %: ${nahled}`);
+    });
+    if (result.neshodne.length > 3) {
+      console.log(`      … a dalších ${result.neshodne.length - 3} vět`);
+    }
+  });
 }
 
 console.log('----------------------------------------------------');
+let failed = false;
+
+if (result.articleSectionIssues.length > 0) {
+  failed = true;
+  console.log(
+    `NALEZENO ${result.articleSectionIssues.length} položek, jejichž paragraf v platném znění není:`
+  );
+  result.articleSectionIssues.forEach((iss) => {
+    console.log(
+      `- "${iss.id}" (${iss.actNumber}) uvádí "${iss.section}"; ` +
+        `e-Sbírka nezná ${iss.neznameParagrafy.join(', ')}`
+    );
+  });
+  console.log('');
+}
+
 if (result.valid) {
   console.log(`KONTROLA TVARU DAT PROŠLA: u ${result.totalArticles} položek nenalezena žádná vada.`);
-  console.log('(Neznamená to, že texty odpovídají platnému znění — viz výše.)');
 } else {
+  failed = true;
   console.log(`NALEZENO ${result.issues.length} vad v tvaru dat:`);
   result.issues.forEach((iss) => {
     console.log(`- [${iss.type.toUpperCase()}] Položka "${iss.id}" v poli "${iss.field}": ${iss.message}`);
   });
-  process.exit(1);
 }
+
+console.log('');
+console.log('CO KONTROLA STÁLE NEOVĚŘUJE');
+console.log('  - doslovnou shodu vět výkladu s platným zněním (porovnává se seznam paragrafů)');
+console.log('  - obsah vnitřních předpisů VS ČR, které ve Sbírce zákonů nejsou');
+console.log('  Právně závazné je znění ve Sbírce zákonů; e-Sbírka poskytuje informativní znění.');
 console.log('====================================================');
+
+if (failed) process.exit(1);

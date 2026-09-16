@@ -8,7 +8,9 @@ import {
 import { LegalArticle } from '../../data/legalCompasData';
 import { VscrRegulation } from '../../data/vscrRegulationsRegistry';
 import { isSpeechSupported } from '../../utils/speech';
+import { resolveRegulationSource } from '../../utils/esbirka/status';
 import PrintHeader from '../common/PrintHeader';
+import OfficialSectionPanel from './OfficialSectionPanel';
 
 interface OfflineStatus {
   isDownloaded: boolean;
@@ -62,6 +64,8 @@ interface LegalRegistryViewProps {
   setSelectedRegistryType: (v: string) => void;
   regulationsList: VscrRegulation[];
   handleSaveForOffline: () => void;
+  /** Běží právě stahování úplných znění do zařízení? */
+  offlineBusy: boolean;
   handleOpenNewEditor: () => void;
   handleExportJSON: () => void;
   handleOpenEditModal: (reg: VscrRegulation) => void;
@@ -101,6 +105,7 @@ export default function LegalRegistryView({
   setSelectedRegistryType,
   regulationsList,
   handleSaveForOffline,
+  offlineBusy,
   handleOpenNewEditor,
   handleExportJSON,
   handleOpenEditModal,
@@ -146,19 +151,23 @@ export default function LegalRegistryView({
                 Registr zákonů, vyhlášek a nařízení GŘ (NGŘ)
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-3xl">
-                Kompletní katalog předpisů s možností offline uložení do telefonu/PC, přímých odkazů na portál e-Sbírka i vlastního přidávání nových směrnic.
+                Katalog předpisů se studijním výběrem ustanovení. U předpisů ze Sbírky zákonů je k dispozici
+                i úplné znění stažené z veřejného REST API e-Sbírky, ověření aktuálnosti proti e-Sbírce
+                a uložení do zařízení pro čtení bez připojení.
               </p>
             </div>
 
             {/* Management Buttons */}
             <div className="flex items-center gap-2 flex-wrap shrink-0 no-print">
               <button
+                type="button"
                 onClick={handleSaveForOffline}
-                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
-                title="Stáhne a uloží všechny předpisy pro plnohodnotné studium bez internetu"
+                disabled={offlineBusy}
+                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+                title="Stáhne úplná znění předpisů z e-Sbírky do zařízení, aby šla číst bez připojení"
               >
-                <Download className="w-3.5 h-3.5" />
-                <span>Stáhnout pro offline</span>
+                <Download className={`w-3.5 h-3.5 ${offlineBusy ? 'animate-pulse' : ''}`} />
+                <span>{offlineBusy ? 'Stahuji…' : 'Stáhnout pro offline'}</span>
               </button>
 
               <button
@@ -248,6 +257,8 @@ export default function LegalRegistryView({
               ustava_mezinarodni: 'bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800',
             }[reg.type];
 
+            const source = resolveRegulationSource(reg);
+
             return (
               <div
                 key={reg.id}
@@ -266,6 +277,19 @@ export default function LegalRegistryView({
                       <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
                         {reg.importanceForZOP}
                       </span>
+                      {/* Poctivé rozlišení: má aplikace úřední znění, nebo jen výběr? */}
+                      {source.summary ? (
+                        <span
+                          className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
+                          title={`Úřední znění z e-Sbírky staženo ${source.summary.stazenoDne.slice(0, 10)}`}
+                        >
+                          ✓ Úplné znění od {source.summary.ucinnostOd}
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                          Jen studijní výběr
+                        </span>
+                      )}
                     </div>
 
                     <h3 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white leading-snug">
@@ -336,12 +360,12 @@ export default function LegalRegistryView({
                     className="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-xs hover:shadow active:scale-95"
                   >
                     <BookOpen className="w-4 h-4 text-amber-300" />
-                    <span>📜 Číst celé znění v okně</span>
+                    <span>{source.summary ? '📜 Číst úplné znění' : '📜 Číst studijní výběr'}</span>
                   </button>
 
-                  {reg.officialUrl && (
+                  {source.portalUrl && (
                     <a
-                      href={reg.officialUrl}
+                      href={source.portalUrl}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700"
@@ -588,18 +612,30 @@ export default function LegalRegistryView({
                 </div>
               </div>
 
-              {/* Block 1: Exact Legal Text */}
+              {/* Blok 1: studijní přepis ustanovení
+                  Dřív byl nadpis „Doslovné znění zákona“. Kontrola doslovnosti
+                  (npm run check:legal) ale ukazuje, že texty jsou z velké části
+                  přepsané vlastními slovy — zkrácené, se zvýrazněním a s důrazem
+                  na zkoušku. Jako studijní pomůcka to smysl má, jako citace
+                  zákona ne, a tvrdit druhé o prvním je zavádějící. Doslovné
+                  znění je hned pod tím, přímo z e-Sbírky. */}
               <div className="space-y-2 print-card">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                     <FileText className="w-3.5 h-3.5 text-blue-500" />
-                    Doslovné znění zákona
+                    Znění ustanovení — studijní přepis
                   </span>
                 </div>
                 <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 font-mono text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed shadow-inner whitespace-pre-wrap select-text print:bg-white print:border-none print:p-0">
                   {currentArticle.exactText}
                 </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Zkrácený přepis pro přípravu na ZOP, ne doslovná citace. Úřední znění je níže.
+                </p>
               </div>
+
+              {/* Blok 1b: doslovné znění z e-Sbírky */}
+              <OfficialSectionPanel article={currentArticle} />
 
               {/* Block 2: Methodological Explanation */}
               <div className="space-y-2 print-card">

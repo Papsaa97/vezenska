@@ -1,8 +1,9 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import pkg from './package.json';
+import { handleEsbirkaProxy } from './src/utils/esbirka/proxy';
 
 /**
  * Identifikátor buildu. Mění se s každým nasazením a používá se jako klíč
@@ -22,9 +23,39 @@ function resolveBuildId(): string {
   return `${pkg.version}-${Date.now().toString(36)}`;
 }
 
+/**
+ * Vývojová obdoba serverless funkce `api/esbirka.ts`.
+ *
+ * Bez ní by most k e-Sbírce fungoval jen na nasazeném Vercelu a při `npm run dev`
+ * by ověřování znění hlásilo nedostupnost. Obsluha je sdílená, takže se vývoj
+ * a produkce nemohou rozejít.
+ */
+function esbirkaDevProxy(): Plugin {
+  return {
+    name: 'esbirka-dev-proxy',
+    configureServer(server) {
+      server.middlewares.use('/api/esbirka', (req, res) => {
+        const parsed = new URL(req.url || '/', 'http://localhost');
+        handleEsbirkaProxy(parsed.searchParams)
+          .then((result) => {
+            res.statusCode = result.status;
+            res.setHeader('Content-Type', result.contentType);
+            res.setHeader('Cache-Control', result.cacheControl);
+            res.end(result.body);
+          })
+          .catch((error: Error) => {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            res.end(JSON.stringify({ chyba: error.message }));
+          });
+      });
+    },
+  };
+}
+
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), esbirkaDevProxy()],
     define: {
       // POZOR: define NEPLATÍ pro soubory v public/ — ty se kopírují beze změny.
       // Service Worker proto verzi nedostane odsud, ale z query stringu vlastní
@@ -48,6 +79,9 @@ export default defineConfig(() => {
         output: {
           manualChunks(id) {
             if (id.includes('/src/data/regulations/')) {
+              return 'data-regulations';
+            }
+            if (id.includes('/src/data/fullLawTexts/')) {
               return 'data-regulations';
             }
             if (id.includes('/src/data/questions/')) {
