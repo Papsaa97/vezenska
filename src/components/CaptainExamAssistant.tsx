@@ -600,6 +600,38 @@ export default function CaptainExamAssistant({
                 </button>
               )}
 
+              {/* Procvičení vyhodnocených otázek.
+                  Props `onStartCustomQuiz` a `onStartCustomFlashcards` tu byly
+                  od začátku, App.tsx je předávala a `handleStartCustomQuiz`
+                  i `handleStartCustomFlashcards` fungovaly — jen k nim nikdy
+                  nevzniklo tlačítko. Rozebraná zkouška od kapitána se tak dala
+                  jen přečíst nebo vytisknout, ne procvičit. */}
+              <button
+                type="button"
+                onClick={() => {
+                  stopSequence();
+                  onStartCustomQuiz(analyzedResult.questions);
+                }}
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-sm"
+                title="Spustit cvičný test právě z těchto vyhodnocených otázek"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Procvičit jako test</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  stopSequence();
+                  onStartCustomFlashcards(analyzedResult.questions);
+                }}
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-600 font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-sm"
+                title="Převést vyhodnocené otázky na kartičky pro opakování"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>Do kartiček</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => window.print()}

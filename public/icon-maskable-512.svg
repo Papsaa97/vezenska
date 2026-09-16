@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!--
+    MASKABLE varianta ikony.
+
+    Android si z maskable ikony vyřízne vlastní tvar (kruh, čtverec se
+    zaoblením, „squircle“ …) a spoléhá na to, že podstatná kresba leží uvnitř
+    bezpečného kruhu o průměru 80 % plochy. Do maskable se proto NESMÍ dávat
+    tentýž soubor jako do `purpose: "any"` — u něj text „AKADEMIE VS ČR“ leží
+    24 px od spodní hrany a maska ho odřízne.
+
+    Tady je celá kresba zmenšená na 72 % a vycentrovaná (nejvzdálenější bod je
+    ~178 px od středu, bezpečný kruh má 204,8 px) a pozadí je na celý čtverec
+    bez zaoblení — zaoblení dodá maska.
+  -->
+  <defs>
+    <linearGradient id="bgGradMask512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="shieldGradMask512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="goldGradMask512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Pozadí na celý čtverec: maska si zaoblení udělá sama. -->
+  <rect width="512" height="512" fill="url(#bgGradMask512)" />
+
+  <g transform="translate(256,256) scale(0.72) translate(-256,-256)">
+    <!-- Shield Emblem -->
+    <path d="M 256 70 L 384 126 C 384 256 336 352 256 416 C 176 352 128 256 128 126 Z" fill="url(#shieldGradMask512)" stroke="#60a5fa" stroke-width="6" />
+
+    <!-- Gold Accent Inner Shield Trim -->
+    <path d="M 256 96 L 358 140 C 358 248 320 326 256 380 C 192 326 154 248 154 140 Z" fill="none" stroke="url(#goldGradMask512)" stroke-width="5" />
+
+    <!-- Letter V -->
+    <text x="256" y="270" font-family="system-ui, -apple-system, sans-serif" font-size="140" font-weight="900" fill="#ffffff" text-anchor="middle" dominant-baseline="central">V</text>
+
+    <!-- VS ČR Text -->
+    <text x="256" y="460" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="800" fill="#fbbf24" text-anchor="middle" letter-spacing="4">AKADEMIE VS ČR</text>
+  </g>
+</svg>

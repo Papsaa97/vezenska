@@ -756,7 +756,7 @@ export default function Statistics({
 
         {weakestTopics.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {weakestTopics.map((topic, idx) => (
+            {weakestTopics.map((topic) => (
               <div 
                 key={topic.topic} 
                 className="bg-slate-50 dark:bg-slate-800/60 p-5 rounded-xl border border-slate-200 dark:border-slate-700/80 flex flex-col justify-between hover:border-red-300 dark:hover:border-red-800/80 transition-all"

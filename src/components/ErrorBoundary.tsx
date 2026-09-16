@@ -11,8 +11,21 @@ interface ErrorBoundaryState {
 }
 
 /**
- * Zachytává neočekávané chyby v podstromu (např. výpadek spojení se Supabase),
- * aby aplikace nespadla na prázdnou bílou obrazovku, ale nabídla srozumitelný fallback.
+ * Zachytává neočekávané chyby v podstromu, aby aplikace nespadla na prázdnou
+ * bílou obrazovku, ale nabídla srozumitelný fallback.
+ *
+ * DVĚ VĚCI, KTERÉ TU BYLY ŠPATNĚ:
+ *
+ * 1. Text sváděl vinu na internet: „došlo k výpadku spojení se serverem
+ *    (Supabase). Zkontrolujte připojení k internetu.“ Sem se ale dostane
+ *    KAŽDÁ neodchycená výjimka při vykreslování — typicky chyba v kódu nebo
+ *    ve datech. Uživatel pak zkoumal wi-fi u vady, se kterou síť nemá nic
+ *    společného. Navíc výpadek Supabase řeší vlastní hlášení (OfflineBanner),
+ *    sem nevede.
+ *
+ * 2. Barvy byly natvrdo tmavé (`bg-slate-950 text-slate-100`), bez ohledu na
+ *    zvolený motiv. Ve světlém režimu tedy chyba vždy přišla jako černá
+ *    obrazovka. Teď se drží motivu jako zbytek aplikace.
  */
 export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { hasError: false, error: null };
@@ -31,16 +44,30 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
 
   render() {
     if (this.state.hasError) {
+      const detail = this.state.error?.message?.trim();
+
       return (
-        <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center gap-4 bg-slate-950 text-slate-100 px-4 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center">
-            <AlertTriangle className="w-7 h-7 text-red-400" />
+        <div
+          role="alert"
+          className="min-h-[100dvh] w-full flex flex-col items-center justify-center gap-4 bg-white px-4 text-center text-slate-900 dark:bg-slate-950 dark:text-slate-100"
+        >
+          <div className="w-14 h-14 rounded-2xl bg-rose-100 border border-rose-200 flex items-center justify-center dark:bg-rose-500/10 dark:border-rose-500/30">
+            <AlertTriangle className="w-7 h-7 text-rose-600 dark:text-rose-400" />
           </div>
-          <div className="space-y-1.5 max-w-sm">
-            <h2 className="text-lg font-bold text-white">Něco se pokazilo</h2>
-            <p className="text-sm text-slate-400">
-              Aplikaci se nepodařilo načíst nebo došlo k výpadku spojení se serverem (Supabase). Zkontrolujte prosím připojení k internetu a zkuste to znovu.
+          <div className="space-y-1.5 max-w-md">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              Tuhle část aplikace se nepodařilo zobrazit
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Jde o chybu v aplikaci, ne o vaše připojení. Uložený postup ani data v prohlížeči se
+              tím nemažou. Zkuste obrazovku načíst znovu — pokud se chyba vrací, nahlaste ji prosím
+              přes tlačítko zpětné vazby.
             </p>
+            {detail && (
+              <p className="pt-1 font-mono text-[11px] break-words text-slate-400 dark:text-slate-500">
+                {detail}
+              </p>
+            )}
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <button
@@ -54,7 +81,7 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold text-sm transition-all cursor-pointer border border-slate-700/60 shadow-lg shadow-slate-900/40"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 font-bold text-sm transition-all cursor-pointer dark:border-slate-700/60 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
             >
               <RotateCcw className="w-4 h-4" />
               Obnovit celou stránku

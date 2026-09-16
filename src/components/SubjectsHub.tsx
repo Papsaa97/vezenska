@@ -10,7 +10,6 @@ import {
   BookOpen, 
   GraduationCap, 
   Layers, 
-  CheckCircle2, 
   ChevronRight, 
   ChevronDown, 
   Star, 

@@ -20,21 +20,22 @@ import {
   RotateCcw,
   Printer,
   Download,
-  FileSpreadsheet,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { writeFailure } from '../utils/supabaseWrite';
 import { useAuth } from '../context/AuthContext';
 import PrintHeader from './common/PrintHeader';
+import NoticeDialog, { Notice } from './common/NoticeDialog';
+import ConfirmDialog from './common/ConfirmDialog';
 import BulkQuestionImportModal from './BulkQuestionImportModal';
 import { downloadQuestionsTemplate } from '../utils/questionTemplateParser';
 import { useEditableContent } from '../hooks/useEditableContent';
 import { DEFAULT_SUBJECTS } from '../utils/contentLibrary';
+import { SupabaseQuizQuestionRow } from '../utils/quizQuestionsLoader';
 import {
   importDefaultQuestionsToSupabase,
   getUniqueDefaultQuestions,
-  SupabaseQuizQuestionRow,
-} from '../utils/quizQuestionsLoader';
+} from '../utils/defaultQuestionsImport';
 
 // ─── Constants & Types ────────────────────────────────────────────────────────
 
@@ -184,6 +185,15 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
   const [isImporting, setIsImporting] = useState(false);
   const [importProgress, setImportProgress] = useState<{ current: number; total: number } | null>(null);
   const [importMsg, setImportMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+
+  /** Oznámení pro správce místo `alert()`. */
+  const [notice, setNotice] = useState<Notice | null>(null);
+
+  /**
+   * Čeká se na potvrzení synchronizace výchozích otázek do Supabase?
+   * `'overwrite'` je destruktivní varianta (přepsání celé tabulky).
+   */
+  const [pendingImport, setPendingImport] = useState<'upsert' | 'overwrite' | null>(null);
   const uniqueDefaultQuestionsCount = useMemo(() => getUniqueDefaultQuestions().length, []);
 
   // ── Fetch Questions ──
@@ -396,12 +406,31 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
           msg.includes('NetworkError');
 
         if (isNetworkErr) {
-          alert('Chyba síťového připojení: Mazání otázky ze serveru se nezdařilo kvůli výpadku spojení. Zkontrolujte prosím připojení k internetu a zkuste to znovu.');
+          setNotice({
+            tone: 'error',
+            title: 'Otázka se nesmazala — spojení se serverem selhalo',
+            description:
+              'Zkontrolujte připojení k internetu a zkuste mazání znovu. Otázka v databázi zůstala.',
+          });
         } else {
-          alert('Smazání selhalo: ' + msg);
+          setNotice({
+            tone: 'error',
+            title: 'Otázku se nepodařilo smazat',
+            description: (
+              <>
+                Server odmítl mazání. Otázka v databázi zůstala.
+                <span className="mt-2 block font-mono text-xs text-slate-500 dark:text-slate-400">{msg}</span>
+              </>
+            ),
+          });
         }
       } else if (!deleteResult || deleteResult.length === 0) {
-        alert('Otázku se nepodařilo smazat z databáze (žádný řádek nebyl odstraněn). Zkontrolujte oprávnění RLS pro DELETE v Supabase.');
+        setNotice({
+          tone: 'error',
+          title: 'Otázka se nesmazala — chybí oprávnění',
+          description:
+            'Server mazání přijal, ale neodstranil žádný řádek. Bývá to politikou RLS pro DELETE nad tabulkou quiz_questions: mazat smí jen správce. Obraťte se na správce systému.',
+        });
       } else {
         setQuestions((prev) => prev.filter((q) => q.id !== id));
         if (editingId === id) {
@@ -418,9 +447,23 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
       console.error('[QuizQuestions] Chyba při mazání:', err);
       const errMsg = err instanceof Error ? err.message : String(err);
       if (errMsg.includes('Load failed') || errMsg.includes('Failed to fetch')) {
-        alert('Chyba síťového připojení se serverem Supabase. Zkontrolujte internet a zkuste smazání znovu.');
+        setNotice({
+          tone: 'error',
+          title: 'Otázka se nesmazala — spojení se serverem selhalo',
+          description:
+            'Zkontrolujte připojení k internetu a zkuste mazání znovu. Otázka v databázi zůstala.',
+        });
       } else {
-        alert('Došlo k chybě při mazání: ' + errMsg);
+        setNotice({
+          tone: 'error',
+          title: 'Při mazání došlo k chybě',
+          description: (
+            <>
+              Otázka v databázi zůstala.
+              <span className="mt-2 block font-mono text-xs text-slate-500 dark:text-slate-400">{errMsg}</span>
+            </>
+          ),
+        });
       }
     } finally {
       setDeletingId(null);
@@ -431,12 +474,6 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
   // ── Import / Synchronize Default Questions Handler ──
   const handleImportDefaults = async (forceOverwrite = false) => {
     if (isImporting) return;
-    const msg = forceOverwrite
-      ? 'POZOR! Opravdu chcete PŘEPSAT celou databázi v Supabase aktuální revizí z aplikace? Všechny stávající otázky v Supabase budou smazány a nahrazeny!'
-      : 'Chcete synchronizovat výchozí otázky z aplikace se Supabase (tabulka quiz_questions)? Chybějící otázky se vloží a otázky se stejným textem, které se v aplikaci od poslední synchronizace změnily (např. přeuspořádané možnosti), se přepíšou aktuální revizí (upsert).';
-
-    const confirmed = window.confirm(msg);
-    if (!confirmed) return;
 
     setIsImporting(true);
     setImportMsg(null);
@@ -881,7 +918,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
         )}
         <button
           type="button"
-          onClick={() => handleImportDefaults(false)}
+          onClick={() => setPendingImport('upsert')}
           disabled={isImporting || tableMissing}
           className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-bold shadow-sm shadow-blue-500/25 transition-all cursor-pointer whitespace-nowrap"
         >
@@ -893,7 +930,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
         </button>
         <button
           type="button"
-          onClick={() => handleImportDefaults(true)}
+          onClick={() => setPendingImport('overwrite')}
           disabled={isImporting || tableMissing}
           className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white text-xs font-bold shadow-sm shadow-red-500/25 transition-all cursor-pointer whitespace-nowrap"
         >
@@ -1172,6 +1209,45 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
           }}
         />
       )}
+
+      {/* Potvrzení synchronizace výchozích otázek do Supabase.
+          Dřív se na obojí ptal `window.confirm()` — systémové okno s názvem
+          domény, které v PWA nejde stylovat a na iOS ho lze potlačit. */}
+      <ConfirmDialog
+        isOpen={pendingImport !== null}
+        tone={pendingImport === 'overwrite' ? 'danger' : 'neutral'}
+        title={
+          pendingImport === 'overwrite'
+            ? 'Přepsat celou banku otázek v Supabase?'
+            : 'Synchronizovat výchozí otázky do Supabase?'
+        }
+        description={
+          pendingImport === 'overwrite' ? (
+            <>
+              Všechny otázky v tabulce <span className="font-mono">quiz_questions</span> se{' '}
+              <strong>smažou</strong> a nahradí aktuální revizí z aplikace. Ruční úpravy otázek
+              provedené ve správě banky se tím nevratně ztratí.
+            </>
+          ) : (
+            <>
+              Chybějící otázky se do tabulky <span className="font-mono">quiz_questions</span>{' '}
+              vloží a otázky se stejným textem, které se v aplikaci od poslední synchronizace
+              změnily (např. přeuspořádané možnosti), se přepíšou aktuální revizí (upsert).
+              Otázky, které jsou jen v Supabase, zůstanou.
+            </>
+          )
+        }
+        confirmLabel={pendingImport === 'overwrite' ? 'Přepsat databázi' : 'Synchronizovat'}
+        isBusy={isImporting}
+        onConfirm={() => {
+          const rezim = pendingImport;
+          setPendingImport(null);
+          void handleImportDefaults(rezim === 'overwrite');
+        }}
+        onCancel={() => setPendingImport(null)}
+      />
+
+      <NoticeDialog notice={notice} onClose={() => setNotice(null)} />
     </div>
   );
 }

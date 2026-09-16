@@ -25,11 +25,10 @@ import {
   Search,
   BookOpen,
   ChevronRight,
-  TrendingUp,
   FileText,
   HeartHandshake
 } from 'lucide-react';
-import { Badge, QuizSessionRecord, MatchingRecord, UserRank } from '../types';
+import { QuizSessionRecord, MatchingRecord, UserRank } from '../types';
 import { VSCR_RANKS } from '../data/gamificationData';
 import { 
   evaluateBadges, 

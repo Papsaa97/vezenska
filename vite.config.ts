@@ -84,6 +84,14 @@ export default defineConfig(() => {
             if (id.includes('/src/data/fullLawTexts/')) {
               return 'data-regulations';
             }
+            // Poznávačka a metadata předmětů jsou malá a potřebná hned;
+            // do balíku s bankou otázek nepatří, jinak by ho stáhla s sebou.
+            if (
+              id.includes('/src/data/questions/matching') ||
+              id.includes('/src/data/questions/subjectsInfo')
+            ) {
+              return undefined;
+            }
             if (id.includes('/src/data/questions/')) {
               return 'data-questions';
             }

@@ -1,18 +1,27 @@
 /**
  * Předstažení úplných znění pro čtení bez připojení.
  *
- * Service Worker (`public/sw.js`) ukládá každou úspěšnou odpověď ze stejné
- * domény, která není HTML ani `/api/`. Stačí tedy soubory se zněními jednou
- * vyžádat a zůstanou v mezipaměti zařízení. Žádná zvláštní obsluha v workeru
- * proto není potřeba.
+ * Service Worker (`public/sw.js`) zachytává požadavky na `/data/esbirka/` a
+ * ukládá je do VLASTNÍ mezipaměti `vscr-esbirka-v1`. Stačí tedy soubory se
+ * zněními jednou vyžádat a zůstanou v zařízení.
  *
- * POZOR NA ŽIVOTNOST: mezipaměť je pojmenovaná podle verze buildu, takže po
- * nasazení nové verze aplikace se stará smaže a znění je nutné stáhnout znovu.
- * Hlášení pro uživatele to říká nahlas — slibovat trvalou offline kopii by bylo
- * nepoctivé.
+ * ŽIVOTNOST: mezipaměť znění záměrně nenese verzi buildu, takže ji úklid při
+ * nasazení nové verze aplikace nemaže. Dřív ji mazal — uživatel si stáhl 1,5 MB
+ * zákonů, a po první opravě nasazené do produkce mu zmizely, přičemž odznak
+ * „Uloženo offline (datum)“ dál tvrdil, že je má. Odznak se proto navíc neptá
+ * localStorage, ale rovnou mezipaměti (viz `countCachedSnapshots`).
  */
 import { ESBIRKA_SNAPSHOTS } from '../../data/esbirka/snapshotManifest';
 import { SNAPSHOT_BASE_PATH } from './snapshot';
+
+/**
+ * Název mezipaměti se zněními. MUSÍ souhlasit s `SNAPSHOT_CACHE_NAME`
+ * v `public/sw.js`.
+ *
+ * Duplikát je tu nutný: soubory v `public/` neprocházejí překladem, takže si
+ * worker nemůže nic importovat a tahle strana si nemůže naimportovat jeho.
+ */
+export const SNAPSHOT_CACHE_NAME = 'vscr-esbirka-v1';
 
 export interface PrefetchResult {
   /** Kolik znění se podařilo stáhnout. */
@@ -67,4 +76,54 @@ export async function prefetchAllSnapshots(
 /** Velikost v megabajtech s jedním desetinným místem. */
 export function formatMegabytes(bajtu: number): string {
   return `${(bajtu / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/** Kolik znění je skutečně v mezipaměti zařízení. */
+export interface CachedSnapshotCount {
+  /** Kolik znění je uloženo. */
+  ulozeno: number;
+  /** Kolik znění aplikace celkem nabízí. */
+  celkem: number;
+  /**
+   * Dá se to vůbec zjistit? Cache Storage API není v Safari v privátním
+   * režimu ani v starších prohlížečích k dispozici. `false` neznamená
+   * „nic uloženo“, znamená „nevím“ — a tak se to má i hlásit.
+   */
+  zjistitelne: boolean;
+}
+
+/**
+ * Zjistí, kolik stažených znění zařízení opravdu drží.
+ *
+ * Odznak offline stavu se dřív opíral jen o časový údaj v localStorage. Ten
+ * přežil i smazání dat webu nebo úklid mezipaměti prohlížečem, takže aplikace
+ * tvrdila „Uloženo offline“ nad prázdnou mezipamětí. Tohle se ptá zdroje.
+ */
+export async function countCachedSnapshots(): Promise<CachedSnapshotCount> {
+  const slugs = Object.keys(ESBIRKA_SNAPSHOTS);
+  const celkem = slugs.length;
+
+  if (typeof caches === 'undefined') {
+    return { ulozeno: 0, celkem, zjistitelne: false };
+  }
+
+  try {
+    const otevrena = await caches.has(SNAPSHOT_CACHE_NAME);
+    if (!otevrena) return { ulozeno: 0, celkem, zjistitelne: true };
+
+    const cache = await caches.open(SNAPSHOT_CACHE_NAME);
+    const nalezeno = await Promise.all(
+      slugs.map(async (slug) => {
+        const hit = await cache.match(`${SNAPSHOT_BASE_PATH}/${slug}.json`);
+        return hit ? 1 : 0;
+      })
+    );
+    return {
+      ulozeno: nalezeno.reduce((soucet: number, kus) => soucet + kus, 0),
+      celkem,
+      zjistitelne: true,
+    };
+  } catch {
+    return { ulozeno: 0, celkem, zjistitelne: false };
+  }
 }

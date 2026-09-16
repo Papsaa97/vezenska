@@ -26,7 +26,6 @@ interface ClassCardCompactProps {
   onEdit: () => void;
   onDelete: () => void;
   onEditUniform: () => void;
-  onAddDuty: () => void;
   onOpenLightbox: () => void;
   onPrintSchedule: () => void;
 }
@@ -41,7 +40,6 @@ export default function ClassCardCompact({
   onEdit,
   onDelete,
   onEditUniform,
-  onAddDuty,
   onOpenLightbox,
   onPrintSchedule,
 }: ClassCardCompactProps) {

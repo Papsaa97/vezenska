@@ -239,7 +239,7 @@ async function main() {
     process.exit(1);
   }
 
-  const { data: authData, error: authError } = await sb.auth.signInWithPassword({ email, password });
+  const { error: authError } = await sb.auth.signInWithPassword({ email, password });
   if (authError) {
     console.error('Chyba při přihlášení správce do Supabase:', authError.message);
     process.exit(1);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useId, useRef, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import Header, { NavTab } from './components/Header';
+import Header from './components/Header';
+import { NavTab, NAV_TAB_LABELS, VALID_TABS, isNavTab } from './data/navTabs';
 import OfflineBanner from './components/OfflineBanner';
 import RoleSyncBanner from './components/RoleSyncBanner';
 import RolePreviewBanner from './components/RolePreviewBanner';
@@ -25,9 +26,8 @@ const BadgesView           = lazy(() => import('./components/BadgesView'));
 const Statistics           = lazy(() => import('./components/Statistics'));
 const MaterialLibrary      = lazy(() => import('./components/MaterialLibrary'));
 const ContentManager       = lazy(() => import('./components/ContentManager'));
-import { matchingCategories } from './data/initialData';
 import { useDialog } from './hooks/useDialog';
-import { academyQuestions } from './data/questionsData';
+import { matchingCategories } from './data/questions/matching';
 import { tacticalScenarios } from './data/scenariosData';
 import { 
   FolderKanban,  
@@ -82,51 +82,15 @@ function TabLoader({ isDark }: { isDark?: boolean }) {
 }
 
 
-const NAV_TAB_LABELS: Record<NavTab, string> = {
-  dashboard: 'Nástěnka',
-  subjects: 'Předměty',
-  quiz: 'Zkouška',
-  assistant: 'AI Asistent',
-  compass: 'Kompas zákonů',
-  admin: 'Administrativa & ETŘ',
-  ethics: 'Profesní etika',
-  scenarios: 'Taktické scénáře',
-  weapons: 'Zbraně & Střelba',
-  flashcards: 'Kartičky',
-  matching: 'Poznávačka',
-  badges: 'Odznaky & Úrovně',
-  statistics: 'Statistiky',
-  library: 'Knihovna',
-  'content-manager': 'Správa obsahu',
-};
-
-const VALID_TABS: NavTab[] = [
-  'dashboard',
-  'subjects',
-  'quiz',
-  'assistant',
-  'compass',
-  'admin',
-  'ethics',
-  'scenarios',
-  'weapons',
-  'flashcards',
-  'matching',
-  'badges',
-  'statistics',
-  'library',
-  'content-manager',
-];
-
 function getInitialTab(): NavTab {
   if (typeof window !== 'undefined') {
     const rawHash = window.location.hash.replace(/^#/, '');
-    const tabFromHash = rawHash.split('/')[0] as NavTab;
-    if (VALID_TABS.includes(tabFromHash)) {
+    const tabFromHash = rawHash.split('/')[0];
+    if (isNavTab(tabFromHash)) {
       return tabFromHash;
     }
-    const saved = localStorage.getItem('vscr_active_tab') as NavTab | null;
-    if (saved && VALID_TABS.includes(saved)) {
+    const saved = localStorage.getItem('vscr_active_tab');
+    if (saved && isNavTab(saved)) {
       return saved;
     }
   }
@@ -153,22 +117,47 @@ export default function App() {
     onClose: () => setIsMobileMenuOpen(false),
   });
 
-  // Otázky: primárně načtené ze Supabase tabulky quiz_questions, s fallbackem na lokální sadu
-  const [allQuestions, setAllQuestions] = useState<Question[]>(academyQuestions);
+  // Otázky: primárně načtené ze Supabase tabulky quiz_questions, s fallbackem na
+  // bundlovanou sadu. Startuje se na prázdném poli a sada se doplní až v
+  // `loadQuestions()` — viz komentář tam. Záložky s otázkami mezitím ukazují
+  // svůj prázdný stav a `questionsLoading` níže drží načítací stav.
+  const [allQuestions, setAllQuestions] = useState<Question[]>([]);
   const [questionsSource, setQuestionsSource] = useState<'supabase' | 'local'>('local');
+  const [questionsLoading, setQuestionsLoading] = useState<boolean>(true);
 
   const loadQuestions = useCallback(async () => {
     const dbQuestions = await fetchQuizQuestionsFromSupabase();
-    const hiddenSet = getHiddenQuestionIds();
-    const sourceQuestions = (dbQuestions && dbQuestions.length > 0) ? dbQuestions : academyQuestions;
-    const syncedQuestions = sourceQuestions.map(q => ({
-      ...q,
-      is_hidden: q.is_hidden === true || hiddenSet.has(q.id),
-    }));
+    const fromDb = Boolean(dbQuestions && dbQuestions.length > 0);
 
-    setAllQuestions(syncedQuestions);
-    setQuestionsSource(dbQuestions && dbQuestions.length > 0 ? 'supabase' : 'local');
+    // Bundlovaná záloha se stahuje TEPRVE když Supabase nic nevrátí.
+    //
+    // VÝKON: `data-questions` má 774 kB (194 kB gzip) — skoro polovinu
+    // gzipovaného payloadu úvodní obrazovky. Statickým importem se stahovala
+    // vždy, i když ji dotaz do Supabase okamžitě nahradil a nikdy se nepoužila.
+    const sourceQuestions = fromDb
+      ? dbQuestions!
+      : (await import('./data/questionsData')).academyQuestions;
+
+    const hiddenSet = getHiddenQuestionIds();
+    setAllQuestions(
+      sourceQuestions.map(q => ({
+        ...q,
+        is_hidden: q.is_hidden === true || hiddenSet.has(q.id),
+      }))
+    );
+    setQuestionsSource(fromDb ? 'supabase' : 'local');
+    setQuestionsLoading(false);
   }, []);
+
+  /**
+   * Čeká se ještě na banku otázek?
+   *
+   * Záložky s otázkami startují na prázdném poli (banka se stahuje až po
+   * vyřešení relace, viz `loadQuestions`). Bez tohohle rozlišení by v té
+   * chvíli ukázaly svůj prázdný stav — „Pro tento předmět nejsou žádné
+   * otázky“ — a tvrdily tak uživateli něco, co není pravda.
+   */
+  const questionsPending = questionsLoading && allQuestions.length === 0;
 
   const handleQuestionUpdate = useCallback((updatedQuestion: Question) => {
     setAllQuestions(prev => prev.map(q => q.id === updatedQuestion.id ? updatedQuestion : q));
@@ -186,8 +175,9 @@ export default function App() {
   // smysl. Odhlášení naopak id změní na `null`, dotaz projde jako anonymní a sada se
   // správně vrátí na bundlovanou.
   //
-  // `allQuestions` startuje na `academyQuestions`, takže i kdyby se relace nevyřešila,
-  // aplikace pořád jede na bundlované sadě — čekání nemůže skončit prázdnou bankou.
+  // Dokud dotaz neproběhne, drží `questionsLoading` načítací stav; selže-li,
+  // `loadQuestions()` doplní bundlovanou sadu, takže čekání nemůže skončit
+  // prázdnou bankou.
   useEffect(() => {
     if (authLoading) return;
     loadQuestions();
@@ -606,8 +596,14 @@ export default function App() {
     <ErrorBoundary>
       <ProtectedRoute isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}>
         <div className={`flex flex-col min-h-[100dvh] h-[100dvh] w-full font-sans overflow-hidden transition-colors print:h-auto print:overflow-visible print:bg-white print:text-black ${isDarkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
+      {/* Přeskočit navigaci. Vidí ho jen ten, kdo dojde Tabem — styl je
+          v index.css (.skip-to-content). */}
+      <a href="#hlavni-obsah" className="skip-to-content no-print">
+        Přeskočit na obsah
+      </a>
+
       <div className="no-print">
-        <Header 
+        <Header
           activeTab={activeTab} 
           setActiveTab={handleTabChange} 
           isDarkMode={isDarkMode} 
@@ -631,7 +627,12 @@ export default function App() {
       <UpdatePrompt />
       <FeedbackButton screenLabel={NAV_TAB_LABELS[activeTab] ?? activeTab} />
       
-      <main className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 sm:p-4 pb-28 sm:pb-32 md:pb-6 lg:pb-4 md:p-6 gap-4 md:gap-6 w-full print:p-0 print:m-0 print:overflow-visible print:h-auto">
+      <main
+        id="hlavni-obsah"
+        tabIndex={-1}
+        aria-label={`Obsah záložky ${NAV_TAB_LABELS[activeTab] ?? activeTab}`}
+        className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 sm:p-4 pb-28 sm:pb-32 md:pb-6 lg:pb-4 md:p-6 gap-4 md:gap-6 w-full print:p-0 print:m-0 print:overflow-visible print:h-auto"
+      >
         <Suspense fallback={<TabLoader isDark={isDarkMode} />}>
         {activeTab === 'dashboard' && (
           <div className="w-full h-full overflow-y-auto pr-1">
@@ -641,27 +642,36 @@ export default function App() {
 
         {activeTab === 'subjects' && (
           <div className="w-full h-full overflow-y-auto pr-1">
-            <SubjectsHub
-              questions={allQuestions || []}
-              favorites={favorites}
-              toggleFavorite={toggleFavorite}
-              onStartQuiz={handleStartSubjectQuiz}
-              onStartFlashcards={handleStartSubjectFlashcards}
-              onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
-            />
+            {questionsPending ? (
+              <TabLoader isDark={isDarkMode} />
+            ) : (
+              <SubjectsHub
+                questions={allQuestions}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                onStartQuiz={handleStartSubjectQuiz}
+                onStartFlashcards={handleStartSubjectFlashcards}
+                onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
+              />
+            )}
           </div>
         )}
 
         {activeTab === 'quiz' && (
-          <Quiz 
-            questions={(customQuestions || allQuestions || []).filter(q => isPrivileged || !isQuestionHidden(q))} 
-            favorites={favorites} 
-            toggleFavorite={toggleFavorite}
-            onSaveQuizResult={handleSaveQuizResult}
-            onNavigateToBadges={() => navigateToTab('badges')}
-            presetSubject={quizPreset.subject}
-            questionsSource={questionsSource}
-          />
+          // Vlastní sada z AI asistenta banku nepotřebuje, na tu se nečeká.
+          questionsPending && !customQuestions ? (
+            <TabLoader isDark={isDarkMode} />
+          ) : (
+            <Quiz
+              questions={(customQuestions || allQuestions).filter(q => isPrivileged || !isQuestionHidden(q))}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              onSaveQuizResult={handleSaveQuizResult}
+              onNavigateToBadges={() => navigateToTab('badges')}
+              presetSubject={quizPreset.subject}
+              questionsSource={questionsSource}
+            />
+          )
         )}
 
         {activeTab === 'assistant' && (
@@ -706,13 +716,17 @@ export default function App() {
         )}
         
         {activeTab === 'flashcards' && (
-          <Flashcards 
-            questions={customQuestions || allQuestions || []} 
-            favorites={favorites} 
-            toggleFavorite={toggleFavorite}
-            presetSubject={flashcardPresetSubject}
-            onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
-          />
+          questionsPending && !customQuestions ? (
+            <TabLoader isDark={isDarkMode} />
+          ) : (
+            <Flashcards
+              questions={customQuestions || allQuestions}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              presetSubject={flashcardPresetSubject}
+              onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
+            />
+          )
         )}
         
         {activeTab === 'matching' && (
@@ -738,7 +752,7 @@ export default function App() {
           <Statistics
             questions={allQuestions}
             history={effectiveQuizHistory}
-            isLoading={quizHistoryLoading}
+            isLoading={quizHistoryLoading || questionsPending}
             onStartTopicQuiz={handleStartSubjectQuiz}
             onClearHistory={handleClearHistory}
             onStartQuiz={() => navigateToTab('quiz')}
@@ -776,7 +790,7 @@ export default function App() {
       </main>
 
       {/* Mobile Bottom Navigation (5 Ergonomic Core Pillars) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 flex items-center justify-around px-2 py-1 z-40 shadow-[0_-4px_24px_rgba(0,0,0,0.12)] no-print" style={{ paddingBottom: 'calc(0.4rem + env(safe-area-inset-bottom))' }}>
+      <nav aria-label="Spodní navigace" className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 flex items-center justify-around px-2 py-1 z-40 shadow-[0_-4px_24px_rgba(0,0,0,0.12)] no-print" style={{ paddingBottom: 'calc(0.4rem + env(safe-area-inset-bottom))' }}>
         
         {/* 1. Subjects */}
         <button
@@ -931,7 +945,7 @@ export default function App() {
                     }`}
                   >
                     <ShieldAlert className="w-5 h-5 text-amber-500 mb-1.5" />
-                    <div className="text-xs font-bold leading-snug">Taktické scénáře</div>
+                    <div className="text-xs font-bold leading-snug">{NAV_TAB_LABELS['scenarios']}</div>
                     <div className="text-[10px] text-slate-500 leading-tight mt-0.5">{tacticalScenarios.length} modelových situací</div>
                   </button>
 
@@ -944,7 +958,7 @@ export default function App() {
                     }`}
                   >
                     <Crosshair className="w-5 h-5 text-blue-500 mb-1.5" />
-                    <div className="text-xs font-bold leading-snug">Zbraně & Střelba</div>
+                    <div className="text-xs font-bold leading-snug">{NAV_TAB_LABELS['weapons']}</div>
                     <div className="text-[10px] text-slate-500 leading-tight mt-0.5">CZ 75 B & Scorpion</div>
                   </button>
 
@@ -957,7 +971,7 @@ export default function App() {
                     }`}
                   >
                     <FileText className="w-5 h-5 text-emerald-500 mb-1.5" />
-                    <div className="text-xs font-bold leading-snug">Administrativa & ETŘ</div>
+                    <div className="text-xs font-bold leading-snug">{NAV_TAB_LABELS['admin']}</div>
                     <div className="text-[10px] text-slate-500 leading-tight mt-0.5">Úřední záznamy & Č.j.</div>
                   </button>
 
@@ -970,7 +984,7 @@ export default function App() {
                     }`}
                   >
                     <HeartHandshake className="w-5 h-5 text-rose-500 mb-1.5" />
-                    <div className="text-xs font-bold leading-snug">Profesní etika</div>
+                    <div className="text-xs font-bold leading-snug">{NAV_TAB_LABELS['ethics']}</div>
                     <div className="text-[10px] text-slate-500 leading-tight mt-0.5">Kodex & rizika</div>
                   </button>
                 </div>
@@ -992,8 +1006,8 @@ export default function App() {
                     }`}
                   >
                     <Scale className="w-4 h-4 text-blue-500 mb-1" />
-                    <div className="text-xs font-bold">Předpisy & §</div>
-                    <div className="text-[9px] text-slate-500 mt-0.5">Kompas zákonů</div>
+                    <div className="text-xs font-bold">{NAV_TAB_LABELS['compass']}</div>
+                    <div className="text-[9px] text-slate-500 mt-0.5">Zákony, vyhlášky, NGŘ</div>
                   </button>
 
                   <button
@@ -1005,7 +1019,7 @@ export default function App() {
                     }`}
                   >
                     <Layers className="w-4 h-4 text-amber-500 mb-1" />
-                    <div className="text-xs font-bold">Kartičky</div>
+                    <div className="text-xs font-bold">{NAV_TAB_LABELS['flashcards']}</div>
                     <div className="text-[9px] text-slate-500 mt-0.5">3D Leitner dril</div>
                   </button>
 
@@ -1018,7 +1032,7 @@ export default function App() {
                     }`}
                   >
                     <LayoutGrid className="w-4 h-4 text-emerald-500 mb-1" />
-                    <div className="text-xs font-bold">Poznávačka</div>
+                    <div className="text-xs font-bold">{NAV_TAB_LABELS['matching']}</div>
                     <div className="text-[9px] text-slate-500 mt-0.5">Pexeso pojmů</div>
                   </button>
                 </div>
@@ -1040,7 +1054,7 @@ export default function App() {
                     }`}
                   >
                     <div>
-                      <div className="text-xs font-bold">Odznaky & Úrovně</div>
+                      <div className="text-xs font-bold">{NAV_TAB_LABELS['badges']}</div>
                       <div className="text-[10px] text-slate-500">Hodnostní postup</div>
                     </div>
                     <Award className="w-5 h-5 text-amber-500" />
@@ -1055,7 +1069,7 @@ export default function App() {
                     }`}
                   >
                     <div>
-                      <div className="text-xs font-bold">Statistiky</div>
+                      <div className="text-xs font-bold">{NAV_TAB_LABELS['statistics']}</div>
                       <div className="text-[10px] text-slate-500">Analýza zkoušky</div>
                     </div>
                     <BarChart3 className="w-5 h-5 text-blue-500" />
@@ -1079,7 +1093,7 @@ export default function App() {
                     }`}
                   >
                     <div>
-                      <div className="text-xs font-bold">Knihovna</div>
+                      <div className="text-xs font-bold">{NAV_TAB_LABELS['library']}</div>
                       <div className="text-[10px] text-slate-500">PDF, DOCX, PPTX</div>
                     </div>
                     <BookOpen className="w-5 h-5 text-indigo-500" />
@@ -1095,7 +1109,7 @@ export default function App() {
                       }`}
                     >
                       <div>
-                        <div className="text-xs font-bold">Správa obsahu</div>
+                        <div className="text-xs font-bold">{NAV_TAB_LABELS['content-manager']}</div>
                         <div className="text-[10px] text-slate-500">Nahrávání souborů</div>
                       </div>
                       <Settings2 className="w-5 h-5 text-emerald-500" />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, HelpCircle, ArrowRight, RotateCcw, CheckCircle2, Trophy, Clock, Brain } from 'lucide-react';
+import { X, HelpCircle, RotateCcw, CheckCircle2, Trophy, Clock, Brain } from 'lucide-react';
 import { useDialog } from '../../hooks/useDialog';
 
 interface LeitnerHelpModalProps {

@@ -42,13 +42,6 @@ function shuffleArray<T>(items: T[]): T[] {
   return copy;
 }
 
-interface SessionStats {
-  correct: number;
-  incorrect: number;
-  total: number;
-  history: { question: number; accuracy: number }[];
-}
-
 export default function Quiz({ 
   questions = [], 
   favorites = [], 
@@ -62,13 +55,11 @@ export default function Quiz({
   const fieldIds = useId();
 
   const [gameState, setGameState] = useState<GameState>('setup');
-  const [sessionStats, setSessionStats] = useState<SessionStats>({ correct: 0, incorrect: 0, total: 0, history: [] });
   
   // Setup state
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>(['all']);
   const [timeLimit, setTimeLimit] = useState<number | null>(null);
   const [questionCount, setQuestionCount] = useState<number>(10);
-  const [isRandomOrder, setIsRandomOrder] = useState<boolean>(true);
   const [isMistakesMode, setIsMistakesMode] = useState<boolean>(false);
   const [mistakeHistory, setMistakeHistory] = useState<Set<string>>(new Set());
 
@@ -236,7 +227,12 @@ export default function Quiz({
     pool = pool.filter(q => q?.options && q.options.length > 0 && (q.correctOption !== undefined || q.correct_index !== undefined));
     
     // Pořadí se míchá Fisher–Yatesem, ne `sort` s náhodným komparátorem.
-    const finalQuestions = isRandomOrder ? shuffleArray(pool) : [...pool];
+    //
+    // Dřív o zamíchání rozhodoval stav `isRandomOrder`, ke kterému ale nikdy
+    // nevznikl žádný přepínač — byl natrvalo `true`. Míchá se tedy vždy, což je
+    // i jediné správné chování pro zkoušku: banka je uložená po předmětech,
+    // takže bez zamíchání by test šel tematicky po sobě.
+    const finalQuestions = shuffleArray(pool);
     
     const selected = finalQuestions
       .slice(0, questionCount === 0 ? pool.length : Math.min(questionCount, pool.length))
@@ -357,20 +353,10 @@ export default function Quiz({
       });
     }
 
-    if (optionIndex !== -1) {
-      setSessionStats(prev => {
-        const newCorrect = prev.correct + (isCorrect ? 1 : 0);
-        const newIncorrect = prev.incorrect + (isCorrect ? 0 : 1);
-        const newTotal = prev.total + 1;
-        const newAccuracy = Math.round((newCorrect / newTotal) * 100);
-        return {
-          correct: newCorrect,
-          incorrect: newIncorrect,
-          total: newTotal,
-          history: [...prev.history, { question: newTotal, accuracy: newAccuracy }]
-        };
-      });
-    }
+    // POZN.: tady se dřív vedl běžící součet správných a chybných odpovědí
+    // (`sessionStats`) včetně historie úspěšnosti po otázkách. Nikdy se nikde
+    // nečetl — úspěšnost počítá výsledková obrazovka z `attempts` a graf
+    // vývoje je v záložce Statistiky. Odstraněno, ať se nepočítá pro nic.
 
     if (timerRef.current) clearInterval(timerRef.current);
   };

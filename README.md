@@ -128,9 +128,11 @@ rozpor v poli `lastAmendment`.
 Prohlížeč na e-Sbírku přímo nedosáhne — API posílá `Access-Control-Allow-Origin`
 jen pro vlastní doménu. Dotazy proto vedou přes vlastní cestu `/api/esbirka`,
 kterou obsluhuje serverless funkce [`api/esbirka.ts`](api/esbirka.ts) na Vercelu
-a při `npm run dev` stejná obsluha ve vývojovém serveru. Proxy pouští jen šest
-konkrétních endpointů a ELI ve tvaru `/eli/cz/sb/{rok}/{číslo}`; nic jiného ven
-neodejde. Na čistě statickém nasazení (`render.yaml`) funkce neběží a ověřování
+a při `npm run dev` stejná obsluha ve vývojovém serveru. Proxy pouští jen sedm
+konkrétních endpointů (`id`, `detail-zneni`, `historie`, `dalsi-informace`,
+`odkazy-ke-stazeni`, `obsah`, `stahni` — viz `ALLOWED_ENDPOINTS`
+v [`src/utils/esbirka/proxy.ts`](src/utils/esbirka/proxy.ts)) a ELI ve tvaru
+`/eli/cz/sb/{rok}/{číslo}`; nic jiného ven neodejde. Na čistě statickém nasazení (`render.yaml`) funkce neběží a ověřování
 se poctivě označí za nedostupné.
 
 ### Přístupový klíč

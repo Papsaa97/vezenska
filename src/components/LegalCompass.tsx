@@ -1,24 +1,21 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { 
-  Scale, Search, BookOpen, ShieldCheck, 
-  FileText, CheckCircle2,
-  Download, Upload,
-  Edit3, Wifi, Database, AlertCircle, Printer
-} from 'lucide-react';
+import { Scale, BookOpen, ShieldCheck, FileText, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { legalDatabase, LegalArticle } from '../data/legalCompasData';
+import { legalDatabase } from '../data/legalCompasData';
 import { VscrRegulation, VSCR_REGULATIONS_REGISTRY } from '../data/vscrRegulationsRegistry';
 import { auditLegalDatabase, measureRegulationCoverage, AuditReport } from '../utils/legalIntegrity';
-import { prefetchAllSnapshots, formatMegabytes } from '../utils/esbirka/offline';
-import { speakText, isSpeechSupported } from '../utils/speech';
+import { prefetchAllSnapshots, formatMegabytes, countCachedSnapshots } from '../utils/esbirka/offline';
+import { speakText } from '../utils/speech';
 import ConfirmDialog from './common/ConfirmDialog';
+import { useAuth } from '../context/AuthContext';
 import {
   getStoredRegulations,
   saveRegulationToStorage,
   deleteRegulationFromStorage,
   isDefaultRegulation,
-  saveAllForOffline,
+  recordOfflineDownload,
   getOfflineStatus,
+  purgeLegacyOfflineCache,
   exportRegulationsToJSON,
   importRegulationsFromJSON
 } from '../utils/regulationsStorage';
@@ -28,6 +25,16 @@ import LegalReaderModal from './legal-compass/LegalReaderModal';
 import LegalRegistryView from './legal-compass/LegalRegistryView';
 
 export default function LegalCompass() {
+  // Předpisy smí zakládat, upravovat, mazat a importovat jen lektor a správce.
+  //
+  // Dřív tu žádná kontrola role nebyla — `useAuth` se v tomhle modulu vůbec
+  // nepoužíval. Student si tak mohl přepsat nebo smazat text zákona 555/1992,
+  // který se mu pak zobrazoval jako studijní výběr, a neměl jak poznat, že už
+  // nečte to, co je v aplikaci. Úpravy žijí jen v localStorage, takže to nikoho
+  // dalšího neohrozilo, ale vlastní studijní materiál si nevratně poškodit šlo.
+  const { profile } = useAuth();
+  const canEditRegulations = profile?.role === 'lektor' || profile?.role === 'admin';
+
   const [viewMode, setViewMode] = useState<'articles' | 'registry'>('articles');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -45,6 +52,23 @@ export default function LegalCompass() {
   const [regulationsList, setRegulationsList] = useState<VscrRegulation[]>(() => getStoredRegulations());
   const [offlineStatus, setOfflineStatus] = useState(() => getOfflineStatus());
   const [offlineBusy, setOfflineBusy] = useState(false);
+
+  /**
+   * Kolik znění zařízení opravdu drží. `null` = ještě nezjištěno.
+   *
+   * Odznak se neopírá o datum v localStorage: to přežije i smazání dat webu,
+   * takže by tvrdil „Uloženo offline“ nad prázdnou mezipamětí.
+   */
+  const [cachedSnapshots, setCachedSnapshots] = useState<{
+    ulozeno: number;
+    celkem: number;
+    zjistitelne: boolean;
+  } | null>(null);
+
+  /** Průběh stahování znění: `null`, když se nestahuje. */
+  const [offlineProgress, setOfflineProgress] = useState<{ hotovo: number; celkem: number } | null>(
+    null
+  );
   const [pdfViewMode, setPdfViewMode] = useState<'paper' | 'dark'>('paper');
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
   
@@ -116,11 +140,19 @@ export default function LegalCompass() {
   const handleSaveForOffline = async () => {
     if (offlineBusy) return;
     setOfflineBusy(true);
+    setOfflineProgress({ hotovo: 0, celkem: 0 });
     showToast('Stahuji úplná znění předpisů do zařízení…', 'info');
 
-    const metaSaved = saveAllForOffline();
-    const result = await prefetchAllSnapshots();
+    const metaSaved = recordOfflineDownload();
+    // Stahování trvá u 1,5 MB zákonů na mobilních datech desítky sekund.
+    // Bez ukazatele průběhu vypadalo tlačítko jen zaseknuté — `onProgress`
+    // přitom `prefetchAllSnapshots` nabízela od začátku a nikdo ji nevyužil.
+    const result = await prefetchAllSnapshots((hotovo, celkem) => {
+      setOfflineProgress({ hotovo, celkem });
+    });
     setOfflineBusy(false);
+    setOfflineProgress(null);
+    setCachedSnapshots(await countCachedSnapshots());
 
     if (result.ulozeno === 0) {
       showToast('Nepodařilo se stáhnout žádné znění. Zkontrolujte připojení.', 'error');
@@ -130,10 +162,10 @@ export default function LegalCompass() {
     const stamp = new Date().toLocaleString('cs-CZ');
     setOfflineStatus({ isDownloaded: true, downloadedAt: stamp });
     const potize = result.selhalo > 0 ? ` ${result.selhalo} se nepodařilo stáhnout.` : '';
-    const metaPotize = metaSaved.success ? '' : ' Metadata předpisů se uložit nepodařilo.';
+    const metaPotize = metaSaved.success ? '' : ' Datum stažení se uložit nepodařilo.';
     showToast(
       `Uloženo ${result.ulozeno} úplných znění (${formatMegabytes(result.bajtu)}).${potize}${metaPotize} ` +
-        'Po aktualizaci aplikace je potřeba stáhnout znovu.',
+        'Znění zůstávají v zařízení i po aktualizaci aplikace.',
       result.selhalo > 0 ? 'info' : 'success'
     );
   };
@@ -370,6 +402,18 @@ export default function LegalCompass() {
     speakText(text, () => setIsSpeaking(false));
   };
 
+  // Ověření offline stavu proti mezipaměti + úklid mrtvého klíče ze starších verzí.
+  useEffect(() => {
+    purgeLegacyOfflineCache();
+    let zruseno = false;
+    countCachedSnapshots().then((pocet) => {
+      if (!zruseno) setCachedSnapshots(pocet);
+    });
+    return () => {
+      zruseno = true;
+    };
+  }, []);
+
   // Close modals on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -557,9 +601,10 @@ export default function LegalCompass() {
         registryTypesList={registryTypesList}
         selectedRegistryType={selectedRegistryType}
         setSelectedRegistryType={setSelectedRegistryType}
-        regulationsList={regulationsList}
         handleSaveForOffline={handleSaveForOffline}
         offlineBusy={offlineBusy}
+        offlineProgress={offlineProgress}
+        cachedSnapshots={cachedSnapshots}
         handleOpenNewEditor={handleOpenNewEditor}
         handleExportJSON={handleExportJSON}
         handleOpenEditModal={handleOpenEditModal}
@@ -567,6 +612,7 @@ export default function LegalCompass() {
         setActiveModalRegulation={setActiveModalRegulation}
         setModalSearchQuery={setModalSearchQuery}
         fileInputRef={fileInputRef}
+        canEdit={canEditRegulations}
       />
 
       {/* Modal: Editor předpisů */}
@@ -601,6 +647,7 @@ export default function LegalCompass() {
         handleCopy={handleCopy}
         handleSpeak={handleSpeak}
         handleOpenEditModal={handleOpenEditModal}
+        canEdit={canEditRegulations}
       />
 
       {/* Potvrzení odebrání předpisu / návratu k výchozímu znění */}

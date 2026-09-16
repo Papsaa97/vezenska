@@ -31,7 +31,6 @@ import {
   fetchClassBoards,
   saveClassBoard,
   deleteClassBoard,
-  uploadScheduleImage,
   fetchGlobalAnnouncements,
   saveGlobalAnnouncement,
   deleteGlobalAnnouncement,
@@ -931,7 +930,6 @@ export default function ClassBulletinBoard() {
                   }}
                   onDelete={() => setDeleteConfirmItem(item)}
                   onEditUniform={() => setUniformModalItem(item)}
-                  onAddDuty={() => setDutyModalItem(item)}
                   onOpenLightbox={() => {
                     setLightboxItem(item);
                     setLightboxZoom(1);
