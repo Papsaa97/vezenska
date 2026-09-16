@@ -1,6 +1,8 @@
 /**
  * Stažení úplných znění předpisů z veřejného REST API e-Sbírky.
- * Spuštění: `npm run sync:laws` (volitelně `-- 555/1992 169/1999` pro výběr).
+ * Spuštění: `npm run sync:laws` (volitelně `-- 555/1992 169/1999` pro výběr,
+ * `-- --summary-file=zmeny.md` pro přehled změn ve formátu Markdown, který
+ * používá plánovaná synchronizace v `.github/workflows/sync-esbirka.yml`).
  *
  * CO SKRIPT DĚLÁ
  *   1. Pro každý předpis z registru, který má číslo ve Sbírce, zjistí přes API
@@ -22,7 +24,7 @@
  *   Sbírky), proto si aplikace u každého znění drží datum účinnosti i seznam
  *   novel a pojmenovává ho jako informativní.
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import mammoth from 'mammoth';
@@ -219,8 +221,116 @@ export function findSnapshotSummary(slug: string | null): EsbirkaSnapshotSummary
   writeFileSync(MANIFEST_FILE, source, 'utf8');
 }
 
+/** Stav předpisu ze souboru, který na disku leží z minulého stažení. */
+function readPreviousSnapshot(slug: string): EsbirkaSnapshot | null {
+  const file = path.join(SNAPSHOT_DIR, `${slug}.json`);
+  if (!existsSync(file)) return null;
+  try {
+    return JSON.parse(readFileSync(file, 'utf8')) as EsbirkaSnapshot;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Liší se stažené znění od toho na disku něčím jiným než časem stažení?
+ *
+ * PROČ TO TU JE: `stazenoDne` se mění při každém běhu, takže bez téhle
+ * kontroly by plánovaná synchronizace přepsala všech devět souborů (2,3 MB)
+ * i ve chvíli, kdy se v žádném zákoně nezměnilo ani písmeno — a každý týden
+ * by zakládala pull request s prázdným rozdílem. Soubor se proto přepíše jen
+ * tehdy, když se změnil jeho obsah.
+ */
+function hasSameContent(previous: EsbirkaSnapshot, current: EsbirkaSnapshot): boolean {
+  const strip = (snapshot: EsbirkaSnapshot) => {
+    const { stazenoDne: _stazenoDne, ...rest } = snapshot;
+    return JSON.stringify(rest);
+  };
+  return strip(previous) === strip(current);
+}
+
+/** Co se u předpisu změnilo proti tomu, co bylo stažené předtím. */
+interface SyncChange {
+  code: string;
+  /** `nove` = předpis přibyl, `zmenene` = vyšla novela nebo se změnil text. */
+  druh: 'nove' | 'zmenene';
+  predtim?: { cisloZneni: number; ucinnostOd: string; pocetZnaku: number };
+  nyni: { cisloZneni: number; ucinnostOd: string; pocetZnaku: number };
+  novely: string[];
+}
+
+function describeChange(
+  code: string,
+  previous: EsbirkaSnapshot | null,
+  current: EsbirkaSnapshot
+): SyncChange | null {
+  const nyni = {
+    cisloZneni: current.cisloZneni,
+    ucinnostOd: current.ucinnostOd,
+    pocetZnaku: current.pocetZnaku,
+  };
+  if (!previous) return { code, druh: 'nove', nyni, novely: current.novely };
+
+  const predtim = {
+    cisloZneni: previous.cisloZneni,
+    ucinnostOd: previous.ucinnostOd,
+    pocetZnaku: previous.pocetZnaku,
+  };
+  const stejne =
+    predtim.cisloZneni === nyni.cisloZneni &&
+    predtim.ucinnostOd === nyni.ucinnostOd &&
+    previous.text === current.text;
+
+  return stejne ? null : { code, druh: 'zmenene', predtim, nyni, novely: current.novely };
+}
+
+/** Přehled změn pro tělo pull requestu, který zakládá plánovaná synchronizace. */
+function buildMarkdownSummary(
+  changes: SyncChange[],
+  failures: Array<{ code: string; reason: string }>,
+  celkem: number
+): string {
+  const lines: string[] = [];
+
+  if (changes.length === 0) {
+    lines.push('Žádné znění se nezměnilo — e-Sbírka vede u všech sledovaných předpisů totéž, co už je v repozitáři.');
+  } else {
+    lines.push(`Změnilo se ${changes.length} z ${celkem} sledovaných předpisů.`);
+    lines.push('');
+    lines.push('| Předpis | Bylo | Je | Novely | Změna textu |');
+    lines.push('| --- | --- | --- | --- | --- |');
+    for (const ch of changes) {
+      const bylo = ch.predtim
+        ? `znění č. ${ch.predtim.cisloZneni} od ${ch.predtim.ucinnostOd}`
+        : '— (nově sledováno)';
+      const je = `znění č. ${ch.nyni.cisloZneni} od ${ch.nyni.ucinnostOd}`;
+      const rozdil = ch.predtim
+        ? `${ch.nyni.pocetZnaku - ch.predtim.pocetZnaku >= 0 ? '+' : ''}${(
+            ch.nyni.pocetZnaku - ch.predtim.pocetZnaku
+          ).toLocaleString('cs-CZ')} znaků`
+        : `${ch.nyni.pocetZnaku.toLocaleString('cs-CZ')} znaků`;
+      lines.push(`| ${ch.code} | ${bylo} | ${je} | ${ch.novely.join(', ') || '—'} | ${rozdil} |`);
+    }
+  }
+
+  if (failures.length > 0) {
+    lines.push('');
+    lines.push(`### Nepodařilo se stáhnout (${failures.length})`);
+    lines.push('');
+    for (const f of failures) lines.push(`- **${f.code}** — ${f.reason}`);
+    lines.push('');
+    lines.push('U těchto předpisů zůstává v repozitáři znění z minulého stažení.');
+  }
+
+  return lines.join('\n');
+}
+
 async function main(): Promise<void> {
-  const filters = process.argv.slice(2).filter((arg) => !arg.startsWith('-'));
+  const args = process.argv.slice(2);
+  const filters = args.filter((arg) => !arg.startsWith('-'));
+  const summaryFile = args
+    .find((arg) => arg.startsWith('--summary-file='))
+    ?.slice('--summary-file='.length);
   const targets = collectTargets(filters);
 
   console.log('===========================================================');
@@ -234,35 +344,79 @@ async function main(): Promise<void> {
 
   const summaries: EsbirkaSnapshotSummary[] = [];
   const failures: Array<{ code: string; reason: string }> = [];
+  const changes: SyncChange[] = [];
 
   for (const target of targets) {
     process.stdout.write(`  ${target.code.padEnd(30)} `);
+    const previous = readPreviousSnapshot(target.slug);
     try {
-      const snapshot = await syncOne(target);
-      writeFileSync(
-        path.join(SNAPSHOT_DIR, `${snapshot.slug}.json`),
-        `${JSON.stringify(snapshot)}\n`,
-        'utf8'
-      );
+      const stazene = await syncOne(target);
+      // Beze změny obsahu se soubor nechává být i s původním datem stažení,
+      // aby plánovaná synchronizace nezakládala PR s prázdným rozdílem.
+      const beze_zmeny = previous !== null && hasSameContent(previous, stazene);
+      const snapshot = beze_zmeny && previous ? previous : stazene;
+
+      if (!beze_zmeny) {
+        writeFileSync(
+          path.join(SNAPSHOT_DIR, `${snapshot.slug}.json`),
+          `${JSON.stringify(snapshot)}\n`,
+          'utf8'
+        );
+      }
+
       const { osnova: _osnova, text: _text, ...summary } = snapshot;
       summaries.push(summary);
+
+      const change = beze_zmeny ? null : describeChange(target.code, previous, snapshot);
+      if (change) changes.push(change);
+
       console.log(
         `znění č. ${String(snapshot.cisloZneni).padStart(3)} ` +
           `od ${snapshot.ucinnostOd}  ` +
           `${String(snapshot.paragrafy.length).padStart(3)} §  ` +
-          `${(snapshot.pocetZnaku / 1024).toFixed(0).padStart(4)} kB`
+          `${(snapshot.pocetZnaku / 1024).toFixed(0).padStart(4)} kB  ` +
+          `${change ? (change.druh === 'nove' ? 'NOVÉ' : 'ZMĚNA') : 'beze změny'}`
       );
     } catch (error) {
       console.log(`SELHALO — ${(error as Error).message}`);
       failures.push({ code: target.code, reason: (error as Error).message });
+
+      // Předpis, který se nepodařilo stáhnout, nesmí vypadnout z přehledu:
+      // jeho soubor na disku zůstává a aplikace by jinak přestala vědět, že
+      // k němu úplné znění má. Do manifestu se proto vrátí minulý stav.
+      if (previous) {
+        const { osnova: _osnova, text: _text, ...summary } = previous;
+        summaries.push(summary);
+      }
     }
   }
 
   if (summaries.length > 0) {
     writeManifest(summaries);
     console.log('');
-    console.log(`Zapsáno ${summaries.length} znění do public/data/esbirka/`);
+    console.log(`V přehledu je ${summaries.length} znění (public/data/esbirka/).`);
     console.log('Přehled aktualizován: src/data/esbirka/snapshotManifest.ts');
+  }
+
+  console.log('');
+  if (changes.length === 0) {
+    console.log('ZMĚNY: žádné — stažená znění odpovídají tomu, co už bylo v repozitáři.');
+  } else {
+    console.log(`ZMĚNY (${changes.length}):`);
+    for (const ch of changes) {
+      const bylo = ch.predtim
+        ? `znění č. ${ch.predtim.cisloZneni} od ${ch.predtim.ucinnostOd}`
+        : 'nově sledováno';
+      console.log(
+        `  ${ch.code.padEnd(30)} ${bylo} → znění č. ${ch.nyni.cisloZneni} od ${ch.nyni.ucinnostOd}` +
+          `${ch.novely.length > 0 ? ` (novely: ${ch.novely.join(', ')})` : ''}`
+      );
+    }
+  }
+
+  if (summaryFile) {
+    writeFileSync(summaryFile, `${buildMarkdownSummary(changes, failures, targets.length)}\n`, 'utf8');
+    console.log(`Přehled změn zapsán do ${summaryFile}`);
   }
 
   console.log('');

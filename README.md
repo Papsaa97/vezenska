@@ -46,6 +46,9 @@ Na každý pull request (a na push do `main`) běží [CI](.github/workflows/ci.
 typová kontrola, produkční build, integrita předpisů a kvalita banky otázek.
 Lokálně je spustíš přes `npm test && npm run build`.
 
+Jednou týdně navíc běží [synchronizace s e-Sbírkou](.github/workflows/sync-esbirka.yml)
+— viz níže.
+
 ### Kontrola kvality banky otázek
 
 `npm run check:questions` dělá dvě věci. Strukturální kontroly (unikátní ID,
@@ -85,6 +88,32 @@ Texty leží mimo JavaScriptový balík záměrně: dohromady mají přes 1,5 MB
 trestní řád přes 600 kB) a načítají se až ve chvíli, kdy je čtenář otevře.
 Service Worker si je pak drží v mezipaměti, takže tlačítko **Stáhnout pro
 offline** skutečně stáhne znění do zařízení.
+
+### Týdenní synchronizace
+
+`npm run sync:laws` spouští sám workflow
+[`sync-esbirka.yml`](.github/workflows/sync-esbirka.yml), každé pondělí ve 3:17 UTC
+(a na požádání přes *Run workflow*, kde jde omezit výběr předpisů).
+
+- **Nezměnilo-li se nic, neudělá nic.** Skript přepíše soubor jen tehdy, když se
+  změnil jeho obsah — samotné datum stažení diff nevytvoří, takže prázdné pull
+  requesty nevznikají.
+- **Změnilo-li se něco**, proběhnou `npm run lint`, `npm run check:legal`
+  a `npm run build` a teprve pak se založí (nebo aktualizuje) draft pull request
+  na větvi `automat/esbirka-sync`. V těle je tabulka „bylo → je“ s čísly znění,
+  novelami a změnou délky textu.
+- Kontroly běží uvnitř workflow schválně: na pull requestu založeném přes
+  `GITHUB_TOKEN` se `ci.yml` nespustí (GitHub tak brání smyčkám), takže by změna
+  jinak přišla k posouzení neověřená.
+
+Aby workflow mohlo pull request založit, musí být v **Settings → Actions →
+General → Workflow permissions** zaškrtnuté *Allow GitHub Actions to create and
+approve pull requests*.
+
+Studijní výběr v `vscrRegulationsRegistry.ts` ani Paragrafový výklad
+v `legalCompasData.ts` skript neupravuje — po novele je na člověku, aby je
+prošel. `check:legal` upozorní na paragraf, který v novém znění není, a na
+rozpor v poli `lastAmendment`.
 
 | Kde | Co to umí |
 |---|---|
