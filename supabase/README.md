@@ -41,6 +41,8 @@ projektu spusťte v tomto pořadí:
 | 27 | `026_smazani_duplicit_a_zruseni_zop.sql` | Maže 13 zdvojených otázek a ruší předmět ZOP — banka klesá na 364 |
 | 28 | `027_stitky_souboru_a_editovatelny_obsah.sql` | Štítky souborů (`material_tags`) a editovatelné bloky obsahu (`content_blocks`) |
 | 29 | `028_naprava_schematu_class_boards.sql` | Srovnává `class_boards` s aplikací — bez toho se nástěnka tříd neuloží na server |
+| 30 | `029_profily_nejsou_verejny_seznam.sql` | ⚠️ **Nespouštět — už proběhla a nic nepřidá.** Měla být bezpečnostní oprava, ale opravovala něco, co nebylo rozbité; navíc u čtení profilů zrušila InitPlan z kroku 20. Podrobně v jejím záhlaví |
+| 31 | `030_vratit_initplan_u_cteni_profilu.sql` | Vrací čtení profilů k obalenému tvaru `(select public.is_admin())` z kroku 20 — na viditelnost dat nemá vliv, jen na počet volání funkce |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
