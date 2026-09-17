@@ -43,6 +43,7 @@ projektu spusťte v tomto pořadí:
 | 29 | `028_naprava_schematu_class_boards.sql` | Srovnává `class_boards` s aplikací — bez toho se nástěnka tříd neuloží na server |
 | 30 | `029_profily_nejsou_verejny_seznam.sql` | ⚠️ **Nespouštět — už proběhla a nic nepřidá.** Měla být bezpečnostní oprava, ale opravovala něco, co nebylo rozbité; navíc u čtení profilů zrušila InitPlan z kroku 20. Podrobně v jejím záhlaví |
 | 31 | `030_vratit_initplan_u_cteni_profilu.sql` | Vrací čtení profilů k obalenému tvaru `(select public.is_admin())` z kroku 20 — na viditelnost dat nemá vliv, jen na počet volání funkce |
+| 32 | `031_materialy_nahravat_lze_znovu.sql` | 🔴 **Opravuje rozbitou funkci.** Politiky nad `storage.objects` volají `get_role()` přímo, ale krok 19 na ni klientům odebral `EXECUTE` — nahrát, přepsat ani smazat studijní materiál proto nemůže nikdo, ani správce. Nahrazuje volání obálkami `my_role()` / `is_staff()` |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
