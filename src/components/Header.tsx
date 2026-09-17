@@ -552,8 +552,28 @@ export default function Header({
               }`}
             >
               <BookOpen className="w-4 h-4" />
-              <span>Materiály</span>
+              <span>{NAV_TAB_SHORT_LABELS['library']}</span>
             </button>
+
+            {/* 9. Správa obsahu — hlavní pracovní záložka lektora a správce.
+                Tlačítko „Další“, které ji jinak obsahuje, je `flex xl:hidden`,
+                takže právě na velkém monitoru, kde lektor pracuje, mu záložka
+                z navigace mizela a zbývalo jen profilové rozbalovátko. */}
+            {isPrivileged && (
+              <button
+                onClick={() => { setActiveTab('content-manager'); setOpenDropdown(null); setDropdownPos(null); }}
+                type="button"
+                aria-current={activeTab === 'content-manager' ? 'page' : undefined}
+                className={`hidden xl:flex px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
+                  activeTab === 'content-manager'
+                    ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-500/20'
+                    : 'text-emerald-300 hover:text-white hover:bg-slate-800/80'
+                }`}
+              >
+                <Settings2 className="w-4 h-4" />
+                <span>{NAV_TAB_SHORT_LABELS['content-manager']}</span>
+              </button>
+            )}
           </nav>
 
           {/* Right edge scroll gradient indicator */}

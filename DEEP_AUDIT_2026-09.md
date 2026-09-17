@@ -348,8 +348,9 @@ Zbývá:
 
 ## 8. Kód a údržba
 
-- **68 nálezů mrtvého kódu** (jednorázový běh `@typescript-eslint/no-unused-vars` nad `src/**/*.{ts,tsx}`). Nejvíc `CaptainExamAssistant.tsx` (13), `Statistics.tsx` (10), `LegalCompass.tsx` (10). Čtyři z nich nejsou kosmetika, ale nedokončená funkce: `quizHistoryError`, `sessionStats`, `setIsRandomOrder`, `score`, `strongestTopics`.
-- **ESLint nevidí `.ts` soubory** — celý `src/utils/`, `src/hooks/`, `src/data/` je bez lintu.
+- **73 nálezů mrtvého kódu ve 23 souborech** (jednorázový běh `@typescript-eslint/no-unused-vars` nad `src/**/*.{ts,tsx}`). Nejvíc `CaptainExamAssistant.tsx` (16), `LegalCompass.tsx` (10), `PrisonAdministration.tsx` (10), `Statistics.tsx` (9). Pět z nich nejsou kosmetika, ale nedokončená funkce: `quizHistoryError`, `sessionStats`, `setIsRandomOrder`, `score`, `strongestTopics`.
+  > **OPRAVA (17. 9. 2026):** první vydání zprávy uvádělo 68 nálezů a rozdělení `CaptainExamAssistant.tsx` (13), `Statistics.tsx` (10), `LegalCompass.tsx` (10), a mluvilo o „čtyřech" nedokončených funkcích, přičemž jich vypsalo pět. Přeměřeno na revizi `20bbcb0` příkazem `npx eslint src` s pravidlem `@typescript-eslint/no-unused-vars`: **73** nálezů, z toho **1** v `.ts` souboru a 72 v `.tsx`. Čísla výše jsou ta přeměřená.
+- **ESLint nevidí `.ts` soubory** — celý `src/utils/`, `src/hooks/`, `src/data/` je bez lintu. Praktický výnos mrtvého kódu je tam ale malý: po rozšíření rozsahu přidaly `.ts` soubory v `src/` jediný nález (víc jich bylo v nelintovaných `scripts/`, 13). Hodnota rozšíření je v tom, co se tam uhlídá příště, ne v tom, co se tam našlo teď.
 - **`PETest` duplikuje `Quiz`** ve slabší podobě (bez míchání, bez časovače, bez ukládání). Sjednotit na jeden test a Profesní etice nechat jen předvolbu předmětu.
 - Tři zrušená/rozpracovaná místa (`saveAllForOffline`, `officialUrl`, `handleStartQuickTest`) tvrdí, že něco dělají, a nedělají nic.
 - V repozitáři leží 4 starší auditní dokumenty, 6 jednorázových `patch_*.cjs`, `update_weapons.cjs`, `update_diagrams.sh`, `test_cuj.py` a 350 kB PDF. `package.json` se pořád jmenuje `react-example`.
