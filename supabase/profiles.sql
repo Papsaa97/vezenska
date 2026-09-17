@@ -74,8 +74,34 @@ REVOKE ALL ON FUNCTION public.is_staff() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.is_staff() TO authenticated;
 
 -- 3. RLS Politiky pro public.profiles
+--
+-- ┌─────────────────────────────────────────────────────────────────────────┐
+-- │ POZOR: POLITIKY V TOMHLE SOUBORU JSOU PŘEKONANÉ POZDĚJŠÍMI MIGRACEMI.   │
+-- │                                                                         │
+-- │ Tenhle soubor je ZAVÁDĚCÍ skript prvního kroku (viz supabase/README.md). │
+-- │ Platný stav politik nad public.profiles určují migrace, které běží po    │
+-- │ něm — u čtení konkrétně:                                                │
+-- │                                                                         │
+-- │   013_harden_rls.sql       ruší "Povolit čtení profilů pro přihlášené"   │
+-- │                           a zavádí "Čtení vlastního profilu, správce     │
+-- │                           čte všechny"                                   │
+-- │   017_oprava_rekurze_politik.sql  tutéž politiku přepisuje kvůli 42P17   │
+-- │   019_vykon_politik_a_indexu.sql  ji přepisuje na (select auth.uid())    │
+-- │                                                                         │
+-- │ NEČTI tedy z tohohle souboru, co v databázi platí — přečti si posledního │
+-- │ pisatele politiky, nebo se zeptej databáze:                             │
+-- │                                                                         │
+-- │   SELECT policyname, cmd, qual, with_check FROM pg_policies             │
+-- │   WHERE schemaname = 'public' AND tablename = 'profiles';               │
+-- │                                                                         │
+-- │ Chybějící poznámka tohohle druhu už jednou vedla k nesprávnému           │
+-- │ bezpečnostnímu nálezu: audit z 9/2026 ohlásil USING (true) níže jako     │
+-- │ živý stav, přestože ho 013 zrušila dva dny předtím.                      │
+-- └─────────────────────────────────────────────────────────────────────────┘
 
--- Čtení: Všichni přihlášení uživatelé mohou číst profily
+-- Čtení: PŘEKONÁNO migracemi 013 → 017 → 019 (viz rámeček výše).
+-- Ponecháno kvůli reprodukovatelnosti historie: kdo spouští skripty od začátku,
+-- dostane tuhle politiku a hned nato ji 013 nahradí zúženou verzí.
 DROP POLICY IF EXISTS "Povolit čtení profilů pro přihlášené" ON public.profiles;
 CREATE POLICY "Povolit čtení profilů pro přihlášené"
   ON public.profiles
