@@ -1,13 +1,31 @@
 # Hloubkový audit aplikace — Akademie VS ČR, studijní portál ZOP A
 
-**Datum:** 16. 9. 2026 · **Revize:** `aeda1ce` (main) · **Rozsah:** 139 souborů / 51 270 řádků `src/`, 15 záložek, datová vrstva, CI, nasazení
+**Datum:** 16. 9. 2026 · **Revize:** `aeda1ce` (main; sloučeno jako `20bbcb0`, na téže revizi měřen §8) · **Rozsah:** 139 souborů / 51 270 řádků `src/`, 15 záložek, datová vrstva, CI, nasazení
 **Metoda:** čtení veškerého zdrojového kódu; spuštění `npm run lint`, `check:legal`, `check:questions`, `npm run build`; porovnání obsahových tvrzení proti **úředním zněním stáhnutým z e-Sbírky**, která má repozitář v `public/data/esbirka/` (znění č. 25 zák. 555/1992 Sb., č. 31 zák. 169/1999 Sb., č. 23 zák. 293/1993 Sb., č. 36 zák. 361/2003 Sb., č. 46 zák. 40/2009 Sb., č. 14 zák. 129/2008 Sb., č. 11 vyhl. 345/1999 Sb.).
+
+
+> ## ⚠️ Errata (17. 9. 2026)
+>
+> Sekce 7 byla v původním vydání částečně nepravdivá, protože **tvrzení o databázi vycházela ze souborů v `supabase/`, ne z živého projektu**. Zaváděcí skript `profiles.sql` byl vydán za platný stav, přestože ho pozdější migrace přepisují. Všechna tvrzení §7 o databázi byla proto 17. 9. **znovu ověřena proti produkci** (`pg_policies`, ledger `supabase_migrations`, simulace rolí `anon`/`authenticated` přes `request.jwt.claims` v transakcích s `ROLLBACK`, a u Storage přímé HTTP požadavky). Výsledek:
+>
+> | Původní tvrzení | Skutečnost |
+> |---|---|
+> | §7 bod 1: *každý přihlášený student si může vypsat celý jmenný seznam* — **kritické** | **Nepravda.** Student i lektor vidí z `profiles` jen vlastní řádek (1 z 23), nepřihlášený nic. Zúžení zavedla `013` dva dny před auditem. |
+> | §7 úvod: *role nelze eskalovat (`profiles.sql:95–115`)* | Závěr platí (8 pokusů o eskalaci zamítnuto), **citace ne** — politika z `profiles.sql` by v klientské session ani neproběhla. |
+> | §7 úvod: *`018` odebírá klientům `EXECUTE` na `get_role`* | Platí — a **tím rozbila nahrávání studijních materiálů** (tři politiky nad `storage.objects` volaly `get_role` přímo). Opraveno migrací `031`, nasazenou 17. 9. |
+> | §7 bod 7: *`set_admin_miichalpapi.sql` má e-mail vlastníka* | **Nepravda** — soubor žádný e-mail neobsahuje. |
+> | §7 bod 7: *není způsob, jak zjistit, co je nasazeno* | Ledger existuje (`supabase_migrations.schema_migrations`), je ale neúplný. |
+> | §8: *68 nálezů mrtvého kódu* | Přeměřeno: **73**. |
+> | Audit **mlčel** o Storage | **Oba buckety jsou veřejné** — materiály i fotografie uživatelů lze stáhnout a vypsat bez přihlášení. Viz §7 bod 1. |
+> | Audit **mlčel** o integritě `vyhodnotit_kviz()` | Ověřený 100% výsledek zkoušky lze vyrobit jedním voláním. Viz §7 bod 2. |
+>
+> Sekce 7 je níže přepsaná celá; tabulka v §0 a kroky 18 a 21 v §9 jsou opravené. Ostatní sekce zůstávají v původním znění — jejich nálezy se ověřovaly proti běžící aplikaci a proti úředním zněním z e-Sbírky, ne proti souborům, a opravy z PR #75 a #76 jsou zaznamenány v těch PR, ne zpětně v textu.
 
 ---
 
 ## 0. Verdikt
 
-Technicky je to nadstandardně zvládnutý projekt: RLS je utažená, role se nedají eskalovat, skóre testu počítá server, proxy na e-Sbírku není otevřené relé, a11y ráčna drží nulu, vše se buildí a všechny kontroly procházejí zeleně.
+Technicky je to nadstandardně zvládnutý projekt: RLS je utažená a role se nedají eskalovat (obojí ověřeno 17. 9. v živé databázi, viz errata), proxy na e-Sbírku není otevřené relé, a11y ráčna drží nulu, vše se buildí a všechny kontroly procházejí zeleně. Dvě věci ale audit původně minul úplně: **Storage je veřejné** a **serverové hodnocení testu jde obejít** — obě v §7.
 
 **Problém je jinde, než kam míří CI.** Hlavní slabinou není kód, ale **fakticita právního obsahu**. Aplikace na několika místech učí věcně nesprávné znění zákona — a co je nejhorší, **sama sobě odporuje**: banka otázek má u kázeňských trestů správná čísla, zatímco Právní kompas, studijní výběr zákona 169/1999 a Poznávačka mají u téhož tři různé nesprávné verze. Student, který se učí z Kompasu, odpoví špatně na otázku z vlastní aplikace.
 
@@ -18,8 +36,8 @@ Technicky je to nadstandardně zvládnutý projekt: RLS je utažená, role se ne
 | UI/UX a konzistence | — | 8 | 14 |
 | Přístupnost | — | 4 | 3 |
 | Výkon | 1 | 2 | 2 |
-| Bezpečnost a soukromí | 1 | 4 | 2 |
-| Kód a údržba | — | 3 | 68 (mrtvý kód) |
+| Bezpečnost a soukromí | — | 5 | 3 |
+| Kód a údržba | — | 3 | 73 (mrtvý kód) |
 
 ---
 
@@ -306,7 +324,7 @@ Plus: viz **mezerník v Kartičkách** (3.5), **validace formuláře v Administr
 
 ## 6. Výkon
 
-**První načtení stahuje 773 kB otázek, které se skoro vždy zahodí.**
+**První načtení stahuje 774 kB otázek, které se skoro vždy zahodí.**
 
 `dist/index.html` předpíná (`modulepreload`) tyto balíky:
 
@@ -323,7 +341,7 @@ Plus: viz **mezerník v Kartičkách** (3.5), **validace formuláře v Administr
 
 Dále:
 
-- `vendor-charts` má 420 kB (120 kB gzip) kvůli `recharts`; 9 nepoužitých importů ve `Statistics.tsx` signalizuje, že se z něj používá málo.
+- `vendor-charts` má 420 kB (120 kB gzip) kvůli `recharts`; 7 nepoužitých importů ve `Statistics.tsx` signalizuje, že se z něj používá málo.
 - `Header` počítá `calculateBaseXp` + `evaluateBadges` nad celou historií při každé změně historie (24 odznaků × všechny pokusy) — dnes zanedbatelné, u studenta se stovkami testů méně.
 - `Flashcards` počítá pět plných průchodů `accessibleQuestions` (`box1Count`…`box5Count`) při každém renderu bez memoizace.
 
@@ -331,18 +349,33 @@ Dále:
 
 ## 7. Bezpečnost a soukromí
 
-Datová vrstva je silná stránka: 29 migrací, `013_harden_rls.sql` ruší `USING (true)`, `018` odebírá klientům `EXECUTE` na `get_role`, `020` chrání posledního správce, `021` počítá skóre serverovou funkcí `vyhodnotit_kviz()`, role nelze eskalovat (`profiles.sql:95–115` — `WITH CHECK (role = public.get_role(id))`), `quiz_results` čte každý jen své. Proxy `/api/esbirka` má pevný výčet endpointů, ELI podle regulárního výrazu, klíč jen na serveru. To je poctivá práce.
+> Sekce přepsaná 17. 9. 2026 podle ověření proti **živé databázi** (viz errata v záhlaví). Kde stojí „ověřeno", znamená to empirický dotaz pod simulovanou rolí v transakci s `ROLLBACK`, ne čtení definice. Hloubka ověření je popsaná na konci sekce.
 
-Zbývá:
+Datová vrstva je silná stránka — a tentokrát to lze tvrdit, protože se to měřilo. Nad všemi 9 tabulkami ve schématu `public` je RLS zapnutá, každá má 3–4 politiky, všech 34 politik míří na roli `authenticated`, pro `anon` neexistuje žádná (nepřihlášený dostane ze všech tabulek 0 řádků a zápis mu skončí `42501`). Čtení `profiles` zúžily `013 → 017 → 019` (a mimo ledger ještě `029`) na vlastní řádek nebo správce. Pět politik `USING (true)` zůstává jen u sdíleného obsahu (`quiz_questions`, `content_blocks`, `class_boards`, `global_announcements`, `material_tags`) a je to záměr. `018` odebrala klientům `EXECUTE` na `get_role(uuid)` (ověřeno: `has_function_privilege` = false pro `anon` i `authenticated`). `020` nasadila trigger `chranit_posledniho_spravce` (`BEFORE DELETE OR UPDATE OF role`), který zamítne odebrání role poslednímu správci i jeho smazání — přímo, hromadně i kaskádou z `auth.users` (ověřeno). Role eskalovat nelze: `UPDATE profiles SET role = 'admin'` pod JWT studenta končí `42501`, stejně jako `ON CONFLICT DO UPDATE`, CTE s dvojím zápisem, `DELETE` + reinsert a poddotaz s cizí rolí — živě platí sloučená politika z `019` s `WITH CHECK (… role = (select my_role()))`, ne `role = public.get_role(id)` z `profiles.sql`, jak stálo v původním znění (tu by klient ani nevyhodnotil, `get_role` mu není dovoleno volat). `user_feedback` čte student jen svá hlášení, lektor a správce všechna; `user_notifications` čte příjemce jen své, lektor cizí nevidí. Proxy `/api/esbirka` má pevný výčet sedmi endpointů, ELI podle regulárního výrazu a klíč bez prefixu `VITE_`.
 
-1. **Každý přihlášený student si může vypsat celý jmenný seznam Akademie.**
-   `profiles.sql:80–84`: `FOR SELECT TO authenticated USING (true)`. Tabulka obsahuje `email`, `full_name`, `role`, `user_class`. Anon klíč je veřejný (a má být), takže jeden dotaz na REST API vrátí kompletní roster. **Aplikace to nepotřebuje** — mimo `UserManager` (jen pro správce) čte kód vždy jen `.eq('id', userId)`. Zúžit na `(select auth.uid()) = id OR public.is_admin()` je změna na jeden řádek.
-2. **Nasazení nemá žádné bezpečnostní hlavičky.** `vercel.json` obsahuje jen `rewrites` — chybí `Content-Security-Policy`, `X-Frame-Options`/`frame-ancestors`, `Referrer-Policy`, `X-Content-Type-Options`, `Strict-Transport-Security`, `Permissions-Policy`. Aplikaci s interními materiály VS ČR lze vložit do cizího rámce.
-3. **Osobní údaje vězněných osob v localStorage bez vazby na uživatele** — viz 3.7.
-4. **Kompas zákonů bez kontroly role** — viz 3.8.
-5. **Gemini API klíč**: uložen v plaintextu v localStorage a posílán z prohlížeče. Modál tvrdí „**Nikam se neodesílá**“ — klíč se posílá s každým požadavkem Googlu; věta má znamenat „ne na náš server“, ale takhle je nepravdivá. Fallback `VITE_GEMINI_API_KEY` se dostane do veřejného bundlu (README to přiznává jako záměrný kompromis).
-6. **Seznam modelů je neplatný.** `geminiAnalyzer.ts:161`: `['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash']` — `gemini-3.5-flash` neexistuje, skončí 404. Smyčka navíc při nedostupnosti prvního modelu protáhne čekání o dva zbytečné okružní požadavky.
-7. **Migrace se spouštějí ručně ve 29 krocích**, dvě dvojice mají shodný prefix (`022_`, `026_`) a v repozitáři není způsob, jak zjistit, co už je v daném projektu nasazeno. `set_admin_miichalpapi.sql` má e-mail vlastníka zapsaný v repozitáři.
+Dva body původního znění byly nepravdivé (jmenný seznam, e-mail v `set_admin_miichalpapi.sql`) a dvě věci audit neviděl vůbec. Zbývá:
+
+1. **Studijní materiály i fotografie uživatelů jsou ve Storage veřejné a bez přihlášení i enumerovatelné.** *(vysoká)* Oba buckety mají `storage.buckets.public = true`, bez `file_size_limit` a bez `allowed_mime_types`, a nad `storage.objects` leží čtecí politiky pro roli `public` (`012_materials_storage.sql:20–24`, `avatars_storage.sql:13–17`). Ověřeno **bez jakékoli hlavičky**: `GET /storage/v1/object/public/studijni-materialy/<cesta>` vrátí `200` a obsah PDF; avatar `200` a 5 MB JPEG. Se samotným anon klíčem (je v JS bundlu, tedy veřejný) vrátí `POST /storage/v1/object/list/studijni-materialy` seznam složek a souborů — útočník tedy **nepotřebuje znát URL**, bucket si vypíše. Dnes je vystaven jeden zkušební PDF a jedna fotografie skutečného uživatele; konstrukce je ale taková, že **každý materiál, který lektor ve Správě obsahu nahraje, je od té chvíle stažitelný bez účtu**. Aplikace na tom závisí: `materials.ts:421`, `classBoardService.ts:867` a `UserProfileModal.tsx:235` tvoří odkazy přes `getPublicUrl()`. Náprava je DB **i** kód: `public = false` a zrušit politiky pro roli `public`, v kódu `createSignedUrl()` s krátkou platností nebo `.download()` (to `materials.ts:427` už dělá); u avatarů buď totéž, nebo vědomě ponechat veřejné a zapsat to jako rozhodnutí. Repozitář navíc neobsahuje pět politik, které v produkci nad `storage.objects` jsou (`Přihlášení mohou číst materiály`, `Lektoři a admini mohou nahrávat/mazat`, `Anyone can view avatars`, `Users can upload avatar`) — Storage není z repozitáře reprodukovatelné.
+
+2. **Ověřený výsledek zkoušky lze vyrobit jedním voláním.** *(střední — integrita hodnocení, ne únik dat)* `vyhodnotit_kviz()` dělá, co má: `user_id` bere z `auth.uid()`, cizí `p_id` odmítne (`42501`), skóre počítá proti bance, `UPDATE` nad `quiz_results` klient nemá vůbec. Nekontroluje ale duplicity otázek, příslušnost otázek k `p_predmet`, `p_dokonceno_v` ani počet otázek. Jedno volání s jedinou správně zodpovězenou otázkou zopakovanou 200× vrátilo `total_questions = 200, correct_answers = 200, accuracy = 100, overeno = true, subject = 'Závěrečná zkouška ZOP A', completed_at = 2020-01-01` (ověřeno, rollback). Správné odpovědi jsou pro `authenticated` čitelné (`quiz_questions_select USING (true)`, `options ->> correct_index`), takže student vyrobí libovolné množství „ověřených" 100% zkoušek — každá se v konzoli správce započte do XP (`UserManager.tsx:101–106`: 200 · 15 + 50 + 100 = 3 150 XP za volání). Razítko `overeno` zaručuje jen *skóre odpovídá odeslaným odpovědím*, ne *uživatel absolvoval skutečný test*. K tomu: přímý `INSERT` do `quiz_results` s libovolným `correct_answers`/`accuracy` je dál povolený — politika vynucuje jen `overeno = false`; takový řádek se do XP správce nezapočte, ale ve vlastní historii a statistice uživatele (`fetchQuizHistory`, `quizResults.ts:103`) se od ověřeného nijak neliší. Náprava ve funkci: odmítnout duplicitní `id` otázek, ověřit `subject` proti bance, zastropovat počet na skutečnou velikost testu, `completed_at` brát z `now()`; v klientovi filtrovat `overeno` i pro vlastní statistiky.
+
+3. **Osobní údaje vězněných osob v localStorage bez vazby na uživatele** — viz 3.7. *(opraveno v PR #75: koncepty pod klíč účtu, varování, tlačítko smazat)*
+
+4. **Kompas zákonů bez kontroly role** — viz 3.8. *(opraveno v PR #75)*
+
+5. **Gemini API klíč**: uložen v plaintextu v localStorage a posílán z prohlížeče. Modál tvrdil „**Nikam se neodesílá**" — klíč se posílá s každým požadavkem Googlu; věta měla znamenat „ne na náš server". *(formulace opravena v PR #75)* Fallback `VITE_GEMINI_API_KEY` se dostane do veřejného bundlu (README to přiznává jako záměrný kompromis).
+
+6. **Seznam modelů byl neplatný** — `gemini-3.5-flash` neexistuje. *(opraveno v PR #75)*
+
+7. **Migrace se nasazují ručně a ledger je neúplný.** *(střední)* Živá databáze ledger **vede** (`supabase_migrations.schema_migrations`, 13 záznamů od `014` po `031`) — původní tvrzení „není způsob, jak zjistit, co je nasazeno" tedy neplatí absolutně. Ledger ale nezná `010`–`013`, `016`, `017`, `027`, `029`, `030` ani žádný z 11 nečíslovaných skriptů; nasazení těch se pozná jen z katalogu, a právě to už vedlo k driftu: `029` běžela bez záznamu, `030` nasazená není, a tři politiky nad Storage nemají v repozitáři zdroj. README vede 32 kroků při 34 souborech `.sql`; v pořadí spouštění chybí `015_fix_admin_delete_user_fail_open.sql` (čistou instalaci kryjí `profiles.sql` + `admin_user_management.sql`, existující instalace ji musí spustit zvlášť). Prefix `022_` sdílí migrace se **spustitelnou zálohou** (`022_zaloha_smazanych_otazek.sql` obsahuje `INSERT`, který smazané otázky vrací) — kdo spustí oba soubory po sobě, zruší účinek migrace; `026_` se opakuje jen s textovou zálohou `.txt`. `set_admin_miichalpapi.sql` **žádný e-mail neobsahuje** (původní tvrzení bylo nepravdivé; v názvu souboru je jen uživatelské jméno).
+
+8. **Bezpečnostní hlavičky** — původní znění: „`vercel.json` obsahuje jen `rewrites`". Platilo pro revizi auditu; *opraveno v PR #75* a ověřeno na nasazené aplikaci (`curl -sI`): CSP, `X-Frame-Options: DENY`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, HSTS, COOP.
+
+9. **Hygiena, ne díra:** advisor Supabase hlásí `EXECUTE` pro `anon` na třech `SECURITY DEFINER` funkcích (`handle_new_user`, `chranit_posledniho_spravce`, `rls_auto_enable`). Skutečný dopad je nulový: první dvě vracejí typ `trigger`, Postgres přímé volání odmítne ještě před vstupem do těla (`0A000`) a PostgREST je do schema cache vůbec nezařadí (`404 PGRST202`); třetí je event trigger bez argumentů, jehož jediná zápisová operace je `ENABLE ROW LEVEL SECURITY`. Stojí za `REVOKE`, aby advisor přestal šumět, ale není to nález.
+
+10. **Lektor vidí z `profiles` jen vlastní řádek** — politika čtení zvýhodňuje jen `is_admin()`, ne `is_staff()`. Pro roli, která má vést třídu, to může být překvapení; není to vada, je to rozhodnutí, které nikde není zapsané.
+
+**Hloubka ověření.** Dvanáct tvrzení §7 ověřoval každé jeden nezávislý agent s přímým přístupem k databázi (výstup s doslovným SQL je v popisu PR, které tuto opravu přináší). Skeptický přezkum — dva další agenti na každý verdikt s úkolem ho vyvrátit — proběhl jen u tvrzení o `profiles` (nevyvráceno; skeptik šel dál než ověřovatel a zkusil i produkční REST API s anon klíčem). Zbylých 23 přezkumů selhalo na limitu relace a spouští se znovu 18. 9. po 01:50 UTC; tato sekce se podle nich případně upraví. Nález 1 (Storage) a regresi nahrávání (viz `031`) jsem navíc reprodukoval sám mimo workflow.
 
 ---
 
@@ -384,7 +417,13 @@ Zbývá:
 
 16. Načítat `data-questions` líně (−194 kB gzip z první obrazovky).
 17. Globální `:focus-visible`, `prefers-reduced-motion`, „přeskočit na obsah“, jeden `h1` na stránku.
-18. Zúžit `SELECT` politiku nad `profiles`; doplnit bezpečnostní hlavičky do `vercel.json`.
+18. ~~Zúžit `SELECT` politiku nad `profiles`~~ (bezpředmětné — už byla zúžená, viz errata); doplnit bezpečnostní hlavičky do `vercel.json`.
 19. Koncepty v Administrativě navázat na uživatele, doplnit upozornění na osobní údaje a tlačítko „smazat koncepty“.
 20. Role v Kompasu zákonů; znění do neverzované mezipaměti Service Workeru.
-21. Rozšířit ESLint na `.ts` a zapnout `no-unused-vars`; uklidit 68 nálezů.
+21. Rozšířit ESLint na `.ts` a zapnout `no-unused-vars`; uklidit 73 nálezů.
+
+**Doplněno 17. 9. po ověření proti živé databázi:**
+
+22. **Storage:** `public = false` u `studijni-materialy`, zrušit čtecí politiky pro roli `public`, v `materials.ts`/`classBoardService.ts`/`UserProfileModal.tsx` nahradit `getPublicUrl()` podepsanými URL nebo `.download()`; u `avatars` rozhodnout a zapsat; nastavit `allowed_mime_types` a `file_size_limit`; politiky vzniklé mimo repozitář buď zapsat do migrace, nebo smazat.
+23. **`vyhodnotit_kviz()`:** odmítnout duplicitní otázky, ověřit příslušnost k předmětu, zastropovat počet otázek, `completed_at` z `now()`; v klientovi filtrovat `overeno` i pro vlastní statistiky.
+24. Spustit `030` (InitPlan u čtení profilů); doplnit `015` do pořadí v README; přejmenovat `022_zaloha_smazanych_otazek.sql` tak, aby nesdílela prefix s migrací.
