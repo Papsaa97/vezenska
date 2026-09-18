@@ -534,13 +534,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const effectiveAvatar =
         data.avatarUrl !== undefined ? data.avatarUrl : (profile?.avatar_url || null);
 
+      // Veliteli třídy se zařazení odtud nemění. `user_class` u něj není
+      // předvolba, ale autorizační údaj: can_manage_class() podle něj pouští
+      // zápis do nástěnky, a proto ho nesprávci zamyká RLS politika z migrace
+      // 032_trida_velitele_neni_samoobsluzna.sql. Server by takový zápis
+      // odmítl celý — i s jménem a fotkou, které v témže UPDATE jedou — takže
+      // požadavek zahazujeme už tady. Třídu veliteli nastavuje správce.
+      const requestedClass =
+        (profile?.role ?? 'student') === 'velitel_tridy' ? undefined : data.userClass;
+
       // Třída se NEDOPLŇUJE. Dřív tu stálo `profile?.user_class || 'ZOP A11'`,
       // takže každé uložení profilu — i pouhá změna jména nebo fotky — zapsalo
       // účtu třídu ZOP A11, i když si ji uživatel nikdy nevybral. Tímhle se
       // třída rozlezla do všech profilů v databázi. Když ji volající neposílá,
       // zůstává, jaká byla; prázdná hodnota znamená „třída nezadaná".
       const effectiveClass =
-        data.userClass !== undefined ? data.userClass.trim() : (profile?.user_class ?? '');
+        requestedClass !== undefined ? requestedClass.trim() : (profile?.user_class ?? '');
 
       // Optimistická aktualizace pro okamžitý efekt v UI; při chybě ji vrátíme zpět.
       setProfile({
@@ -558,7 +567,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const updates: Record<string, string | null> = {
         full_name: effectiveFullName,
       };
-      if (data.userClass !== undefined) {
+      if (requestedClass !== undefined) {
         updates.user_class = effectiveClass || null;
       }
       if (data.avatarUrl !== undefined) {
@@ -592,7 +601,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // v prohlížeči nedrží hodnoty, které na serveru nikdy neskončily. Ukládá se
       // jedině předvolba třídy, a to spolu s účtem, kterému patří — jméno ani
       // fotka v prohlížeči nemají co dělat, viz pruneLocalPrefs().
-      if (typeof window !== 'undefined' && user && data.userClass !== undefined) {
+      if (typeof window !== 'undefined' && user && requestedClass !== undefined) {
         localStorage.setItem(LOCAL_CLASS_KEY, effectiveClass);
         localStorage.setItem(LOCAL_CLASS_OWNER_KEY, user.id);
       }

@@ -131,6 +131,10 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
   const [passwordMessage, setPasswordMessage] = useState<FormMessage | null>(null);
 
   const [userClass, setUserClass] = useState<string>(effectiveProfile.user_class ?? '');
+  // Velitel třídy si zařazení nepřepisuje sám — určuje, do které nástěnky smí
+  // psát, a RLS politika nad profiles ho nesprávci zamyká (migrace 032).
+  // Pole proto zůstává jen ke čtení; třídu veliteli nastavuje správce.
+  const classLocked = profile?.role === 'velitel_tridy';
   const [selectedRole, setSelectedRole] = useState<UserRole>(
     previewRole ??
       (effectiveProfile.role === 'student' && isSystemAdmin ? 'admin' : effectiveProfile.role)
@@ -420,9 +424,21 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                 type="text"
                 value={userClass}
                 onChange={(e) => setUserClass(e.target.value)}
-                placeholder="Zatím nezadáno — např. ZOP A11"
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all font-semibold"
+                readOnly={classLocked}
+                aria-describedby={classLocked ? `${fieldIds}-1-hint` : undefined}
+                placeholder={classLocked ? 'Zařazení nastavuje správce' : 'Zatím nezadáno — např. ZOP A11'}
+                className={`w-full border rounded-xl px-4 py-2.5 text-sm placeholder-slate-500 transition-all font-semibold ${
+                  classLocked
+                    ? 'bg-slate-800/60 border-slate-700/60 text-slate-400 cursor-not-allowed'
+                    : 'bg-slate-800 border-slate-700 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50'
+                }`}
               />
+              {classLocked && (
+                <p id={`${fieldIds}-1-hint`} className="mt-1.5 text-[11px] text-slate-500">
+                  Zařazení velitele třídy určuje, kterou nástěnku smí spravovat, takže ho
+                  nastavuje správce. Změnu si vyžádejte u něj.
+                </p>
+              )}
             </div>
 
             {(isSystemAdmin || effectiveProfile?.role === 'admin') ? (
