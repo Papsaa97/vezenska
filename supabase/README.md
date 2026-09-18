@@ -44,6 +44,7 @@ projektu spusťte v tomto pořadí:
 | 30 | `029_profily_nejsou_verejny_seznam.sql` | ⚠️ **Nespouštět — už proběhla a nic nepřidá.** Měla být bezpečnostní oprava, ale opravovala něco, co nebylo rozbité; navíc u čtení profilů zrušila InitPlan z kroku 20. Podrobně v jejím záhlaví |
 | 31 | `030_vratit_initplan_u_cteni_profilu.sql` | Vrací čtení profilů k obalenému tvaru `(select public.is_admin())` z kroku 20 — na viditelnost dat nemá vliv, jen na počet volání funkce |
 | 32 | `031_materialy_nahravat_lze_znovu.sql` | **Opravuje rozbitou funkci.** Politiky nad `storage.objects` volaly `get_role()` přímo, ale krok 19 na ni klientům odebral `EXECUTE` — nahrát, přepsat ani smazat studijní materiál proto nemohl nikdo, ani správce. Nahrazuje volání obálkami `my_role()` / `is_staff()`. *Na produkci spuštěna 17. 9. 2026, v ledgeru jako `20260917211122_materialy_nahravat_lze_znovu`* |
+| 33 | `032_trida_velitele_neni_samoobsluzna.sql` | **Bezpečnostní oprava.** Politika `UPDATE` nad `profiles` hlídala jen sloupec `role`, takže si velitel třídy mohl sám přepsat `user_class` a získat zápis do cizí nástěnky; e-mail si mohl přepsat kdokoli. Zavádí `my_email()` a doplňuje do `WITH CHECK` zámek na obojí |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
@@ -160,8 +161,15 @@ Pokud už aplikaci provozujete, doplňte jen nové skripty:
 ```
 
 Po spuštění `011` lze poprvé skutečně přidělit roli **velitel třídy**. Veliteli
-nezapomeňte ve správě uživatelů vyplnit i **třídu** (`user_class`) — politika
-`can_manage_class()` ho bez ní nepustí k žádné nástěnce (úmyslně fail-closed).
+nezapomeňte vyplnit i **třídu** (`user_class`) — politika `can_manage_class()`
+ho bez ní nepustí k žádné nástěnce (úmyslně fail-closed).
+
+Zařazení veliteli nastavuje **správce**, a to zatím jedině v Supabase SQL
+Editoru (`UPDATE public.profiles SET user_class = 'ZOP A11' WHERE id = …`);
+správa uživatelů v aplikaci pole pro třídu nemá. Sám si ho velitel po migraci
+`032` nezapíše — `user_class` u něj rozhoduje o přístupu k nástěnce, takže ho
+politika zamyká. Přidělujete-li roli velitele účtu, který nějakou třídu už má,
+**ověřte ji**: dokud byl ten účet studentem, mohl si ji zvolit sám.
 
 ## Proč je potřeba i `014` (ověřte si to)
 
