@@ -13,6 +13,14 @@ import { supabase } from '../lib/supabase';
 
 export const MATERIALS_BUCKET = 'studijni-materialy';
 
+/**
+ * Jak dlouho platí podepsaná URL. Osm hodin, protože nástěnka třídy běžně visí
+ * na obrazovce v učebně celý den a s hodinovou platností by se obrázek rozvrhu
+ * po obědě rozbil. Kratší dobu by stejně neprodloužila — kdo si soubor stáhne,
+ * má ho.
+ */
+export const MATERIALS_SIGNED_URL_TTL_S = 8 * 60 * 60;
+
 /** Složka pro nově nahrávané soubory. O zařazení už nerozhoduje, je to jen adresa. */
 export const MATERIALS_UPLOAD_FOLDER = 'materialy';
 
@@ -416,10 +424,30 @@ export async function deleteMaterial(storagePath: string): Promise<TagWriteResul
   return { persisted: true, error: null };
 }
 
-/** Veřejná URL souboru — bucket je veřejně čitelný (migrace 012). */
-export function getMaterialUrl(storagePath: string): string {
-  const { data } = supabase.storage.from(MATERIALS_BUCKET).getPublicUrl(storagePath);
-  return data?.publicUrl ?? '';
+/**
+ * Dočasná podepsaná URL souboru.
+ *
+ * Kbelík `studijni-materialy` je od migrace 036 privátní, takže veřejná URL
+ * z `getPublicUrl()` vrátí 400 — tu tahle funkce nahradila. Podepsaná URL
+ * vzniká jménem přihlášeného uživatele, takže projde stejnou RLS politikou
+ * jako `download()`; nepřihlášenému se nevystaví vůbec.
+ *
+ * Náhled i stahování v Knihovně materiálů jedou přes `download()` a blob URL
+ * (`FileViewerModal.tsx`), takže tohle je pro případy, kdy je potřeba odkaz
+ * do `src` nebo `href` — třeba obrázek rozvrhu na nástěnce třídy.
+ */
+export async function getMaterialSignedUrl(
+  storagePath: string,
+  expiresInSeconds: number = MATERIALS_SIGNED_URL_TTL_S
+): Promise<string | null> {
+  const { data, error } = await supabase.storage
+    .from(MATERIALS_BUCKET)
+    .createSignedUrl(storagePath, expiresInSeconds);
+
+  if (error || !data?.signedUrl) {
+    return null;
+  }
+  return data.signedUrl;
 }
 
 /** Stáhne soubor do zařízení pod čitelným názvem. */

@@ -142,24 +142,25 @@ ON CONFLICT (id) DO NOTHING;
 -- ve VITE_ADMIN_EMAILS. Roli správce nelze nastavit z aplikace — první správce
 -- v projektu vzniká jedině tady, protože politika „Pouze administrátor může
 -- měnit role“ vyžaduje, aby už nějaký správce existoval.
+--
+-- Nejdřív se profilové e-maily srovnají podle auth.users. Řádky založené
+-- v kroku 4 e-mail mít nemusí a správa uživatelů s ním pracuje.
 
-UPDATE public.profiles
-SET role = 'admin'
-WHERE email ILIKE '%miichalpapi%'
-  AND role IS DISTINCT FROM 'admin';
-
--- Řádky založené v kroku 4 nemusí mít e-mail — doplníme ho z auth.users, ať
--- podmínka výše i správa uživatelů pracují s reálnou adresou.
 UPDATE public.profiles p
 SET email = u.email
 FROM auth.users u
 WHERE u.id = p.id AND p.email IS DISTINCT FROM u.email;
 
--- Ještě jednou po doplnění e-mailů, ať se nastavení správce chytí i tam.
-UPDATE public.profiles
-SET role = 'admin'
-WHERE email ILIKE '%miichalpapi%'
-  AND role IS DISTINCT FROM 'admin';
+-- Roli pak nastaví nastavit_spravce() z migrace 035. Dřív tu stály dva
+-- `UPDATE ... WHERE email ILIKE '%miichalpapi%'` nad public.profiles, a to
+-- byly dvě chyby najednou: podřetězec vyhověl každé adrese, která ten kus
+-- textu kdekoli obsahovala, a rozhodovalo se podle profilového e-mailu —
+-- sloupce, který si uživatel do migrace 032 sám přepisoval. První z těch
+-- UPDATE navíc běžel PŘED srovnáním e-mailů výše, takže povyšoval podle
+-- hodnoty, kterou si uživatel zapsal sám. Funkce bere celou adresu, porovnává
+-- ji na rovnost a hledá ji v auth.users, kam uživatel nevidí.
+
+SELECT * FROM public.nastavit_spravce('vase.adresa@example.cz');
 
 -- ─── 6. Kontrola: nepřežila někde povolující politika z doby před 013? ───────
 --
