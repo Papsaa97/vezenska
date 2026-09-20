@@ -45,6 +45,7 @@ projektu spusťte v tomto pořadí:
 | 31 | `030_vratit_initplan_u_cteni_profilu.sql` | Vrací čtení profilů k obalenému tvaru `(select public.is_admin())` z kroku 20 — na viditelnost dat nemá vliv, jen na počet volání funkce |
 | 32 | `031_materialy_nahravat_lze_znovu.sql` | **Opravuje rozbitou funkci.** Politiky nad `storage.objects` volaly `get_role()` přímo, ale krok 19 na ni klientům odebral `EXECUTE` — nahrát, přepsat ani smazat studijní materiál proto nemohl nikdo, ani správce. Nahrazuje volání obálkami `my_role()` / `is_staff()`. *Na produkci spuštěna 17. 9. 2026, v ledgeru jako `20260917211122_materialy_nahravat_lze_znovu`* |
 | 33 | `032_trida_velitele_neni_samoobsluzna.sql` | **Bezpečnostní oprava.** Politika `UPDATE` nad `profiles` hlídala jen sloupec `role`, takže si velitel třídy mohl sám přepsat `user_class` a získat zápis do cizí nástěnky; e-mail si mohl přepsat kdokoli. Zavádí `my_email()` a doplňuje do `WITH CHECK` zámek na obojí |
+| 34 | `033_truncate_uz_neobejde_pojistku.sql` | **Bezpečnostní oprava.** `TRUNCATE` obchází RLS i pojistku `020` (řádkové triggery se na něj nespouštějí) a `anon`/`authenticated` ho měli dovolený nad všemi tabulkami. Odebírá privilegium `TRUNCATE` těmto rolím i `service_role` a přidává statement-level trigger nad `profiles`, který příkaz vždy odmítne |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
