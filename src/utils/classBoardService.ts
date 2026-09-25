@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { getMaterialSignedUrl } from './materials';
 
 // ─── Výsledky operací ────────────────────────────────────────────────────────
 //
@@ -702,6 +703,28 @@ function mapRowToItem(row: SupabaseClassBoardRow): ClassBoardItem {
 }
 
 /**
+ * Doplní kartám tříd čerstvě podepsané odkazy na obrázek rozvrhu.
+ *
+ * Kbelík `studijni-materialy` je od migrace 036 privátní, takže `schedule_url`
+ * uložená v databázi už sama o sobě obrázek nezobrazí. Rozhoduje
+ * `schedule_storage_path`: z něj se při každém načtení podepíše nová URL.
+ *
+ * Karty bez cesty k souboru zůstávají, jak jsou — starší rozvrhy uložené jako
+ * `data:` URL (záložní cesta v ClassEditModal, když nahrání selže) i prázdné
+ * karty. Nepodaří-li se podepsat, zůstane původní hodnota: odkaz bude nejspíš
+ * mrtvý, ale zbytek karty se zobrazí.
+ */
+async function podepsaneRozvrhy(items: ClassBoardItem[]): Promise<ClassBoardItem[]> {
+  return Promise.all(
+    items.map(async (item) => {
+      if (!item.scheduleStoragePath) return item;
+      const signed = await getMaterialSignedUrl(item.scheduleStoragePath);
+      return signed ? { ...item, scheduleUrl: signed } : item;
+    })
+  );
+}
+
+/**
  * Načte všechny třídy z databáze Supabase nebo localStorage.
  */
 export async function fetchClassBoards(): Promise<FetchResult<ClassBoardItem>> {
@@ -721,8 +744,11 @@ export async function fetchClassBoards(): Promise<FetchResult<ClassBoardItem>> {
 
     if (data && data.length > 0) {
       const items = (data as SupabaseClassBoardRow[]).map(mapRowToItem);
+      // Do mezipaměti jde to, co přišlo z databáze — tedy cesta k souboru,
+      // ne podepsaná URL. Ta za pár hodin vyprší a uložená by po návratu
+      // offline ukazovala na mrtvý odkaz.
       saveLocalBoards(items);
-      return { items, source: 'server', error: null };
+      return { items: await podepsaneRozvrhy(items), source: 'server', error: null };
     }
 
     // Prázdná databáze není chyba — použije se výchozí sada tříd (INITIAL_CLASS_BOARDS).
@@ -862,16 +888,18 @@ export async function uploadScheduleImage(
     throw new Error(`Nahrání obrázku do úložiště selhalo: ${uploadError.message}`);
   }
 
-  const { data: urlData } = supabase.storage
-    .from(BUCKET_NAME)
-    .getPublicUrl(storagePath);
+  // Kbelík je od migrace 036 privátní, takže veřejná URL by vrátila 400.
+  // Podepsaná platí osm hodin; rozhoduje `storagePath`, který se ukládá vedle
+  // ní do `class_boards.schedule_storage_path` a ze kterého se při každém
+  // načtení nástěnky podepíše nová (viz podepsaneRozvrhy níže).
+  const signedUrl = await getMaterialSignedUrl(storagePath);
 
-  if (!urlData?.publicUrl) {
-    throw new Error('Nepodařilo se vygenerovat veřejnou URL nahraného rozvrhu.');
+  if (!signedUrl) {
+    throw new Error('Nepodařilo se vygenerovat odkaz na nahraný rozvrh.');
   }
 
   return {
-    publicUrl: urlData.publicUrl,
+    publicUrl: signedUrl,
     storagePath,
   };
 }

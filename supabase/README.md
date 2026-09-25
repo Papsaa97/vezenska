@@ -42,10 +42,14 @@ projektu spusťte v tomto pořadí:
 | 28 | `027_stitky_souboru_a_editovatelny_obsah.sql` | Štítky souborů (`material_tags`) a editovatelné bloky obsahu (`content_blocks`) |
 | 29 | `028_naprava_schematu_class_boards.sql` | Srovnává `class_boards` s aplikací — bez toho se nástěnka tříd neuloží na server |
 | 30 | `029_profily_nejsou_verejny_seznam.sql` | ⚠️ **Nespouštět — už proběhla a nic nepřidá.** Měla být bezpečnostní oprava, ale opravovala něco, co nebylo rozbité; navíc u čtení profilů zrušila InitPlan z kroku 20. Podrobně v jejím záhlaví |
-| 31 | `030_vratit_initplan_u_cteni_profilu.sql` | Vrací čtení profilů k obalenému tvaru `(select public.is_admin())` z kroku 20 — na viditelnost dat nemá vliv, jen na počet volání funkce |
+| 31 | `030_vratit_initplan_u_cteni_profilu.sql` | Vrací čtení profilů k obalenému tvaru `(select public.is_admin())` z kroku 20 — na viditelnost dat nemá vliv, jen na počet volání funkce. *Na produkci spuštěna 18. 9. 2026, v ledgeru jako `vratit_initplan_u_cteni_profilu`* |
 | 32 | `031_materialy_nahravat_lze_znovu.sql` | **Opravuje rozbitou funkci.** Politiky nad `storage.objects` volaly `get_role()` přímo, ale krok 19 na ni klientům odebral `EXECUTE` — nahrát, přepsat ani smazat studijní materiál proto nemohl nikdo, ani správce. Nahrazuje volání obálkami `my_role()` / `is_staff()`. *Na produkci spuštěna 17. 9. 2026, v ledgeru jako `20260917211122_materialy_nahravat_lze_znovu`* |
 | 33 | `032_trida_velitele_neni_samoobsluzna.sql` | **Bezpečnostní oprava.** Politika `UPDATE` nad `profiles` hlídala jen sloupec `role`, takže si velitel třídy mohl sám přepsat `user_class` a získat zápis do cizí nástěnky; e-mail si mohl přepsat kdokoli. Zavádí `my_email()` a doplňuje do `WITH CHECK` zámek na obojí |
 | 34 | `033_truncate_uz_neobejde_pojistku.sql` | **Bezpečnostní oprava.** `TRUNCATE` obchází RLS i pojistku `020` (řádkové triggery se na něj nespouštějí) a `anon`/`authenticated` ho měli dovolený nad všemi tabulkami. Odebírá privilegium `TRUNCATE` těmto rolím i `service_role` a přidává statement-level trigger nad `profiles`, který příkaz vždy odmítne |
+| 34 | `033_kviz_se_neda_nafouknout.sql` | **Bezpečnostní oprava.** `vyhodnotit_kviz()` přijímala tutéž otázku mnohokrát, otázky z cizího předmětu, až 500 odpovědí bez ohledu na velikost banky a libovolné `completed_at`. Doplňuje odduplikování, kontrolu předmětu, strop odvozený z banky a srovnání času |
+| 35 | `034_truncate_neni_pro_klienty.sql` | Odebírá `TRUNCATE` rolím `anon` a `authenticated` nad celým schématem `public` a staví `BEFORE TRUNCATE` trigger nad `profiles`. `TRUNCATE` obchází RLS i ochranu posledního správce z kroku 21 |
+| 36 | `035_spravce_podle_cele_adresy.sql` | **Bezpečnostní oprava.** Zavádí `nastavit_spravce(text)`: roli správce nastaví podle CELÉ adresy z `auth.users`, ne podle podřetězce v `profiles.email`. Nahrazuje `ILIKE '%…%'` v `set_admin_miichalpapi.sql` i v kroku 17 |
+| 37 | `036_materialy_nejsou_verejne.sql` | **Bezpečnostní oprava.** Kbelík `studijni-materialy` přestává být veřejný a čtecí politika pro roli `public` mizí. ⚠️ Spouštět až po nasazení aplikace s podepsanými URL |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
@@ -209,6 +213,15 @@ Vrátit smí jen `class_boards` a `global_announcements` (čtení pro přihláš
   Velitel třídy smí upravovat výhradně nástěnku své vlastní třídy.
 
 ## Co zatím utažené není
+
+**Avatary zůstávají veřejné, a je to záměr.** Kbelík `avatars` má `public = true`
+a čtecí politiku pro roli `public`. Profilová fotka je tedy stažitelná pro toho,
+kdo zná její URL — ta obsahuje UUID účtu, takže se nedá uhodnout. Důvod je cena
+převodu: podobizna se zobrazuje na desítkách míst v rozhraní přes
+`getPublicUrl()` (`src/components/UserProfileModal.tsx:239`) a podepsané URL by
+znamenaly asynchronní načítání v každém z nich. Studijní materiály to mají
+naopak — ty jsou od migrace `036` privátní, protože jde o interní dokumenty,
+ne o obsah, který si uživatel nahrál jako svou veřejnou tvář.
 
 Banku otázek čte každý **přihlášený** uživatel celou, včetně sloupce
 `correct_index` — politika `quiz_questions_select` má `USING (true)` pro roli
