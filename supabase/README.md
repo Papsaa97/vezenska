@@ -50,6 +50,7 @@ projektu spusťte v tomto pořadí:
 | 35 | `034_truncate_neni_pro_klienty.sql` | Odebírá `TRUNCATE` rolím `anon` a `authenticated` nad celým schématem `public` a staví `BEFORE TRUNCATE` trigger nad `profiles`. `TRUNCATE` obchází RLS i ochranu posledního správce z kroku 21 |
 | 36 | `035_spravce_podle_cele_adresy.sql` | **Bezpečnostní oprava.** Zavádí `nastavit_spravce(text)`: roli správce nastaví podle CELÉ adresy z `auth.users`, ne podle podřetězce v `profiles.email`. Nahrazuje `ILIKE '%…%'` v `set_admin_miichalpapi.sql` i v kroku 17 |
 | 37 | `036_materialy_nejsou_verejne.sql` | **Bezpečnostní oprava.** Kbelík `studijni-materialy` přestává být veřejný a čtecí politika pro roli `public` mizí. ⚠️ Spouštět až po nasazení aplikace s podepsanými URL |
+| 38 | `037_zpravy_od_spravce_sloupce.sql` | **Oprava rozbité funkce.** Produkční `user_notifications` vznikla ze starší verze skriptu se sloupci `sender_name` a `message`, aplikace ale čte a zapisuje `sender_id` a `body` — zvonek proto u každého uživatele končí chybou 400 a správce nemůže poslat žádnou zprávu. Přejmenuje `message` na `body`, doplní `sender_id` a srovná NOT NULL. Idempotentní |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li

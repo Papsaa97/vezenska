@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { PROGRESS_EVENT } from '../utils/userScopedStorage';
+import { PROGRESS_EVENT, getStorageOwner } from '../utils/userScopedStorage';
 
 /**
  * Číslo, které se zvýší po každé změně postupu v úložišti.
@@ -26,4 +26,31 @@ export function useProgressRevision(): number {
   }, []);
 
   return revision;
+}
+
+/**
+ * Čí postup se právě čte a zapisuje (id účtu, nebo `anon`).
+ *
+ * Na rozdíl od `useProgressRevision()` se mění jen přihlášením a odhlášením,
+ * ne každým zápisem. Efekt, který na změnu reaguje ZÁPISEM do úložiště, se
+ * proto musí vázat na tohle, ne na revizi: zápis vyvolá PROGRESS_EVENT, ten
+ * zvýší revizi a efekt se spustí znovu — nekonečná smyčka překreslování.
+ * Přesně ta v App.tsx (oblíbené otázky) překreslovala celou aplikaci desítkykrát
+ * za sekundu a ve Statistikách ji shazovala na „Maximum update depth exceeded“.
+ */
+export function useStorageOwner(): string {
+  const [owner, setOwner] = useState<string>(getStorageOwner);
+
+  useEffect(() => {
+    // Stejná hodnota překreslení nevyvolá, takže běžný zápis postupu tu nic nestojí.
+    const sync = () => setOwner(getStorageOwner());
+    // Vlastník se mohl změnit dřív, než se odběr připojil.
+    sync();
+    window.addEventListener(PROGRESS_EVENT, sync);
+    return () => {
+      window.removeEventListener(PROGRESS_EVENT, sync);
+    };
+  }, []);
+
+  return owner;
 }

@@ -22,7 +22,7 @@ import PrisonAdminETR from './prison-admin/PrisonAdminETR';
 import PrisonAdminVIS from './prison-admin/PrisonAdminVIS';
 import PrisonAdminStyleRules from './prison-admin/PrisonAdminStyleRules';
 import ConfirmDialog from './common/ConfirmDialog';
-import { useProgressRevision } from '../hooks/useProgressRevision';
+import { useStorageOwner } from '../hooks/useProgressRevision';
 import { readScoped, removeScoped, writeScoped } from '../utils/userScopedStorage';
 
 export type AdminSection = 'generator' | 'etr' | 'vis' | 'style-rules';
@@ -310,7 +310,13 @@ export default function PrisonAdministration() {
 
   // Změní-li se vlastník úložiště (přihlášení / odhlášení), koncepty se
   // načtou znovu — jinak by v formuláři zůstal cizí rozepsaný záznam.
-  const draftsOwnerRevision = useProgressRevision();
+  //
+  // Vlastník, ne revize úložiště: revize se zvedá každým zápisem, tedy i
+  // automatickým uložením konceptu níže. Načtení konceptu pak vrátilo do
+  // formuláře nový objekt, ten spustil další uložení a tak dokola — každých
+  // 400 ms zápis do localStorage a překreslení celé aplikace, dokud byla
+  // záložka otevřená.
+  const draftsOwner = useStorageOwner();
 
   const currentTemplate = useMemo(() => {
     return RECORD_TEMPLATES.find(t => t.id === selectedTemplateId) || RECORD_TEMPLATES[0];
@@ -382,7 +388,7 @@ export default function PrisonAdministration() {
     setFormData({ ...tpl.defaultData });
     setSelectedBodyParts(tpl.affectedBodyPartsDefault || []);
     loadedTemplateRef.current = selectedTemplateId;
-  }, [selectedTemplateId, draftsOwnerRevision]);
+  }, [selectedTemplateId, draftsOwner]);
 
   // Autosave the in-progress record as a draft (debounced) so a reload/tab-close doesn't lose it.
   useEffect(() => {
