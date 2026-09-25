@@ -229,12 +229,27 @@ role, o kterých rozhoduje **výhradně** sloupec `public.profiles.role`:
 | Role | Oprávnění |
 |---|---|
 | `student` | Studium, testy, vlastní statistiky |
-| `velitel_tridy` | Navíc správa nástěnky **své vlastní** třídy |
-| `lektor` | Navíc správa otázek, materiálů, zpětné vazby a všech tříd |
+| `velitel_tridy` | Navíc správa nástěnky **své vlastní** třídy, označování nezařazených do ní, zástupce a předání funkce |
+| `lektor` | Navíc správa otázek, materiálů, zpětné vazby a všech tříd; zařazování do tříd a jmenování velitelů |
 | `admin` | Navíc správa uživatelů, rolí a interních zpráv |
 
 Roli přiděluje správce ve správě uživatelů. Uživatel si ji nemůže nastavit sám —
 zápis jde přímo do databáze a vynucuje ho RLS politika, ne kód na klientovi.
+
+### Zařazení do tříd
+
+Od migrace `038` si třídu nikdo nezapisuje sám:
+
+- Nový student po přihlášení požádá o existující třídu, nebo zvolí „Nevidím zde
+  svou třídu“ a povinně napíše poznámku, kam patří.
+- Velitel třídy (nebo jeho dočasný zástupce) vidí na nástěnce v záložce
+  „Zařazení“ nezařazené s poznámkou a dobou v seznamu. Může je označit pro svou
+  třídu; zařazení proběhne až po potvrzení označeným. O žádostech do třídy
+  rozhoduje taky on.
+- Lektor a správce přiřazují třídu komukoli, jmenují a odvolávají velitele
+  a vidí historii předání funkce včetně odůvodnění.
+- Plnou nástěnku třídy a seznam jejích členů vidí jen členové, lektoři
+  a správci; ostatní jen přehled (termín kurzu, velitel, počet členů).
 
 ## Nasazení
 

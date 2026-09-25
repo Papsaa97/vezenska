@@ -81,7 +81,6 @@ function formatToday(): string {
 export default function ClassBulletinBoard() {
   const { profile, user } = useAuth();
   const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
-  const canSeeAssignments = isPrivileged || (profile?.role === 'velitel_tridy' && Boolean(profile?.user_class));
 
   // Data
   /**
@@ -180,6 +179,8 @@ export default function ClassBulletinBoard() {
             courseStartDate: c.courseStartDate ?? null,
             courseEndDate: c.courseEndDate ?? null,
             commanderName: null,
+            deputyName: null,
+            deputyUntil: null,
             memberCount: 0,
             updatedAt: c.updatedAt,
           }))
@@ -240,14 +241,20 @@ export default function ClassBulletinBoard() {
     setViewMode('expanded');
   };
 
+  /** Seznam nezařazených vidí lektor, správce, velitel a jeho platný zástupce. */
+  const canSeeAssignments =
+    isPrivileged ||
+    (profile?.role === 'velitel_tridy' && Boolean(profile?.user_class)) ||
+    Boolean(membership?.commandsClass);
+
   /** Čekající žádost o třídu, pokud nějaká je. */
   const pendingRequest = membership?.pending.find((p) => p.kind === 'zadost') ?? null;
   const isUnassigned = !profile?.user_class;
 
   /** Jméno skutečného velitele třídy podle přehledu. */
-  const commanderOf = useCallback(
-    (className: string): string | null =>
-      overview.find((o) => o.className.toLowerCase() === className.toLowerCase())?.commanderName ?? null,
+  const overviewOf = useCallback(
+    (className: string): ClassOverview | null =>
+      overview.find((o) => o.className.toLowerCase() === className.toLowerCase()) ?? null,
     [overview]
   );
 
@@ -318,9 +325,12 @@ export default function ClassBulletinBoard() {
         const myCls = (profile.user_class || '').trim().toLowerCase();
         return myCls.length > 0 && item.className.toLowerCase() === myCls;
       }
-      return false;
+      // Platný zástupce velitele má k nástěnce stejná práva (can_manage_class
+      // v migraci 038); `commandsClass` počítá server včetně konce zástupcování.
+      const leads = (membership?.commandsClass || '').trim().toLowerCase();
+      return leads.length > 0 && item.className.toLowerCase() === leads;
     },
-    [isPrivileged, profile]
+    [isPrivileged, profile, membership?.commandsClass]
   );
 
   /**
@@ -1009,7 +1019,9 @@ export default function ClassBulletinBoard() {
         <section className="no-print space-y-6">
           <ClassDetailExpanded
             item={myClassItem}
-            commanderName={commanderOf(myClassItem.className)}
+            commanderName={overviewOf(myClassItem.className)?.commanderName ?? null}
+            deputyName={overviewOf(myClassItem.className)?.deputyName ?? null}
+            deputyUntil={overviewOf(myClassItem.className)?.deputyUntil ?? null}
             isMyClass={myClassItem.className.toLowerCase() === (profile?.user_class || '').toLowerCase()}
             isManager={checkCanManageClass(myClassItem)}
             isPrivileged={isPrivileged}
@@ -1071,6 +1083,7 @@ export default function ClassBulletinBoard() {
                   key={item.id}
                   item={item}
                   commanderName={entry.commanderName}
+                  deputyName={entry.deputyName}
                   memberCount={entry.memberCount}
                   isMyClass={isMine}
                   isManager={checkCanManageClass(item)}
@@ -1097,7 +1110,7 @@ export default function ClassBulletinBoard() {
       )}
 
       {/* ─── Zařazení do tříd (velitel, lektor, správce) ─────────────────── */}
-      {viewMode === 'assignments' && canSeeAssignments && <ClassAssignmentPanel classes={overview} />}
+      {viewMode === 'assignments' && canSeeAssignments && <ClassAssignmentPanel classes={overview} leadsClass={membership?.commandsClass ?? null} />}
 
       {/* ─── Žádost o zařazení (nezařazený student) ──────────────────────── */}
       {isChooseClassOpen && (
