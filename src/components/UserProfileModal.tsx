@@ -106,12 +106,8 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     role: (isSystemAdmin ? 'admin' : profile?.role || 'student') as UserRole,
     created_at: profile?.created_at || user?.created_at || new Date().toISOString(),
     avatar_url: profile?.avatar_url ?? null,
-    // Nezadaná třída zůstává prázdná. Předvyplněná „ZOP A11" se uložením jména
-    // zapsala do profilu jako skutečné zařazení, i když ji nikdo nevybral.
-    user_class:
-      profile?.user_class ||
-      (typeof window !== 'undefined' ? localStorage.getItem('vscr_my_class') : null) ||
-      '',
+    // Zařazení z databáze (migrace 038) — kopie z prohlížeče tu nemá co dělat.
+    user_class: profile?.user_class || '',
   };
 
   const [fullName, setFullName] = useState<string>(
@@ -130,11 +126,10 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
   const [passwordSaving, setPasswordSaving] = useState<boolean>(false);
   const [passwordMessage, setPasswordMessage] = useState<FormMessage | null>(null);
 
-  const [userClass, setUserClass] = useState<string>(effectiveProfile.user_class ?? '');
-  // Velitel třídy si zařazení nepřepisuje sám — určuje, do které nástěnky smí
-  // psát, a RLS politika nad profiles ho nesprávci zamyká (migrace 032).
-  // Pole proto zůstává jen ke čtení; třídu veliteli nastavuje správce.
-  const classLocked = profile?.role === 'velitel_tridy';
+  // Třídu si od migrace 038 nikdo nepřepisuje sám: student o ni žádá na
+  // nástěnce, velitel ho označí a zařazení potvrdí, přeřazuje lektor/správce.
+  // V profilu je proto jen ke čtení.
+  const userClass = effectiveProfile.user_class ?? '';
   const [selectedRole, setSelectedRole] = useState<UserRole>(
     previewRole ??
       (effectiveProfile.role === 'student' && isSystemAdmin ? 'admin' : effectiveProfile.role)
@@ -169,10 +164,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     setNameSaving(true);
     setNameMessage(null);
 
-    const { error } = await updateProfile({
-      fullName: trimmed,
-      userClass: userClass.trim(),
-    });
+    const { error } = await updateProfile({ fullName: trimmed });
 
     if (error) {
       setNameSaving(false);
@@ -422,23 +414,14 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               <input
                 id={`${fieldIds}-1`}
                 type="text"
-                value={userClass}
-                onChange={(e) => setUserClass(e.target.value)}
-                readOnly={classLocked}
-                aria-describedby={classLocked ? `${fieldIds}-1-hint` : undefined}
-                placeholder={classLocked ? 'Zařazení nastavuje správce' : 'Zatím nezadáno — např. ZOP A11'}
-                className={`w-full border rounded-xl px-4 py-2.5 text-sm placeholder-slate-500 transition-all font-semibold ${
-                  classLocked
-                    ? 'bg-slate-800/60 border-slate-700/60 text-slate-400 cursor-not-allowed'
-                    : 'bg-slate-800 border-slate-700 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50'
-                }`}
+                value={userClass || 'Nezařazen(a)'}
+                readOnly
+                aria-describedby={`${fieldIds}-1-hint`}
+                className="w-full border rounded-xl px-4 py-2.5 text-sm transition-all font-semibold bg-slate-800/60 border-slate-700/60 text-slate-400 cursor-not-allowed"
               />
-              {classLocked && (
-                <p id={`${fieldIds}-1-hint`} className="mt-1.5 text-[11px] text-slate-500">
-                  Zařazení velitele třídy určuje, kterou nástěnku smí spravovat, takže ho
-                  nastavuje správce. Změnu si vyžádejte u něj.
-                </p>
-              )}
+              <p id={`${fieldIds}-1-hint`} className="mt-1.5 text-[11px] text-slate-500">
+                Třídu mění jen lektor nebo správce. Nezařazení o ni požádají na nástěnce tříd.
+              </p>
             </div>
 
             {(isSystemAdmin || effectiveProfile?.role === 'admin') ? (

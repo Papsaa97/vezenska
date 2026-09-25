@@ -751,8 +751,11 @@ export async function fetchClassBoards(): Promise<FetchResult<ClassBoardItem>> {
       return { items: await podepsaneRozvrhy(items), source: 'server', error: null };
     }
 
-    // Prázdná databáze není chyba — použije se výchozí sada tříd (INITIAL_CLASS_BOARDS).
-    return { items: loadLocalBoards(), source: 'local', error: null };
+    // Prázdný výsledek je od migrace 038 platná odpověď: nečlen žádné třídy
+    // plnou nástěnku nedostane. Záložní kopie se proto NEPOUŽIJE a smaže —
+    // mohla v ní zůstat nástěnka cizí třídy z doby, kdy je četl každý.
+    saveLocalBoards([]);
+    return { items: [], source: 'server', error: null };
   } catch (err) {
     return {
       items: loadLocalBoards(),

@@ -146,6 +146,11 @@ interface AuthContextValue {
   updateProfile: (data: UpdateProfileInput) => Promise<ProfileUpdateResult>;
   updateRole: (targetUserId: string, role: UserRole) => Promise<ProfileUpdateResult>;
   updatePassword: (newPassword: string) => Promise<ProfileUpdateResult>;
+  /**
+   * Znovu načte profil z databáze. Volá se po změně, kterou udělala funkce na
+   * serveru (přijatá nominace, schválená žádost) — klient ji jinak nevidí.
+   */
+  refreshProfile: () => Promise<void>;
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -287,13 +292,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const isSystemAdmin = isKnownAdmin(userEmail);
     const effectiveRole: UserRole = isSystemAdmin ? 'admin' : (profileData?.role ?? 'student');
 
-    // Zařazení do třídy je předvolba, nikoli oprávnění — lokální fallback je tu v pořádku.
-    // Oprávnění velitele třídy se ověřuje v RLS politikách přes public.my_class().
+    // Zařazení do třídy je od migrace 038 údaj, o kterém rozhoduje databáze:
+    // mění ho jen lektor, správce nebo schválená žádost/nominace, a podle něj
+    // RLS pouští k plné nástěnce třídy. Když se profil načetl, platí jedině
+    // hodnota z databáze — i prázdná. Kopie z prohlížeče se použije jen tehdy,
+    // když se profil načíst nepodařilo, a to pouze pro zobrazení.
     //
     // Nezadaná třída je prázdný řetězec. Dřív se tu dosazovala „ZOP A11", takže
-    // každý účet vypadal, že do té třídy patří, a hodnota se odsud šířila dál do
-    // prohlížeče i do databáze.
-    const effectiveClass = profileData?.user_class?.trim() || localClass?.trim() || '';
+    // každý účet vypadal, že do té třídy patří.
+    const effectiveClass = profileData
+      ? profileData.user_class?.trim() || ''
+      : localClass?.trim() || '';
 
     if (typeof window !== 'undefined') {
       if (effectiveClass) {
@@ -339,8 +348,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           id: userId,
           email: userEmail,
           full_name: effectiveFullName,
-          // Třída se zakládanému profilu nevyplňuje — vybere si ji uživatel sám.
-          ...(resolvedProfile.user_class ? { user_class: resolvedProfile.user_class } : {}),
+          // Třída se zakládanému profilu nevyplňuje: RLS od migrace 038 pustí
+          // jen profil bez třídy a zařazení projde žádostí nebo nominací.
           ...(resolvedProfile.avatar_url ? { avatar_url: resolvedProfile.avatar_url } : {}),
         },
         { onConflict: 'id' }
@@ -534,22 +543,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const effectiveAvatar =
         data.avatarUrl !== undefined ? data.avatarUrl : (profile?.avatar_url || null);
 
-      // Veliteli třídy se zařazení odtud nemění. `user_class` u něj není
-      // předvolba, ale autorizační údaj: can_manage_class() podle něj pouští
-      // zápis do nástěnky, a proto ho nesprávci zamyká RLS politika z migrace
-      // 032_trida_velitele_neni_samoobsluzna.sql. Server by takový zápis
-      // odmítl celý — i s jménem a fotkou, které v témže UPDATE jedou — takže
-      // požadavek zahazujeme už tady. Třídu veliteli nastavuje správce.
-      const requestedClass =
-        (profile?.role ?? 'student') === 'velitel_tridy' ? undefined : data.userClass;
-
-      // Třída se NEDOPLŇUJE. Dřív tu stálo `profile?.user_class || 'ZOP A11'`,
-      // takže každé uložení profilu — i pouhá změna jména nebo fotky — zapsalo
-      // účtu třídu ZOP A11, i když si ji uživatel nikdy nevybral. Tímhle se
-      // třída rozlezla do všech profilů v databázi. Když ji volající neposílá,
-      // zůstává, jaká byla; prázdná hodnota znamená „třída nezadaná".
-      const effectiveClass =
-        requestedClass !== undefined ? requestedClass.trim() : (profile?.user_class ?? '');
+      // Třída se odtud nemění vůbec. Od migrace 038 ji nesprávci nesmí zapsat
+      // ani do vlastního profilu — zařazení jde přes žádost, nominaci velitele
+      // nebo přiřazení lektorem (utils/classMembership.ts).
+      const effectiveClass = profile?.user_class ?? '';
 
       // Optimistická aktualizace pro okamžitý efekt v UI; při chybě ji vrátíme zpět.
       setProfile({
@@ -567,9 +564,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const updates: Record<string, string | null> = {
         full_name: effectiveFullName,
       };
-      if (requestedClass !== undefined) {
-        updates.user_class = effectiveClass || null;
-      }
       if (data.avatarUrl !== undefined) {
         updates.avatar_url = effectiveAvatar;
       }
@@ -595,15 +589,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return {
           error: 'Profil se nepodařilo uložit — server změnu nepřijal. Zkuste se odhlásit a znovu přihlásit.',
         };
-      }
-
-      // Do localStorage zapisujeme teprve po úspěšném zápisu do databáze, ať se
-      // v prohlížeči nedrží hodnoty, které na serveru nikdy neskončily. Ukládá se
-      // jedině předvolba třídy, a to spolu s účtem, kterému patří — jméno ani
-      // fotka v prohlížeči nemají co dělat, viz pruneLocalPrefs().
-      if (typeof window !== 'undefined' && user && requestedClass !== undefined) {
-        localStorage.setItem(LOCAL_CLASS_KEY, effectiveClass);
-        localStorage.setItem(LOCAL_CLASS_OWNER_KEY, user.id);
       }
 
       return { error: null };
@@ -648,6 +633,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user, fetchProfile]
   );
 
+  const refreshProfile = useCallback(async () => {
+    if (user) await fetchProfile(user.id, user);
+  }, [user, fetchProfile]);
+
   /** Bezpečně změní heslo přihlášeného uživatele přes Supabase Auth. */
   const updatePassword = useCallback(async (newPassword: string): Promise<ProfileUpdateResult> => {
     const { error } = await supabase.auth.updateUser({ password: newPassword });
@@ -671,6 +660,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         updateProfile,
         updateRole,
         updatePassword,
+        refreshProfile,
       }}
     >
       {children}

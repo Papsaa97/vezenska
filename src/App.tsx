@@ -4,6 +4,7 @@ import Header from './components/Header';
 import { NavTab, NAV_TAB_LABELS, VALID_TABS, isNavTab } from './data/navTabs';
 import OfflineBanner from './components/OfflineBanner';
 import RoleSyncBanner from './components/RoleSyncBanner';
+import ClassMembershipGate from './components/class-bulletin/ClassMembershipGate';
 import RolePreviewBanner from './components/RolePreviewBanner';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import UpdatePrompt from './components/UpdatePrompt';
@@ -643,6 +644,8 @@ export default function App() {
       </div>
       <PWAInstallPrompt />
       <UpdatePrompt />
+      {/* Povinná volba třídy po registraci a potvrzení nominace od velitele. */}
+      <ClassMembershipGate />
       <FeedbackButton screenLabel={NAV_TAB_LABELS[activeTab] ?? activeTab} />
       
       <main

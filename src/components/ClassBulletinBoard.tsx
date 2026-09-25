@@ -16,6 +16,7 @@ import {
   Search,
   School,
   Trash2,
+  UserCheck,
   Users,
   X,
 } from 'lucide-react';
@@ -51,6 +52,19 @@ import SectionModal from './class-bulletin/SectionModal';
 import GlobalAnnouncementModal from './class-bulletin/GlobalAnnouncementModal';
 import DeleteConfirmModal from './class-bulletin/DeleteConfirmModal';
 import ScheduleLightbox from './class-bulletin/ScheduleLightbox';
+import ClassOverviewCard from './class-bulletin/ClassOverviewCard';
+import ClassAssignmentPanel from './class-bulletin/ClassAssignmentPanel';
+import {
+  ChooseClassDialog,
+  MEMBERSHIP_CHANGED_EVENT,
+  announceMembershipChange,
+} from './class-bulletin/ClassMembershipGate';
+import {
+  ClassOverview,
+  MyMembership,
+  fetchClassOverview,
+  fetchMyMembership,
+} from '../utils/classMembership';
 
 /** Dnešní datum ve tvaru „pondělí 16. září 2026“. */
 function formatToday(): string {
@@ -65,11 +79,21 @@ function formatToday(): string {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function ClassBulletinBoard() {
-  const { profile, user, updateProfile } = useAuth();
+  const { profile, user } = useAuth();
   const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
+  const canSeeAssignments = isPrivileged || (profile?.role === 'velitel_tridy' && Boolean(profile?.user_class));
 
   // Data
+  /**
+   * Plné nástěnky. Od migrace 038 vrátí server jen ty, ke kterým má účet
+   * přístup: vlastní třídu, lektor a správce všechny.
+   */
   const [classes, setClasses] = useState<ClassBoardItem[]>([]);
+  /** Přehled všech tříd (název, termín, velitel, počet členů) — vidí každý. */
+  const [overview, setOverview] = useState<ClassOverview[]>([]);
+  /** Stav zařazení přihlášeného (čekající žádost, poznámka). */
+  const [membership, setMembership] = useState<MyMembership | null>(null);
+  const [isChooseClassOpen, setIsChooseClassOpen] = useState<boolean>(false);
   const [globalAnnouncements, setGlobalAnnouncements] = useState<GlobalAnnouncement[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -83,10 +107,18 @@ export default function ClassBulletinBoard() {
    */
   const [syncNotice, setSyncNotice] = useState<string | null>(null);
 
-  // Preference zobrazení
-  const [selectedMyClass, setSelectedMyClassState] = useState<string>(getMyClass);
+  // Preference zobrazení.
+  //
+  // „Moje třída“ je od migrace 038 zařazení z profilu — student ani velitel ji
+  // tady nepřepíná. Lektor a správce čtou všechny nástěnky, takže si
+  // mohou vybrat, kterou zobrazit v podrobném přehledu; ta volba zůstává jen
+  // v prohlížeči a do profilu se nezapisuje.
+  const [staffViewClass, setStaffViewClass] = useState<string>(getMyClass);
+  const selectedMyClass = isPrivileged
+    ? staffViewClass || profile?.user_class || ''
+    : profile?.user_class || '';
   const [hiddenClassIds, setHiddenClassIds] = useState<string[]>(getHiddenClassIds);
-  const [viewMode, setViewMode] = useState<'expanded' | 'grid'>('expanded');
+  const [viewMode, setViewMode] = useState<'expanded' | 'grid' | 'assignments'>('expanded');
   const [isClassDropdownOpen, setIsClassDropdownOpen] = useState<boolean>(false);
   const classDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -124,12 +156,35 @@ export default function ClassBulletinBoard() {
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [classResult, announcementResult] = await Promise.all([
+      const [classResult, announcementResult, overviewResult, membershipResult] = await Promise.all([
         fetchClassBoards(),
         fetchGlobalAnnouncements(),
+        fetchClassOverview(),
+        fetchMyMembership(),
       ]);
-      setClasses(classResult.items);
+      // Záložní kopie z prohlížeče může pocházet z doby, kdy nástěnky četl
+      // každý. Bez serveru se nečlenovi ukáže nanejvýš jeho vlastní třída.
+      const ownClass = (profile?.user_class || '').trim().toLowerCase();
+      setClasses(
+        classResult.source === 'local' && !isPrivileged
+          ? classResult.items.filter((c) => ownClass && c.className.trim().toLowerCase() === ownClass)
+          : classResult.items
+      );
       setGlobalAnnouncements(announcementResult.items);
+      // Bez migrace 038 přehled chybí — pak se vystačí s plnými nástěnkami.
+      setOverview(
+        overviewResult.data ??
+          classResult.items.map((c) => ({
+            id: c.id,
+            className: c.className,
+            courseStartDate: c.courseStartDate ?? null,
+            courseEndDate: c.courseEndDate ?? null,
+            commanderName: null,
+            memberCount: 0,
+            updatedAt: c.updatedAt,
+          }))
+      );
+      setMembership(membershipResult.data);
 
       // Když server odpoví chybou, zobrazí se záložní kopie ze zařízení. To samo
       // o sobě není špatně, ale uživatel musí vědět, že nemusí být aktuální —
@@ -147,7 +202,7 @@ export default function ClassBulletinBoard() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [profile?.user_class, isPrivileged]);
 
   /**
    * Zkontroluje výsledek zápisu a při neúspěchu na to upozorní.
@@ -165,27 +220,36 @@ export default function ClassBulletinBoard() {
     return false;
   }, []);
 
+  // Znovu načíst i po změně zařazení (přijatá nominace mění, čí nástěnku
+  // server vůbec vydá) a po akci v jiné části aplikace.
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  // Synchronizace Moje třída s profilem
   useEffect(() => {
-    if (profile?.user_class && profile.user_class !== selectedMyClass) {
-      setSelectedMyClassState(profile.user_class);
-      setMyClass(profile.user_class);
-    }
-  }, [profile?.user_class, selectedMyClass]);
+    const handler = () => void loadData();
+    window.addEventListener(MEMBERSHIP_CHANGED_EVENT, handler);
+    return () => window.removeEventListener(MEMBERSHIP_CHANGED_EVENT, handler);
+  }, [loadData]);
 
-  // Výběr třídy uživatele
-  const handleSelectMyClass = (className: string) => {
-    setSelectedMyClassState(className);
+  /** Lektor/správce: kterou třídu ukázat v podrobném přehledu. Jen v prohlížeči. */
+  const handleSelectViewClass = (className: string) => {
+    setStaffViewClass(className);
     setMyClass(className);
     setIsClassDropdownOpen(false);
-    if (user) {
-      updateProfile({ userClass: className });
-    }
+    setViewMode('expanded');
   };
+
+  /** Čekající žádost o třídu, pokud nějaká je. */
+  const pendingRequest = membership?.pending.find((p) => p.kind === 'zadost') ?? null;
+  const isUnassigned = !profile?.user_class;
+
+  /** Jméno skutečného velitele třídy podle přehledu. */
+  const commanderOf = useCallback(
+    (className: string): string | null =>
+      overview.find((o) => o.className.toLowerCase() === className.toLowerCase())?.commanderName ?? null,
+    [overview]
+  );
 
   // Skrývání / zobrazování třídy
   const handleToggleHideClass = (classId: string) => {
@@ -204,18 +268,24 @@ export default function ClassBulletinBoard() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Filtrované třídy pro mřížku
+  /** Plná nástěnka k položce přehledu, má-li k ní účet přístup. */
+  const fullBoardById = useMemo(() => new Map(classes.map((c) => [c.id, c])), [classes]);
+
+  // Filtrované třídy pro mřížku. Mřížka stojí na přehledu, protože ten vidí
+  // každý; plný obsah se u dlaždice ukáže jen tam, kde ho server vydal.
   const filteredClasses = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
-    return classes.filter((c) => {
-      const matchesSearch =
-        !q ||
-        c.className.toLowerCase().includes(q) ||
-        (c.infoText || '').toLowerCase().includes(q) ||
-        c.dutyRoster?.some((d) => d.title.toLowerCase().includes(q) || d.attendees?.toLowerCase().includes(q));
-      return matchesSearch;
+    return overview.filter((o) => {
+      if (!q) return true;
+      const full = fullBoardById.get(o.id);
+      return (
+        o.className.toLowerCase().includes(q) ||
+        (o.commanderName || '').toLowerCase().includes(q) ||
+        (full?.infoText || '').toLowerCase().includes(q) ||
+        Boolean(full?.dutyRoster?.some((d) => d.title.toLowerCase().includes(q) || d.attendees?.toLowerCase().includes(q)))
+      );
     });
-  }, [classes, searchQuery]);
+  }, [overview, fullBoardById, searchQuery]);
 
   /** Třídy, které jsou v mřížce opravdu vidět (po filtru i po skrytí). */
   const visibleGridClasses = useMemo(
@@ -284,7 +354,8 @@ export default function ClassBulletinBoard() {
   const handleSaveItem = async (input: ClassBoardInput) => {
     try {
       const result = await saveClassBoard(input, user?.email);
-      reportWrite(result);
+      // Nová nebo přejmenovaná třída musí naskočit i v přehledu.
+      if (reportWrite(result)) void loadData();
       const saved = result.item;
       setClasses((prev) => {
         const idx = prev.findIndex((c) => c.id === saved.id);
@@ -308,7 +379,7 @@ export default function ClassBulletinBoard() {
     if (!deleteConfirmItem) return;
     setIsDeleting(true);
     try {
-      reportWrite(await deleteClassBoard(deleteConfirmItem.id));
+      if (reportWrite(await deleteClassBoard(deleteConfirmItem.id))) void loadData();
       setClasses((prev) => prev.filter((c) => c.id !== deleteConfirmItem.id));
       setDeleteConfirmItem(null);
     } catch (err) {
@@ -565,50 +636,67 @@ export default function ClassBulletinBoard() {
                 <span>Základní odborná příprava (ZOP)</span>
               </div>
 
-              {/* Výběr a propsání „Moje třída" */}
-              <div className="relative" ref={classDropdownRef}>
-                <button
-                  onClick={() => setIsClassDropdownOpen((prev) => !prev)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/25 to-yellow-500/25 border border-amber-400/40 text-amber-200 text-xs font-bold hover:bg-amber-500/30 transition-all cursor-pointer shadow-sm"
-                  title="Zvolit moji třídu"
-                >
+              {/* „Moje třída“ — zařazení z profilu, ne volba v prohlížeči */}
+              {isPrivileged ? (
+                <div className="relative" ref={classDropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsClassDropdownOpen((prev) => !prev)}
+                    aria-expanded={isClassDropdownOpen}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/25 to-yellow-500/25 border border-amber-400/40 text-amber-200 text-xs font-bold hover:bg-amber-500/30 transition-all cursor-pointer shadow-sm"
+                    title="Kterou třídu zobrazit v podrobném přehledu"
+                  >
+                    <Bookmark className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Zobrazená třída:</span>
+                    <span className="text-white underline underline-offset-2">
+                      {selectedMyClass || 'zatím nevybráno'}
+                    </span>
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isClassDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isClassDropdownOpen && (
+                    <div className="absolute left-0 mt-2 w-56 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-2 z-50 space-y-1">
+                      <div className="px-2.5 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                        Zobrazit nástěnku třídy
+                      </div>
+                      {classes.map((cls) => (
+                        <button
+                          type="button"
+                          key={cls.id}
+                          onClick={() => handleSelectViewClass(cls.className)}
+                          className={`w-full px-3 py-2 rounded-xl text-left text-xs font-semibold flex items-center justify-between cursor-pointer transition-colors ${
+                            cls.className.toLowerCase() === selectedMyClass.toLowerCase()
+                              ? 'bg-blue-600 text-white font-bold'
+                              : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                          }`}
+                        >
+                          <span>{cls.className}</span>
+                          {cls.className.toLowerCase() === selectedMyClass.toLowerCase() && (
+                            <Check className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/25 to-yellow-500/25 border border-amber-400/40 text-amber-200 text-xs font-bold shadow-sm">
                   <Bookmark className="w-3.5 h-3.5 text-amber-400" />
                   <span>Moje třída:</span>
-                  <span className="text-white underline underline-offset-2">
-                    {selectedMyClass || 'zatím nevybráno'}
+                  <span className="text-white">
+                    {profile?.user_class
+                      ? profile.user_class
+                      : pendingRequest
+                      ? `${pendingRequest.className} (čeká na schválení)`
+                      : 'nezařazen(a)'}
                   </span>
                   {profile?.role === 'velitel_tridy' && (
                     <span className="ml-1 px-1.5 py-0.2 rounded bg-purple-600/60 text-purple-200 text-[10px]">
                       Velitel
                     </span>
                   )}
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isClassDropdownOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {isClassDropdownOpen && (
-                  <div className="absolute left-0 mt-2 w-56 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-2 z-50 space-y-1">
-                    <div className="px-2.5 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                      Vyberte svou třídu
-                    </div>
-                    {classes.map((cls) => (
-                      <button
-                        key={cls.id}
-                        onClick={() => handleSelectMyClass(cls.className)}
-                        className={`w-full px-3 py-2 rounded-xl text-left text-xs font-semibold flex items-center justify-between cursor-pointer transition-colors ${
-                          cls.className.toLowerCase() === selectedMyClass.toLowerCase()
-                            ? 'bg-blue-600 text-white font-bold'
-                            : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                        }`}
-                      >
-                        <span>{cls.className}</span>
-                        {cls.className.toLowerCase() === selectedMyClass.toLowerCase() && (
-                          <Check className="w-3.5 h-3.5" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white flex items-center gap-3">
@@ -655,6 +743,22 @@ export default function ClassBulletinBoard() {
                 <Users className="w-3.5 h-3.5" />
                 <span>Všechny třídy</span>
               </button>
+
+              {canSeeAssignments && (
+                <button
+                  type="button"
+                  onClick={() => setViewMode('assignments')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    viewMode === 'assignments'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Nezařazení uživatelé, žádosti a nominace"
+                >
+                  <UserCheck className="w-3.5 h-3.5" />
+                  <span>Zařazení</span>
+                </button>
+              )}
             </div>
 
             <div className="flex items-center gap-2">
@@ -716,14 +820,16 @@ export default function ClassBulletinBoard() {
           <div className="text-xs text-slate-400 flex items-center gap-2">
             <span>Zobrazeno:</span>
             <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-200 font-bold border border-slate-700">
-              {viewMode === 'expanded'
+              {viewMode === 'assignments'
+                ? 'zařazení do tříd'
+                : viewMode === 'expanded'
                 ? selectedMyClass
                   ? `1 podrobná (${selectedMyClass})`
                   : 'třída nevybrána'
                 : /* Počítá se to, co je opravdu na obrazovce. Dřív se ukazoval
                      `filteredClasses.length`, do kterého se počítaly i skryté
                      třídy, takže číslo nesouhlasilo s počtem dlaždic. */
-                  `${visibleGridClasses.length} z ${classes.length} tříd`}
+                  `${visibleGridClasses.length} z ${overview.length} tříd`}
             </span>
           </div>
         </div>
@@ -839,34 +945,61 @@ export default function ClassBulletinBoard() {
           <div className="w-12 h-12 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
             <School className="w-6 h-6 text-slate-400" />
           </div>
-          {classes.length === 0 ? (
+          {overview.length === 0 ? (
             <>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                 Zatím není založená žádná třída
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
                 {isPrivileged
-                  ? 'Třídu založíte tlačítkem „Přidat třídu" v záhlaví. Teprve potom si k ní posluchači mohou přiřadit sami sebe a lektoři k ní označit soubory.'
+                  ? 'Třídu založíte tlačítkem „Přidat třídu" v záhlaví. Teprve potom do ní půjde zařazovat posluchače a lektoři k ní budou moct označit soubory.'
                   : 'Jakmile lektor založí vaši třídu, objeví se tady její rozvrh, ústrojová kázeň i služby.'}
               </p>
+            </>
+          ) : isPrivileged ? (
+            <>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Vyberte třídu</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
+                V záhlaví u popisku „Zobrazená třída" zvolte, čí nástěnku chcete vidět.
+              </p>
+            </>
+          ) : isUnassigned ? (
+            <>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                {pendingRequest ? `Žádost o třídu ${pendingRequest.className} čeká na schválení` : 'Zatím nejste zařazeni do třídy'}
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
+                {pendingRequest
+                  ? 'Jakmile ji velitel třídy (nebo lektor) schválí, uvidíte tady rozvrh, ústroj i služby své třídy. Dostanete o tom oznámení.'
+                  : membership?.note
+                  ? `Vaše poznámka: „${membership.note}". Až bude vaše třída založená, velitel vás označí nebo si o ni požádáte sami. Nástěnky tříd vidí jen jejich členové, ostatním se ukazuje přehled.`
+                  : 'Nástěnky tříd vidí jen jejich členové. Požádejte o zařazení do své třídy.'}
+              </p>
+              <div className="flex flex-wrap justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsChooseClassOpen(true)}
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold cursor-pointer"
+                >
+                  {pendingRequest ? 'Změnit žádost' : 'Požádat o zařazení'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('grid')}
+                  className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-700 text-white text-xs font-bold cursor-pointer"
+                >
+                  Přehled všech tříd
+                </button>
+              </div>
             </>
           ) : (
             <>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                Vyberte svou třídu
+                Nástěnku třídy {profile?.user_class} se nepodařilo načíst
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
-                {selectedMyClass
-                  ? `Třída „${selectedMyClass}" na nástěnce není — vyberte prosím svou třídu znovu v záhlaví u popisku „Moje třída".`
-                  : 'Nahoře v záhlaví klepněte na „Moje třída" a zvolte tu svoji. Do té doby tu není co zobrazit — cizí třídu vám aplikace ukazovat nebude.'}
+                Třída mohla být přejmenována nebo smazána. Zkuste nástěnku obnovit; pokud to nepomůže, obraťte se na lektora.
               </p>
-              <button
-                type="button"
-                onClick={() => setViewMode('grid')}
-                className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-700 text-white text-xs font-bold cursor-pointer"
-              >
-                Zobrazit všechny třídy
-              </button>
             </>
           )}
         </section>
@@ -876,6 +1009,8 @@ export default function ClassBulletinBoard() {
         <section className="no-print space-y-6">
           <ClassDetailExpanded
             item={myClassItem}
+            commanderName={commanderOf(myClassItem.className)}
+            isMyClass={myClassItem.className.toLowerCase() === (profile?.user_class || '').toLowerCase()}
             isManager={checkCanManageClass(myClassItem)}
             isPrivileged={isPrivileged}
             formatUpdateTime={formatUpdateTime}
@@ -913,16 +1048,35 @@ export default function ClassBulletinBoard() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {visibleGridClasses
-              .map((item) => (
+            {visibleGridClasses.map((entry) => {
+              const item = fullBoardById.get(entry.id);
+              const isMine = entry.className.toLowerCase() === (profile?.user_class || '').toLowerCase();
+              // Bez plné nástěnky (cizí třída) jen přehled. Obsah posílá
+              // server jen členům, lektorům a správcům — tady se nic neskrývá
+              // navíc, jen se nemá co ukázat.
+              if (!item) {
+                return (
+                  <ClassOverviewCard
+                    key={entry.id}
+                    item={entry}
+                    canRequest={isUnassigned && !isPrivileged}
+                    isRequested={pendingRequest?.className.toLowerCase() === entry.className.toLowerCase()}
+                    onRequest={() => setIsChooseClassOpen(true)}
+                    onToggleHide={() => handleToggleHideClass(entry.id)}
+                  />
+                );
+              }
+              return (
                 <ClassCardCompact
                   key={item.id}
                   item={item}
-                  isMyClass={item.className.toLowerCase() === selectedMyClass.toLowerCase()}
+                  commanderName={entry.commanderName}
+                  memberCount={entry.memberCount}
+                  isMyClass={isMine}
                   isManager={checkCanManageClass(item)}
                   isPrivileged={isPrivileged}
                   formatUpdateTime={formatUpdateTime}
-                  onSelectAsMyClass={() => handleSelectMyClass(item.className)}
+                  onSelectAsMyClass={isPrivileged ? () => handleSelectViewClass(item.className) : undefined}
                   onToggleHide={() => handleToggleHideClass(item.id)}
                   onEdit={() => {
                     setEditingItem(item);
@@ -936,9 +1090,25 @@ export default function ClassBulletinBoard() {
                   }}
                   onPrintSchedule={() => handlePrintSchedule(item)}
                 />
-              ))}
+              );
+            })}
           </div>
         </section>
+      )}
+
+      {/* ─── Zařazení do tříd (velitel, lektor, správce) ─────────────────── */}
+      {viewMode === 'assignments' && canSeeAssignments && <ClassAssignmentPanel classes={overview} />}
+
+      {/* ─── Žádost o zařazení (nezařazený student) ──────────────────────── */}
+      {isChooseClassOpen && (
+        <ChooseClassDialog
+          classes={overview}
+          onCancel={() => setIsChooseClassOpen(false)}
+          onDone={() => {
+            setIsChooseClassOpen(false);
+            announceMembershipChange();
+          }}
+        />
       )}
 
       {/* ─── Modální formulář pro třídu ──────────────────────────────────── */}
