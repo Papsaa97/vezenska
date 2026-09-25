@@ -65,8 +65,8 @@ import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import { getHiddenQuestionIds, isQuestionHidden } from './utils/questionActions';
-import { getStorageOwner, readScoped, writeScoped } from './utils/userScopedStorage';
-import { useProgressRevision } from './hooks/useProgressRevision';
+import { getStorageOwner, readScoped, readScopedRaw, writeScoped } from './utils/userScopedStorage';
+import { useProgressRevision, useStorageOwner } from './hooks/useProgressRevision';
 
 /** Oblíbené otázky uživatele (klíč se v úložišti doplní id účtu). */
 const FAVORITES_KEY = 'vscr_favorites';
@@ -330,16 +330,34 @@ export default function App() {
 
   // Oblíbené otázky. Ukládají se pod klíč účtu a při změně vlastníka se načtou
   // znovu — jinak by si studenti na sdíleném počítači viděli do oblíbených.
-  const favoritesOwnerRef = useRef<string>(getStorageOwner());
+  //
+  // DVA EFEKTY A VLASTNÍK MÍSTO REVIZE. Dřív tu byl jeden efekt se závislostmi
+  // [favorites, progressRevision], který při každém spuštění zapsal oblíbené.
+  // Zápis ale vyvolá PROGRESS_EVENT, ten zvýší progressRevision a efekt se
+  // spustil znovu — a znovu zapsal. Celá aplikace se tak překreslovala pořád
+  // dokola, na každé záložce, a ve Statistikách (grafy recharts při každém
+  // překreslení aktualizují své vnitřní úložiště) to spadlo na „Maximum update
+  // depth exceeded“. Po obnovení stránky se otevřely zase Statistiky a spadly
+  // znovu, takže uživatel z chyby neměl jak odejít.
+  //
+  // Pořadí efektů je záměrné: při přepnutí účtu doběhne zápis dřív než načtení
+  // a pojistka na vlastníka v něm zabrání, aby se oblíbené odhlášeného
+  // uživatele zapsaly pod nový účet.
+  const storageOwner = useStorageOwner();
+  const favoritesOwnerRef = useRef<string>(storageOwner);
   useEffect(() => {
-    const owner = getStorageOwner();
-    if (owner !== favoritesOwnerRef.current) {
-      favoritesOwnerRef.current = owner;
-      setFavorites(readScoped<string[]>(FAVORITES_KEY, []));
-      return;
-    }
+    if (favoritesOwnerRef.current !== getStorageOwner()) return;
+    const serialized = JSON.stringify(favorites);
+    const stored = readScopedRaw(FAVORITES_KEY);
+    if (stored === serialized || (stored === null && favorites.length === 0)) return;
     writeScoped(FAVORITES_KEY, favorites);
-  }, [favorites, progressRevision]);
+  }, [favorites]);
+
+  useEffect(() => {
+    if (favoritesOwnerRef.current === storageOwner) return;
+    favoritesOwnerRef.current = storageOwner;
+    setFavorites(readScoped<string[]>(FAVORITES_KEY, []));
+  }, [storageOwner]);
 
   useEffect(() => {
     localStorage.setItem('vscr_theme', isDarkMode ? 'dark' : 'light');
@@ -593,7 +611,7 @@ export default function App() {
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundary scope="app" screenLabel={NAV_TAB_LABELS[activeTab] ?? activeTab}>
       <ProtectedRoute isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}>
         <div className={`flex flex-col min-h-[100dvh] h-[100dvh] w-full font-sans overflow-hidden transition-colors print:h-auto print:overflow-visible print:bg-white print:text-black ${isDarkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
       {/* Přeskočit navigaci. Vidí ho jen ten, kdo dojde Tabem — styl je
@@ -633,6 +651,15 @@ export default function App() {
         aria-label={`Obsah záložky ${NAV_TAB_LABELS[activeTab] ?? activeTab}`}
         className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden p-3 sm:p-4 pb-28 sm:pb-32 md:pb-6 lg:pb-4 md:p-6 gap-4 md:gap-6 w-full print:p-0 print:m-0 print:overflow-visible print:h-auto"
       >
+        {/* Vlastní hranice pro záložku: pád jedné obrazovky nesmaže hlavičku,
+            navigaci ani tlačítko zpětné vazby. `key` ji při přepnutí záložky
+            vrátí do výchozího stavu. */}
+        <ErrorBoundary
+          key={activeTab}
+          scope="view"
+          screenLabel={NAV_TAB_LABELS[activeTab] ?? activeTab}
+          onLeave={() => navigateToTab('dashboard')}
+        >
         <Suspense fallback={<TabLoader isDark={isDarkMode} />}>
         {activeTab === 'dashboard' && (
           <div className="w-full h-full overflow-y-auto pr-1">
@@ -787,6 +814,7 @@ export default function App() {
           )
         )}
         </Suspense>
+        </ErrorBoundary>
       </main>
 
       {/* Mobile Bottom Navigation (5 Ergonomic Core Pillars) */}
