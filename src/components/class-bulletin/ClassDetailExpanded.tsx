@@ -9,6 +9,7 @@ import {
   MapPin,
   Plus,
   Printer,
+  Shield,
   Shirt,
   Trash2,
   ZoomIn,
@@ -25,6 +26,10 @@ import { materialsForClass } from '../../utils/materials';
 
 interface ClassDetailExpandedProps {
   item: ClassBoardItem;
+  /** Skutečný velitel třídy (z profilů), nebo null. */
+  commanderName: string | null;
+  /** Je to třída přihlášeného? Lektor/správce si může zobrazit i cizí. */
+  isMyClass: boolean;
   isManager: boolean;
   isPrivileged: boolean;
   formatUpdateTime: (iso: string) => string;
@@ -40,6 +45,8 @@ interface ClassDetailExpandedProps {
 
 export default function ClassDetailExpanded({
   item,
+  commanderName,
+  isMyClass,
   isManager,
   isPrivileged,
   formatUpdateTime,
@@ -70,20 +77,25 @@ export default function ClassDetailExpanded({
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                 Třída {item.className}
               </h2>
-              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-400/30">
-                Moje třída
-              </span>
+              {isMyClass && (
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-400/30">
+                  Moje třída
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 mt-1">
               <span className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5 text-slate-400" />
                 Aktualizováno: {formatUpdateTime(item.updatedAt)}
               </span>
-              {item.uniformGuidance?.updatedBy && (
-                <span className="text-purple-600 dark:text-purple-400 font-semibold">
-                  • {item.uniformGuidance.updatedBy}
-                </span>
-              )}
+              {/* Velitel se bere z profilů (role velitel_tridy + třída), ne
+                  z textu uloženého u ústroje. Dřív tu stál `updatedBy` z ústrojové
+                  kázně — ručně zapsaný popisek, který nešel změnit a s
+                  jmenovaným velitelem neměl nic společného. */}
+              <span className="text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1">
+                <Shield className="w-3.5 h-3.5" />
+                Velitel třídy: {commanderName || 'zatím nejmenován'}
+              </span>
             </div>
           </div>
         </div>
@@ -330,7 +342,7 @@ export default function ClassDetailExpanded({
                 )}
 
                 <div className="text-[10px] text-slate-400 pt-2 border-t border-purple-200/40 dark:border-purple-900/40 flex items-center justify-between">
-                  <span>Určil: {item.uniformGuidance.updatedBy || 'Velitel třídy'}</span>
+                  <span>Naposledy upraveno</span>
                   {item.uniformGuidance.updatedAt && (
                     <span>{formatUpdateTime(item.uniformGuidance.updatedAt)}</span>
                   )}

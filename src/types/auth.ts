@@ -19,7 +19,8 @@ export interface UserProfile {
 export interface UpdateProfileInput {
   fullName?: string;
   avatarUrl?: string;
-  userClass?: string;
+  // Třída tu schválně není: od migrace 038 ji mění jen žádost schválená
+  // velitelem, přijatá nominace nebo lektor/správce — viz utils/classMembership.ts.
 }
 
 export interface ProfileUpdateResult {

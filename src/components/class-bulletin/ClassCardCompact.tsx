@@ -5,6 +5,7 @@ import {
   EyeOff,
   ImageIcon,
   Printer,
+  Shield,
   Shirt,
   Trash2,
   ZoomIn,
@@ -17,11 +18,15 @@ import CourseCountdownWidget from './CourseCountdownWidget';
 
 interface ClassCardCompactProps {
   item: ClassBoardItem;
+  /** Skutečný velitel třídy (z profilů), nebo null. */
+  commanderName: string | null;
+  memberCount: number;
   isMyClass: boolean;
   isManager: boolean;
   isPrivileged: boolean;
   formatUpdateTime: (iso: string) => string;
-  onSelectAsMyClass: () => void;
+  /** Jen lektor/správce: zobrazit tuto třídu v podrobném přehledu. */
+  onSelectAsMyClass?: () => void;
   onToggleHide: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -32,6 +37,8 @@ interface ClassCardCompactProps {
 
 export default function ClassCardCompact({
   item,
+  commanderName,
+  memberCount,
   isMyClass,
   isManager,
   isPrivileged,
@@ -66,13 +73,14 @@ export default function ClassCardCompact({
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
-          {!isMyClass && (
+          {onSelectAsMyClass && (
             <button
+              type="button"
               onClick={onSelectAsMyClass}
               className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 hover:underline px-1.5 py-0.5 cursor-pointer"
-              title="Nastavit jako moji třídu"
+              title="Zobrazit nástěnku této třídy v podrobném přehledu"
             >
-              Zvolit
+              Zobrazit
             </button>
           )}
 
@@ -113,6 +121,15 @@ export default function ClassCardCompact({
         canEdit={isPrivileged}
         onEditDates={onEdit}
       />
+
+      <div className="px-4 pt-3 flex items-center justify-between gap-2 text-[11px] text-slate-600 dark:text-slate-300">
+        <span className="flex items-center gap-1.5 min-w-0">
+          <Shield className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+          <span className="font-semibold">Velitel:</span>
+          <span className="truncate">{commanderName || 'zatím nejmenován'}</span>
+        </span>
+        <span className="shrink-0 text-slate-500 dark:text-slate-400">Členů: {memberCount}</span>
+      </div>
 
       {/* Tělo kompaktní karty: dva sloupce */}
       <div className="p-4 flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
