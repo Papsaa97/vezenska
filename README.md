@@ -250,6 +250,10 @@ Od migrace `038` si třídu nikdo nezapisuje sám:
   a vidí historii předání funkce včetně odůvodnění.
 - Plnou nástěnku třídy a seznam jejích členů vidí jen členové, lektoři
   a správci; ostatní jen přehled (termín kurzu, velitel, počet členů).
+- Na rozšířené nástěnce je od migrace `039` diskuze třídy: příspěvky, ankety
+  a označení spolužáků (označený dostane oznámení do zvonku). Velitel, jeho
+  zástupce, lektor a správce příspěvky připínají, skrývají a mažou; autor smí
+  smazat svůj příspěvek a ukončit svou anketu.
 
 ## Nasazení
 

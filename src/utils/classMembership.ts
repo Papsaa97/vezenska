@@ -70,17 +70,31 @@ export interface RpcResult<T> {
  * jak je. Chybějící funkce (PGRST202 / 42883) znamená, že migrace 038 ještě
  * neběžela — to se řekne srozumitelně, ne technickou hláškou.
  */
-function describeError(error: { message: string; code?: string }): string {
+function describeError(error: { message: string; code?: string }, feature: MissingFeature): string {
   if (error.code === 'PGRST202' || error.code === '42883' || /could not find the function/i.test(error.message)) {
-    return 'Zařazování do tříd zatím není na serveru zapnuté (chybí migrace 038). Obraťte se prosím na správce.';
+    return `${feature.label} zatím není na serveru zapnut${feature.ending} (chybí migrace ${feature.migration}). Obraťte se prosím na správce.`;
   }
   return error.message;
 }
 
-async function call<T>(fn: string, args?: Record<string, unknown>): Promise<RpcResult<T>> {
+/** Jak pojmenovat funkci, které na serveru chybí migrace. */
+export interface MissingFeature {
+  label: string;
+  /** Koncovka příčestí podle rodu: „zapnuté“ / „zapnutá“. */
+  ending: 'é' | 'á' | 'ý';
+  migration: string;
+}
+
+const MEMBERSHIP_FEATURE: MissingFeature = { label: 'Zařazování do tříd', ending: 'é', migration: '038' };
+
+export async function call<T>(
+  fn: string,
+  args?: Record<string, unknown>,
+  feature: MissingFeature = MEMBERSHIP_FEATURE
+): Promise<RpcResult<T>> {
   try {
     const { data, error } = await supabase.rpc(fn, args);
-    if (error) return { data: null, error: describeError(error) };
+    if (error) return { data: null, error: describeError(error, feature) };
     return { data: data as T, error: null };
   } catch (err) {
     return { data: null, error: `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).` };

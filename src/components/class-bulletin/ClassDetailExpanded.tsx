@@ -21,6 +21,7 @@ import {
 } from '../../utils/classBoardService';
 import CourseCountdownWidget from './CourseCountdownWidget';
 import ClassMembersPanel from './ClassMembersPanel';
+import ClassDiscussionBoard from './ClassDiscussionBoard';
 import AttachedFilesPanel from '../common/AttachedFilesPanel';
 import { useTaggedMaterials } from '../../hooks/useTaggedMaterials';
 import { materialsForClass } from '../../utils/materials';
@@ -553,6 +554,11 @@ export default function ClassDetailExpanded({
             </div>
           )}
         </div>
+      </div>
+
+      {/* Diskuze třídy — moderuje velitel, jeho zástupce, lektor a správce */}
+      <div className="pt-5 border-t border-slate-200 dark:border-slate-800">
+        <ClassDiscussionBoard className={item.className} />
       </div>
 
       {/* Členové třídy — vidí je jen členové, lektoři a správci */}
