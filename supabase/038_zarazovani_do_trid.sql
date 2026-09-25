@@ -12,9 +12,15 @@
 --    proběhne až tehdy, když to označený sám potvrdí. O potvrzení i odmítnutí
 --    přijde veliteli oznámení do zvonku.
 -- 3. Třídu komukoli mění, velitele jmenuje a odvolává jen lektor nebo správce.
--- 4. Plný obsah nástěnky třídy (rozvrh, služby, ústroj, sekce) čtou jen
---    členové třídy, lektoři a správci. Ostatní vidí přes trida_prehled()
---    jen přehled: název, termín kurzu, jméno velitele a počet členů.
+-- 4. Plný obsah nástěnky třídy (rozvrh, služby, ústroj, sekce) a seznam
+--    jejích členů vidí jen členové třídy, lektoři a správci. Ostatní vidí přes
+--    trida_prehled() jen přehled: název, termín kurzu, velitele (případně
+--    zástupce) a počet členů.
+-- 5. Velitel si může určit dočasného zástupce z členů své třídy (se stejnými
+--    právy k nástěnce a zařazování, dokud zástupcování platí) a může funkci
+--    předat jinému členovi — jen s povinným odůvodněním. Každé jmenování,
+--    odvolání, předání a zástupcování se zapisuje do historie, kterou čtou
+--    lektoři a správci.
 --
 -- PROČ PŘES FUNKCE, A NE PŘES PŘÍMÝ ZÁPIS DO profiles
 -- Po migraci 029 čte každý jen vlastní řádek v profiles, takže velitel ani
@@ -93,7 +99,53 @@ CREATE INDEX IF NOT EXISTS idx_tridni_prirazeni_trida_ceka
 ALTER TABLE public.tridni_prirazeni ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.tridni_prirazeni FROM anon, authenticated;
 
+-- ─── 2b. Zástupce velitele a historie funkce ─────────────────────────────────
+--
+-- Zástupce je nejvýš jeden na třídu. `plati_do` NULL = do odvolání.
+-- Zástupce zůstává v roli student; práva mu dává can_manage_class() níže.
+
+CREATE TABLE IF NOT EXISTS public.tridni_zastupce (
+  class_name  TEXT NOT NULL,
+  user_id     UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  plati_do    TIMESTAMPTZ,
+  ustanovil   UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  vytvoreno   TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_tridni_zastupce_trida
+  ON public.tridni_zastupce (lower(trim(class_name)));
+
+ALTER TABLE public.tridni_zastupce ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON public.tridni_zastupce FROM anon, authenticated;
+
+CREATE TABLE IF NOT EXISTS public.tridni_historie_velitelu (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  class_name  TEXT NOT NULL,
+  druh        TEXT NOT NULL CHECK (druh IN ('jmenovani', 'odvolani', 'predani', 'zastupce', 'zastupce_konec')),
+  kdo_pred    UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  kdo_po      UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  duvod       TEXT,
+  plati_do    TIMESTAMPTZ,
+  provedl     UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  kdy         TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_tridni_historie_velitelu_kdy
+  ON public.tridni_historie_velitelu (kdy DESC);
+
+ALTER TABLE public.tridni_historie_velitelu ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON public.tridni_historie_velitelu FROM anon, authenticated;
+
 -- ─── 3. Pomocné funkce (nejsou volatelné z klienta) ──────────────────────────
+--
+-- Funkce s RETURNS TABLE nejde přes CREATE OR REPLACE změnit na jiný tvar,
+-- proto se napřed zahazují. Jsou jen z této migrace, nic jiného na nich nestojí.
+DROP FUNCTION IF EXISTS public.trida_prehled();
+DROP FUNCTION IF EXISTS public.moje_zarazeni();
+DROP FUNCTION IF EXISTS public.seznam_zarazeni();
+DROP FUNCTION IF EXISTS public.jmenovat_velitele(UUID, TEXT);
+DROP FUNCTION IF EXISTS public.odvolat_velitele(UUID);
+
 
 -- Kanonický název existující třídy, nebo NULL.
 CREATE OR REPLACE FUNCTION public._trida_kanonicky(p_class TEXT)
@@ -153,7 +205,46 @@ BEGIN
   UPDATE public.tridni_prirazeni
   SET stav = 'zruseno', rozhodl = auth.uid(), rozhodnuto = now()
   WHERE user_id = p_user AND stav = 'ceka';
+
+  -- Kdo odchází z třídy, přestává v ní zastupovat velitele.
+  DELETE FROM public.tridni_zastupce
+  WHERE user_id = p_user
+    AND lower(trim(class_name)) IS DISTINCT FROM lower(trim(p_class));
 END;
+$$;
+
+-- Zapíše krok do historie funkce velitele.
+CREATE OR REPLACE FUNCTION public._zapsat_historii(
+  p_class TEXT, p_druh TEXT, p_pred UUID, p_po UUID, p_duvod TEXT, p_plati_do TIMESTAMPTZ
+)
+RETURNS VOID
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  INSERT INTO public.tridni_historie_velitelu (class_name, druh, kdo_pred, kdo_po, duvod, plati_do, provedl)
+  VALUES (p_class, p_druh, p_pred, p_po, NULLIF(trim(COALESCE(p_duvod, '')), ''), p_plati_do, auth.uid());
+$$;
+
+-- Třída, kterou volající právě vede: jako velitel, nebo jako platný zástupce.
+CREATE OR REPLACE FUNCTION public._velim_tride()
+RETURNS TEXT
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT CASE
+    WHEN p.role = 'velitel_tridy' THEN p.user_class
+    WHEN EXISTS (
+      SELECT 1 FROM public.tridni_zastupce z
+      WHERE z.user_id = p.id
+        AND lower(trim(z.class_name)) = lower(trim(p.user_class))
+        AND (z.plati_do IS NULL OR z.plati_do > now())
+    ) THEN p.user_class
+  END
+  FROM public.profiles p
+  WHERE p.id = auth.uid() AND p.user_class IS NOT NULL;
 $$;
 
 -- Velitelé dané třídy (obvykle jeden).
@@ -174,6 +265,26 @@ REVOKE ALL ON FUNCTION public._upozornit(UUID, TEXT, TEXT) FROM PUBLIC, anon, au
 REVOKE ALL ON FUNCTION public._jmeno(UUID)                FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public._zaradit(UUID, TEXT)        FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public._velitele_tridy(TEXT)       FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public._zapsat_historii(TEXT, TEXT, UUID, UUID, TEXT, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
+-- _velim_tride() volá RLS politika přes can_manage_class(), ta ale běží jako
+-- SECURITY DEFINER, takže klient ji přímo volat nemusí.
+REVOKE ALL ON FUNCTION public._velim_tride()              FROM PUBLIC, anon, authenticated;
+
+-- can_manage_class(): k veliteli přibývá platný zástupce. Tvar i práva
+-- zůstávají, takže politiky nad class_boards (INSERT/UPDATE) se nemění.
+CREATE OR REPLACE FUNCTION public.can_manage_class(target_class TEXT)
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT COALESCE(
+    public.is_staff()
+    OR lower(trim(target_class)) = lower(trim(public._velim_tride())),
+    false
+  );
+$$;
 
 -- ─── 4. Funkce pro klienta ───────────────────────────────────────────────────
 
@@ -185,6 +296,8 @@ RETURNS TABLE (
   course_start_date DATE,
   course_end_date   DATE,
   velitel_jmeno     TEXT,
+  zastupce_jmeno    TEXT,
+  zastupce_do       TIMESTAMPTZ,
   pocet_clenu       INTEGER,
   updated_at        TIMESTAMPTZ
 )
@@ -202,22 +315,29 @@ AS $$
        FROM public.profiles p
       WHERE p.role = 'velitel_tridy'
         AND lower(trim(p.user_class)) = lower(trim(b.class_name))),
+    public._jmeno(z.user_id),
+    z.plati_do,
     (SELECT count(*)::int
        FROM public.profiles p
       WHERE p.role IN ('student', 'velitel_tridy')
         AND lower(trim(p.user_class)) = lower(trim(b.class_name))),
     b.updated_at
   FROM public.class_boards b
+  LEFT JOIN public.tridni_zastupce z
+    ON lower(trim(z.class_name)) = lower(trim(b.class_name))
+   AND (z.plati_do IS NULL OR z.plati_do > now())
   WHERE auth.uid() IS NOT NULL
   ORDER BY b.class_name;
 $$;
 
--- 4b. Stav zařazení přihlášeného uživatele: třída, poznámka, čekající položky.
+-- 4b. Stav zařazení přihlášeného uživatele: třída, poznámka, čekající položky
+--     a třída, kterou právě vede (jako velitel nebo zástupce).
 CREATE OR REPLACE FUNCTION public.moje_zarazeni()
 RETURNS TABLE (
   user_class     TEXT,
   trida_poznamka TEXT,
   nezarazen_od   TIMESTAMPTZ,
+  velim_tride    TEXT,
   polozka_id     UUID,
   druh           TEXT,
   class_name     TEXT,
@@ -229,7 +349,7 @@ STABLE
 SECURITY DEFINER
 SET search_path = public
 AS $$
-  SELECT p.user_class, p.trida_poznamka, p.nezarazen_od,
+  SELECT p.user_class, p.trida_poznamka, p.nezarazen_od, public._velim_tride(),
          t.id, t.druh, t.class_name, public._jmeno(t.vytvoril), t.vytvoreno
   FROM public.profiles p
   LEFT JOIN public.tridni_prirazeni t
@@ -314,9 +434,9 @@ BEGIN
 END;
 $$;
 
--- 4e. Seznam pro velitele a lektory/správce.
+-- 4e. Seznam pro velitele (a jeho zástupce) a lektory/správce.
 --
--- Velitel dostane jen nezařazené studenty (bez e-mailu). Lektor a správce
+-- Velitel a zástupce dostanou jen nezařazené studenty (bez e-mailu). Lektor a správce
 -- dostanou všechny účty s e-mailem — potřebují je přeřazovat a jmenovat velitele.
 CREATE OR REPLACE FUNCTION public.seznam_zarazeni()
 RETURNS TABLE (
@@ -337,10 +457,9 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
-  v_role  TEXT := public.my_role();
   v_staff BOOLEAN := public.is_staff();
 BEGIN
-  IF NOT v_staff AND NOT (v_role = 'velitel_tridy' AND public.my_class() IS NOT NULL) THEN
+  IF NOT v_staff AND public._velim_tride() IS NULL THEN
     RAISE EXCEPTION 'Seznam vidí jen velitel třídy, lektor a správce.' USING ERRCODE = '42501';
   END IF;
 
@@ -378,11 +497,11 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
-  v_class  TEXT := public.my_class();
+  v_class  TEXT := public._velim_tride();
   v_target public.profiles%ROWTYPE;
 BEGIN
-  IF public.my_role() <> 'velitel_tridy' OR v_class IS NULL THEN
-    RAISE EXCEPTION 'Označovat do třídy smí jen velitel třídy.' USING ERRCODE = '42501';
+  IF v_class IS NULL THEN
+    RAISE EXCEPTION 'Označovat do třídy smí jen velitel třídy nebo jeho zástupce.' USING ERRCODE = '42501';
   END IF;
   v_class := COALESCE(public._trida_kanonicky(v_class), v_class);
 
@@ -399,7 +518,7 @@ BEGIN
     PERFORM public._upozornit(
       p_user,
       'Byli jste označeni ve třídě ' || v_class,
-      public._jmeno(auth.uid()) || ', velitel třídy ' || v_class || ', vás označil jako člena své třídy. '
+      public._jmeno(auth.uid()) || ' z vedení třídy ' || v_class || ' vás označil(a) jako člena třídy. '
         || 'Potvrďte nebo odmítněte to prosím v aplikaci.'
     );
   END IF;
@@ -418,8 +537,7 @@ BEGIN
   SET stav = 'zruseno', rozhodl = auth.uid(), rozhodnuto = now()
   WHERE user_id = p_user AND druh = 'nominace' AND stav = 'ceka'
     AND (public.is_staff()
-         OR (public.my_role() = 'velitel_tridy'
-             AND lower(trim(class_name)) = lower(trim(public.my_class()))));
+         OR lower(trim(class_name)) = lower(trim(public._velim_tride())));
 END;
 $$;
 
@@ -560,9 +678,9 @@ $$;
 -- 4k. Lektor nebo správce jmenuje velitele třídy.
 --
 -- Třída má jednoho velitele: dosavadní velitel téže třídy se vrací mezi
--- studenty (ve třídě zůstává). Lektora ani správce velitelem udělat nejde —
--- šlo by o snížení jejich role.
-CREATE OR REPLACE FUNCTION public.jmenovat_velitele(p_user UUID, p_class TEXT)
+-- studenty (ve třídě zůstává) a zástupcování v třídě končí. Lektora ani
+-- správce velitelem udělat nejde — šlo by o snížení jejich role.
+CREATE OR REPLACE FUNCTION public.jmenovat_velitele(p_user UUID, p_class TEXT, p_duvod TEXT DEFAULT NULL)
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -602,6 +720,8 @@ BEGIN
 
   UPDATE public.profiles SET role = 'velitel_tridy' WHERE id = p_user;
   PERFORM public._zaradit(p_user, v_class);
+  DELETE FROM public.tridni_zastupce WHERE lower(trim(class_name)) = lower(trim(v_class));
+  PERFORM public._zapsat_historii(v_class, 'jmenovani', v_prev, p_user, p_duvod, NULL);
 
   PERFORM public._upozornit(
     p_user,
@@ -613,25 +733,200 @@ END;
 $$;
 
 -- 4l. Lektor nebo správce odvolá velitele (zůstane ve třídě jako student).
-CREATE OR REPLACE FUNCTION public.odvolat_velitele(p_user UUID)
+CREATE OR REPLACE FUNCTION public.odvolat_velitele(p_user UUID, p_duvod TEXT DEFAULT NULL)
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+DECLARE
+  v_class TEXT;
 BEGIN
   IF NOT public.is_staff() THEN
     RAISE EXCEPTION 'Velitele odvolává jen lektor nebo správce.' USING ERRCODE = '42501';
   END IF;
   UPDATE public.profiles SET role = 'student'
-  WHERE id = p_user AND role = 'velitel_tridy';
+  WHERE id = p_user AND role = 'velitel_tridy'
+  RETURNING user_class INTO v_class;
   IF FOUND THEN
+    DELETE FROM public.tridni_zastupce WHERE lower(trim(class_name)) = lower(trim(v_class));
+    PERFORM public._zapsat_historii(COALESCE(v_class, '—'), 'odvolani', p_user, NULL, p_duvod, NULL);
     PERFORM public._upozornit(
       p_user,
       'Funkce velitele třídy skončila',
       public._jmeno(auth.uid()) || ' vás odvolal(a) z funkce velitele třídy. Ve třídě zůstáváte jako student.'
     );
   END IF;
+END;
+$$;
+
+-- 4m. Velitel určí dočasného zástupce z členů své třídy.
+--     `p_plati_do` NULL = do odvolání. Nový zástupce nahradí předchozího.
+CREATE OR REPLACE FUNCTION public.urcit_zastupce(p_user UUID, p_plati_do TIMESTAMPTZ DEFAULT NULL)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_class  TEXT := public.my_class();
+  v_target public.profiles%ROWTYPE;
+BEGIN
+  IF public.my_role() <> 'velitel_tridy' OR v_class IS NULL THEN
+    RAISE EXCEPTION 'Zástupce určuje velitel třídy.' USING ERRCODE = '42501';
+  END IF;
+  IF p_plati_do IS NOT NULL AND p_plati_do <= now() THEN
+    RAISE EXCEPTION 'Konec zástupcování musí být v budoucnu.' USING ERRCODE = '22023';
+  END IF;
+  SELECT * INTO v_target FROM public.profiles WHERE id = p_user;
+  IF NOT FOUND OR v_target.role <> 'student'
+     OR lower(trim(v_target.user_class)) IS DISTINCT FROM lower(trim(v_class)) THEN
+    RAISE EXCEPTION 'Zástupcem může být jen student z vaší třídy.' USING ERRCODE = '42501';
+  END IF;
+
+  DELETE FROM public.tridni_zastupce WHERE lower(trim(class_name)) = lower(trim(v_class));
+  INSERT INTO public.tridni_zastupce (class_name, user_id, plati_do, ustanovil)
+  VALUES (v_class, p_user, p_plati_do, auth.uid());
+  PERFORM public._zapsat_historii(v_class, 'zastupce', auth.uid(), p_user, NULL, p_plati_do);
+
+  PERFORM public._upozornit(
+    p_user,
+    'Zastupujete velitele třídy ' || v_class,
+    public._jmeno(auth.uid()) || ' vás určil(a) svým zástupcem'
+      || CASE WHEN p_plati_do IS NULL THEN ' do odvolání'
+              ELSE ' do ' || to_char(p_plati_do AT TIME ZONE 'Europe/Prague', 'DD. MM. YYYY HH24:MI') END
+      || '. Do té doby můžete upravovat nástěnku třídy a zařazovat do ní nezařazené.'
+  );
+END;
+$$;
+
+-- 4n. Velitel (nebo lektor/správce) ukončí zástupcování ve třídě.
+CREATE OR REPLACE FUNCTION public.zrusit_zastupce(p_class TEXT)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_user UUID;
+BEGIN
+  IF NOT (public.is_staff()
+          OR (public.my_role() = 'velitel_tridy'
+              AND lower(trim(public.my_class())) = lower(trim(p_class)))) THEN
+    RAISE EXCEPTION 'Zástupce ruší velitel třídy, lektor nebo správce.' USING ERRCODE = '42501';
+  END IF;
+  DELETE FROM public.tridni_zastupce
+  WHERE lower(trim(class_name)) = lower(trim(p_class))
+  RETURNING user_id INTO v_user;
+  IF v_user IS NOT NULL THEN
+    PERFORM public._zapsat_historii(p_class, 'zastupce_konec', v_user, NULL, NULL, NULL);
+    PERFORM public._upozornit(v_user, 'Zástupcování skončilo',
+      'Zástupcování velitele třídy ' || p_class || ' ukončil(a) ' || public._jmeno(auth.uid()) || '.');
+  END IF;
+END;
+$$;
+
+-- 4o. Velitel předá funkci jinému členovi třídy. Odůvodnění je povinné —
+--     čtou ho lektoři a správci v historii.
+CREATE OR REPLACE FUNCTION public.predat_velitele(p_user UUID, p_duvod TEXT)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_class  TEXT := public.my_class();
+  v_duvod  TEXT := trim(COALESCE(p_duvod, ''));
+  v_target public.profiles%ROWTYPE;
+BEGIN
+  IF public.my_role() <> 'velitel_tridy' OR v_class IS NULL THEN
+    RAISE EXCEPTION 'Funkci předává jen velitel třídy.' USING ERRCODE = '42501';
+  END IF;
+  IF length(v_duvod) < 10 THEN
+    RAISE EXCEPTION 'Napište prosím odůvodnění předání (alespoň 10 znaků).' USING ERRCODE = '22023';
+  END IF;
+  IF length(v_duvod) > 500 THEN
+    RAISE EXCEPTION 'Odůvodnění může mít nejvýš 500 znaků.' USING ERRCODE = '22023';
+  END IF;
+  SELECT * INTO v_target FROM public.profiles WHERE id = p_user FOR UPDATE;
+  IF NOT FOUND OR v_target.role <> 'student'
+     OR lower(trim(v_target.user_class)) IS DISTINCT FROM lower(trim(v_class)) THEN
+    RAISE EXCEPTION 'Funkci lze předat jen studentovi z vaší třídy.' USING ERRCODE = '42501';
+  END IF;
+
+  UPDATE public.profiles SET role = 'student'       WHERE id = auth.uid();
+  UPDATE public.profiles SET role = 'velitel_tridy' WHERE id = p_user;
+  DELETE FROM public.tridni_zastupce WHERE lower(trim(class_name)) = lower(trim(v_class));
+  PERFORM public._zapsat_historii(v_class, 'predani', auth.uid(), p_user, v_duvod, NULL);
+
+  PERFORM public._upozornit(
+    p_user,
+    'Převzali jste funkci velitele třídy ' || v_class,
+    public._jmeno(auth.uid()) || ' vám předal(a) funkci velitele třídy ' || v_class || '. Odůvodnění: ' || v_duvod
+  );
+END;
+$$;
+
+-- 4p. Historie funkce velitele — pro lektory a správce.
+CREATE OR REPLACE FUNCTION public.historie_velitelu()
+RETURNS TABLE (
+  id         UUID,
+  class_name TEXT,
+  druh       TEXT,
+  kdo_pred   TEXT,
+  kdo_po     TEXT,
+  duvod      TEXT,
+  plati_do   TIMESTAMPTZ,
+  provedl    TEXT,
+  kdy        TIMESTAMPTZ
+)
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NOT public.is_staff() THEN
+    RAISE EXCEPTION 'Historii velitelů vidí lektoři a správci.' USING ERRCODE = '42501';
+  END IF;
+  RETURN QUERY
+  SELECT h.id, h.class_name, h.druh, public._jmeno(h.kdo_pred), public._jmeno(h.kdo_po),
+         h.duvod, h.plati_do, public._jmeno(h.provedl), h.kdy
+  FROM public.tridni_historie_velitelu h
+  ORDER BY h.kdy DESC
+  LIMIT 200;
+END;
+$$;
+
+-- 4q. Členové třídy — pro její členy, lektory a správce.
+CREATE OR REPLACE FUNCTION public.clenove_tridy(p_class TEXT)
+RETURNS TABLE (
+  id          UUID,
+  full_name   TEXT,
+  role        TEXT,
+  je_zastupce BOOLEAN,
+  avatar_url  TEXT
+)
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NOT (public.is_staff() OR lower(trim(public.my_class())) = lower(trim(p_class))) THEN
+    RAISE EXCEPTION 'Seznam členů vidí jen členové třídy, lektoři a správci.' USING ERRCODE = '42501';
+  END IF;
+  RETURN QUERY
+  SELECT p.id, public._jmeno(p.id), p.role,
+         EXISTS (SELECT 1 FROM public.tridni_zastupce z
+                 WHERE z.user_id = p.id
+                   AND lower(trim(z.class_name)) = lower(trim(p_class))
+                   AND (z.plati_do IS NULL OR z.plati_do > now())),
+         p.avatar_url
+  FROM public.profiles p
+  WHERE lower(trim(p.user_class)) = lower(trim(p_class))
+    AND p.role IN ('student', 'velitel_tridy')
+  ORDER BY (p.role = 'velitel_tridy') DESC, p.full_name;
 END;
 $$;
 
@@ -651,8 +946,13 @@ BEGIN
     'public.rozhodnout_nominaci(uuid, boolean)',
     'public.rozhodnout_zadost(uuid, boolean)',
     'public.priradit_tridu(uuid, text)',
-    'public.jmenovat_velitele(uuid, text)',
-    'public.odvolat_velitele(uuid)'
+    'public.jmenovat_velitele(uuid, text, text)',
+    'public.odvolat_velitele(uuid, text)',
+    'public.urcit_zastupce(uuid, timestamptz)',
+    'public.zrusit_zastupce(text)',
+    'public.predat_velitele(uuid, text)',
+    'public.historie_velitelu()',
+    'public.clenove_tridy(text)'
   ] LOOP
     EXECUTE format('REVOKE ALL ON FUNCTION %s FROM PUBLIC, anon', f);
     EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO authenticated, service_role', f);
@@ -749,6 +1049,8 @@ BEGIN
       WHERE lower(trim(user_class)) = lower(trim(OLD.class_name));
       UPDATE public.tridni_prirazeni SET class_name = NEW.class_name
       WHERE stav = 'ceka' AND lower(trim(class_name)) = lower(trim(OLD.class_name));
+      UPDATE public.tridni_zastupce SET class_name = NEW.class_name
+      WHERE lower(trim(class_name)) = lower(trim(OLD.class_name));
     END IF;
     RETURN NEW;
   END IF;
@@ -760,6 +1062,8 @@ BEGIN
   UPDATE public.tridni_prirazeni
   SET stav = 'zruseno', rozhodnuto = now()
   WHERE stav = 'ceka' AND lower(trim(class_name)) = lower(trim(OLD.class_name));
+  DELETE FROM public.tridni_zastupce
+  WHERE lower(trim(class_name)) = lower(trim(OLD.class_name));
   RETURN OLD;
 END;
 $$;
@@ -788,8 +1092,10 @@ COMMIT;
 --   WHERE proname IN ('trida_prehled','moje_zarazeni','pozadat_o_tridu',
 --                     'nevidim_svou_tridu','seznam_zarazeni','nominovat_do_tridy',
 --                     'zrusit_nominaci','rozhodnout_nominaci','rozhodnout_zadost',
---                     'priradit_tridu','jmenovat_velitele','odvolat_velitele');
---     -- 12 řádků
+--                     'priradit_tridu','jmenovat_velitele','odvolat_velitele',
+--                     'urcit_zastupce','zrusit_zastupce','predat_velitele',
+--                     'historie_velitelu','clenove_tridy');
+--     -- 17 řádků
 --
 --   SELECT count(*) FROM public.profiles WHERE user_class IS NULL AND nezarazen_od IS NULL;
 --     -- 0

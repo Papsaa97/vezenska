@@ -56,6 +56,13 @@ export default function ClassOverviewCard({
           <span className="font-semibold">Velitel třídy:</span>
           <span>{item.commanderName || 'zatím nejmenován'}</span>
         </div>
+        {item.deputyName && (
+          <div className="flex items-center gap-2 text-slate-700 dark:text-slate-200">
+            <Shield className="w-3.5 h-3.5 text-indigo-500" />
+            <span className="font-semibold">Zástupce:</span>
+            <span>{item.deputyName}</span>
+          </div>
+        )}
         <div className="flex items-center gap-2 text-slate-700 dark:text-slate-200">
           <Users className="w-3.5 h-3.5 text-blue-500" />
           <span className="font-semibold">Členů:</span>

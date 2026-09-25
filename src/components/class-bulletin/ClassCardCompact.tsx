@@ -20,6 +20,8 @@ interface ClassCardCompactProps {
   item: ClassBoardItem;
   /** Skutečný velitel třídy (z profilů), nebo null. */
   commanderName: string | null;
+  /** Platný zástupce velitele, nebo null. */
+  deputyName: string | null;
   memberCount: number;
   isMyClass: boolean;
   isManager: boolean;
@@ -38,6 +40,7 @@ interface ClassCardCompactProps {
 export default function ClassCardCompact({
   item,
   commanderName,
+  deputyName,
   memberCount,
   isMyClass,
   isManager,
@@ -126,7 +129,10 @@ export default function ClassCardCompact({
         <span className="flex items-center gap-1.5 min-w-0">
           <Shield className="w-3.5 h-3.5 text-purple-500 shrink-0" />
           <span className="font-semibold">Velitel:</span>
-          <span className="truncate">{commanderName || 'zatím nejmenován'}</span>
+          <span className="truncate">
+            {commanderName || 'zatím nejmenován'}
+            {deputyName ? ` (zastupuje ${deputyName})` : ''}
+          </span>
         </span>
         <span className="shrink-0 text-slate-500 dark:text-slate-400">Členů: {memberCount}</span>
       </div>

@@ -1,11 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Check, Clock, Loader2, RefreshCw, Search, Shield, UserPlus, Users, X } from 'lucide-react';
+import { Check, Clock, History, Loader2, RefreshCw, Search, Shield, UserPlus, Users, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ROLE_LABELS } from '../../constants/auth';
 import type { UserRole } from '../../types/auth';
 import {
   AssignmentRow,
   ClassOverview,
+  CommandHistoryEntry,
+  CommandHistoryKind,
+  fetchCommandHistory,
   appointCommander,
   assignClass,
   cancelNomination,
@@ -19,6 +22,8 @@ import { MEMBERSHIP_CHANGED_EVENT, announceMembershipChange } from './ClassMembe
 
 interface ClassAssignmentPanelProps {
   classes: ClassOverview[];
+  /** Třída, kterou účet vede jako velitel nebo platný zástupce (ze serveru). */
+  leadsClass: string | null;
 }
 
 /**
@@ -29,11 +34,12 @@ interface ClassAssignmentPanelProps {
  * Lektor a správce vidí všechny účty, přiřazují třídy a jmenují velitele.
  * Co kdo smí, rozhoduje server (migrace 038); tlačítka jen kopírují jeho pravidla.
  */
-export default function ClassAssignmentPanel({ classes }: ClassAssignmentPanelProps) {
+export default function ClassAssignmentPanel({ classes, leadsClass }: ClassAssignmentPanelProps) {
   const { profile } = useAuth();
   const isStaff = profile?.role === 'lektor' || profile?.role === 'admin';
-  const myClass = (profile?.user_class || '').trim();
-  const isCommander = profile?.role === 'velitel_tridy' && myClass.length > 0;
+  // Velitel i jeho platný zástupce označují a schvalují do třídy, kterou vedou.
+  const myClass = (leadsClass || (profile?.role === 'velitel_tridy' ? profile.user_class : '') || '').trim();
+  const isCommander = !isStaff && myClass.length > 0;
 
   const [rows, setRows] = useState<AssignmentRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -304,6 +310,92 @@ export default function ClassAssignmentPanel({ classes }: ClassAssignmentPanelPr
           );
         })}
       </ul>
+
+      {isStaff && <CommandHistory />}
     </section>
+  );
+}
+
+const HISTORY_LABELS: Record<CommandHistoryKind, string> = {
+  jmenovani: 'Jmenování velitele',
+  odvolani: 'Odvolání velitele',
+  predani: 'Předání funkce',
+  zastupce: 'Určení zástupce',
+  zastupce_konec: 'Konec zástupcování',
+};
+
+/** Historie funkce velitele — kdo, komu, kdy a proč. Jen lektoři a správci. */
+function CommandHistory() {
+  const [entries, setEntries] = useState<CommandHistoryEntry[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<boolean>(false);
+
+  const load = useCallback(async () => {
+    const res = await fetchCommandHistory();
+    if (res.error) {
+      setError(res.error);
+      return;
+    }
+    setError(null);
+    setEntries(res.data ?? []);
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  useEffect(() => {
+    const handler = () => void load();
+    window.addEventListener(MEMBERSHIP_CHANGED_EVENT, handler);
+    return () => window.removeEventListener(MEMBERSHIP_CHANGED_EVENT, handler);
+  }, [load]);
+
+  const shown = expanded ? entries : entries.slice(0, 5);
+  const fmt = (iso: string) =>
+    new Date(iso).toLocaleString('cs-CZ', { day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+  return (
+    <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
+      <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+        <History className="w-4 h-4 text-purple-500" />
+        Historie velitelů a zástupců
+      </h3>
+      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {!error && entries.length === 0 && (
+        <p className="text-xs text-slate-400 italic">Zatím žádné jmenování, předání ani zástupcování.</p>
+      )}
+      <ul className="space-y-1.5">
+        {shown.map((e) => (
+          <li key={e.id} className="text-xs text-slate-600 dark:text-slate-300 p-2 rounded-lg bg-slate-50 dark:bg-slate-950/50">
+            <div className="flex flex-wrap items-center gap-x-2">
+              <span className="font-bold text-slate-800 dark:text-slate-100">{HISTORY_LABELS[e.kind]}</span>
+              <span className="px-1.5 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-semibold">{e.className}</span>
+              <span className="text-slate-400">{fmt(e.at)}</span>
+            </div>
+            <div>
+              {e.before && <span>{e.before}</span>}
+              {e.before && e.after && <span> → </span>}
+              {e.after && <span className="font-semibold">{e.after}</span>}
+              {e.until && <span> (do {fmt(e.until)})</span>}
+              {e.by && e.by !== e.before && <span className="text-slate-400"> · provedl(a) {e.by}</span>}
+            </div>
+            {e.reason && (
+              <div className="mt-0.5">
+                <span className="font-semibold">Odůvodnění:</span> {e.reason}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+      {entries.length > 5 && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+        >
+          {expanded ? 'Zobrazit méně' : `Zobrazit vše (${entries.length})`}
+        </button>
+      )}
+    </div>
   );
 }

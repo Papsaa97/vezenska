@@ -20,6 +20,7 @@ import {
   getTodayCzechName,
 } from '../../utils/classBoardService';
 import CourseCountdownWidget from './CourseCountdownWidget';
+import ClassMembersPanel from './ClassMembersPanel';
 import AttachedFilesPanel from '../common/AttachedFilesPanel';
 import { useTaggedMaterials } from '../../hooks/useTaggedMaterials';
 import { materialsForClass } from '../../utils/materials';
@@ -28,6 +29,9 @@ interface ClassDetailExpandedProps {
   item: ClassBoardItem;
   /** Skutečný velitel třídy (z profilů), nebo null. */
   commanderName: string | null;
+  /** Platný dočasný zástupce velitele a do kdy zastupuje (null = do odvolání). */
+  deputyName: string | null;
+  deputyUntil: string | null;
   /** Je to třída přihlášeného? Lektor/správce si může zobrazit i cizí. */
   isMyClass: boolean;
   isManager: boolean;
@@ -46,6 +50,8 @@ interface ClassDetailExpandedProps {
 export default function ClassDetailExpanded({
   item,
   commanderName,
+  deputyName,
+  deputyUntil,
   isMyClass,
   isManager,
   isPrivileged,
@@ -83,7 +89,7 @@ export default function ClassDetailExpanded({
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400 mt-1">
               <span className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5 text-slate-400" />
                 Aktualizováno: {formatUpdateTime(item.updatedAt)}
@@ -96,6 +102,12 @@ export default function ClassDetailExpanded({
                 <Shield className="w-3.5 h-3.5" />
                 Velitel třídy: {commanderName || 'zatím nejmenován'}
               </span>
+              {deputyName && (
+                <span className="text-indigo-600 dark:text-indigo-400 font-semibold">
+                  • Zástupce: {deputyName}
+                  {deputyUntil ? ` (do ${formatUpdateTime(deputyUntil)})` : ''}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -541,6 +553,11 @@ export default function ClassDetailExpanded({
             </div>
           )}
         </div>
+      </div>
+
+      {/* Členové třídy — vidí je jen členové, lektoři a správci */}
+      <div className="pt-5 border-t border-slate-200 dark:border-slate-800">
+        <ClassMembersPanel className={item.className} />
       </div>
     </div>
   );
