@@ -5,6 +5,8 @@ import { useDialog } from '../../hooks/useDialog';
 
 interface DeleteConfirmModalProps {
   className: string;
+  /** Počet členů z přehledu tříd; null, když přehled (migrace 038) chybí. */
+  memberCount: number | null;
   isDeleting: boolean;
   onConfirm: () => void;
   onCancel: () => void;
@@ -12,6 +14,7 @@ interface DeleteConfirmModalProps {
 
 export default function DeleteConfirmModal({
   className,
+  memberCount,
   isDeleting,
   onConfirm,
   onCancel,
@@ -48,6 +51,21 @@ export default function DeleteConfirmModal({
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
             Tato akce odstraní kartu třídy, rozvrh, ústrojovou kázeň i všechny vypsané služby. Doporučeno
             při ukončení kurzu.
+          </p>
+          {/* Smazání spouští v databázi trigger z migrace 038 (členové bez
+              třídy, konec zástupcování) a kaskádu z migrace 039 (diskuze).
+              Ani jedno se z karty třídy nepozná, a vrátit to nejde. */}
+          <p className="text-xs text-red-700 dark:text-red-300 mt-2 leading-relaxed bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2 text-left">
+            Všichni členové třídy
+            {/* Bez migrace 038 je v přehledu náhradní nula — pak se počet neuvádí. */}
+            {memberCount !== null && memberCount > 0 && (
+              <>
+                {' '}
+                (<strong>{memberCount}</strong>)
+              </>
+            )}
+            , včetně velitele, se vrátí mezi nezařazené a zástupce velitele přestane zastupovat. Diskuze třídy se všemi příspěvky
+            a anketami se trvale smaže.
           </p>
         </div>
         <div className="flex items-center justify-center gap-3 pt-2">

@@ -1225,6 +1225,7 @@ export default function ClassBulletinBoard() {
         {deleteConfirmItem && (
           <DeleteConfirmModal
             className={deleteConfirmItem.className}
+            memberCount={overviewOf(deleteConfirmItem.className)?.memberCount ?? null}
             isDeleting={isDeleting}
             onConfirm={handleConfirmDelete}
             onCancel={() => setDeleteConfirmItem(null)}
