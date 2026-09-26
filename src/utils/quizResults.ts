@@ -31,6 +31,9 @@ export interface QuizResultOperationResult {
   stored?: QuizSessionRecord;
 }
 
+/** Prefix ID otázek, které sestavil AI asistent ze zadání (viz utils/geminiAnalyzer). */
+const CUSTOM_QUESTION_ID_PREFIX = 'custom-q';
+
 /** Jedna odpověď tak, jak ji přijímá parametr p_odpovedi funkce vyhodnotit_kviz(). */
 interface OdpovedProServer {
   id: string;
@@ -53,6 +56,12 @@ function odpovediProServer(result: QuizSessionRecord): OdpovedProServer[] | null
   const attempts = result.attempts ?? [];
   if (attempts.length === 0) return null;
   if (!attempts.every((a) => typeof a.selectedText === 'string')) return null;
+  // Otázky vygenerované AI asistentem (utils/geminiAnalyzer) v bance nejsou —
+  // server je nespáruje ani podle UUID, ani podle textu, a celý test by ohodnotil
+  // nulou. Takový výsledek proto jde záložní cestou jako neověřený se skóre
+  // z prohlížeče: do XP v admin konzoli se nezapočte, ale uživatel neuvidí
+  // ve statistikách 0 % za test, který ve skutečnosti zvládl.
+  if (attempts.some((a) => a.questionId.startsWith(CUSTOM_QUESTION_ID_PREFIX))) return null;
 
   return attempts.map((a) => ({
     id: a.questionId,
@@ -154,7 +163,8 @@ export async function saveQuizResult(
     };
   }
 
-  // Záložní cesta pro výsledky uvízlé ve frontě ze starší verze aplikace. Politika
+  // Záložní cesta pro výsledky uvízlé ve frontě ze starší verze aplikace a pro
+  // testy z otázek AI asistenta, které server ohodnotit neumí. Politika
   // „Vlastní výsledek jen jako neověřený" jim nedovolí nastavit overeno, takže se
   // uloží bez razítka a do XP v admin konzoli se nezapočítají.
   const { data, error } = await supabase
