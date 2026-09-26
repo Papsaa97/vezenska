@@ -2,7 +2,8 @@ import { supabase } from '../lib/supabase';
 import { getStorageOwner } from './userScopedStorage';
 
 /**
- * Splněné scénáře a drily na serveru (tabulka public.studijni_postup, migrace 040).
+ * Splněné scénáře a drily (migrace 040) a oblíbené otázky a předpisy (migrace 041)
+ * na serveru v tabulce public.studijni_postup.
  *
  * PROČ: dřív žil tenhle postup jen v localStorage. Na jiném zařízení, v PWA
  * na ploše telefonu (má jiné úložiště než prohlížeč) nebo po tom, co Safari

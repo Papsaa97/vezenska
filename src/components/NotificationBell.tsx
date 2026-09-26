@@ -28,12 +28,12 @@ function formatDateTime(iso: string): string {
 const REFRESH_MS = 60_000;
 
 /**
- * Hláška pro smazání, které RLS pustila k nule řádků. Do migrace 040 směl
+ * Hláška pro smazání, které RLS pustila k nule řádků. Do migrace 041 směl
  * oznámení mazat jen správce; obecná nápověda o roli v profiles by adresáta
  * poslala hledat chybu jinde.
  */
 const DELETE_REJECTED =
-  'Oznámení se nepodařilo smazat — databáze mazání zatím nedovoluje (chybí migrace 040).';
+  'Oznámení se nepodařilo smazat — databáze mazání zatím nedovoluje (chybí migrace 041).';
 
 export default function NotificationBell() {
   const { user } = useAuth();

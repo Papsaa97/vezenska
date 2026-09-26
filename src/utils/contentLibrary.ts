@@ -26,7 +26,7 @@ import { VscrRegulation } from '../data/vscrRegulationsRegistry';
 
 /**
  * Druhy obsahu. Musí odpovídat CHECK `content_blocks_kind_check` v databázi —
- * 'weapon', 'stoppage_drill', 'jidelnicek' a 'regulation' přidává migrace 040.
+ * 'weapon', 'stoppage_drill' a 'jidelnicek' přidává migrace 040, 'regulation' migrace 041.
  */
 export type ContentKind =
   | 'subject'
