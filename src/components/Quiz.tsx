@@ -125,21 +125,14 @@ export default function Quiz({
     }
   }, [presetSubject, presetTopic]);
 
-  const handleSubjectToggle = (subject: string) => {
+  // Výběr předmětu je jednoduchý <select>, takže volba nahrazuje předchozí.
+  // Dřív ho obsluhoval přepínač pro vícenásobný výběr: každá volba se přičítala
+  // k předchozím, select přitom ukazoval jen první předmět a test se tiše skládal
+  // ze všech dosud zvolených — a ukládal jako „Kombinace předmětů“.
+  const handleSubjectSelect = (subject: string) => {
     // Okruh patří k předmětu z předvolby; jiná volba předmětu ho ruší.
     setSelectedTopic(null);
-    if (subject === 'all') {
-      setSelectedSubjects(['all']);
-    } else {
-      let newSubjects = selectedSubjects.filter(s => s !== 'all');
-      if (newSubjects.includes(subject)) {
-        newSubjects = newSubjects.filter(s => s !== subject);
-      } else {
-        newSubjects.push(subject);
-      }
-      if (newSubjects.length === 0) newSubjects = ['all'];
-      setSelectedSubjects(newSubjects);
-    }
+    setSelectedSubjects([subject || 'all']);
   };
 
   const shuffleQuestionOptions = (q: Question): Question => {
@@ -611,7 +604,7 @@ export default function Quiz({
                 id={`${fieldIds}-0`} 
                 className="w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 dark:text-slate-200"
                 value={selectedSubjects[0]}
-                onChange={(e) => handleSubjectToggle(e.target.value)}
+                onChange={(e) => handleSubjectSelect(e.target.value)}
                 disabled={gameState === 'playing'}
               >
                 <option value="all">Všechny předměty (Souhrnný test)</option>

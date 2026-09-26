@@ -280,6 +280,17 @@ export function getUserRank(totalXp: number): { currentRank: UserRank; nextRank:
   };
 }
 
+/**
+ * Označení souhrnných testů v `QuizSessionRecord.subject`. Nejsou to předměty:
+ * „Kombinace předmětů“ se dřív započítala do odznaku za všechny předměty jako
+ * další vyzkoušený předmět. Skutečné předměty takového testu se berou z odpovědí.
+ */
+const AGGREGATE_QUIZ_SUBJECTS: ReadonlySet<string> = new Set([
+  'all',
+  'Kombinace předmětů',
+  'Závěrečná zkouška ZOP A',
+]);
+
 export function evaluateBadges(
   quizHistory: QuizSessionRecord[], 
   matchingHistory: MatchingRecord[], 
@@ -293,7 +304,7 @@ export function evaluateBadges(
   // Count unique tested subjects
   const testedSubjects = new Set<string>();
   quizHistory.forEach(s => {
-    if (s.subject && s.subject !== 'all' && s.subject !== 'Závěrečná zkouška ZOP A') {
+    if (s.subject && !AGGREGATE_QUIZ_SUBJECTS.has(s.subject)) {
       testedSubjects.add(s.subject);
     }
     s.attempts.forEach(a => {
@@ -307,7 +318,7 @@ export function evaluateBadges(
   // Best accuracy per subject
   const subjectBestAccuracy: Record<string, number> = {};
   quizHistory.forEach(s => {
-    if (s.subject && s.subject !== 'all') {
+    if (s.subject && !AGGREGATE_QUIZ_SUBJECTS.has(s.subject)) {
       subjectBestAccuracy[s.subject] = Math.max(subjectBestAccuracy[s.subject] || 0, s.accuracy);
     }
     // Also check filtered attempts per subject in a session if at least 4 questions
