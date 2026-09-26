@@ -323,6 +323,18 @@ export default function ClassBulletinBoard() {
     });
   }, [overview, fullBoardById, searchQuery]);
 
+  /**
+   * Počet skrytých tříd, které ještě existují.
+   *
+   * Seznam skrytých id žije v prohlížeči a smazaná třída v něm zůstává. Počítat
+   * rovnou jeho délku znamenalo slibovat „skryté třídy (3)“, i když v mřížce
+   * chyběla jediná.
+   */
+  const hiddenExistingCount = useMemo(
+    () => overview.filter((o) => hiddenClassIds.includes(o.id)).length,
+    [overview, hiddenClassIds]
+  );
+
   /** Třídy, které jsou v mřížce opravdu vidět (po filtru i po skrytí). */
   const visibleGridClasses = useMemo(
     () => filteredClasses.filter((c) => !hiddenClassIds.includes(c.id)),
@@ -1080,12 +1092,12 @@ export default function ClassBulletinBoard() {
         <section className="no-print space-y-4">
           <div className="flex items-center justify-between text-xs text-slate-400 px-1">
             <span>Dlaždice jednotlivých tříd ZOP:</span>
-            {hiddenClassIds.length > 0 && (
+            {hiddenExistingCount > 0 && (
               <button
                 onClick={() => setHiddenClassIds(clearHiddenClasses())}
                 className="text-blue-500 hover:text-blue-400 font-semibold cursor-pointer"
               >
-                Zobrazit všechny skryté třídy ({hiddenClassIds.length})
+                Zobrazit všechny skryté třídy ({hiddenExistingCount})
               </button>
             )}
           </div>

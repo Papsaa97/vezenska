@@ -160,7 +160,13 @@ export default function ClassAssignmentPanel({ classes, leadsClass }: ClassAssig
 
       {!loading && filtered.length === 0 && !error && (
         <p className="text-center text-xs text-slate-400 italic py-6">
-          {showAssigned ? 'Nikdo neodpovídá hledání.' : 'Všichni jsou zařazení — seznam je prázdný.'}
+          {/* Prázdný výsledek hledání neznamená, že jsou všichni zařazení —
+              dřív to tak hlásil a velitel mohl přehlédnout nezařazeného. */}
+          {query.trim()
+            ? 'Nikdo neodpovídá hledání.'
+            : showAssigned
+              ? 'Seznam účtů je prázdný.'
+              : 'Všichni jsou zařazení — seznam je prázdný.'}
         </p>
       )}
 
