@@ -200,7 +200,7 @@ export default function LegalEditorModal({
                 onClick={handleSaveRegulation}
                 className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs cursor-pointer shadow-sm"
               >
-                Uložit do databáze
+                Uložit pro všechny
               </button>
             </div>
           </motion.div>

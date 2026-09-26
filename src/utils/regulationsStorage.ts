@@ -27,83 +27,39 @@ export function purgeLegacyOfflineCache(): void {
 }
 
 /**
- * Loads all regulations (defaults merged with user-created or edited ones).
+ * Předpisy, které lektor dřív upravil nebo přidal jen v tomto prohlížeči.
+ *
+ * Úpravy předpisů se ukládaly do localStorage, přestože tlačítko slibovalo
+ * „Uložit do databáze". Kolegové ani studenti je proto nikdy neviděli. Teď jdou
+ * do společné tabulky content_blocks (druh 'regulation'); tahle funkce jen
+ * najde staré místní úpravy, aby je lektor mohl jedním tlačítkem nahrát.
  */
-export function getStoredRegulations(): VscrRegulation[] {
-  if (typeof window === 'undefined') return VSCR_REGULATIONS_REGISTRY;
-
+export function readLegacyLocalRegulations(): VscrRegulation[] {
+  if (typeof window === 'undefined') return [];
   try {
-    const customData = localStorage.getItem(STORAGE_KEY);
-    const customRegs: VscrRegulation[] = customData ? JSON.parse(customData) : [];
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const parsed: unknown = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed)
+      ? parsed.filter((r): r is VscrRegulation => !!r && typeof r === 'object' && 'id' in r && 'code' in r)
+      : [];
+  } catch {
+    return [];
+  }
+}
 
-    // Merge: custom regs override defaults with same ID, or append if new
-    const registryMap = new Map<string, VscrRegulation>();
-    
-    // First fill with default registry
-    VSCR_REGULATIONS_REGISTRY.forEach(reg => {
-      registryMap.set(reg.id, reg);
-    });
-
-    // Then overwrite/add with custom items
-    customRegs.forEach(custom => {
-      registryMap.set(custom.id, custom);
-    });
-
-    return Array.from(registryMap.values());
-  } catch (e) {
-    console.error('Failed to load regulations from storage:', e);
-    return VSCR_REGULATIONS_REGISTRY;
+/** Po úspěšném nahrání do databáze se místní kopie uklidí. */
+export function clearLegacyLocalRegulations(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // Zakázaná localStorage — nevadí, nabídka nahrání se jen ukáže znovu.
   }
 }
 
 /** Je to předpis dodávaný s aplikací (lze ho vrátit na výchozí znění)? */
 export function isDefaultRegulation(regulationId: string): boolean {
   return VSCR_REGULATIONS_REGISTRY.some((reg) => reg.id === regulationId);
-}
-
-/**
- * Saves or updates a regulation in local storage.
- */
-export function saveRegulationToStorage(regulation: VscrRegulation): boolean {
-  if (typeof window === 'undefined') return false;
-
-  try {
-    const customData = localStorage.getItem(STORAGE_KEY);
-    const customRegs: VscrRegulation[] = customData ? JSON.parse(customData) : [];
-
-    const existingIndex = customRegs.findIndex(r => r.id === regulation.id);
-    if (existingIndex >= 0) {
-      customRegs[existingIndex] = regulation;
-    } else {
-      customRegs.push(regulation);
-    }
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(customRegs));
-    return true;
-  } catch (e) {
-    console.error('Failed to save regulation:', e);
-    return false;
-  }
-}
-
-/**
- * Deletes a custom regulation or resets an edited default back to initial state.
- */
-export function deleteRegulationFromStorage(regulationId: string): boolean {
-  if (typeof window === 'undefined') return false;
-
-  try {
-    const customData = localStorage.getItem(STORAGE_KEY);
-    if (!customData) return true;
-
-    const customRegs: VscrRegulation[] = JSON.parse(customData);
-    const filtered = customRegs.filter(r => r.id !== regulationId);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
-    return true;
-  } catch (e) {
-    console.error('Failed to delete regulation:', e);
-    return false;
-  }
 }
 
 /**
@@ -114,13 +70,13 @@ export function deleteRegulationFromStorage(regulationId: string): boolean {
  * pro popisek v rozhraní. Dřív navíc zapisovala celou druhou kopii předpisů
  * do klíče, který nikdo nečetl; viz LEGACY_OFFLINE_CACHE_KEY.
  */
-export function recordOfflineDownload(): { success: boolean; count: number; timestamp: string } {
+export function recordOfflineDownload(count: number): { success: boolean; count: number; timestamp: string } {
   if (typeof window === 'undefined') return { success: false, count: 0, timestamp: '' };
 
   try {
     const now = new Date().toLocaleString('cs-CZ');
     localStorage.setItem(OFFLINE_STATUS_KEY, now);
-    return { success: true, count: getStoredRegulations().length, timestamp: now };
+    return { success: true, count, timestamp: now };
   } catch (e) {
     console.error('Datum stažení pro offline se nepodařilo uložit:', e);
     return { success: false, count: 0, timestamp: '' };
@@ -142,11 +98,8 @@ export function getOfflineStatus(): { isDownloaded: boolean; downloadedAt: strin
   }
 }
 
-/**
- * Exports all current regulations into a downloadable JSON file.
- */
-export function exportRegulationsToJSON(): void {
-  const regs = getStoredRegulations();
+/** Stáhne předaný seznam předpisů jako soubor JSON (záloha). */
+export function exportRegulationsToJSON(regs: VscrRegulation[]): void {
   const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(regs, null, 2));
   const downloadAnchor = document.createElement('a');
   downloadAnchor.setAttribute('href', dataStr);
@@ -157,24 +110,26 @@ export function exportRegulationsToJSON(): void {
 }
 
 /**
- * Imports regulations from a JSON file content string.
+ * Přečte předpisy ze záložního souboru JSON. Nic neukládá — uložení do
+ * databáze obstará volající, aby mohl hlásit, co opravdu prošlo.
  */
-export function importRegulationsFromJSON(jsonString: string): { success: boolean; count: number; message: string } {
+export function parseRegulationsJSON(
+  jsonString: string
+): { success: boolean; items: VscrRegulation[]; message: string } {
   try {
-    const parsed = JSON.parse(jsonString);
+    const parsed: unknown = JSON.parse(jsonString);
     if (!Array.isArray(parsed)) {
-      return { success: false, count: 0, message: 'Neplatný formát: soubor musí obsahovat pole předpisů.' };
+      return { success: false, items: [], message: 'Neplatný formát: soubor musí obsahovat pole předpisů.' };
     }
-
-    // Validate structure of first few items
-    const valid = parsed.filter(item => item.id && item.title && item.code);
+    const valid = parsed.filter(
+      (item): item is VscrRegulation =>
+        !!item && typeof item === 'object' && 'id' in item && 'title' in item && 'code' in item
+    );
     if (valid.length === 0) {
-      return { success: false, count: 0, message: 'Nebyly nalezeny žádné platné předpisy se správnou strukturou.' };
+      return { success: false, items: [], message: 'Nebyly nalezeny žádné platné předpisy se správnou strukturou.' };
     }
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(valid));
-    return { success: true, count: valid.length, message: `Úspěšně naimportováno ${valid.length} předpisů.` };
+    return { success: true, items: valid, message: '' };
   } catch (e) {
-    return { success: false, count: 0, message: 'Chyba při čtení JSON souboru: ' + (e as Error).message };
+    return { success: false, items: [], message: 'Chyba při čtení JSON souboru: ' + (e as Error).message };
   }
 }

@@ -80,7 +80,7 @@ function formatToday(): string {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function ClassBulletinBoard() {
-  const { profile, user } = useAuth();
+  const { profile, user, realRole, refreshProfile } = useAuth();
   const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
 
   // Data
@@ -152,6 +152,15 @@ export default function ClassBulletinBoard() {
   // Tisk
   const [printingItem, setPrintingItem] = useState<ClassBoardItem | null>(null);
 
+  /**
+   * Stav serveru, pro který už se jednou obnovoval profil.
+   *
+   * Zástupce velitele má `commandsClass` vyplněné, ale roli dál „student“ —
+   * rozpor tak po obnovení profilu může trvat. Bez téhle pojistky by se profil
+   * obnovoval při každém načtení nástěnky; takhle jen jednou na každou změnu.
+   */
+  const refreshedForRef = useRef<string | null>(null);
+
   // Načtení dat
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -188,6 +197,25 @@ export default function ClassBulletinBoard() {
       );
       setMembership(membershipResult.data);
 
+      // Profil v AuthContext se načítá jen při přihlášení. Schválí-li žádost
+      // velitel, zařadí-li účet lektor nebo odvolá-li velitele, zůstane v něm
+      // stará třída i role — stránka pak hlásí „Zatím nejste zařazeni“ a nabízí
+      // tlačítko, které server odmítne, nebo odvolanému veliteli nechává
+      // tlačítka správy. Server tu právě řekl, jak to je, tak se profil obnoví.
+      const server = membershipResult.data;
+      if (server) {
+        const norm = (v: string | null | undefined) => (v || '').trim().toLowerCase();
+        const classStale = norm(server.userClass) !== norm(profile?.user_class);
+        const roleStale =
+          (realRole === 'velitel_tridy' && !server.commandsClass) ||
+          (realRole === 'student' && Boolean(server.commandsClass));
+        const key = `${norm(server.userClass)}|${norm(server.commandsClass)}|${realRole ?? ''}|${norm(profile?.user_class)}`;
+        if ((classStale || roleStale) && refreshedForRef.current !== key) {
+          refreshedForRef.current = key;
+          void refreshProfile();
+        }
+      }
+
       // Když server odpoví chybou, zobrazí se záložní kopie ze zařízení. To samo
       // o sobě není špatně, ale uživatel musí vědět, že nemusí být aktuální —
       // dřív se chyba jen zapsala do konzole a nástěnka vypadala normálně.
@@ -204,7 +232,7 @@ export default function ClassBulletinBoard() {
     } finally {
       setLoading(false);
     }
-  }, [profile?.user_class, isPrivileged]);
+  }, [profile?.user_class, isPrivileged, realRole, refreshProfile]);
 
   /**
    * Zkontroluje výsledek zápisu a při neúspěchu na to upozorní.
@@ -294,6 +322,18 @@ export default function ClassBulletinBoard() {
       );
     });
   }, [overview, fullBoardById, searchQuery]);
+
+  /**
+   * Počet skrytých tříd, které ještě existují.
+   *
+   * Seznam skrytých id žije v prohlížeči a smazaná třída v něm zůstává. Počítat
+   * rovnou jeho délku znamenalo slibovat „skryté třídy (3)“, i když v mřížce
+   * chyběla jediná.
+   */
+  const hiddenExistingCount = useMemo(
+    () => overview.filter((o) => hiddenClassIds.includes(o.id)).length,
+    [overview, hiddenClassIds]
+  );
 
   /** Třídy, které jsou v mřížce opravdu vidět (po filtru i po skrytí). */
   const visibleGridClasses = useMemo(
@@ -1028,7 +1068,6 @@ export default function ClassBulletinBoard() {
             deputyUntil={overviewOf(myClassItem.className)?.deputyUntil ?? null}
             isMyClass={myClassItem.className.toLowerCase() === (profile?.user_class || '').toLowerCase()}
             isManager={checkCanManageClass(myClassItem)}
-            isPrivileged={isPrivileged}
             formatUpdateTime={formatUpdateTime}
             onEdit={() => {
               setEditingItem(myClassItem);
@@ -1053,12 +1092,12 @@ export default function ClassBulletinBoard() {
         <section className="no-print space-y-4">
           <div className="flex items-center justify-between text-xs text-slate-400 px-1">
             <span>Dlaždice jednotlivých tříd ZOP:</span>
-            {hiddenClassIds.length > 0 && (
+            {hiddenExistingCount > 0 && (
               <button
                 onClick={() => setHiddenClassIds(clearHiddenClasses())}
                 className="text-blue-500 hover:text-blue-400 font-semibold cursor-pointer"
               >
-                Zobrazit všechny skryté třídy ({hiddenClassIds.length})
+                Zobrazit všechny skryté třídy ({hiddenExistingCount})
               </button>
             )}
           </div>
@@ -1133,6 +1172,8 @@ export default function ClassBulletinBoard() {
         {isEditModalOpen && (
           <ClassEditModal
             item={editingItem}
+            canRename={isPrivileged}
+            canUploadSchedule={isPrivileged || profile?.role === 'velitel_tridy'}
             onClose={() => {
               setIsEditModalOpen(false);
               setEditingItem(null);
@@ -1196,6 +1237,7 @@ export default function ClassBulletinBoard() {
         {deleteConfirmItem && (
           <DeleteConfirmModal
             className={deleteConfirmItem.className}
+            memberCount={overviewOf(deleteConfirmItem.className)?.memberCount ?? null}
             isDeleting={isDeleting}
             onConfirm={handleConfirmDelete}
             onCancel={() => setDeleteConfirmItem(null)}

@@ -248,11 +248,14 @@ export const RAW_BADGES: Omit<Badge, 'isUnlocked' | 'progressPercent' | 'current
   {
     id: 'badge-all-subjects',
     title: 'Všeuměl Akademie',
-    description: 'Vyzkoušej si test alespoň jednou z 9 různých předmětů ZOP A.',
+    description: 'Vyzkoušej si test alespoň jednou z každého předmětu ZOP A, který má v bance otázky.',
     category: 'quiz',
     tier: 'platinum',
     iconName: 'Layers',
     xpReward: 350,
+    // Skutečný cíl dopočítává evaluateBadges z předmětů, které v bance mají otázky
+    // (předměty se ruší i zakládají — viz supabase/025). Tohle číslo platí jen do
+    // chvíle, než se banka načte.
     requirement: { type: 'all_subjects', target: 9 }
   },
 
@@ -267,15 +270,20 @@ export const RAW_BADGES: Omit<Badge, 'isUnlocked' | 'progressPercent' | 'current
     xpReward: 200,
     requirement: { type: 'subject_mastery', target: 90, subject: 'Právo' }
   },
+  // Předmět „Bezpečnostní služba“ byl zrušen a jeho otázky (strážní, dozorčí
+  // a eskortní služba) přešly do Služební přípravy — supabase/025. Odznak tak
+  // nešel získat. ID zůstává, aby se neměnila identita odznaku; cíl je 100 %,
+  // protože 90 % ze Služební přípravy už odměňuje badge-master-sluzebni a dva
+  // odznaky za totéž by vyplatily XP dvakrát.
   {
     id: 'badge-master-bezpecnost',
     title: 'Strážní velitel',
-    description: 'Dosáhni alespoň 90 % úspěšnosti v testu z Bezpečnostní služby.',
+    description: 'Dosáhni 100 % úspěšnosti v testu ze Služební přípravy (strážní, dozorčí a eskortní služba).',
     category: 'subjects',
     tier: 'silver',
     iconName: 'Shield',
     xpReward: 200,
-    requirement: { type: 'subject_mastery', target: 90, subject: 'Bezpečnostní služba' }
+    requirement: { type: 'subject_mastery', target: 100, subject: 'Služební příprava' }
   },
   {
     id: 'badge-master-penologie',

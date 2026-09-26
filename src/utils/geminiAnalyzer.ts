@@ -197,7 +197,11 @@ export async function analyzeExamContent(
       }
 
       parsed.questions = usable.map((q, idx) => ({
-        id: q.id || `custom-q-${Date.now()}-${idx + 1}`,
+        // ID z modelu se bere jen s prefixem custom-q. Podle něj ukládání výsledků
+        // (utils/quizResults) pozná otázky mimo banku; model, který by vrátil
+        // třeba „pr-12“, by jinak test poslal k serverovému vyhodnocení a ten by
+        // ho srazil na nulu — nebo ho spároval s cizí otázkou z banky.
+        id: typeof q.id === 'string' && q.id.startsWith('custom-q') ? q.id : `custom-q-${Date.now()}-${idx + 1}`,
         subject: q.subject || parsed.subject || 'Služební příprava',
         topic: q.topic || 'Zadání od kapitána',
         question: q.question,

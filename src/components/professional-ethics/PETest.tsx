@@ -1,10 +1,11 @@
 import React from 'react';
 import { Award, CheckCircle2, ArrowRight, Info } from 'lucide-react';
-import { profesniEtikaQuestions } from '../../data/questions/profesniEtika';
 
 interface PETestProps {
   /** Spustí cvičný test předmětu v hlavním zkouškovém modulu. */
   onStartSubjectQuiz?: () => void;
+  /** Počet otázek, které test z živé banky nabídne. */
+  questionCount: number;
 }
 
 /**
@@ -22,8 +23,7 @@ interface PETestProps {
  * Hlavní Zkouška všechno tohle umí. Místo druhé, nekvalitnější implementace
  * proto záložka předá řízení jí a přednastaví předmět.
  */
-export const PETest: React.FC<PETestProps> = ({ onStartSubjectQuiz }) => {
-  const questionCount = profesniEtikaQuestions.length;
+export const PETest: React.FC<PETestProps> = ({ onStartSubjectQuiz, questionCount }) => {
 
   return (
     <div className="space-y-6">

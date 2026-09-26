@@ -556,8 +556,12 @@ export async function fetchGlobalAnnouncements(): Promise<FetchResult<GlobalAnno
       };
     }
 
+    // Prázdný výsledek bez chyby je platná odpověď serveru: hlášení byla
+    // smazána. Kdyby se tu sáhlo do mezipaměti, poslední smazané hlášení by
+    // v prohlížeči viselo navždy — mezipaměť se proto vyprázdní.
     if (!data || data.length === 0) {
-      return { items: loadLocalGlobalAnnouncements(), source: 'local', error: null };
+      saveLocalGlobalAnnouncements([]);
+      return { items: [], source: 'server', error: null };
     }
 
     const items = (data as Array<{

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Bell, CheckCheck, Check, Loader2, Inbox, AlertTriangle } from 'lucide-react';
+import { Bell, CheckCheck, Check, Loader2, Inbox, AlertTriangle, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { writeFailure } from '../utils/supabaseWrite';
 import { useAuth } from '../context/AuthContext';
@@ -18,6 +18,23 @@ function formatDateTime(iso: string): string {
   });
 }
 
+/**
+ * Jak často se oznámení načítají znovu, když je stránka vidět.
+ *
+ * Oznámení do zvonku posílají i funkce v databázi (nominace do třídy, žádost
+ * veliteli). Načtení jen po přihlášení znamenalo, že je uživatel uviděl až
+ * po znovunačtení stránky — stejný interval jako diskuze třídy.
+ */
+const REFRESH_MS = 60_000;
+
+/**
+ * Hláška pro smazání, které RLS pustila k nule řádků. Do migrace 041 směl
+ * oznámení mazat jen správce; obecná nápověda o roli v profiles by adresáta
+ * poslala hledat chybu jinde.
+ */
+const DELETE_REJECTED =
+  'Oznámení se nepodařilo smazat — databáze mazání zatím nedovoluje (chybí migrace 041).';
+
 export default function NotificationBell() {
   const { user } = useAuth();
 
@@ -29,8 +46,9 @@ export default function NotificationBell() {
   const [notice, setNotice] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const loadNotifications = useCallback(async (userId: string) => {
-    setLoading(true);
+  /** `quiet`: obnovení na pozadí, bez točícího se kolečka místo seznamu. */
+  const loadNotifications = useCallback(async (userId: string, quiet = false) => {
+    if (!quiet) setLoading(true);
     const { data, error } = await supabase
       .from('user_notifications')
       .select('id, user_id, sender_id, title, body, is_read, created_at')
@@ -50,13 +68,31 @@ export default function NotificationBell() {
   }, []);
 
   useEffect(() => {
-    if (user) {
-      loadNotifications(user.id);
-    } else {
+    if (!user) {
       setNotifications([]);
       setLoading(false);
+      return;
     }
+    const userId = user.id;
+    void loadNotifications(userId);
+    // Skrytá karta se neobnovuje (zbytečné dotazy na pozadí); po návratu na ni
+    // se oznámení načtou hned, ne až při dalším tiku intervalu.
+    const refreshIfVisible = () => {
+      if (document.visibilityState === 'visible') void loadNotifications(userId, true);
+    };
+    document.addEventListener('visibilitychange', refreshIfVisible);
+    const timer = window.setInterval(refreshIfVisible, REFRESH_MS);
+    return () => {
+      document.removeEventListener('visibilitychange', refreshIfVisible);
+      window.clearInterval(timer);
+    };
   }, [user, loadNotifications]);
+
+  /** Otevření zvonku vždy přinese čerstvý stav, ne ten z posledního tiku. */
+  const toggleOpen = () => {
+    if (!isOpen && user) void loadNotifications(user.id, true);
+    setIsOpen(!isOpen);
+  };
 
   // Zavření po kliknutí mimo panel
   useEffect(() => {
@@ -91,6 +127,26 @@ export default function NotificationBell() {
     setMarkingId(null);
   };
 
+  /** Smaže oznámení podle id; stav se mění až po potvrzení serveru. */
+  const deleteNotifications = async (ids: string[]) => {
+    if (ids.length === 0 || markingId) return;
+    setMarkingId(ids.length === 1 ? ids[0] : 'bulk');
+    const res = await supabase.from('user_notifications').delete().in('id', ids).select('id');
+    if (res.error) {
+      setNotice(`Oznámení se nepodařilo smazat: ${res.error.message}`);
+    } else if (!res.data || res.data.length === 0) {
+      setNotice(DELETE_REJECTED);
+    } else {
+      // Odstraní jen skutečně smazané řádky — část mohla politika odmítnout.
+      const deleted = new Set(res.data.map((r: { id: string }) => r.id));
+      setNotice(null);
+      setNotifications((prev) => prev.filter((n) => !deleted.has(n.id)));
+    }
+    setMarkingId(null);
+  };
+
+  const readIds = useMemo(() => notifications.filter((n) => n.is_read).map((n) => n.id), [notifications]);
+
   const markAllAsRead = async () => {
     const unreadIds = notifications.filter((n) => !n.is_read).map((n) => n.id);
     if (unreadIds.length === 0) return;
@@ -121,9 +177,9 @@ export default function NotificationBell() {
     <div className="relative shrink-0" ref={containerRef}>
       <button
         type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={toggleOpen}
         className="relative p-2 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-slate-700"
-        title="Zprávy od správce"
+        title="Oznámení"
         aria-label="Oznámení"
       >
         <Bell className="w-4 h-4" />
@@ -144,16 +200,33 @@ export default function NotificationBell() {
             className="absolute right-0 top-full mt-2 w-80 max-w-[90vw] max-h-[70vh] overflow-y-auto bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl p-3 space-y-2 z-50 backdrop-blur-xl"
           >
             <div className="flex items-center justify-between px-1 pb-2 border-b border-slate-800">
-              <span className="font-bold text-sm text-white">Zprávy</span>
-              {unreadCount > 0 && (
-                <button
-                  type="button"
-                  onClick={markAllAsRead}
-                  className="flex items-center gap-1 text-[11px] font-semibold text-blue-400 hover:text-blue-300 cursor-pointer transition-colors"
-                >
-                  <CheckCheck className="w-3.5 h-3.5" /> Označit vše jako přečtené
-                </button>
-              )}
+              <span className="font-bold text-sm text-white">Oznámení</span>
+              <div className="flex items-center gap-3">
+                {unreadCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={markAllAsRead}
+                    className="flex items-center gap-1 text-[11px] font-semibold text-blue-400 hover:text-blue-300 cursor-pointer transition-colors"
+                  >
+                    <CheckCheck className="w-3.5 h-3.5" /> Vše přečteno
+                  </button>
+                )}
+                {readIds.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => deleteNotifications(readIds)}
+                    disabled={markingId !== null}
+                    className="flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-red-300 cursor-pointer transition-colors disabled:opacity-50"
+                  >
+                    {markingId === 'bulk' ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-3.5 h-3.5" />
+                    )}
+                    Smazat přečtené
+                  </button>
+                )}
+              </div>
             </div>
 
             {notice && (
@@ -194,15 +267,27 @@ export default function NotificationBell() {
                       <div className="text-[11px] mt-1 whitespace-pre-wrap break-words opacity-90">{n.body}</div>
                       <div className="text-[10px] mt-1.5 opacity-60">{formatDateTime(n.created_at)}</div>
                     </div>
-                    {!n.is_read && (
+                    {!n.is_read ? (
                       <button
                         type="button"
                         onClick={() => markAsRead(n)}
                         disabled={markingId === n.id}
                         title="Označit jako přečtené"
+                        aria-label="Označit jako přečtené"
                         className="shrink-0 p-1.5 rounded-lg text-blue-300 hover:text-white hover:bg-blue-800/50 transition-colors cursor-pointer disabled:opacity-50"
                       >
                         {markingId === n.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => deleteNotifications([n.id])}
+                        disabled={markingId !== null}
+                        title="Smazat oznámení"
+                        aria-label={`Smazat oznámení ${n.title}`}
+                        className="shrink-0 p-1.5 rounded-lg text-slate-500 hover:text-red-300 hover:bg-red-900/30 transition-colors cursor-pointer disabled:opacity-50"
+                      >
+                        {markingId === n.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                       </button>
                     )}
                   </div>

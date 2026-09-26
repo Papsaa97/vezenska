@@ -184,7 +184,10 @@ async function listFolder(folder: string): Promise<StudyMaterial[]> {
       .from(MATERIALS_BUCKET)
       .list(folder, { limit: PAGE_SIZE, offset, sortBy: { column: 'name', order: 'asc' } });
 
-    if (error || !data) break;
+    // Storage chybu nevyhazuje, vrací ji. Dřív se tu tiše přerušilo čtení
+    // a výpadek se tvářil jako prázdná knihovna („Žádné materiály“).
+    if (error) throw new Error(error.message);
+    if (!data) break;
 
     for (const obj of data) {
       if (obj.name === '.emptyFolderPlaceholder') continue;

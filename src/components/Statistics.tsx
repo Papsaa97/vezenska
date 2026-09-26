@@ -80,8 +80,36 @@ export default function Statistics({
       list = list.filter(item => now - item.timestamp <= 30 * 24 * 3600 * 1000);
     }
 
+    // Filtr předmětu se uplatňuje na jednotlivé odpovědi, ne jen na celé testy.
+    // Dřív prošel smíšený test (a každý test „Všechny předměty“, i bez jediné
+    // otázky z vybraného předmětu) celý, takže se do úspěšnosti, slabých okruhů
+    // i grafů započítaly odpovědi z úplně jiných předmětů. Test, ze kterého do
+    // předmětu patří jen část otázek, se proto zúží na tu část a jeho skóre se
+    // přepočítá; test bez jediné takové otázky ze seznamu vypadne.
     if (selectedSubjectFilter !== 'all') {
-      list = list.filter(item => item.subject === 'all' || item.subject === selectedSubjectFilter || item.attempts.some(a => a.subject === selectedSubjectFilter));
+      list = list.flatMap((item): QuizSessionRecord[] => {
+        // Starší záznamy bez jednotlivých odpovědí jde posoudit jen podle předmětu testu.
+        if (item.attempts.length === 0) {
+          return item.subject === selectedSubjectFilter ? [item] : [];
+        }
+        const matching = item.attempts.filter(a => a.subject === selectedSubjectFilter);
+        if (matching.length === 0) return [];
+        if (matching.length === item.attempts.length) return [item];
+
+        const correct = matching.filter(a => a.isCorrect).length;
+        const share = matching.length / item.attempts.length;
+        return [{
+          ...item,
+          attempts: matching,
+          totalQuestions: matching.length,
+          correctAnswers: correct,
+          accuracy: Math.round((correct / matching.length) * 100),
+          // Čas se po otázkách neměří; podíl podle počtu otázek je nejlepší odhad.
+          timeSpentSeconds: item.timeSpentSeconds !== undefined ? Math.round(item.timeSpentSeconds * share) : undefined,
+          correctInLimit: undefined,
+          correctAfterLimit: undefined,
+        }];
+      });
     }
 
     return list.sort((a, b) => a.timestamp - b.timestamp);
@@ -1027,9 +1055,15 @@ export default function Statistics({
         title="Vymazat celou historii testů?"
         description={
           <>
-            Smaže se <strong>všech {history.length} záznamů</strong> o absolvovaných testech
-            i historie pexesa — a to i ze serveru, tedy na všech vašich zařízeních. Přijdete
-            tím o statistiky, XP z testů a hodnostní postup. Vrátit to zpět nelze.
+            {/* Text musí odpovídat tomu, co handleClearHistory v App opravdu dělá:
+                výsledky testů maže na serveru, historii pexesa jen v úložišti
+                tohoto zařízení (na server se nikdy neposílá) a splněných scénářů
+                a drilů se nedotkne. Dřív tu stálo, že se vše smaže na všech
+                zařízeních — pexeso ale na ostatních zařízeních zůstávalo. */}
+            Smaže se <strong>všech {history.length} záznamů</strong> o absolvovaných testech,
+            a to i ze serveru, takže zmizí na všech vašich zařízeních. Historie pexesa se
+            smaže <strong>jen v tomto zařízení</strong>. Přijdete tím o statistiky a XP z testů
+            a pexesa; splněné scénáře a drily zůstávají. Vrátit to zpět nelze.
           </>
         }
         confirmLabel="Vymazat historii"

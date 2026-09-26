@@ -28,6 +28,7 @@ const Statistics           = lazy(() => import('./components/Statistics'));
 const MaterialLibrary      = lazy(() => import('./components/MaterialLibrary'));
 const ContentManager       = lazy(() => import('./components/ContentManager'));
 import { useDialog } from './hooks/useDialog';
+import ConfirmDialog from './components/common/ConfirmDialog';
 import { matchingCategories } from './data/questions/matching';
 import { tacticalScenarios } from './data/scenariosData';
 import { 
@@ -53,7 +54,15 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord, Question } from './types';
-import { loadMatchingHistory, saveMatchingHistory, updateDailyStreak } from './utils/gamification';
+import {
+  FAVORITES_KEY,
+  FAVORITES_SYNCED_EVENT,
+  loadMatchingHistory,
+  saveFavoriteIds,
+  saveMatchingHistory,
+  subjectsWithQuestions,
+  updateDailyStreak,
+} from './utils/gamification';
 import { fetchQuizHistory, saveQuizResult, clearQuizHistory } from './utils/quizResults';
 import {
   enqueuePendingResult,
@@ -66,11 +75,10 @@ import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import { getHiddenQuestionIds, isQuestionHidden } from './utils/questionActions';
-import { getStorageOwner, readScoped, readScopedRaw, writeScoped } from './utils/userScopedStorage';
+import { getStorageOwner, readScoped, readScopedRaw } from './utils/userScopedStorage';
 import { useProgressRevision, useStorageOwner } from './hooks/useProgressRevision';
 
 /** Oblíbené otázky uživatele (klíč se v úložišti doplní id účtu). */
-const FAVORITES_KEY = 'vscr_favorites';
 
 /** Spinner zobrazený při lazy-loadingu view komponent. */
 function TabLoader({ isDark }: { isDark?: boolean }) {
@@ -104,7 +112,7 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState<NavTab>(getInitialTab);
   const [favorites, setFavorites] = useState<string[]>(() => readScoped<string[]>(FAVORITES_KEY, []));
-  const [quizPreset, setQuizPreset] = useState<{ subject?: string }>({});
+  const [quizPreset, setQuizPreset] = useState<{ subject?: string; topic?: string }>({});
   const [flashcardPresetSubject, setFlashcardPresetSubject] = useState<string | undefined>(undefined);
   const [customQuestions, setCustomQuestions] = useState<Question[] | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -143,7 +151,8 @@ export default function App() {
     setAllQuestions(
       sourceQuestions.map(q => ({
         ...q,
-        is_hidden: q.is_hidden === true || hiddenSet.has(q.id),
+        // Z databáze platí její is_hidden; místní seznam jen pro výchozí banku.
+        is_hidden: fromDb ? q.is_hidden === true : q.is_hidden === true || hiddenSet.has(q.id),
       }))
     );
     setQuestionsSource(fromDb ? 'supabase' : 'local');
@@ -303,6 +312,15 @@ export default function App() {
     return [...quizHistory, ...extra].sort((a, b) => a.timestamp - b.timestamp);
   }, [quizHistory, pendingResults]);
 
+  // Předměty, ze kterých jde v bance udělat test — cíl odznaku „Všeuměl
+  // Akademie“. Počítá se jednou tady a stejné pole jde do hlavičky i do Odznaků,
+  // aby se XP v obou místech shodovalo. Skryté otázky se nepočítají ani lektorovi:
+  // cíl má být pro všechny stejný.
+  const availableSubjects = useMemo(
+    () => subjectsWithQuestions(allQuestions.filter(q => (q.options?.length ?? 0) > 0 && !isQuestionHidden(q))),
+    [allQuestions]
+  );
+
   // Historie pexesa a oblíbené otázky patří účtu, ne zařízení — viz
   // utils/userScopedStorage. Přečtou se znovu, jakmile se změní vlastník
   // (přihlášení / odhlášení) nebo kdykoli jiná část aplikace do postupu zapíše.
@@ -351,8 +369,17 @@ export default function App() {
     const serialized = JSON.stringify(favorites);
     const stored = readScopedRaw(FAVORITES_KEY);
     if (stored === serialized || (stored === null && favorites.length === 0)) return;
-    writeScoped(FAVORITES_KEY, favorites);
+    // I k účtu — dřív oblíbené otázky žily jen v tomto zařízení.
+    saveFavoriteIds('fav_question', favorites);
   }, [favorites]);
+
+  // Po přihlášení se oblíbené sloučí se serverem (syncCompletedProgress);
+  // stav tu se pak musí načíst znovu, jinak by ho další zápis přepsal.
+  useEffect(() => {
+    const reload = () => setFavorites(readScoped<string[]>(FAVORITES_KEY, []));
+    window.addEventListener(FAVORITES_SYNCED_EVENT, reload);
+    return () => window.removeEventListener(FAVORITES_SYNCED_EVENT, reload);
+  }, []);
 
   useEffect(() => {
     if (favoritesOwnerRef.current === storageOwner) return;
@@ -393,7 +420,7 @@ export default function App() {
    * maže: jinak „Zkouška“ ve spodní liště navždy startovala s předmětem
    * z posledního kliknutí v Předmětech.
    */
-  const navigateToTab = useCallback((tab: NavTab, options?: { keepContext?: boolean }) => {
+  const navigateToTabNow = useCallback((tab: NavTab, options?: { keepContext?: boolean }) => {
     if (!options?.keepContext && (tab === 'quiz' || tab === 'flashcards')) {
       setCustomQuestions(null);
       setQuizPreset({});
@@ -411,7 +438,7 @@ export default function App() {
     window.history.pushState({ tab }, '', `#${tab}`);
   }, [historyIndex, navHistory]);
 
-  const handleGoBack = useCallback(() => {
+  const goBackNow = useCallback(() => {
     if (historyIndex > 0) {
       const prevIndex = historyIndex - 1;
       const prevTab = navHistory[prevIndex];
@@ -423,7 +450,7 @@ export default function App() {
     }
   }, [historyIndex, navHistory]);
 
-  const handleGoForward = useCallback(() => {
+  const goForwardNow = useCallback(() => {
     if (historyIndex < navHistory.length - 1) {
       const nextIndex = historyIndex + 1;
       const nextTab = navHistory[nextIndex];
@@ -434,6 +461,55 @@ export default function App() {
       window.history.forward();
     }
   }, [historyIndex, navHistory]);
+
+  // Pojistka proti ztrátě rozepsaného testu.
+  //
+  // Přepnutí záložky Quiz odpojí a s ním celý stav testu — odpovědi, odpočet
+  // i ostrou zkoušku. Dřív na to stačilo ťuknout do spodní lišty nebo nechtěně
+  // švihnout prstem do strany. Quiz proto hlásí, že test běží (onPlayingChange),
+  // a navigace se v tu chvíli nejdřív zeptá. Odložená akce čeká v refu: je to
+  // funkce, a ta se do stavu ukládat nemá (setState by ji zavolal jako updater).
+  const [isQuizPlaying, setIsQuizPlaying] = useState<boolean>(false);
+  const [isLeaveQuizDialogOpen, setIsLeaveQuizDialogOpen] = useState<boolean>(false);
+  const pendingNavigationRef = useRef<(() => void) | null>(null);
+
+  const guardQuizNavigation = useCallback((action: () => void) => {
+    if (activeTab === 'quiz' && isQuizPlaying) {
+      pendingNavigationRef.current = action;
+      setIsLeaveQuizDialogOpen(true);
+      return;
+    }
+    action();
+  }, [activeTab, isQuizPlaying]);
+
+  const navigateToTab = useCallback((tab: NavTab, options?: { keepContext?: boolean }) => {
+    // Na tutéž záložku se test neodpojí, není se na co ptát.
+    if (tab === activeTab) {
+      navigateToTabNow(tab, options);
+      return;
+    }
+    guardQuizNavigation(() => navigateToTabNow(tab, options));
+  }, [activeTab, guardQuizNavigation, navigateToTabNow]);
+
+  const handleGoBack = useCallback(() => {
+    guardQuizNavigation(goBackNow);
+  }, [guardQuizNavigation, goBackNow]);
+
+  const handleGoForward = useCallback(() => {
+    guardQuizNavigation(goForwardNow);
+  }, [guardQuizNavigation, goForwardNow]);
+
+  const confirmLeaveQuiz = () => {
+    const action = pendingNavigationRef.current;
+    pendingNavigationRef.current = null;
+    setIsLeaveQuizDialogOpen(false);
+    action?.();
+  };
+
+  const cancelLeaveQuiz = () => {
+    pendingNavigationRef.current = null;
+    setIsLeaveQuizDialogOpen(false);
+  };
 
   // Synchronizace aktivní záložky do URL hash a localStorage pro zachování pozice při refresh
   useEffect(() => {
@@ -569,9 +645,11 @@ export default function App() {
     setMatchingHistory(prev => [record, ...prev]);
   };
 
-  const handleStartSubjectQuiz = (subject: string) => {
+  // Okruh je nepovinný: Předměty a Etika spouštějí test z celého předmětu,
+  // Statistiky („Procvičit nejslabší okruh“, „Drilovat“) z jednoho okruhu.
+  const handleStartSubjectQuiz = (subject: string, topic?: string) => {
     setCustomQuestions(null);
-    setQuizPreset({ subject });
+    setQuizPreset({ subject, topic });
     navigateToTab('quiz', { keepContext: true });
   };
 
@@ -633,6 +711,7 @@ export default function App() {
           canGoForward={canGoForward}
           onGoBack={handleGoBack}
           onGoForward={handleGoForward}
+          availableSubjects={availableSubjects}
         />
         <OfflineBanner
           pendingResultCount={pendingResults.length}
@@ -699,6 +778,8 @@ export default function App() {
               onSaveQuizResult={handleSaveQuizResult}
               onNavigateToBadges={() => navigateToTab('badges')}
               presetSubject={quizPreset.subject}
+              presetTopic={quizPreset.topic}
+              onPlayingChange={setIsQuizPlaying}
               questionsSource={questionsSource}
             />
           )
@@ -727,7 +808,10 @@ export default function App() {
 
         {activeTab === 'ethics' && (
           <div className="w-full h-full overflow-y-auto pr-1">
-            <ProfessionalEthics onStartSubjectQuiz={handleStartSubjectQuiz} />
+            <ProfessionalEthics
+              onStartSubjectQuiz={handleStartSubjectQuiz}
+              questionCount={allQuestions.filter(q => q.subject === 'Profesní etika' && (isPrivileged || !isQuestionHidden(q))).length}
+            />
           </div>
         )}
 
@@ -774,6 +858,7 @@ export default function App() {
               matchingHistory={matchingHistory}
               onStartQuiz={() => navigateToTab('quiz')}
               onStartMatching={() => navigateToTab('matching')}
+              availableSubjects={availableSubjects}
             />
           </div>
         )}
@@ -1152,6 +1237,22 @@ export default function App() {
           </>
         )}
       </AnimatePresence>
+
+      <ConfirmDialog
+        isOpen={isLeaveQuizDialogOpen}
+        tone="danger"
+        title="Opustit rozpracovaný test?"
+        description={
+          <>
+            Test ještě není dokončený. Když teď odejdete, <strong>vaše odpovědi se neuloží</strong>{' '}
+            a do statistik ani XP se nezapočítají.
+          </>
+        }
+        confirmLabel="Opustit test"
+        cancelLabel="Pokračovat v testu"
+        onConfirm={confirmLeaveQuiz}
+        onCancel={cancelLeaveQuiz}
+      />
         </div>
       </ProtectedRoute>
     </ErrorBoundary>

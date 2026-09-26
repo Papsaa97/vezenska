@@ -64,6 +64,48 @@ function isDueForReview(box: number, lastReviewedISO: string | undefined): boole
   return Date.now() - last >= interval * MS_PER_DAY;
 }
 
+/** Kdy bude kartička zase na řadě (ms od epochy); u nikdy neopakované teď. */
+function nextReviewAt(box: number, lastReviewedISO: string | undefined): number {
+  if (!lastReviewedISO) return Date.now();
+  const last = new Date(lastReviewedISO).getTime();
+  if (Number.isNaN(last)) return Date.now();
+  return last + (LEITNER_INTERVAL_DAYS[box] ?? 1) * MS_PER_DAY;
+}
+
+interface DeckFilters {
+  subject: string;
+  favoritesOnly: boolean;
+  favorites: string[];
+  search: string;
+}
+
+/**
+ * Filtry balíčku kromě Leitnerovy krabičky: předmět, oblíbené, hledání.
+ *
+ * Společný základ pro balíček i pro počty v krabičkách. Dřív se počty
+ * (B1–B5, „dnes k opakování“) počítaly ze všech předmětů, kdežto balíček
+ * respektoval filtry — u „dnes 40“ se pak otevřel prázdný balíček.
+ */
+function filterDeckBase(questions: Question[], filters: DeckFilters): Question[] {
+  let filtered = questions;
+  if (filters.subject !== 'all') {
+    const normSel = normalizeSubject(filters.subject);
+    filtered = filtered.filter(q => q?.subject && (q.subject === filters.subject || normalizeSubject(q.subject) === normSel));
+  }
+  if (filters.favoritesOnly) {
+    filtered = filtered.filter(q => q?.id && filters.favorites.includes(q.id));
+  }
+  if (filters.search.trim()) {
+    const lowerQuery = filters.search.toLowerCase();
+    filtered = filtered.filter(q =>
+      (q?.question || '').toLowerCase().includes(lowerQuery) ||
+      (q?.answer || '').toLowerCase().includes(lowerQuery) ||
+      (q?.topic || '').toLowerCase().includes(lowerQuery)
+    );
+  }
+  return filtered;
+}
+
 interface FlashcardsProps {
   questions: Question[];
   favorites: string[];
@@ -175,16 +217,13 @@ export default function Flashcards({
 
   /** Složí balíček podle právě nastavených filtrů. */
   const buildDeck = useCallback((): Question[] => {
-    let filtered = accessibleQuestions;
+    let filtered = filterDeckBase(accessibleQuestions, {
+      subject: selectedSubject,
+      favoritesOnly: showOnlyFavorites,
+      favorites: favoritesRef.current || [],
+      search: searchQuery,
+    });
 
-    if (selectedSubject !== 'all') {
-      const normSel = normalizeSubject(selectedSubject);
-      filtered = filtered.filter(q => q?.subject && (q.subject === selectedSubject || normalizeSubject(q.subject) === normSel));
-    }
-    if (showOnlyFavorites) {
-      const favs = favoritesRef.current || [];
-      filtered = filtered.filter(q => q?.id && favs.includes(q.id));
-    }
     if (isLeitnerMode && selectedLeitnerBox === 'due') {
       filtered = filtered.filter(q => {
         if (!q?.id) return false;
@@ -196,14 +235,6 @@ export default function Flashcards({
         const box = q?.id ? (leitnerBoxesRef.current[q.id] || 1) : 1;
         return box === selectedLeitnerBox;
       });
-    }
-    if (searchQuery.trim()) {
-      const lowerQuery = searchQuery.toLowerCase();
-      filtered = filtered.filter(q =>
-        (q?.question || '').toLowerCase().includes(lowerQuery) ||
-        (q?.answer || '').toLowerCase().includes(lowerQuery) ||
-        (q?.topic || '').toLowerCase().includes(lowerQuery)
-      );
     }
     return filtered;
   }, [accessibleQuestions, selectedSubject, showOnlyFavorites, isLeitnerMode, selectedLeitnerBox, searchQuery]);
@@ -362,17 +393,38 @@ export default function Flashcards({
   // Obsazenost krabiček a počet kartiček splatných k dnešnímu opakování.
   // Jedním průchodem, ne šesti — dřív se pole procházelo pro každou krabičku
   // zvlášť a bez memoizace při každém renderu.
-  const { boxCounts, dueCount } = useMemo(() => {
+  //
+  // Počítá se ze stejného základu jako balíček (filterDeckBase), jen bez filtru
+  // krabičky — jinak by čísla u krabiček slibovala kartičky, které balíček
+  // s právě nastaveným předmětem nebo hledáním vůbec nenabídne.
+  const { boxCounts, dueCount, baseCount, nextDueAt } = useMemo(() => {
+    const base = filterDeckBase(accessibleQuestions, {
+      subject: selectedSubject,
+      favoritesOnly: showOnlyFavorites,
+      favorites,
+      search: searchQuery,
+    });
     const counts = [0, 0, 0, 0, 0, 0];
     let due = 0;
-    for (const q of accessibleQuestions) {
+    let soonest = Number.POSITIVE_INFINITY;
+    for (const q of base) {
       if (!q?.id) continue;
       const box = leitnerBoxes[q.id] || 1;
       if (box >= 1 && box <= 5) counts[box] += 1;
       if (isDueForReview(box, leitnerReviews[q.id])) due += 1;
+      else soonest = Math.min(soonest, nextReviewAt(box, leitnerReviews[q.id]));
     }
-    return { boxCounts: counts, dueCount: due };
-  }, [accessibleQuestions, leitnerBoxes, leitnerReviews]);
+    return {
+      boxCounts: counts,
+      dueCount: due,
+      baseCount: base.length,
+      nextDueAt: Number.isFinite(soonest) ? soonest : null,
+    };
+  }, [accessibleQuestions, selectedSubject, showOnlyFavorites, favorites, searchQuery, leitnerBoxes, leitnerReviews]);
+
+  // Prázdná fronta „dnes k opakování“ při neprázdném výběru není chyba filtru,
+  // ale splněný úkol: vše, co bylo na řadě, je zopakované.
+  const isDueQueueDone = isLeitnerMode && selectedLeitnerBox === 'due' && baseCount > 0 && shuffledQuestions.length === 0;
 
   const [, box1Count, box2Count, box3Count, box4Count, box5Count] = boxCounts;
 
@@ -639,7 +691,25 @@ export default function Flashcards({
 
       {/* Main Flashcard Area */}
       <section className="flex-1 flex flex-col min-h-[100dvh] md:min-h-0 h-auto md:h-full overflow-y-auto md:overflow-hidden shrink-0">
-        {shuffledQuestions.length === 0 ? (
+        {isDueQueueDone ? (
+          <div role="status" className="w-full h-full bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-12 text-center">
+            <CheckCircle2 className="w-12 h-12 text-emerald-500 mb-3" aria-hidden="true" />
+            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Hotovo pro dnešek</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 max-w-sm">
+              Všechny kartičky, které byly dnes na řadě, máte zopakované.
+              {nextDueAt !== null && (
+                <> Další budou na řadě {new Date(nextDueAt).toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'numeric' })}.</>
+              )}
+            </p>
+            <button
+              type="button"
+              onClick={() => setSelectedLeitnerBox('all')}
+              className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+            >
+              Procvičit i ostatní kartičky
+            </button>
+          </div>
+        ) : shuffledQuestions.length === 0 ? (
           <div className="w-full h-full bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-12 text-center">
             <p className="text-slate-500 dark:text-slate-400 mb-2">Nenalezeny žádné otázky odpovídající filtrům.</p>
             <button 

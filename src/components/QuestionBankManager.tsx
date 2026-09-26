@@ -20,6 +20,8 @@ import {
   RotateCcw,
   Printer,
   Download,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { writeFailure } from '../utils/supabaseWrite';
@@ -67,6 +69,8 @@ export interface QuizQuestionItem {
   rationale?: string | null;
   created_at?: string;
   created_by?: string | null;
+  /** Skrytá studentům (sloupec is_hidden). */
+  is_hidden: boolean;
 }
 
 interface QuestionFormData {
@@ -133,6 +137,7 @@ function parseQuestionRow(row: SupabaseQuizQuestionRow): QuizQuestionItem {
     correct_option: correctIdx >= 0 && correctIdx < 4 ? correctIdx : 0,
     answer: String(row.answer ?? fixedOptions[correctIdx] ?? ''),
     rationale: explanation,
+    is_hidden: row.is_hidden === true,
     created_at: row.created_at ? String(row.created_at) : undefined,
     created_by: row.created_by ? String(row.created_by) : null,
   };
@@ -163,6 +168,11 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
   const [questions, setQuestions] = useState<QuizQuestionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [tableMissing, setTableMissing] = useState(false);
+  // Chyba načtení jiná než chybějící tabulka. Dřív se tvářila jako prázdná
+  // banka („vytvořte svou první otázku“) a nechávala zapnutý i import
+  // s přepsáním — nad falešně prázdnou bankou.
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const [filterSubject, setFilterSubject] = useState<string>('all');
 
   // Předměty, které lektor přidal v záložce Předměty, musí jít vybrat i tady —
@@ -200,6 +210,7 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
   const fetchQuestions = useCallback(async () => {
     setLoading(true);
     setTableMissing(false);
+    setLoadError(null);
     try {
       const { data, error } = await supabase
         .from('quiz_questions')
@@ -213,6 +224,7 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
           setTableMissing(true);
         } else {
           console.error('[QuizQuestions] Chyba při načítání:', error);
+          setLoadError(`Otázky se nepodařilo načíst (${error.message}).`);
         }
         setQuestions([]);
       } else if (data) {
@@ -221,6 +233,7 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
       }
     } catch (err) {
       console.error('[QuizQuestions] Neznámá chyba:', err);
+      setLoadError(`Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`);
     } finally {
       setLoading(false);
     }
@@ -363,6 +376,25 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
   };
 
   // ── Delete Handler ──
+  // Skrytí přímo ze správce banky. Dřív to šlo jen z Předmětů a Kartiček
+  // a skrytá otázka tu vypadala stejně jako zveřejněná.
+  const handleToggleHidden = async (q: QuizQuestionItem) => {
+    setTogglingId(q.id);
+    const res = await supabase
+      .from('quiz_questions')
+      .update({ is_hidden: !q.is_hidden })
+      .eq('id', q.id)
+      .select('id');
+    setTogglingId(null);
+    const failure = res.error ? res.error.message : writeFailure('Otázku', res);
+    if (failure) {
+      setNotice({ tone: 'error', title: 'Viditelnost se nezměnila', description: failure });
+      return;
+    }
+    setQuestions((prev) => prev.map((item) => (item.id === q.id ? { ...item, is_hidden: !q.is_hidden } : item)));
+    window.dispatchEvent(new CustomEvent('vscr:questions_updated'));
+  };
+
   const handleDelete = async (id: string) => {
     setDeletingId(id);
     try {
@@ -429,7 +461,7 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
           tone: 'error',
           title: 'Otázka se nesmazala — chybí oprávnění',
           description:
-            'Server mazání přijal, ale neodstranil žádný řádek. Bývá to politikou RLS pro DELETE nad tabulkou quiz_questions: mazat smí jen správce. Obraťte se na správce systému.',
+            'Server mazání přijal, ale neodstranil žádný řádek. Bývá to politikou RLS pro DELETE nad tabulkou quiz_questions: mazat smí jen lektor nebo správce. Zkontrolujte svou roli, případně se obraťte na správce systému.',
         });
       } else {
         setQuestions((prev) => prev.filter((q) => q.id !== id));
@@ -919,7 +951,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
         <button
           type="button"
           onClick={() => setPendingImport('upsert')}
-          disabled={isImporting || tableMissing}
+          disabled={isImporting || tableMissing || loadError !== null}
           className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-bold shadow-sm shadow-blue-500/25 transition-all cursor-pointer whitespace-nowrap"
         >
           {isImporting ? (
@@ -931,7 +963,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
         <button
           type="button"
           onClick={() => setPendingImport('overwrite')}
-          disabled={isImporting || tableMissing}
+          disabled={isImporting || tableMissing || loadError !== null}
           className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white text-xs font-bold shadow-sm shadow-red-500/25 transition-all cursor-pointer whitespace-nowrap"
         >
           <UploadCloud className="w-4 h-4" /> Přepsat banku novou revizí
@@ -1029,7 +1061,21 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
         )}
 
         {/* Empty state */}
-        {!loading && questions.length === 0 && !tableMissing && (
+        {!loading && loadError && (
+          <div role="alert" className="p-4 rounded-2xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 text-sm text-red-700 dark:text-red-300 flex flex-wrap items-center justify-between gap-3 no-print">
+            <span>{loadError}</span>
+            <button
+              type="button"
+              onClick={() => void fetchQuestions()}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold cursor-pointer"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Zkusit znovu
+            </button>
+          </div>
+        )}
+
+        {!loading && questions.length === 0 && !tableMissing && !loadError && (
           <div className="p-8 text-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/40 space-y-2 no-print">
             <HelpCircle className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
             <div className="font-semibold text-sm text-slate-700 dark:text-slate-300">
@@ -1080,6 +1126,11 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
                             · {new Date(q.created_at).toLocaleDateString('cs-CZ')}
                           </span>
                         )}
+                        {q.is_hidden && (
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 no-print">
+                            Skryto studentům
+                          </span>
+                        )}
                         {isEditing && (
                           <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 no-print">
                             Právě editujete
@@ -1125,6 +1176,15 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
                             title="Upravit otázku"
                           >
                             <Edit3 className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void handleToggleHidden(q)}
+                            disabled={togglingId === q.id}
+                            aria-label={q.is_hidden ? 'Zveřejnit otázku studentům' : 'Skrýt otázku studentům'}
+                            className="p-2 rounded-xl text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all cursor-pointer disabled:opacity-50"
+                          >
+                            {q.is_hidden ? <EyeOff className="w-4 h-4 text-amber-500" /> : <Eye className="w-4 h-4" />}
                           </button>
                           <button
                             type="button"

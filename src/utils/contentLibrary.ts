@@ -4,6 +4,7 @@ import { SubjectInfo, subjectsMeta } from '../data/questions/subjectsInfo';
 import { Scenario, ScenarioStep, ScenarioChoice } from '../data/scenariosData';
 import { StoppageDrill, WeaponData, WeaponStep } from '../data/weaponsData';
 import { Jidelnicek } from '../data/jidelnicek';
+import { VscrRegulation } from '../data/vscrRegulationsRegistry';
 
 // ─── Editovatelný obsah záložek ──────────────────────────────────────────────
 //
@@ -25,7 +26,7 @@ import { Jidelnicek } from '../data/jidelnicek';
 
 /**
  * Druhy obsahu. Musí odpovídat CHECK `content_blocks_kind_check` v databázi —
- * 'weapon', 'stoppage_drill' a 'jidelnicek' přidává migrace 040.
+ * 'weapon', 'stoppage_drill' a 'jidelnicek' přidává migrace 040, 'regulation' migrace 041.
  */
 export type ContentKind =
   | 'subject'
@@ -33,7 +34,8 @@ export type ContentKind =
   | 'scenario'
   | 'weapon'
   | 'stoppage_drill'
-  | 'jidelnicek';
+  | 'jidelnicek'
+  | 'regulation';
 
 /**
  * Předměty tak, jak jsou v repozitáři. Překryv z databáze je může přepsat,
@@ -395,6 +397,43 @@ function normalizeJidelnicek(value: unknown): Jidelnicek | null {
   };
 }
 
+const REGULATION_TYPES: VscrRegulation['type'][] = ['zakon', 'vyhlaska', 'ngr', 'instrukce', 'ustava_mezinarodni'];
+const REGULATION_IMPORTANCE: VscrRegulation['importanceForZOP'][] = [
+  'Klíčový (ZOP A)',
+  'Velmi vysoký',
+  'Vysoký',
+  'Informační',
+];
+
+function normalizeRegulation(value: unknown): VscrRegulation | null {
+  const raw = record(value);
+  if (!raw) return null;
+  const id = str(raw.id).trim();
+  const code = str(raw.code).trim();
+  const title = str(raw.title).trim();
+  if (!id || !code || !title) return null;
+  const type = REGULATION_TYPES.find((t) => t === raw.type) ?? 'ngr';
+  const importance = REGULATION_IMPORTANCE.find((i) => i === raw.importanceForZOP) ?? 'Vysoký';
+  return {
+    id,
+    code,
+    title,
+    shortTitle: str(raw.shortTitle).trim() || code,
+    type,
+    authority: str(raw.authority),
+    effectiveFrom: str(raw.effectiveFrom) || undefined,
+    lastAmendment: str(raw.lastAmendment) || undefined,
+    scope: str(raw.scope),
+    keyProvisions: strArray(raw.keyProvisions),
+    importanceForZOP: importance,
+    tags: strArray(raw.tags),
+    summary: str(raw.summary),
+    practicalApplication: str(raw.practicalApplication),
+    officialUrl: str(raw.officialUrl) || undefined,
+    fullLegalText: str(raw.fullLegalText),
+  };
+}
+
 const NORMALIZERS: Record<ContentKind, (value: unknown) => unknown> = {
   subject: normalizeSubject,
   matching_category: normalizeMatchingCategory,
@@ -402,6 +441,7 @@ const NORMALIZERS: Record<ContentKind, (value: unknown) => unknown> = {
   weapon: normalizeWeapon,
   stoppage_drill: normalizeStoppageDrill,
   jidelnicek: normalizeJidelnicek,
+  regulation: normalizeRegulation,
 };
 
 // ─── Čtení překryvu ──────────────────────────────────────────────────────────

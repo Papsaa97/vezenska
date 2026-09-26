@@ -42,7 +42,11 @@ export function setQuestionHiddenInStorage(questionId: string, isHidden: boolean
  * Zjistí, zda je otázka skrytá (kombinace příznaku v objektu a lokálního úložiště).
  */
 export function isQuestionHidden(question: Question): boolean {
-  if (question.is_hidden === true) return true;
+  // Příznak z databáze má přednost. Místní seznam je jen pro otázky, které
+  // příznak nemají (výchozí banka bez spojení se serverem) — dřív se k němu
+  // přičítal vždy, takže otázku, kterou jiný lektor zveřejnil, tohle zařízení
+  // dál skrývalo, i studentům na sdíleném počítači.
+  if (typeof question.is_hidden === 'boolean') return question.is_hidden;
   if (!question.id) return false;
   return getHiddenQuestionIds().has(question.id);
 }
@@ -56,18 +60,11 @@ export async function updateQuestionInSupabase(
   updatedQuestion: Question
 ): Promise<{ success: boolean; error?: string }> {
   const isHidden = updatedQuestion.is_hidden ?? false;
-  
-  // 1. Okamžitě synchronizuj lokální úložiště
-  if (updatedQuestion.id) {
-    setQuestionHiddenInStorage(updatedQuestion.id, isHidden);
-  }
 
-  // 2. Pokud jsme offline, lokální stav stačí
+  // Offline se změna neuloží nikam, kde by ji viděli studenti. Dřív se tu
+  // hlásil úspěch a stav se zapsal jen do tohoto zařízení.
   if (typeof navigator !== 'undefined' && !navigator.onLine) {
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('vscr:questions_updated', { detail: { question: updatedQuestion } }));
-    }
-    return { success: true };
+    return { success: false, error: 'Jste offline — změnu otázky teď nelze uložit na server.' };
   }
 
   const correctIdx = typeof updatedQuestion.correctOption === 'number'
@@ -166,6 +163,11 @@ export async function updateQuestionInSupabase(
     if (queryError) {
       console.error('[questionActions] Chyba Supabase při aktualizaci otázky:', queryError);
       return { success: false, error: queryError.message || 'Chyba při ukládání do databáze' };
+    }
+
+    // Místní seznam skrytých se zapíše až po potvrzení serverem.
+    if (updatedQuestion.id) {
+      setQuestionHiddenInStorage(updatedQuestion.id, isHidden);
     }
 
     // Upozorníme aplikaci na změnu

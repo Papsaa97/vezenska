@@ -15,6 +15,13 @@ interface QuizProps {
   onSaveQuizResult?: (result: QuizSessionRecord) => void;
   onNavigateToBadges?: () => void;
   presetSubject?: string;
+  /** Okruh (`Question.topic`), na který se má test zúžit — např. „Drilovat“ ve Statistikách. */
+  presetTopic?: string;
+  /**
+   * Hlásí App, jestli právě běží test. Podle toho se App před přepnutím záložky
+   * zeptá — odchod komponentu odpojí a rozepsaný test by zmizel beze stopy.
+   */
+  onPlayingChange?: (isPlaying: boolean) => void;
   questionsSource?: 'supabase' | 'local';
 }
 
@@ -33,6 +40,13 @@ const EXAM_TIME_LIMIT_MINUTES = 45;
  * vycházejí výrazně častěji. V aplikaci to bylo na pěti místech včetně skládání
  * ostré zkoušky.
  */
+/** „1 předmět“, „3 předměty“, „9 předmětů“. */
+function formatSubjectCount(count: number): string {
+  if (count === 1) return '1 předmět';
+  if (count >= 2 && count <= 4) return `${count} předměty`;
+  return `${count} předmětů`;
+}
+
 function shuffleArray<T>(items: T[]): T[] {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -49,6 +63,8 @@ export default function Quiz({
   onSaveQuizResult,
   onNavigateToBadges,
   presetSubject,
+  presetTopic,
+  onPlayingChange,
   questionsSource = 'local'
 }: QuizProps) {
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
@@ -58,6 +74,8 @@ export default function Quiz({
   
   // Setup state
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>(['all']);
+  /** Okruh, na který se test zužuje; null = celý předmět. Nastavuje ho jen předvolba z navigace. */
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [timeLimit, setTimeLimit] = useState<number | null>(null);
   const [questionCount, setQuestionCount] = useState<number>(10);
   const [isMistakesMode, setIsMistakesMode] = useState<boolean>(false);
@@ -110,26 +128,32 @@ export default function Quiz({
     [questions]
   );
 
-  // Handle preset subject from navigation
+  // Předvolba z navigace (Předměty, Statistiky). Okruh se nastavuje spolu
+  // s předmětem: dřív se z tlačítek „Procvičit nejslabší okruh“ a „Drilovat“
+  // do testu dostal jen předmět a okruh se cestou ztratil.
   useEffect(() => {
     if (presetSubject) {
       setSelectedSubjects([presetSubject]);
+      setSelectedTopic(presetTopic ?? null);
     }
-  }, [presetSubject]);
+  }, [presetSubject, presetTopic]);
 
-  const handleSubjectToggle = (subject: string) => {
-    if (subject === 'all') {
-      setSelectedSubjects(['all']);
-    } else {
-      let newSubjects = selectedSubjects.filter(s => s !== 'all');
-      if (newSubjects.includes(subject)) {
-        newSubjects = newSubjects.filter(s => s !== subject);
-      } else {
-        newSubjects.push(subject);
-      }
-      if (newSubjects.length === 0) newSubjects = ['all'];
-      setSelectedSubjects(newSubjects);
-    }
+  // Výběr předmětu je jednoduchý <select>, takže volba nahrazuje předchozí.
+  // Dřív ho obsluhoval přepínač pro vícenásobný výběr: každá volba se přičítala
+  // k předchozím, select přitom ukazoval jen první předmět a test se tiše skládal
+  // ze všech dosud zvolených — a ukládal jako „Kombinace předmětů“.
+  // Stav běhu testu pro App (viz onPlayingChange). Úklid při odpojení hlásí
+  // konec, ať po odchodu ze záložky nezůstane viset „test běží“.
+  const isPlaying = gameState === 'playing';
+  useEffect(() => {
+    onPlayingChange?.(isPlaying);
+  }, [isPlaying, onPlayingChange]);
+  useEffect(() => () => onPlayingChange?.(false), [onPlayingChange]);
+
+  const handleSubjectSelect = (subject: string) => {
+    // Okruh patří k předmětu z předvolby; jiná volba předmětu ho ruší.
+    setSelectedTopic(null);
+    setSelectedSubjects([subject || 'all']);
   };
 
   const shuffleQuestionOptions = (q: Question): Question => {
@@ -221,6 +245,13 @@ export default function Quiz({
       if (!selectedSubjects.includes('all')) {
         const normSelected = selectedSubjects.map(s => normalizeSubject(s));
         pool = pool.filter(q => q?.subject && (selectedSubjects.includes(q.subject) || normSelected.includes(normalizeSubject(q.subject))));
+      }
+      // Okruh zužuje předmět jen tehdy, když v něm nějaké otázky jsou. Statistiky
+      // nabízejí okruhy z historie, a ten mohl mezitím z banky zmizet nebo být
+      // přejmenován — pak je lepší procvičit celý předmět než skončit chybou.
+      if (selectedTopic) {
+        const topicPool = pool.filter(q => (q?.topic || 'Základní okruh') === selectedTopic);
+        if (topicPool.some(q => q?.options && q.options.length > 0)) pool = topicPool;
       }
     }
     
@@ -476,7 +507,8 @@ export default function Quiz({
     if (isExamMode && gameState === 'playing') {
       const answeredCount = Object.keys(answers).length;
       return (
-        <aside className="w-full md:w-72 flex flex-col gap-4 shrink-0">
+        // data-no-swipe: vodorovný tah přes paletu otázek nesmí přepnout záložku.
+        <aside data-no-swipe className="w-full md:w-72 flex flex-col gap-4 shrink-0">
           <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-5">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
@@ -594,7 +626,7 @@ export default function Quiz({
                 id={`${fieldIds}-0`} 
                 className="w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 dark:text-slate-200"
                 value={selectedSubjects[0]}
-                onChange={(e) => handleSubjectToggle(e.target.value)}
+                onChange={(e) => handleSubjectSelect(e.target.value)}
                 disabled={gameState === 'playing'}
               >
                 <option value="all">Všechny předměty (Souhrnný test)</option>
@@ -602,6 +634,19 @@ export default function Quiz({
                   <option key={subject} value={subject}>{getSubjectInfo(subject).name}</option>
                 ))}
               </select>
+              {selectedTopic && (
+                <div className="mt-2 flex items-center justify-between gap-2 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-1.5 text-[11px] text-blue-800 dark:text-blue-200">
+                  <span className="min-w-0 truncate">Okruh: <strong>{selectedTopic}</strong></span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTopic(null)}
+                    disabled={gameState === 'playing'}
+                    className="shrink-0 font-semibold underline hover:no-underline cursor-pointer"
+                  >
+                    Celý předmět
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className={isMistakesMode ? 'opacity-50 pointer-events-none' : ''}>
@@ -861,7 +906,8 @@ export default function Quiz({
             {/* Subject Breakdown Table (Screen only) */}
             <div className="my-6 no-print">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">
-                Výsledky podle jednotlivých předmětů (9 předmětů ZOP A):
+                {/* Počet se bere z testu, ne natvrdo: předměty v bance přibývají i mizí. */}
+                Výsledky podle jednotlivých předmětů ({formatSubjectCount(Object.keys(subjectBreakdown).length)}):
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {Object.entries(subjectBreakdown).map(([sub, stats]) => {
@@ -1133,8 +1179,10 @@ export default function Quiz({
     const progressPercent = ((currentIndex + 1) / quizQuestions.length) * 100;
     const isFlagged = flaggedQuestions.has(currentQ.id);
 
+    // data-no-swipe: během testu vodorovný tah záložku nepřepíná (viz swipe v App).
+    // Dřív stačil nechtěný tah při listování otázkou a test se ztratil.
     return (
-      <section className="flex-1 flex flex-col gap-4 h-full">
+      <section data-no-swipe className="flex-1 flex flex-col gap-4 h-full">
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col h-full overflow-hidden">
           
           {/* Progress Bar */}

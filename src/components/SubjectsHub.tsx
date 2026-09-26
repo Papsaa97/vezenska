@@ -213,6 +213,12 @@ export default function SubjectsHub({
   const handleToggleVisibility = async (q: Question) => {
     if (!canEdit || !q) return;
     const res = await toggleQuestionVisibilityInSupabase(q);
+    // Nepovedené skrytí se dřív tvářilo jako hotové a studenti otázku dál viděli.
+    if (!res.success) {
+      setSubjectActionError(res.error ?? 'Viditelnost otázky se nepodařilo uložit.');
+      return;
+    }
+    setSubjectActionError(null);
     const updated: Question = {
       ...q,
       is_hidden: res.isHidden,
@@ -518,6 +524,11 @@ export default function SubjectsHub({
 
         {/* Question Explorer Section */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+          {canEdit && subjectActionError && (
+            <p role="alert" className="p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 text-xs">
+              {subjectActionError}
+            </p>
+          )}
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
