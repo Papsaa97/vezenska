@@ -15,6 +15,8 @@ interface QuizProps {
   onSaveQuizResult?: (result: QuizSessionRecord) => void;
   onNavigateToBadges?: () => void;
   presetSubject?: string;
+  /** Okruh (`Question.topic`), na který se má test zúžit — např. „Drilovat“ ve Statistikách. */
+  presetTopic?: string;
   questionsSource?: 'supabase' | 'local';
 }
 
@@ -49,6 +51,7 @@ export default function Quiz({
   onSaveQuizResult,
   onNavigateToBadges,
   presetSubject,
+  presetTopic,
   questionsSource = 'local'
 }: QuizProps) {
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
@@ -58,6 +61,8 @@ export default function Quiz({
   
   // Setup state
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>(['all']);
+  /** Okruh, na který se test zužuje; null = celý předmět. Nastavuje ho jen předvolba z navigace. */
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [timeLimit, setTimeLimit] = useState<number | null>(null);
   const [questionCount, setQuestionCount] = useState<number>(10);
   const [isMistakesMode, setIsMistakesMode] = useState<boolean>(false);
@@ -110,14 +115,19 @@ export default function Quiz({
     [questions]
   );
 
-  // Handle preset subject from navigation
+  // Předvolba z navigace (Předměty, Statistiky). Okruh se nastavuje spolu
+  // s předmětem: dřív se z tlačítek „Procvičit nejslabší okruh“ a „Drilovat“
+  // do testu dostal jen předmět a okruh se cestou ztratil.
   useEffect(() => {
     if (presetSubject) {
       setSelectedSubjects([presetSubject]);
+      setSelectedTopic(presetTopic ?? null);
     }
-  }, [presetSubject]);
+  }, [presetSubject, presetTopic]);
 
   const handleSubjectToggle = (subject: string) => {
+    // Okruh patří k předmětu z předvolby; jiná volba předmětu ho ruší.
+    setSelectedTopic(null);
     if (subject === 'all') {
       setSelectedSubjects(['all']);
     } else {
@@ -221,6 +231,13 @@ export default function Quiz({
       if (!selectedSubjects.includes('all')) {
         const normSelected = selectedSubjects.map(s => normalizeSubject(s));
         pool = pool.filter(q => q?.subject && (selectedSubjects.includes(q.subject) || normSelected.includes(normalizeSubject(q.subject))));
+      }
+      // Okruh zužuje předmět jen tehdy, když v něm nějaké otázky jsou. Statistiky
+      // nabízejí okruhy z historie, a ten mohl mezitím z banky zmizet nebo být
+      // přejmenován — pak je lepší procvičit celý předmět než skončit chybou.
+      if (selectedTopic) {
+        const topicPool = pool.filter(q => (q?.topic || 'Základní okruh') === selectedTopic);
+        if (topicPool.some(q => q?.options && q.options.length > 0)) pool = topicPool;
       }
     }
     
@@ -602,6 +619,19 @@ export default function Quiz({
                   <option key={subject} value={subject}>{getSubjectInfo(subject).name}</option>
                 ))}
               </select>
+              {selectedTopic && (
+                <div className="mt-2 flex items-center justify-between gap-2 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-1.5 text-[11px] text-blue-800 dark:text-blue-200">
+                  <span className="min-w-0 truncate">Okruh: <strong>{selectedTopic}</strong></span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTopic(null)}
+                    disabled={gameState === 'playing'}
+                    className="shrink-0 font-semibold underline hover:no-underline cursor-pointer"
+                  >
+                    Celý předmět
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className={isMistakesMode ? 'opacity-50 pointer-events-none' : ''}>

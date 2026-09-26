@@ -110,7 +110,7 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState<NavTab>(getInitialTab);
   const [favorites, setFavorites] = useState<string[]>(() => readScoped<string[]>(FAVORITES_KEY, []));
-  const [quizPreset, setQuizPreset] = useState<{ subject?: string }>({});
+  const [quizPreset, setQuizPreset] = useState<{ subject?: string; topic?: string }>({});
   const [flashcardPresetSubject, setFlashcardPresetSubject] = useState<string | undefined>(undefined);
   const [customQuestions, setCustomQuestions] = useState<Question[] | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -585,9 +585,11 @@ export default function App() {
     setMatchingHistory(prev => [record, ...prev]);
   };
 
-  const handleStartSubjectQuiz = (subject: string) => {
+  // Okruh je nepovinný: Předměty a Etika spouštějí test z celého předmětu,
+  // Statistiky („Procvičit nejslabší okruh“, „Drilovat“) z jednoho okruhu.
+  const handleStartSubjectQuiz = (subject: string, topic?: string) => {
     setCustomQuestions(null);
-    setQuizPreset({ subject });
+    setQuizPreset({ subject, topic });
     navigateToTab('quiz', { keepContext: true });
   };
 
@@ -715,6 +717,7 @@ export default function App() {
               onSaveQuizResult={handleSaveQuizResult}
               onNavigateToBadges={() => navigateToTab('badges')}
               presetSubject={quizPreset.subject}
+              presetTopic={quizPreset.topic}
               questionsSource={questionsSource}
             />
           )
