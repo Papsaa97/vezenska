@@ -18,6 +18,15 @@ function formatDateTime(iso: string): string {
   });
 }
 
+/**
+ * Jak často se oznámení načítají znovu, když je stránka vidět.
+ *
+ * Oznámení do zvonku posílají i funkce v databázi (nominace do třídy, žádost
+ * veliteli). Načtení jen po přihlášení znamenalo, že je uživatel uviděl až
+ * po znovunačtení stránky — stejný interval jako diskuze třídy.
+ */
+const REFRESH_MS = 60_000;
+
 export default function NotificationBell() {
   const { user } = useAuth();
 
@@ -29,8 +38,9 @@ export default function NotificationBell() {
   const [notice, setNotice] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const loadNotifications = useCallback(async (userId: string) => {
-    setLoading(true);
+  /** `quiet`: obnovení na pozadí, bez točícího se kolečka místo seznamu. */
+  const loadNotifications = useCallback(async (userId: string, quiet = false) => {
+    if (!quiet) setLoading(true);
     const { data, error } = await supabase
       .from('user_notifications')
       .select('id, user_id, sender_id, title, body, is_read, created_at')
@@ -50,13 +60,31 @@ export default function NotificationBell() {
   }, []);
 
   useEffect(() => {
-    if (user) {
-      loadNotifications(user.id);
-    } else {
+    if (!user) {
       setNotifications([]);
       setLoading(false);
+      return;
     }
+    const userId = user.id;
+    void loadNotifications(userId);
+    // Skrytá karta se neobnovuje (zbytečné dotazy na pozadí); po návratu na ni
+    // se oznámení načtou hned, ne až při dalším tiku intervalu.
+    const refreshIfVisible = () => {
+      if (document.visibilityState === 'visible') void loadNotifications(userId, true);
+    };
+    document.addEventListener('visibilitychange', refreshIfVisible);
+    const timer = window.setInterval(refreshIfVisible, REFRESH_MS);
+    return () => {
+      document.removeEventListener('visibilitychange', refreshIfVisible);
+      window.clearInterval(timer);
+    };
   }, [user, loadNotifications]);
+
+  /** Otevření zvonku vždy přinese čerstvý stav, ne ten z posledního tiku. */
+  const toggleOpen = () => {
+    if (!isOpen && user) void loadNotifications(user.id, true);
+    setIsOpen(!isOpen);
+  };
 
   // Zavření po kliknutí mimo panel
   useEffect(() => {
@@ -121,9 +149,9 @@ export default function NotificationBell() {
     <div className="relative shrink-0" ref={containerRef}>
       <button
         type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={toggleOpen}
         className="relative p-2 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-slate-700"
-        title="Zprávy od správce"
+        title="Oznámení"
         aria-label="Oznámení"
       >
         <Bell className="w-4 h-4" />

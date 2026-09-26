@@ -25,6 +25,9 @@ export function announceMembershipChange(): void {
 
 const MISSING_CLASS = '__nevidim__';
 
+/** Jak často se zařazení (a čekající nominace) načítá znovu. */
+const MEMBERSHIP_REFRESH_MS = 60_000;
+
 /**
  * Povinná volba třídy a potvrzení nominací od velitele.
  *
@@ -56,11 +59,25 @@ export default function ClassMembershipGate() {
     if (!loading) void load();
   }, [loading, load]);
 
+  // Nominaci pošle velitel z jiného zařízení kdykoli. Načtení jen při startu
+  // znamenalo, že se dialog k potvrzení ukázal až po znovunačtení stránky;
+  // proto se stav obnovuje i po návratu na kartu a každou minutu, ale jen
+  // když je stránka vidět (stejně jako diskuze třídy a zvonek).
   useEffect(() => {
+    if (loading) return;
     const handler = () => void load();
+    const refreshIfVisible = () => {
+      if (document.visibilityState === 'visible') void load();
+    };
     window.addEventListener(MEMBERSHIP_CHANGED_EVENT, handler);
-    return () => window.removeEventListener(MEMBERSHIP_CHANGED_EVENT, handler);
-  }, [load]);
+    document.addEventListener('visibilitychange', refreshIfVisible);
+    const timer = window.setInterval(refreshIfVisible, MEMBERSHIP_REFRESH_MS);
+    return () => {
+      window.removeEventListener(MEMBERSHIP_CHANGED_EVENT, handler);
+      document.removeEventListener('visibilitychange', refreshIfVisible);
+      window.clearInterval(timer);
+    };
+  }, [loading, load]);
 
   if (!user || loading || !membership) return null;
 
