@@ -456,16 +456,35 @@ interface RoleSelectProps {
   onChange: (role: UserRole) => void;
 }
 
+/**
+ * Velitele třídy odsud jmenovat nejde, jen odvolat (změnit roli na jinou).
+ *
+ * Přímá změna role by obešla funkci jmenovat_velitele (migrace 038): ta
+ * ověří, že účet má třídu, dosavadního velitele téže třídy vrátí mezi
+ * studenty, ukončí zástupcování, zapíše historii a pošle oznámení. Tady by
+ * vznikl velitel bez třídy nebo druhý velitel jedné třídy. Volba proto zůstává
+ * vidět jen u účtu, který velitelem už je, aby select ukazoval skutečnou roli.
+ */
+const COMMANDER_HINT = 'Velitele třídy jmenujte na Nástěnce tříd v panelu Zařazení.';
+
 function RoleSelect({ value, disabled, onChange }: RoleSelectProps) {
+  const isCommander = value === 'velitel_tridy';
   return (
     <select
       value={value}
       disabled={disabled}
+      title={isCommander ? undefined : COMMANDER_HINT}
       onChange={(e) => onChange(e.target.value as UserRole)}
       className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all disabled:opacity-50 cursor-pointer"
     >
       <option value="student">Student</option>
-      <option value="velitel_tridy">Velitel třídy</option>
+      {isCommander ? (
+        <option value="velitel_tridy">Velitel třídy</option>
+      ) : (
+        <option value="velitel_tridy" disabled>
+          Velitel třídy (jmenuje se v panelu Zařazení)
+        </option>
+      )}
       <option value="lektor">Lektor</option>
       <option value="admin">Správce</option>
     </select>
