@@ -15,6 +15,7 @@ import { supabase } from '../lib/supabase';
 export type { UserRole, UserProfile, UpdateProfileInput, ProfileUpdateResult } from '../types/auth';
 import type { UserRole, UserProfile, UpdateProfileInput, ProfileUpdateResult } from '../types/auth';
 import { setStorageOwner } from '../utils/userScopedStorage';
+import { syncCompletedProgress } from '../utils/gamification';
 
 /**
  * Seznam e-mailových adres garantovaných správců systému — bootstrap pro případ,
@@ -175,6 +176,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // cokoli postup čítat.
   useEffect(() => {
     setStorageOwner(user?.id ?? null);
+    // Splněné scénáře a drily ze serveru — jinak by na novém zařízení
+    // (nebo v PWA na ploše) záložka ukazovala 0 splněných.
+    if (user?.id) void syncCompletedProgress(user.id);
   }, [user?.id]);
 
   // Náhled cizí role. Schválně jen ve stavu komponenty, ne v localStorage:
