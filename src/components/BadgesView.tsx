@@ -231,7 +231,7 @@ export default function BadgesView({
                 </span>
                 <span className="flex items-center gap-1 text-xs font-medium text-amber-400 bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-800/40">
                   <Flame className="w-3.5 h-3.5" />
-                  {streakInfo.currentStreak} {streakInfo.currentStreak === 1 ? 'den' : streakInfo.currentStreak < 5 ? 'dny' : 'dní'} série
+                  {streakInfo.currentStreak} {streakInfo.currentStreak === 1 ? 'den' : streakInfo.currentStreak >= 2 && streakInfo.currentStreak < 5 ? 'dny' : 'dní'} série
                 </span>
               </div>
 

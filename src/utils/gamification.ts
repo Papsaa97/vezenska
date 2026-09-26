@@ -10,6 +10,12 @@ export const COMPLETED_DRILLS_KEY = 'vscr_completed_drills';
 
 export interface StreakInfo {
   currentStreak: number;
+  /**
+   * Nejdelší série, jaké kdy uživatel dosáhl. Podle ní se udělují odznaky za
+   * vytrvalost — kdyby se braly z aktuální série, přerušení by odznak i jeho XP
+   * zase odebralo a uživatel by mohl i sestoupit v hodnosti.
+   */
+  bestStreak: number;
   lastActiveDate: string; // 'YYYY-MM-DD'
   activeDaysCount: number;
 }
@@ -116,6 +122,12 @@ export function recordMatchingCompletion(record: Omit<MatchingRecord, 'id' | 'ti
   return { record: newRecord, newHistory };
 }
 
+/** Počet kalendářních dní mezi dvěma daty 'YYYY-MM-DD'; NaN, když jedno chybí. */
+function daysBetween(from: string, to: string): number {
+  if (!from || !to) return Number.NaN;
+  return Math.round((new Date(to).getTime() - new Date(from).getTime()) / (1000 * 3600 * 24));
+}
+
 /**
  * Série bez zápisu.
  *
@@ -123,11 +135,34 @@ export function recordMatchingCompletion(record: Omit<MatchingRecord, 'id' | 'ti
  * nový uživatel měl sérii jeden den ještě předtím, než cokoli udělal. Čtení
  * teď nic nezapisuje; sérii zakládá až `updateDailyStreak()`, kterou volá
  * dokončená studijní aktivita.
+ *
+ * Uložená série se přepočítává na „teď“: poslední aktivita starší než včera
+ * znamená, že série skončila, i když se to do úložiště zapíše až s další
+ * aktivitou. Dřív se ukazovalo uložené číslo, takže kdo před týdnem skončil na
+ * pěti dnech, viděl „5 dní série“ dál.
  */
 export function loadStreakInfo(): StreakInfo {
-  const stored = readScoped<StreakInfo | null>(STREAK_KEY, null);
-  if (stored && typeof stored.currentStreak === 'number') return stored;
-  return { currentStreak: 0, lastActiveDate: '', activeDaysCount: 0 };
+  const stored = readScoped<Partial<StreakInfo> | null>(STREAK_KEY, null);
+  if (!stored || typeof stored.currentStreak !== 'number') {
+    return { currentStreak: 0, bestStreak: 0, lastActiveDate: '', activeDaysCount: 0 };
+  }
+
+  const lastActiveDate = typeof stored.lastActiveDate === 'string' ? stored.lastActiveDate : '';
+  // Záznamy ze starší verze `bestStreak` nemají. Nejlepší, co o nich víme, je
+  // uložená série — ta se kdysi skutečně odehrála, i když už je přerušená.
+  const bestStreak = Math.max(
+    typeof stored.bestStreak === 'number' ? stored.bestStreak : 0,
+    stored.currentStreak
+  );
+  const gap = daysBetween(lastActiveDate, getTodayDateString());
+  const stillRunning = gap === 0 || gap === 1;
+
+  return {
+    currentStreak: stillRunning ? stored.currentStreak : 0,
+    bestStreak,
+    lastActiveDate,
+    activeDaysCount: typeof stored.activeDaysCount === 'number' ? stored.activeDaysCount : 0,
+  };
 }
 
 export function saveStreakInfo(streak: StreakInfo): void {
@@ -150,15 +185,13 @@ export function updateDailyStreak(): StreakInfo {
     return current;
   }
 
-  // Prázdné datum = dnes se studuje poprvé.
-  const diffDays = current.lastActiveDate
-    ? Math.round(
-        (new Date(today).getTime() - new Date(current.lastActiveDate).getTime()) / (1000 * 3600 * 24)
-      )
-    : Number.NaN;
+  // Prázdné datum = dnes se studuje poprvé (daysBetween vrátí NaN).
+  const diffDays = daysBetween(current.lastActiveDate, today);
+  const currentStreak = diffDays === 1 ? current.currentStreak + 1 : 1;
 
   const updated: StreakInfo = {
-    currentStreak: diffDays === 1 ? current.currentStreak + 1 : 1,
+    currentStreak,
+    bestStreak: Math.max(current.bestStreak, currentStreak),
     lastActiveDate: today,
     activeDaysCount: (current.activeDaysCount || 0) + 1,
   };
@@ -354,7 +387,9 @@ export function evaluateBadges(
         break;
 
       case 'streak_days':
-        currentValue = streakInfo.currentStreak || 1;
+        // Nejlepší série, ne aktuální: jednou získaný odznak se přerušením
+        // neodebírá. A bez `|| 1` — nový uživatel nemá za sebou ani den.
+        currentValue = streakInfo.bestStreak;
         isUnlocked = currentValue >= targetValue;
         break;
 
