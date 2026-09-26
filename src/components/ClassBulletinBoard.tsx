@@ -80,7 +80,7 @@ function formatToday(): string {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function ClassBulletinBoard() {
-  const { profile, user } = useAuth();
+  const { profile, user, realRole, refreshProfile } = useAuth();
   const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
 
   // Data
@@ -152,6 +152,15 @@ export default function ClassBulletinBoard() {
   // Tisk
   const [printingItem, setPrintingItem] = useState<ClassBoardItem | null>(null);
 
+  /**
+   * Stav serveru, pro který už se jednou obnovoval profil.
+   *
+   * Zástupce velitele má `commandsClass` vyplněné, ale roli dál „student“ —
+   * rozpor tak po obnovení profilu může trvat. Bez téhle pojistky by se profil
+   * obnovoval při každém načtení nástěnky; takhle jen jednou na každou změnu.
+   */
+  const refreshedForRef = useRef<string | null>(null);
+
   // Načtení dat
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -188,6 +197,25 @@ export default function ClassBulletinBoard() {
       );
       setMembership(membershipResult.data);
 
+      // Profil v AuthContext se načítá jen při přihlášení. Schválí-li žádost
+      // velitel, zařadí-li účet lektor nebo odvolá-li velitele, zůstane v něm
+      // stará třída i role — stránka pak hlásí „Zatím nejste zařazeni“ a nabízí
+      // tlačítko, které server odmítne, nebo odvolanému veliteli nechává
+      // tlačítka správy. Server tu právě řekl, jak to je, tak se profil obnoví.
+      const server = membershipResult.data;
+      if (server) {
+        const norm = (v: string | null | undefined) => (v || '').trim().toLowerCase();
+        const classStale = norm(server.userClass) !== norm(profile?.user_class);
+        const roleStale =
+          (realRole === 'velitel_tridy' && !server.commandsClass) ||
+          (realRole === 'student' && Boolean(server.commandsClass));
+        const key = `${norm(server.userClass)}|${norm(server.commandsClass)}|${realRole ?? ''}|${norm(profile?.user_class)}`;
+        if ((classStale || roleStale) && refreshedForRef.current !== key) {
+          refreshedForRef.current = key;
+          void refreshProfile();
+        }
+      }
+
       // Když server odpoví chybou, zobrazí se záložní kopie ze zařízení. To samo
       // o sobě není špatně, ale uživatel musí vědět, že nemusí být aktuální —
       // dřív se chyba jen zapsala do konzole a nástěnka vypadala normálně.
@@ -204,7 +232,7 @@ export default function ClassBulletinBoard() {
     } finally {
       setLoading(false);
     }
-  }, [profile?.user_class, isPrivileged]);
+  }, [profile?.user_class, isPrivileged, realRole, refreshProfile]);
 
   /**
    * Zkontroluje výsledek zápisu a při neúspěchu na to upozorní.
