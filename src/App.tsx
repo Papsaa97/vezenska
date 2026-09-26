@@ -143,7 +143,8 @@ export default function App() {
     setAllQuestions(
       sourceQuestions.map(q => ({
         ...q,
-        is_hidden: q.is_hidden === true || hiddenSet.has(q.id),
+        // Z databáze platí její is_hidden; místní seznam jen pro výchozí banku.
+        is_hidden: fromDb ? q.is_hidden === true : q.is_hidden === true || hiddenSet.has(q.id),
       }))
     );
     setQuestionsSource(fromDb ? 'supabase' : 'local');
@@ -727,7 +728,10 @@ export default function App() {
 
         {activeTab === 'ethics' && (
           <div className="w-full h-full overflow-y-auto pr-1">
-            <ProfessionalEthics onStartSubjectQuiz={handleStartSubjectQuiz} />
+            <ProfessionalEthics
+              onStartSubjectQuiz={handleStartSubjectQuiz}
+              questionCount={allQuestions.filter(q => q.subject === 'Profesní etika' && (isPrivileged || !isQuestionHidden(q))).length}
+            />
           </div>
         )}
 
