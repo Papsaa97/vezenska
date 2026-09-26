@@ -2,6 +2,8 @@ import { supabase } from '../lib/supabase';
 import { MatchingCategory, MatchingPair, MatchingDiagramPart } from '../types';
 import { SubjectInfo, subjectsMeta } from '../data/questions/subjectsInfo';
 import { Scenario, ScenarioStep, ScenarioChoice } from '../data/scenariosData';
+import { StoppageDrill, WeaponData, WeaponStep } from '../data/weaponsData';
+import { Jidelnicek } from '../data/jidelnicek';
 
 // ─── Editovatelný obsah záložek ──────────────────────────────────────────────
 //
@@ -21,7 +23,17 @@ import { Scenario, ScenarioStep, ScenarioChoice } from '../data/scenariosData';
 // vrátí přesně k tomu, co je v repozitáři. Proto se výchozí položka nemaže
 // natvrdo, ale „náhrobkem" (is_deleted) — jinak by ji zpátky nedostal nikdo.
 
-export type ContentKind = 'subject' | 'matching_category' | 'scenario';
+/**
+ * Druhy obsahu. Musí odpovídat CHECK `content_blocks_kind_check` v databázi —
+ * 'weapon', 'stoppage_drill' a 'jidelnicek' přidává migrace 040.
+ */
+export type ContentKind =
+  | 'subject'
+  | 'matching_category'
+  | 'scenario'
+  | 'weapon'
+  | 'stoppage_drill'
+  | 'jidelnicek';
 
 /**
  * Předměty tak, jak jsou v repozitáři. Překryv z databáze je může přepsat,
@@ -270,10 +282,126 @@ function normalizeScenario(value: unknown): Scenario | null {
   };
 }
 
+function normalizeWeaponSteps(value: unknown): WeaponStep[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((s) => {
+      const sr = record(s);
+      if (!sr) return null;
+      const title = str(sr.title).trim();
+      const actionInstruction = str(sr.actionInstruction).trim();
+      if (!title || !actionInstruction) return null;
+      return {
+        title,
+        actionInstruction,
+        whyCrucial: str(sr.whyCrucial),
+        dangerIfOmitted: str(sr.dangerIfOmitted),
+      };
+    })
+    .filter((s): s is Omit<WeaponStep, 'stepNumber'> => s !== null)
+    .map((s, i) => ({ ...s, stepNumber: i + 1 }));
+}
+
+function normalizeWeapon(value: unknown): WeaponData | null {
+  const raw = record(value);
+  if (!raw) return null;
+  const id = str(raw.id).trim();
+  const name = str(raw.name).trim();
+  if (!id || !name) return null;
+
+  const safetySteps = normalizeWeaponSteps(raw.safetySteps);
+  const disassemblySteps = normalizeWeaponSteps(raw.disassemblySteps);
+  // Zbraň bez postupu by se otevřela na prázdném nácviku.
+  if (safetySteps.length === 0 || disassemblySteps.length === 0) return null;
+
+  const technicalSpecs = Array.isArray(raw.technicalSpecs)
+    ? raw.technicalSpecs
+        .map((t) => {
+          const tr = record(t);
+          if (!tr) return null;
+          const label = str(tr.label).trim();
+          const specValue = str(tr.value).trim();
+          return label && specValue ? { label, value: specValue } : null;
+        })
+        .filter((t): t is { label: string; value: string } => t !== null)
+    : [];
+
+  return {
+    id,
+    name,
+    caliber: str(raw.caliber),
+    capacity: str(raw.capacity),
+    serviceRole: str(raw.serviceRole),
+    technicalSpecs,
+    safetySteps,
+    disassemblySteps,
+  };
+}
+
+function normalizeStoppageDrill(value: unknown): StoppageDrill | null {
+  const raw = record(value);
+  if (!raw) return null;
+  const id = str(raw.id).trim();
+  const name = str(raw.name).trim();
+  if (!id || !name) return null;
+
+  const options = Array.isArray(raw.options)
+    ? raw.options
+        .map((o) => {
+          const or = record(o);
+          if (!or) return null;
+          const text = str(or.text).trim();
+          if (!text) return null;
+          return { text, isCorrect: or.isCorrect === true, feedback: str(or.feedback) };
+        })
+        .filter((o): o is StoppageDrill['options'][number] => o !== null)
+    : [];
+  // Bez správné volby by závada nešla splnit.
+  if (options.length < 2 || !options.some((o) => o.isCorrect)) return null;
+
+  return {
+    id,
+    name,
+    symptom: str(raw.symptom),
+    cause: str(raw.cause),
+    correctAction: str(raw.correctAction),
+    whyCorrect: str(raw.whyCorrect),
+    dangerOfWrongAction: str(raw.dangerOfWrongAction),
+    options,
+  };
+}
+
+function normalizeJidelnicek(value: unknown): Jidelnicek | null {
+  const raw = record(value);
+  if (!raw) return null;
+  const id = str(raw.id).trim();
+  if (!id) return null;
+  const days = Array.isArray(raw.days)
+    ? raw.days
+        .map((d) => {
+          const dr = record(d);
+          if (!dr) return null;
+          const day = str(dr.day).trim();
+          if (!day) return null;
+          return { day, meals: str(dr.meals) };
+        })
+        .filter((d): d is Jidelnicek['days'][number] => d !== null)
+    : [];
+  return {
+    id,
+    weekLabel: str(raw.weekLabel),
+    note: str(raw.note),
+    days,
+  };
+}
+
 const NORMALIZERS: Record<ContentKind, (value: unknown) => unknown> = {
   subject: normalizeSubject,
   matching_category: normalizeMatchingCategory,
   scenario: normalizeScenario,
+  weapon: normalizeWeapon,
+  stoppage_drill: normalizeStoppageDrill,
+  jidelnicek: normalizeJidelnicek,
 };
 
 // ─── Čtení překryvu ──────────────────────────────────────────────────────────
