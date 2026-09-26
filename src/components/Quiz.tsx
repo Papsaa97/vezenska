@@ -35,6 +35,13 @@ const EXAM_TIME_LIMIT_MINUTES = 45;
  * vycházejí výrazně častěji. V aplikaci to bylo na pěti místech včetně skládání
  * ostré zkoušky.
  */
+/** „1 předmět“, „3 předměty“, „9 předmětů“. */
+function formatSubjectCount(count: number): string {
+  if (count === 1) return '1 předmět';
+  if (count >= 2 && count <= 4) return `${count} předměty`;
+  return `${count} předmětů`;
+}
+
 function shuffleArray<T>(items: T[]): T[] {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -884,7 +891,8 @@ export default function Quiz({
             {/* Subject Breakdown Table (Screen only) */}
             <div className="my-6 no-print">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">
-                Výsledky podle jednotlivých předmětů (9 předmětů ZOP A):
+                {/* Počet se bere z testu, ne natvrdo: předměty v bance přibývají i mizí. */}
+                Výsledky podle jednotlivých předmětů ({formatSubjectCount(Object.keys(subjectBreakdown).length)}):
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {Object.entries(subjectBreakdown).map(([sub, stats]) => {

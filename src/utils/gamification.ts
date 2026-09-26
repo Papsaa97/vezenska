@@ -291,11 +291,31 @@ const AGGREGATE_QUIZ_SUBJECTS: ReadonlySet<string> = new Set([
   'Závěrečná zkouška ZOP A',
 ]);
 
+/**
+ * Předměty, které mají v bance aspoň jednu otázku, bez souhrnných označení.
+ * Podle nich se určuje cíl odznaku za všechny předměty (viz evaluateBadges).
+ */
+export function subjectsWithQuestions(questions: ReadonlyArray<{ subject?: string | null }>): string[] {
+  const set = new Set<string>();
+  questions.forEach(q => {
+    if (q.subject && !AGGREGATE_QUIZ_SUBJECTS.has(q.subject)) set.add(q.subject);
+  });
+  return Array.from(set).sort((a, b) => a.localeCompare(b, 'cs'));
+}
+
+/**
+ * `availableSubjects` jsou předměty, které v bance mají otázky (subjectsWithQuestions).
+ * Dřív byl cíl odznaku za všechny předměty natvrdo 9: po zrušení Bezpečnostní
+ * služby by šel splnit jen díky starým testům z předmětu, který už neexistuje,
+ * a nový předmět by se do něj nikdy nepočítal. Dokud se banka nenačte (prázdný
+ * seznam), platí číslo z gamificationData.
+ */
 export function evaluateBadges(
   quizHistory: QuizSessionRecord[], 
   matchingHistory: MatchingRecord[], 
   streakInfo: StreakInfo,
-  baseXp: number
+  baseXp: number,
+  availableSubjects: readonly string[] = []
 ): { badges: Badge[]; totalXpWithBadges: number; unlockedCount: number } {
   // Aggregate helper values
   const totalQuizCount = quizHistory.length;
@@ -366,7 +386,14 @@ export function evaluateBadges(
         break;
 
       case 'all_subjects':
-        currentValue = testedSubjects.size;
+        if (availableSubjects.length > 0) {
+          // Počítají se jen předměty, které v bance pořád jsou — test ze zrušeného
+          // předmětu nesmí nahradit ten, který uživateli ještě chybí.
+          targetValue = availableSubjects.length;
+          currentValue = availableSubjects.filter(sub => testedSubjects.has(sub)).length;
+        } else {
+          currentValue = testedSubjects.size;
+        }
         isUnlocked = currentValue >= targetValue;
         break;
 

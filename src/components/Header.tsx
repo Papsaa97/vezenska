@@ -57,6 +57,8 @@ interface HeaderProps {
   canGoForward?: boolean;
   onGoBack?: () => void;
   onGoForward?: () => void;
+  /** Předměty s otázkami v bance. Musí jít stejné jako do BadgesView, jinak by se XP v liště a v Odznacích rozešlo. */
+  availableSubjects?: readonly string[];
 }
 
 type DropdownType = 'practice' | 'drill' | 'more' | 'profile';
@@ -112,7 +114,8 @@ export default function Header({
   canGoBack = false,
   canGoForward = false,
   onGoBack,
-  onGoForward
+  onGoForward,
+  availableSubjects
 }: HeaderProps) {
   const { user, profile, signOut } = useAuth();
   const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
@@ -139,8 +142,8 @@ export default function Header({
   );
 
   const { totalXpWithBadges, unlockedCount } = useMemo(() => {
-    return evaluateBadges(quizHistory, matchingHistory, streakInfo, baseXp);
-  }, [quizHistory, matchingHistory, streakInfo, baseXp]);
+    return evaluateBadges(quizHistory, matchingHistory, streakInfo, baseXp, availableSubjects);
+  }, [quizHistory, matchingHistory, streakInfo, baseXp, availableSubjects]);
 
   const { currentRank, progressPercent: xpProgress } = useMemo(() => {
     return getUserRank(totalXpWithBadges);

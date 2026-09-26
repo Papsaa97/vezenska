@@ -59,6 +59,7 @@ import {
   loadMatchingHistory,
   saveFavoriteIds,
   saveMatchingHistory,
+  subjectsWithQuestions,
   updateDailyStreak,
 } from './utils/gamification';
 import { fetchQuizHistory, saveQuizResult, clearQuizHistory } from './utils/quizResults';
@@ -309,6 +310,15 @@ export default function App() {
     if (extra.length === 0) return quizHistory;
     return [...quizHistory, ...extra].sort((a, b) => a.timestamp - b.timestamp);
   }, [quizHistory, pendingResults]);
+
+  // Předměty, ze kterých jde v bance udělat test — cíl odznaku „Všeuměl
+  // Akademie“. Počítá se jednou tady a stejné pole jde do hlavičky i do Odznaků,
+  // aby se XP v obou místech shodovalo. Skryté otázky se nepočítají ani lektorovi:
+  // cíl má být pro všechny stejný.
+  const availableSubjects = useMemo(
+    () => subjectsWithQuestions(allQuestions.filter(q => (q.options?.length ?? 0) > 0 && !isQuestionHidden(q))),
+    [allQuestions]
+  );
 
   // Historie pexesa a oblíbené otázky patří účtu, ne zařízení — viz
   // utils/userScopedStorage. Přečtou se znovu, jakmile se změní vlastník
@@ -651,6 +661,7 @@ export default function App() {
           canGoForward={canGoForward}
           onGoBack={handleGoBack}
           onGoForward={handleGoForward}
+          availableSubjects={availableSubjects}
         />
         <OfflineBanner
           pendingResultCount={pendingResults.length}
@@ -796,6 +807,7 @@ export default function App() {
               matchingHistory={matchingHistory}
               onStartQuiz={() => navigateToTab('quiz')}
               onStartMatching={() => navigateToTab('matching')}
+              availableSubjects={availableSubjects}
             />
           </div>
         )}

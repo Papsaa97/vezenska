@@ -44,6 +44,8 @@ interface BadgesViewProps {
   matchingHistory: MatchingRecord[];
   onStartQuiz?: () => void;
   onStartMatching?: () => void;
+  /** Předměty s otázkami v bance — cíl odznaku za všechny předměty (viz evaluateBadges). */
+  availableSubjects?: readonly string[];
 }
 
 // Helper to render Lucide icon by name
@@ -146,7 +148,8 @@ export default function BadgesView({
   quizHistory,
   matchingHistory,
   onStartQuiz,
-  onStartMatching
+  onStartMatching,
+  availableSubjects
 }: BadgesViewProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'unlocked' | 'locked'>('all');
@@ -169,8 +172,8 @@ export default function BadgesView({
 
 
   const { badges, totalXpWithBadges, unlockedCount } = useMemo(() => {
-    return evaluateBadges(quizHistory, matchingHistory, streakInfo, baseXp);
-  }, [quizHistory, matchingHistory, streakInfo, baseXp]);
+    return evaluateBadges(quizHistory, matchingHistory, streakInfo, baseXp, availableSubjects);
+  }, [quizHistory, matchingHistory, streakInfo, baseXp, availableSubjects]);
 
   const { currentRank, nextRank, progressPercent, xpForNext } = useMemo(() => {
     return getUserRank(totalXpWithBadges);
