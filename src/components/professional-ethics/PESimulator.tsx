@@ -163,7 +163,7 @@ export const PESimulator: React.FC = () => {
           }`}>
             <div className="flex items-center gap-2 font-bold mb-1.5">
               {dilemmaScenarios[activeScenarioIdx].options[selectedSimOption].correct ? (
-                <><CheckCircle2 className="w-5 h-5 text-emerald-400 print:text-emerald-800" /><span>Správné řešení! (+15 XP)</span></>
+                <><CheckCircle2 className="w-5 h-5 text-emerald-400 print:text-emerald-800" /><span>Správné řešení!</span></>
               ) : (
                 <><AlertTriangle className="w-5 h-5 text-red-400 print:text-red-800" /><span>Nesprávný postup</span></>
               )}

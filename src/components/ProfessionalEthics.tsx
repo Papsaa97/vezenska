@@ -10,7 +10,6 @@ import {
   Award,
   Printer
 } from 'lucide-react';
-import { profesniEtikaQuestions } from '../data/questions/profesniEtika';
 import PrintHeader from './common/PrintHeader';
 import PEConcepts, { conceptsList } from './professional-ethics/PEConcepts';
 import PECodeOfEthics from './professional-ethics/PECodeOfEthics';
@@ -22,12 +21,18 @@ import PETest from './professional-ethics/PETest';
 interface ProfessionalEthicsProps {
   /** Spustí cvičný test předmětu Profesní etika v modulu Test & Zkouška. */
   onStartSubjectQuiz?: (subject: string) => void;
+  /**
+   * Kolik otázek z Profesní etiky test opravdu nabídne — z živé banky, po
+   * odečtení skrytých. Dřív se tu počítal soubor v repozitáři, takže po
+   * úpravách lektora popisek nesouhlasil s testem.
+   */
+  questionCount: number;
 }
 
 /** Přesný název předmětu v bance otázek — musí souhlasit s polem `subject`. */
 const ETHICS_SUBJECT = 'Profesní etika';
 
-export const ProfessionalEthics: React.FC<ProfessionalEthicsProps> = ({ onStartSubjectQuiz }) => {
+export const ProfessionalEthics: React.FC<ProfessionalEthicsProps> = ({ onStartSubjectQuiz, questionCount }) => {
   const [activeSubTab, setActiveSubTab] = useState<'concepts' | 'code' | 'anticorruption' | 'conventions' | 'simulator' | 'test'>('concepts');
 
   /**
@@ -103,7 +108,7 @@ export const ProfessionalEthics: React.FC<ProfessionalEthicsProps> = ({ onStartS
               className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-emerald-500/20 cursor-pointer no-print"
             >
               <Award className="w-4 h-4" />
-              <span>Spustit test ({profesniEtikaQuestions.length} otázek v bance)</span>
+              <span>Spustit test ({questionCount} otázek v bance)</span>
             </button>
           </div>
         </div>
@@ -116,7 +121,7 @@ export const ProfessionalEthics: React.FC<ProfessionalEthicsProps> = ({ onStartS
             { id: 'anticorruption', label: 'Protikorupční program & Rizika', Icon: Calculator },
             { id: 'conventions', label: 'EVP & Lidská práva', Icon: Globe2 },
             { id: 'simulator', label: 'Trenažér etických dilemat', Icon: Sparkles },
-            { id: 'test', label: `Zkušební test (${profesniEtikaQuestions.length} otázek)`, Icon: HelpCircle },
+            { id: 'test', label: `Zkušební test (${questionCount} otázek)`, Icon: HelpCircle },
           ] as const).map(({ id, label, Icon }) => (
             <button
               key={id}
@@ -140,7 +145,7 @@ export const ProfessionalEthics: React.FC<ProfessionalEthicsProps> = ({ onStartS
       {activeSubTab === 'conventions' && <PEConventions />}
       {activeSubTab === 'simulator' && <PESimulator />}
       {activeSubTab === 'test' && (
-        <PETest onStartSubjectQuiz={onStartSubjectQuiz ? () => onStartSubjectQuiz(ETHICS_SUBJECT) : undefined} />
+        <PETest questionCount={questionCount} onStartSubjectQuiz={onStartSubjectQuiz ? () => onStartSubjectQuiz(ETHICS_SUBJECT) : undefined} />
       )}
     </div>
   );

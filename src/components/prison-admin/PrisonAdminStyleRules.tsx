@@ -222,7 +222,7 @@ export default function PrisonAdminStyleRules() {
           {exerciseChecked && (
             <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
               <Check className="w-4 h-4" />
-              <span>Vyhodnoceno (+15 XP do celkového postupu)</span>
+              <span>Vyhodnoceno</span>
             </span>
           )}
         </div>
