@@ -9,16 +9,16 @@ import { speakText } from '../utils/speech';
 import ConfirmDialog from './common/ConfirmDialog';
 import { useAuth } from '../context/AuthContext';
 import {
-  getStoredRegulations,
-  saveRegulationToStorage,
-  deleteRegulationFromStorage,
   isDefaultRegulation,
   recordOfflineDownload,
   getOfflineStatus,
   purgeLegacyOfflineCache,
   exportRegulationsToJSON,
-  importRegulationsFromJSON
+  parseRegulationsJSON,
+  readLegacyLocalRegulations,
+  clearLegacyLocalRegulations,
 } from '../utils/regulationsStorage';
+import { useEditableContent } from '../hooks/useEditableContent';
 import LegalEditorModal from './legal-compass/LegalEditorModal';
 import LegalAuditModal from './legal-compass/LegalAuditModal';
 import LegalReaderModal from './legal-compass/LegalReaderModal';
@@ -33,8 +33,8 @@ export default function LegalCompass() {
   // Dřív tu žádná kontrola role nebyla — `useAuth` se v tomhle modulu vůbec
   // nepoužíval. Student si tak mohl přepsat nebo smazat text zákona 555/1992,
   // který se mu pak zobrazoval jako studijní výběr, a neměl jak poznat, že už
-  // nečte to, co je v aplikaci. Úpravy žijí jen v localStorage, takže to nikoho
-  // dalšího neohrozilo, ale vlastní studijní materiál si nevratně poškodit šlo.
+  // nečte to, co je v aplikaci. Úpravy teď jdou do společné databáze
+  // (content_blocks), takže je vidí všichni — kontrola role je o to důležitější.
   const { profile } = useAuth();
   const canEditRegulations = profile?.role === 'lektor' || profile?.role === 'admin';
 
@@ -52,7 +52,24 @@ export default function LegalCompass() {
   const [showIntegrityModal, setShowIntegrityModal] = useState(false);
 
   // Dynamic Regulations Database State
-  const [regulationsList, setRegulationsList] = useState<VscrRegulation[]>(() => getStoredRegulations());
+  // Předpisy = výchozí registr + úpravy lektorů ze společné databáze. Dřív
+  // úpravy ležely jen v localStorage lektora, přestože tlačítko slibovalo
+  // „Uložit do databáze" — nikdo jiný je neviděl.
+  const {
+    items: regulationsList,
+    save: saveRegulation,
+    restore: restoreRegulation,
+    purge: purgeRegulation,
+    error: regulationsError,
+  } = useEditableContent<VscrRegulation>('regulation', VSCR_REGULATIONS_REGISTRY, canEditRegulations);
+  /** Úpravy předpisů ze starší verze, které leží jen v tomto prohlížeči. */
+  const [legacyLocalRegs, setLegacyLocalRegs] = useState<VscrRegulation[]>(() =>
+    canEditRegulations ? readLegacyLocalRegulations() : []
+  );
+  useEffect(() => {
+    setLegacyLocalRegs(canEditRegulations ? readLegacyLocalRegulations() : []);
+  }, [canEditRegulations]);
+  const [regulationsBusy, setRegulationsBusy] = useState(false);
   const [offlineStatus, setOfflineStatus] = useState(() => getOfflineStatus());
   const [offlineBusy, setOfflineBusy] = useState(false);
 
@@ -127,9 +144,30 @@ export default function LegalCompass() {
     saveFavoriteIds('fav_legal', next);
   };
 
-  const reloadRegulations = () => {
-    setRegulationsList(getStoredRegulations());
-    setOfflineStatus(getOfflineStatus());
+  /** Uloží předpisy postupně; vrátí počet uložených a první chybu. */
+  const saveRegulationsBatch = async (regs: VscrRegulation[]) => {
+    let saved = 0;
+    let firstError: string | null = null;
+    for (const reg of regs) {
+      const res = await saveRegulation(reg);
+      if (res.error) firstError ??= res.error;
+      else saved += 1;
+    }
+    return { saved, firstError };
+  };
+
+  const uploadLegacyLocalRegs = async () => {
+    if (regulationsBusy || legacyLocalRegs.length === 0) return;
+    setRegulationsBusy(true);
+    const { saved, firstError } = await saveRegulationsBatch(legacyLocalRegs);
+    setRegulationsBusy(false);
+    if (firstError) {
+      showToast(`Nahráno ${saved} z ${legacyLocalRegs.length}. ${firstError}`, 'error');
+      return;
+    }
+    clearLegacyLocalRegulations();
+    setLegacyLocalRegs([]);
+    showToast(`Nahráno ${saved} místních úprav předpisů — teď je vidí všichni.`);
   };
 
   /**
@@ -146,7 +184,7 @@ export default function LegalCompass() {
     setOfflineProgress({ hotovo: 0, celkem: 0 });
     showToast('Stahuji úplná znění předpisů do zařízení…', 'info');
 
-    const metaSaved = recordOfflineDownload();
+    const metaSaved = recordOfflineDownload(regulationsList.length);
     // Stahování trvá u 1,5 MB zákonů na mobilních datech desítky sekund.
     // Bez ukazatele průběhu vypadalo tlačítko jen zaseknuté — `onProgress`
     // přitom `prefetchAllSnapshots` nabízela od začátku a nikdo ji nevyužil.
@@ -174,16 +212,15 @@ export default function LegalCompass() {
   };
 
   const handleExportJSON = () => {
-    exportRegulationsToJSON();
+    exportRegulationsToJSON(regulationsList);
     showToast('Databáze předpisů exportována do souboru JSON.');
   };
 
   /**
    * Import předpisů ze souboru JSON.
    *
-   * Import místní databázi NAHRAZUJE, ne doplňuje — dřív to proběhlo bez
-   * jakéhokoli dotazu, takže si uživatel nevratně přepsal všechny své úpravy
-   * předpisů. Soubor se proto nejdřív přečte a teprve po potvrzení uloží.
+   * Import přepíše v databázi předpisy se stejným id a přidá nové — vidí to
+   * všichni. Soubor se proto nejdřív přečte a teprve po potvrzení uloží.
    */
   const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -199,16 +236,19 @@ export default function LegalCompass() {
     if (e.target) e.target.value = '';
   };
 
-  const confirmImport = () => {
+  const confirmImport = async () => {
     if (!pendingImport) return;
-    const res = importRegulationsFromJSON(pendingImport.text);
-    if (res.success) {
-      reloadRegulations();
-      showToast(res.message, 'success');
-    } else {
-      showToast(res.message, 'error');
-    }
+    const parsed = parseRegulationsJSON(pendingImport.text);
     setPendingImport(null);
+    if (!parsed.success) {
+      showToast(parsed.message, 'error');
+      return;
+    }
+    setRegulationsBusy(true);
+    const { saved, firstError } = await saveRegulationsBatch(parsed.items);
+    setRegulationsBusy(false);
+    if (firstError) showToast(`Uloženo ${saved} z ${parsed.items.length} předpisů. ${firstError}`, 'error');
+    else showToast(`Uloženo ${saved} předpisů do databáze.`);
   };
 
   const handleOpenNewEditor = () => {
@@ -237,7 +277,7 @@ export default function LegalCompass() {
     setShowEditorModal(true);
   };
 
-  const handleSaveRegulation = () => {
+  const handleSaveRegulation = async () => {
     if (!editingRegulation?.code || !editingRegulation?.title || !editingRegulation?.shortTitle) {
       showToast('Vyplňte prosím kód, zkrácený a plný název předpisu.', 'error');
       return;
@@ -264,15 +304,18 @@ export default function LegalCompass() {
       fullLegalText: editingRegulation.fullLegalText || ''
     };
 
-    const saved = saveRegulationToStorage(regToSave);
-    if (saved) {
-      reloadRegulations();
-      setShowEditorModal(false);
-      setEditingRegulation(null);
-      showToast(`Předpis „${regToSave.code}" byl úspěšně uložen!`);
-    } else {
-      showToast('Chyba při ukládání předpisu.', 'error');
+    if (regulationsBusy) return;
+    setRegulationsBusy(true);
+    const res = await saveRegulation(regToSave);
+    setRegulationsBusy(false);
+    if (res.error) {
+      // Editor zůstane otevřený, aby se rozepsaný text neztratil.
+      showToast(res.error, 'error');
+      return;
     }
+    setShowEditorModal(false);
+    setEditingRegulation(null);
+    showToast(`Předpis „${regToSave.code}" je uložen a vidí ho všichni.`);
   };
 
   /**
@@ -288,16 +331,22 @@ export default function LegalCompass() {
     setPendingDelete({ id, code, isDefault: isDefaultRegulation(id) });
   };
 
-  const confirmDeleteRegulation = () => {
+  const confirmDeleteRegulation = async () => {
     if (!pendingDelete) return;
-    deleteRegulationFromStorage(pendingDelete.id);
-    reloadRegulations();
-    showToast(
-      pendingDelete.isDefault
-        ? `Předpis ${pendingDelete.code} byl vrácen na výchozí znění z aplikace.`
-        : `Vlastní předpis ${pendingDelete.code} byl odebrán z tohoto zařízení.`
-    );
+    const target = pendingDelete;
     setPendingDelete(null);
+    // Výchozí předpis: smazat řádek překryvu = zpět na znění z aplikace.
+    // Vlastní předpis: smazat jeho řádek úplně.
+    const res = target.isDefault ? await restoreRegulation(target.id) : await purgeRegulation(target.id);
+    if (res.error) {
+      showToast(res.error, 'error');
+      return;
+    }
+    showToast(
+      target.isDefault
+        ? `Předpis ${target.code} byl vrácen na výchozí znění z aplikace.`
+        : `Vlastní předpis ${target.code} byl odebrán pro všechny.`
+    );
   };
 
   const filteredArticles = useMemo(() => {
@@ -575,6 +624,28 @@ export default function LegalCompass() {
         </div>
       </div>
 
+      {viewMode === 'registry' && canEditRegulations && legacyLocalRegs.length > 0 && (
+        <div className="no-print flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 text-xs text-amber-900 dark:text-amber-200">
+          <span>
+            V tomto prohlížeči máte {legacyLocalRegs.length} úprav předpisů ze starší verze aplikace, které
+            nikdo jiný nevidí.
+          </span>
+          <button
+            type="button"
+            onClick={uploadLegacyLocalRegs}
+            disabled={regulationsBusy}
+            className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold cursor-pointer disabled:opacity-50"
+          >
+            {regulationsBusy ? 'Nahrávám…' : 'Nahrát do databáze'}
+          </button>
+        </div>
+      )}
+      {viewMode === 'registry' && canEditRegulations && regulationsError && (
+        <p role="alert" className="no-print text-xs text-red-700 dark:text-red-300">
+          Úpravy předpisů se nepodařilo načíst ze serveru ({regulationsError}). Zobrazuje se poslední známý stav.
+        </p>
+      )}
+
       {/* Main Content Area */}
       <LegalRegistryView
         viewMode={viewMode}
@@ -665,13 +736,13 @@ export default function LegalCompass() {
         description={
           pendingDelete?.isDefault ? (
             <>
-              Vaše úpravy tohoto předpisu se zahodí a text se vrátí na podobu, kterou má
-              v aplikaci. Samotný předpis z registru nezmizí.
+              Úpravy tohoto předpisu se zahodí pro všechny a text se vrátí na podobu, kterou
+              má v aplikaci. Samotný předpis z registru nezmizí.
             </>
           ) : (
             <>
-              Předpis jste si přidal sám, takže se odebere úplně — a protože vlastní předpisy
-              žijí <strong>jen v tomto prohlížeči</strong>, nikde jinde se nedá obnovit.
+              Předpis do aplikace přidal lektor, takže se odebere úplně —{' '}
+              <strong>pro všechny uživatele</strong>. Obnovit ho půjde jen ze zálohy JSON.
             </>
           )
         }
@@ -684,16 +755,15 @@ export default function LegalCompass() {
       <ConfirmDialog
         isOpen={pendingImport !== null}
         tone="danger"
-        title="Nahradit místní úpravy předpisů importem?"
+        title="Uložit předpisy ze souboru do databáze?"
         description={
           <>
-            Soubor <strong>{pendingImport?.fileName}</strong> importem{' '}
-            <strong>nahradí všechny vaše dosavadní úpravy předpisů</strong> v tomto prohlížeči,
-            nepřidá se k nim. Co máte rozepsané, se ztratí. Doporučujeme si nejdřív udělat
-            export.
+            Předpisy ze souboru <strong>{pendingImport?.fileName}</strong> se uloží do společné
+            databáze: <strong>přepíší předpisy se stejným označením</strong> a nové se přidají.
+            Změnu uvidí všichni uživatelé. Doporučujeme si nejdřív udělat export.
           </>
         }
-        confirmLabel="Nahradit a importovat"
+        confirmLabel="Uložit do databáze"
         onConfirm={confirmImport}
         onCancel={() => setPendingImport(null)}
       />
