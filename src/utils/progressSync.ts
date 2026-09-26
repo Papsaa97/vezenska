@@ -14,7 +14,13 @@ import { getStorageOwner } from './userScopedStorage';
  * splněnou položku tak žádné zařízení „neodsplní“.
  */
 
-export type ProgressKind = 'scenario' | 'drill';
+export type ProgressKind = 'scenario' | 'drill' | 'fav_question' | 'fav_legal';
+
+export const PROGRESS_KINDS: ProgressKind[] = ['scenario', 'drill', 'fav_question', 'fav_legal'];
+
+function isProgressKind(value: string): value is ProgressKind {
+  return (PROGRESS_KINDS as string[]).includes(value);
+}
 
 const TABLE = 'studijni_postup';
 
@@ -66,13 +72,39 @@ export async function pullCompleted(userId: string): Promise<Record<ProgressKind
       else console.warn('[progressSync] Postup se nepodařilo načíst ze serveru:', error.message);
       return null;
     }
-    const result: Record<ProgressKind, string[]> = { scenario: [], drill: [] };
+    const result: Record<ProgressKind, string[]> = { scenario: [], drill: [], fav_question: [], fav_legal: [] };
     for (const row of (data ?? []) as { druh: string; polozka: string }[]) {
-      if (row.druh === 'scenario' || row.druh === 'drill') result[row.druh].push(row.polozka);
+      if (isProgressKind(row.druh)) result[row.druh].push(row.polozka);
     }
     return result;
   } catch (err) {
     console.warn('[progressSync] Spojení se serverem selhalo:', err);
     return null;
   }
+}
+
+/**
+ * Srovná serverovou sadu daného druhu s `ids` — pro oblíbené, které se dají
+ * i odebrat (splněný scénář se naopak nikdy „neodsplní“, proto pushCompleted).
+ */
+export async function replaceRemoteSet(kind: ProgressKind, ids: string[]): Promise<void> {
+  const userId = currentUserId();
+  if (!userId || tableMissing) return;
+  try {
+    let removal = supabase.from(TABLE).delete().eq('user_id', userId).eq('druh', kind);
+    if (ids.length > 0) {
+      const list = ids.map((id) => `"${id.replace(/"/g, '\\"')}"`).join(',');
+      removal = removal.not('polozka', 'in', `(${list})`);
+    }
+    const { error } = await removal;
+    if (error) {
+      if (isMissingTable(error.code, error.message)) tableMissing = true;
+      else console.warn('[progressSync] Oblíbené se nepodařilo srovnat se serverem:', error.message);
+      return;
+    }
+  } catch (err) {
+    console.warn('[progressSync] Spojení se serverem selhalo:', err);
+    return;
+  }
+  await pushCompleted(kind, ids);
 }

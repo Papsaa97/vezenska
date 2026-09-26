@@ -53,7 +53,14 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord, Question } from './types';
-import { loadMatchingHistory, saveMatchingHistory, updateDailyStreak } from './utils/gamification';
+import {
+  FAVORITES_KEY,
+  FAVORITES_SYNCED_EVENT,
+  loadMatchingHistory,
+  saveFavoriteIds,
+  saveMatchingHistory,
+  updateDailyStreak,
+} from './utils/gamification';
 import { fetchQuizHistory, saveQuizResult, clearQuizHistory } from './utils/quizResults';
 import {
   enqueuePendingResult,
@@ -66,11 +73,10 @@ import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import { getHiddenQuestionIds, isQuestionHidden } from './utils/questionActions';
-import { getStorageOwner, readScoped, readScopedRaw, writeScoped } from './utils/userScopedStorage';
+import { getStorageOwner, readScoped, readScopedRaw } from './utils/userScopedStorage';
 import { useProgressRevision, useStorageOwner } from './hooks/useProgressRevision';
 
 /** Oblíbené otázky uživatele (klíč se v úložišti doplní id účtu). */
-const FAVORITES_KEY = 'vscr_favorites';
 
 /** Spinner zobrazený při lazy-loadingu view komponent. */
 function TabLoader({ isDark }: { isDark?: boolean }) {
@@ -352,8 +358,17 @@ export default function App() {
     const serialized = JSON.stringify(favorites);
     const stored = readScopedRaw(FAVORITES_KEY);
     if (stored === serialized || (stored === null && favorites.length === 0)) return;
-    writeScoped(FAVORITES_KEY, favorites);
+    // I k účtu — dřív oblíbené otázky žily jen v tomto zařízení.
+    saveFavoriteIds('fav_question', favorites);
   }, [favorites]);
+
+  // Po přihlášení se oblíbené sloučí se serverem (syncCompletedProgress);
+  // stav tu se pak musí načíst znovu, jinak by ho další zápis přepsal.
+  useEffect(() => {
+    const reload = () => setFavorites(readScoped<string[]>(FAVORITES_KEY, []));
+    window.addEventListener(FAVORITES_SYNCED_EVENT, reload);
+    return () => window.removeEventListener(FAVORITES_SYNCED_EVENT, reload);
+  }, []);
 
   useEffect(() => {
     if (favoritesOwnerRef.current === storageOwner) return;

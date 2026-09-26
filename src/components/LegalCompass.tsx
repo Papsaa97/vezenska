@@ -23,10 +23,9 @@ import LegalEditorModal from './legal-compass/LegalEditorModal';
 import LegalAuditModal from './legal-compass/LegalAuditModal';
 import LegalReaderModal from './legal-compass/LegalReaderModal';
 import LegalRegistryView from './legal-compass/LegalRegistryView';
-import { readScoped, writeScoped } from '../utils/userScopedStorage';
+import { readScoped } from '../utils/userScopedStorage';
 import { useStorageOwner } from '../hooks/useProgressRevision';
-
-const LEGAL_FAVS_KEY = 'vscr_legal_favs';
+import { FAVORITES_SYNCED_EVENT, LEGAL_FAVS_KEY, saveFavoriteIds } from '../utils/gamification';
 
 export default function LegalCompass() {
   // Předpisy smí zakládat, upravovat, mazat a importovat jen lektor a správce.
@@ -100,6 +99,11 @@ export default function LegalCompass() {
   useEffect(() => {
     setSavedFavorites(readScoped<string[]>(LEGAL_FAVS_KEY, []));
   }, [storageOwner]);
+  useEffect(() => {
+    const reload = () => setSavedFavorites(readScoped<string[]>(LEGAL_FAVS_KEY, []));
+    window.addEventListener(FAVORITES_SYNCED_EVENT, reload);
+    return () => window.removeEventListener(FAVORITES_SYNCED_EVENT, reload);
+  }, []);
 
   const auditReport: AuditReport = useMemo(() => {
     // Pokrytí se měří proti osnově předpisu stažené z e-Sbírky, ne odhadem
@@ -120,7 +124,7 @@ export default function LegalCompass() {
       ? savedFavorites.filter(i => i !== id)
       : [...savedFavorites, id];
     setSavedFavorites(next);
-    writeScoped(LEGAL_FAVS_KEY, next);
+    saveFavoriteIds('fav_legal', next);
   };
 
   const reloadRegulations = () => {

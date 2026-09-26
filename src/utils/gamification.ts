@@ -1,7 +1,7 @@
 import { QuizSessionRecord, MatchingRecord, UserRank, Badge } from '../types';
 import { VSCR_RANKS, RAW_BADGES } from '../data/gamificationData';
 import { getStorageOwner, readScoped, writeScoped } from './userScopedStorage';
-import { ProgressKind, pullCompleted, pushCompleted } from './progressSync';
+import { ProgressKind, pullCompleted, pushCompleted, replaceRemoteSet } from './progressSync';
 
 const MATCHING_HISTORY_KEY = 'vscr_matching_history';
 const STREAK_KEY = 'vscr_streak_info';
@@ -47,9 +47,17 @@ export function saveCompletedDrills(ids: string[]): void {
   void pushCompleted('drill', ids);
 }
 
+export const FAVORITES_KEY = 'vscr_favorites';
+export const LEGAL_FAVS_KEY = 'vscr_legal_favs';
+
+/** Po sloučení oblíbených se serverem — App a Právní kompas si je načtou znovu. */
+export const FAVORITES_SYNCED_EVENT = 'vscr:favorites_synced';
+
 const PROGRESS_KEYS: Record<ProgressKind, string> = {
   scenario: COMPLETED_SCENARIOS_KEY,
   drill: COMPLETED_DRILLS_KEY,
+  fav_question: FAVORITES_KEY,
+  fav_legal: LEGAL_FAVS_KEY,
 };
 
 /**
@@ -62,14 +70,28 @@ export async function syncCompletedProgress(userId: string): Promise<void> {
   // Mezitím se mohl přihlásit někdo jiný — cizí postup do jeho úložiště nepatří.
   if (!remote || getStorageOwner() !== userId) return;
 
+  let favoritesChanged = false;
   for (const kind of Object.keys(PROGRESS_KEYS) as ProgressKind[]) {
     const key = PROGRESS_KEYS[kind];
-    const local = readScoped<string[]>(key, []);
+    const stored = readScoped<unknown>(key, []);
+    const local = Array.isArray(stored) ? stored.filter((v): v is string => typeof v === 'string') : [];
     const merged = Array.from(new Set([...local, ...remote[kind]]));
-    if (merged.length !== local.length) writeScoped(key, merged);
+    if (merged.length !== local.length) {
+      writeScoped(key, merged);
+      if (kind === 'fav_question' || kind === 'fav_legal') favoritesChanged = true;
+    }
     const missingOnServer = local.filter((id) => !remote[kind].includes(id));
     if (missingOnServer.length > 0) await pushCompleted(kind, missingOnServer);
   }
+  if (favoritesChanged && typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(FAVORITES_SYNCED_EVENT));
+  }
+}
+
+/** Uloží oblíbené do zařízení i k účtu (odebrané zmizí i ze serveru). */
+export function saveFavoriteIds(kind: 'fav_question' | 'fav_legal', ids: string[]): void {
+  writeScoped(PROGRESS_KEYS[kind], ids);
+  void replaceRemoteSet(kind, ids);
 }
 
 export function recordMatchingCompletion(record: Omit<MatchingRecord, 'id' | 'timestamp' | 'xpEarned'>): { record: MatchingRecord; newHistory: MatchingRecord[] } {
