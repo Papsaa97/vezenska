@@ -1055,9 +1055,15 @@ export default function Statistics({
         title="Vymazat celou historii testů?"
         description={
           <>
-            Smaže se <strong>všech {history.length} záznamů</strong> o absolvovaných testech
-            i historie pexesa — a to i ze serveru, tedy na všech vašich zařízeních. Přijdete
-            tím o statistiky, XP z testů a hodnostní postup. Vrátit to zpět nelze.
+            {/* Text musí odpovídat tomu, co handleClearHistory v App opravdu dělá:
+                výsledky testů maže na serveru, historii pexesa jen v úložišti
+                tohoto zařízení (na server se nikdy neposílá) a splněných scénářů
+                a drilů se nedotkne. Dřív tu stálo, že se vše smaže na všech
+                zařízeních — pexeso ale na ostatních zařízeních zůstávalo. */}
+            Smaže se <strong>všech {history.length} záznamů</strong> o absolvovaných testech,
+            a to i ze serveru, takže zmizí na všech vašich zařízeních. Historie pexesa se
+            smaže <strong>jen v tomto zařízení</strong>. Přijdete tím o statistiky a XP z testů
+            a pexesa; splněné scénáře a drily zůstávají. Vrátit to zpět nelze.
           </>
         }
         confirmLabel="Vymazat historii"
