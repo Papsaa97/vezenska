@@ -1056,7 +1056,6 @@ export default function ClassBulletinBoard() {
             deputyUntil={overviewOf(myClassItem.className)?.deputyUntil ?? null}
             isMyClass={myClassItem.className.toLowerCase() === (profile?.user_class || '').toLowerCase()}
             isManager={checkCanManageClass(myClassItem)}
-            isPrivileged={isPrivileged}
             formatUpdateTime={formatUpdateTime}
             onEdit={() => {
               setEditingItem(myClassItem);
@@ -1161,6 +1160,8 @@ export default function ClassBulletinBoard() {
         {isEditModalOpen && (
           <ClassEditModal
             item={editingItem}
+            canRename={isPrivileged}
+            canUploadSchedule={isPrivileged || profile?.role === 'velitel_tridy'}
             onClose={() => {
               setIsEditModalOpen(false);
               setEditingItem(null);

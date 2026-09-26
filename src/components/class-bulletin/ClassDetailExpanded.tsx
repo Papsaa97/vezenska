@@ -35,8 +35,12 @@ interface ClassDetailExpandedProps {
   deputyUntil: string | null;
   /** Je to třída přihlášeného? Lektor/správce si může zobrazit i cizí. */
   isMyClass: boolean;
+  /**
+   * Smí účet nástěnku upravovat — lektor, správce, velitel této třídy nebo
+   * jeho platný zástupce. Odpovídá politice can_manage_class (migrace 038);
+   * úpravy hlášení, rozvrhu a termínu kurzu se řídí jí, ne jen rolí lektora.
+   */
   isManager: boolean;
-  isPrivileged: boolean;
   formatUpdateTime: (iso: string) => string;
   onEdit: () => void;
   onEditUniform: () => void;
@@ -55,7 +59,6 @@ export default function ClassDetailExpanded({
   deputyUntil,
   isMyClass,
   isManager,
-  isPrivileged,
   formatUpdateTime,
   onEdit,
   onEditUniform,
@@ -144,7 +147,7 @@ export default function ClassDetailExpanded({
             </>
           )}
 
-          {isPrivileged && (
+          {isManager && (
             <button
               onClick={onEdit}
               className="p-2 rounded-xl text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
@@ -160,7 +163,7 @@ export default function ClassDetailExpanded({
       <CourseCountdownWidget
         startDate={item.courseStartDate}
         endDate={item.courseEndDate}
-        canEdit={isPrivileged}
+        canEdit={isManager}
         onEditDates={onEdit}
       />
 
@@ -171,7 +174,7 @@ export default function ClassDetailExpanded({
             <FileText className="w-4 h-4 text-blue-500" />
             <span>Denní hlášení, operativní změny &amp; zkoušky</span>
           </h3>
-          {isPrivileged && (
+          {isManager && (
             <button
               onClick={onEdit}
               className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold flex items-center gap-1 cursor-pointer"
@@ -254,7 +257,7 @@ export default function ClassDetailExpanded({
               <span className="text-xs text-slate-500 mt-1 max-w-xs">
                 Lektor nebo velitel výcviku může nahrát aktuální obrázek rozvrhu v editaci třídy.
               </span>
-              {isPrivileged && (
+              {isManager && (
                 <button
                   onClick={onEdit}
                   className="mt-4 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all cursor-pointer"

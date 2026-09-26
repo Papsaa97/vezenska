@@ -95,15 +95,19 @@ export default function ClassCardCompact({
             <EyeOff className="w-3.5 h-3.5" />
           </button>
 
+          {/* Upravit smí i velitel a jeho zástupce (can_manage_class), smazat
+              třídu jen lektor a správce. */}
+          {isManager && (
+            <button
+              onClick={onEdit}
+              className="p-1 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-slate-200 dark:hover:bg-slate-800"
+              title="Upravit třídu"
+            >
+              <Edit2 className="w-3.5 h-3.5" />
+            </button>
+          )}
           {isPrivileged && (
             <>
-              <button
-                onClick={onEdit}
-                className="p-1 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-slate-200 dark:hover:bg-slate-800"
-                title="Upravit třídu"
-              >
-                <Edit2 className="w-3.5 h-3.5" />
-              </button>
               <button
                 onClick={onDelete}
                 className="p-1 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-200 dark:hover:bg-slate-800"
@@ -121,7 +125,7 @@ export default function ClassCardCompact({
         startDate={item.courseStartDate}
         endDate={item.courseEndDate}
         compact
-        canEdit={isPrivileged}
+        canEdit={isManager}
         onEditDates={onEdit}
       />
 

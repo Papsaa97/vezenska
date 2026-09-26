@@ -15,11 +15,26 @@ import { useDialog } from '../../hooks/useDialog';
 
 interface ClassEditModalProps {
   item: ClassBoardItem | null;
+  /**
+   * Smí účet třídu přejmenovat? Jen lektor a správce — velitel ani zástupce
+   * ne: politika nad class_boards jim přejmenování nedovolí a uložení by
+   * skončilo chybou až po vyplnění celého formuláře.
+   */
+  canRename: boolean;
+  /**
+   * Smí účet nahrát obrázek do úložiště? Politika kbelíku studijni-materialy
+   * (migrace 031) pouští lektora, správce a velitele třídy. Zástupce velitele
+   * má roli „student“, takže by nahrání selhalo a rozvrh by se potichu uložil
+   * jako data: URL přímo do řádku nástěnky.
+   */
+  canUploadSchedule: boolean;
   onClose: () => void;
   onSave: (input: ClassBoardInput) => Promise<void>;
 }
 
-export default function ClassEditModal({ item, onClose, onSave }: ClassEditModalProps) {
+export default function ClassEditModal({ item, canRename, canUploadSchedule, onClose, onSave }: ClassEditModalProps) {
+  // Novou třídu zakládá jen lektor nebo správce; u existující rozhoduje prop.
+  const nameEditable = canRename || !item;
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
   const fieldIds = useId();
 
@@ -158,11 +173,18 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
               id={`${fieldIds}-0`}
               type="text"
               required
+              readOnly={!nameEditable}
+              aria-describedby={nameEditable ? undefined : `${fieldIds}-0-hint`}
               value={className}
               onChange={(e) => setClassName(e.target.value)}
               placeholder="např. ZOP A11, ZOP B04..."
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-semibold"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-semibold read-only:opacity-70 read-only:cursor-not-allowed"
             />
+            {!nameEditable && (
+              <p id={`${fieldIds}-0-hint`} className="text-[11px] text-slate-500 dark:text-slate-400">
+                Třídu může přejmenovat jen lektor nebo správce.
+              </p>
+            )}
           </div>
 
           {/* Termín kurzu (pro odpočet) */}
@@ -225,11 +247,18 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
               )}
             </div>
 
+            {!canUploadSchedule && (
+              <p className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2">
+                Nový obrázek rozvrhu může nahrát velitel třídy, lektor nebo správce. Ostatní údaje nástěnky můžete upravit.
+              </p>
+            )}
+
             {/* sr-only místo hidden: display:none vyřadí pole z přístupnostního
                 stromu, takže by na něj popisek neměl na co ukázat a klávesnicí
                 by se k výběru souboru nedalo dostat. Vizuálně beze změny. */}
             <input
               type="file"
+              disabled={!canUploadSchedule}
               id={`${fieldIds}-rozvrh`}
               ref={fileInputRef}
               onChange={handleFileChange}
@@ -242,15 +271,17 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
                 <img src={previewUrl} alt="Náhled rozvrhu" className="w-full h-48 object-contain" />
                 {/* <label> místo klikacího divu: výběr souboru otevře nativně,
                     bez obsluhy onClick a bez další zastávky tabulátoru. */}
-                <label
-                  htmlFor={`${fieldIds}-rozvrh`}
-                  className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-bold cursor-pointer"
-                >
-                  <UploadCloud className="w-4 h-4" />
-                  <span>Kliknutím vyměnit obrázek</span>
-                </label>
+                {canUploadSchedule && (
+                  <label
+                    htmlFor={`${fieldIds}-rozvrh`}
+                    className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-bold cursor-pointer"
+                  >
+                    <UploadCloud className="w-4 h-4" />
+                    <span>Kliknutím vyměnit obrázek</span>
+                  </label>
+                )}
               </div>
-            ) : (
+            ) : canUploadSchedule ? (
               <label
                 htmlFor={`${fieldIds}-rozvrh`}
                 className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors bg-slate-50/50 dark:bg-slate-800/30"
@@ -263,7 +294,7 @@ export default function ClassEditModal({ item, onClose, onSave }: ClassEditModal
                   Uloženo do Supabase Storage bucketu studijni-materialy/rozvrhy/
                 </span>
               </label>
-            )}
+            ) : null}
           </div>
 
           <div className="space-y-1.5">
