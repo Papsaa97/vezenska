@@ -5,6 +5,7 @@ import DiagramGame from "./DiagramGame";
 import { recordMatchingCompletion } from '../utils/gamification';
 import PrintHeader from './common/PrintHeader';
 import MatchingCategoryEditModal from './common/MatchingCategoryEditModal';
+import ConfirmDialog from './common/ConfirmDialog';
 import { useAuth } from '../context/AuthContext';
 import { useEditableContent } from '../hooks/useEditableContent';
 
@@ -27,6 +28,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
     save: saveCategory,
     remove: removeCategory,
     restore: restoreCategory,
+    purge: purgeCategory,
     toggleHidden: toggleCategoryHidden,
   } = useEditableContent<MatchingCategory>('matching_category', categories, canEdit);
 
@@ -36,6 +38,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
   const [editingCategory, setEditingCategory] = useState<MatchingCategory | null>(null);
   const [confirmDeleteCategory, setConfirmDeleteCategory] = useState(false);
   const [categoryError, setCategoryError] = useState<string | null>(null);
+  const [purgeCategoryId, setPurgeCategoryId] = useState<string | null>(null);
   
   const [leftItems, setLeftItems] = useState<{ id: string, text: string }[]>([]);
   const [rightItems, setRightItems] = useState<{ id: string, text: string }[]>([]);
@@ -327,7 +330,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
 
             {deletedEntries.length > 0 && (
               <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-500 dark:text-slate-400">
-                <span className="font-semibold">Odebrané:</span>
+                <span className="font-semibold">Odebrané (vrátit / smazat natrvalo):</span>
                 {deletedEntries.map(entry => (
                   <button
                     key={entry.id}
@@ -339,8 +342,34 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
                     {entry.item.title}
                   </button>
                 ))}
+                {deletedEntries.map(entry => (
+                  <button
+                    key={`purge-${entry.id}`}
+                    type="button"
+                    onClick={() => setPurgeCategoryId(entry.id)}
+                    aria-label={`Smazat poznávačku ${entry.item.title} natrvalo`}
+                    className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-semibold transition-colors cursor-pointer"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    {entry.item.title}
+                  </button>
+                ))}
               </div>
             )}
+
+            <ConfirmDialog
+              isOpen={purgeCategoryId !== null}
+              title="Smazat poznávačku natrvalo?"
+              description="Poznávačka zmizí i z přehledu odebraných a vrátit ji půjde jen zásahem do databáze."
+              confirmLabel="Smazat natrvalo"
+              tone="danger"
+              onCancel={() => setPurgeCategoryId(null)}
+              onConfirm={() => {
+                const id = purgeCategoryId;
+                setPurgeCategoryId(null);
+                if (id) purgeCategory(id).then(r => setCategoryError(r.error));
+              }}
+            />
 
             {categoryError && (
               <div className="text-[11px] text-red-600 dark:text-red-400">{categoryError}</div>
