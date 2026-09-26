@@ -7,6 +7,7 @@ import {
   deleteContentItem,
   fetchContentOverlay,
   mergeContent,
+  purgeContentItem,
   restoreContentItem,
   saveContentItem,
 } from '../utils/contentLibrary';
@@ -24,6 +25,8 @@ export interface EditableContent<T extends { id: string }> {
   save: (item: T, options?: { isHidden?: boolean }) => Promise<PersistResult>;
   remove: (id: string) => Promise<PersistResult>;
   restore: (id: string) => Promise<PersistResult>;
+  /** Smaže odebranou položku natrvalo — zmizí i z přehledu odebraných. */
+  purge: (id: string) => Promise<PersistResult>;
   toggleHidden: (id: string) => Promise<PersistResult>;
 }
 
@@ -100,6 +103,17 @@ export function useEditableContent<T extends { id: string }>(
     [kind, reload]
   );
 
+  const purge = useCallback(
+    async (id: string) => {
+      const entry = findEntry(id);
+      if (!entry) return { persisted: false, error: 'Položka už v seznamu není.' };
+      const result = await purgeContentItem(kind, entry.item, entry.isBuiltIn);
+      await reload();
+      return result;
+    },
+    [kind, findEntry, reload]
+  );
+
   const toggleHidden = useCallback(
     async (id: string) => {
       const entry = findEntry(id);
@@ -111,5 +125,5 @@ export function useEditableContent<T extends { id: string }>(
     [kind, findEntry, reload]
   );
 
-  return { entries, items, loading, error, source, reload, save, remove, restore, toggleHidden };
+  return { entries, items, loading, error, source, reload, save, remove, restore, purge, toggleHidden };
 }

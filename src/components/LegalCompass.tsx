@@ -23,6 +23,10 @@ import LegalEditorModal from './legal-compass/LegalEditorModal';
 import LegalAuditModal from './legal-compass/LegalAuditModal';
 import LegalReaderModal from './legal-compass/LegalReaderModal';
 import LegalRegistryView from './legal-compass/LegalRegistryView';
+import { readScoped, writeScoped } from '../utils/userScopedStorage';
+import { useStorageOwner } from '../hooks/useProgressRevision';
+
+const LEGAL_FAVS_KEY = 'vscr_legal_favs';
 
 export default function LegalCompass() {
   // Předpisy smí zakládat, upravovat, mazat a importovat jen lektor a správce.
@@ -88,19 +92,14 @@ export default function LegalCompass() {
   const detailContainerRef = useRef<HTMLDivElement>(null);
   const listContainerRef = useRef<HTMLDivElement>(null);
 
-  const [savedFavorites, setSavedFavorites] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('vscr_legal_favs');
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    }
-    return [];
-  });
+  // Oblíbené předpisy patří účtu (userScopedStorage). Dřív se četly a psaly
+  // pod společným klíčem, který userScopedStorage při každém načtení stránky
+  // převedl na účet a smazal — po obnovení stránky byly oblíbené prázdné.
+  const storageOwner = useStorageOwner();
+  const [savedFavorites, setSavedFavorites] = useState<string[]>(() => readScoped<string[]>(LEGAL_FAVS_KEY, []));
+  useEffect(() => {
+    setSavedFavorites(readScoped<string[]>(LEGAL_FAVS_KEY, []));
+  }, [storageOwner]);
 
   const auditReport: AuditReport = useMemo(() => {
     // Pokrytí se měří proti osnově předpisu stažené z e-Sbírky, ne odhadem
@@ -117,11 +116,11 @@ export default function LegalCompass() {
   };
 
   const toggleFavorite = (id: string) => {
-    setSavedFavorites(prev => {
-      const next = prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id];
-      localStorage.setItem('vscr_legal_favs', JSON.stringify(next));
-      return next;
-    });
+    const next = savedFavorites.includes(id)
+      ? savedFavorites.filter(i => i !== id)
+      : [...savedFavorites, id];
+    setSavedFavorites(next);
+    writeScoped(LEGAL_FAVS_KEY, next);
   };
 
   const reloadRegulations = () => {

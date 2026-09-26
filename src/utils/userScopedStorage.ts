@@ -48,6 +48,7 @@ const MIGRATED_KEYS = [
   'vscr_favorites',
   'vscr_legal_favs',
   'vscr_custom_saved_exams',
+  'vscr_gemini_api_key',
 ];
 
 /** Plný klíč v localStorage pro daný základ a aktuálního vlastníka. */

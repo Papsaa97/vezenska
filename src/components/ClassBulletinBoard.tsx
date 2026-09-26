@@ -65,6 +65,7 @@ import {
   fetchClassOverview,
   fetchMyMembership,
 } from '../utils/classMembership';
+import JidelnicekCard from './class-bulletin/JidelnicekCard';
 
 /** Dnešní datum ve tvaru „pondělí 16. září 2026“. */
 function formatToday(): string {
@@ -844,6 +845,9 @@ export default function ClassBulletinBoard() {
           </div>
         </div>
       </header>
+
+      {/* ─── Jídelníček ──────────────────────────────────────────────────── */}
+      <JidelnicekCard canEdit={isPrivileged} />
 
       {/* ─── Celoškolní informace pro všechny (Akademie VS ČR) ───────────── */}
       <section className="no-print bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm p-5 sm:p-6 space-y-4">

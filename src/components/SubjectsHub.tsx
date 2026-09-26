@@ -106,6 +106,7 @@ export default function SubjectsHub({
     save: saveSubject,
     remove: removeSubject,
     restore: restoreSubject,
+    purge: purgeSubject,
     toggleHidden: toggleSubjectHidden,
   } = useEditableContent<SubjectInfo>('subject', DEFAULT_SUBJECTS, canEdit);
 
@@ -115,6 +116,7 @@ export default function SubjectsHub({
   const [subjectModalOpen, setSubjectModalOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<SubjectInfo | null>(null);
   const [confirmDeleteSubjectId, setConfirmDeleteSubjectId] = useState<string | null>(null);
+  const [confirmPurgeSubjectId, setConfirmPurgeSubjectId] = useState<string | null>(null);
   const [subjectActionError, setSubjectActionError] = useState<string | null>(null);
 
   // Filtrování podle role: Běžný student položky s is_hidden === true vůbec neuvidí (odfiltrují se ze statistik i přehledu)
@@ -143,7 +145,9 @@ export default function SubjectsHub({
   // stačí i přiřazený soubor. Lektor vidí všechno včetně skrytých a smazaných:
   // jinak by nový předmět zmizel hned po založení, než k němu něco přibude.
   const visibleEntries = useMemo(() => {
-    if (canEdit) return subjectEntries;
+    // Odebrané předměty nejsou dlaždice v mřížce — lektor je má v pruhu pod
+    // ní, kde je vrátí nebo smaže natrvalo. Dřív v mřížce visely napořád.
+    if (canEdit) return subjectEntries.filter(entry => !entry.isDeleted);
     return subjectEntries.filter(entry => {
       const stats = subjectStats[entry.id];
       return (stats?.totalQuestions ?? 0) > 0 || (stats?.totalFiles ?? 0) > 0;
@@ -188,6 +192,17 @@ export default function SubjectsHub({
   const handleSubjectRestore = async (id: string) => {
     const result = await restoreSubject(id);
     setSubjectActionError(result.error);
+  };
+
+  const deletedEntries = useMemo(
+    () => subjectEntries.filter(entry => entry.isDeleted),
+    [subjectEntries]
+  );
+
+  const handleSubjectPurge = async (id: string) => {
+    const result = await purgeSubject(id);
+    setSubjectActionError(result.error);
+    setConfirmPurgeSubjectId(null);
   };
 
   const handleSubjectHiddenToggle = async (id: string) => {
@@ -844,35 +859,6 @@ export default function SubjectsHub({
           const stats = subjectStats?.[entry.id] || { totalQuestions: 0, totalFiles: 0 };
           const styles = getSubjectColorStyles(info?.accentColor || 'indigo');
 
-          // Předmět, který lektor smazal, zůstává v jeho přehledu jako
-          // náhrobek — výchozí data jsou v repozitáři a dají se vrátit.
-          if (entry.isDeleted) {
-            return (
-              <div
-                key={entry.id}
-                className="bg-slate-50 dark:bg-slate-900/40 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-6 flex flex-col justify-between gap-4"
-              >
-                <div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                    Odebráno z nabídky
-                  </span>
-                  <h2 className="text-lg font-bold text-slate-500 dark:text-slate-400 mt-2">{info.name}</h2>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Studenti tenhle předmět nevidí. Obnovením se vrátí výchozí podoba z aplikace.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleSubjectRestore(entry.id)}
-                  className="w-full py-2 px-3 rounded-xl bg-slate-900 dark:bg-slate-700 text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  Vrátit předmět zpět
-                </button>
-              </div>
-            );
-          }
-
           // Dlaždice předmětu se chová jako tlačítko, ale <button> to být
           // nemůže — uvnitř už další tlačítka jsou a vnořit je nelze.
           return (
@@ -1039,6 +1025,64 @@ export default function SubjectsHub({
           );
         })}
       </div>
+
+      {canEdit && deletedEntries.length > 0 && (
+        <section
+          aria-label="Odebrané předměty"
+          className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 p-4 space-y-2"
+        >
+          <div>
+            <h2 className="text-sm font-bold text-slate-700 dark:text-slate-200">Odebrané předměty</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Studenti je nevidí. Vrátit je můžete do výchozí podoby, nebo je smazat natrvalo, aby tu už nebyly.
+            </p>
+          </div>
+          <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+            {deletedEntries.map(entry => (
+              <li key={entry.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">{entry.item.name}</span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleSubjectRestore(entry.id)}
+                    className="px-2.5 py-1.5 rounded-lg bg-slate-900 dark:bg-slate-700 text-white text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    Vrátit
+                  </button>
+                  {confirmPurgeSubjectId === entry.id ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleSubjectPurge(entry.id)}
+                        className="px-2.5 py-1.5 rounded-lg bg-red-600 text-white text-[11px] font-bold cursor-pointer"
+                      >
+                        Ano, smazat natrvalo
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmPurgeSubjectId(null)}
+                        className="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-bold cursor-pointer"
+                      >
+                        Ne
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setConfirmPurgeSubjectId(entry.id)}
+                      className="px-2.5 py-1.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Smazat natrvalo
+                    </button>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </motion.div>
     </AnimatePresence>
   );

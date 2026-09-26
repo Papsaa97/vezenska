@@ -1,5 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { Question } from '../types';
+import { readScoped, writeScoped } from './userScopedStorage';
 
 export interface AnalyzedExamResponse {
   title: string;
@@ -20,30 +21,24 @@ export interface SavedCustomExam {
   questions: Question[];
 }
 
+// Klíč i uložená zadání patří účtu (userScopedStorage). Dřív ležely pod
+// společným klíčem: uložená zadání po obnovení stránky mizela (userScopedStorage
+// je při přihlášení převáděl na účet a mazal) a na sdíleném počítači by další
+// přihlášený používal cizí klíč ke Gemini.
+
 export function getSavedApiKey(): string {
-  if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem(STORAGE_KEY_API_KEY);
-    if (saved) return saved.trim();
-  }
+  const saved = readScoped<string>(STORAGE_KEY_API_KEY, '');
+  if (typeof saved === 'string' && saved.trim()) return saved.trim();
   return import.meta.env?.VITE_GEMINI_API_KEY || '';
 }
 
 export function setSavedApiKey(key: string): void {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY_API_KEY, key.trim());
-  }
+  writeScoped(STORAGE_KEY_API_KEY, key.trim());
 }
 
 export function getSavedCustomExams(): SavedCustomExam[] {
-  if (typeof window !== 'undefined') {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_SAVED_EXAMS);
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      console.error('Failed to load saved custom exams', e);
-    }
-  }
-  return [];
+  const saved = readScoped<unknown>(STORAGE_KEY_SAVED_EXAMS, []);
+  return Array.isArray(saved) ? (saved as SavedCustomExam[]) : [];
 }
 
 export function saveCustomExam(exam: Omit<SavedCustomExam, 'id' | 'createdAt'>): SavedCustomExam {
@@ -52,20 +47,12 @@ export function saveCustomExam(exam: Omit<SavedCustomExam, 'id' | 'createdAt'>):
     id: `custom-exam-${Date.now()}`,
     createdAt: Date.now()
   };
-  if (typeof window !== 'undefined') {
-    const current = getSavedCustomExams();
-    const updated = [newExam, ...current];
-    localStorage.setItem(STORAGE_KEY_SAVED_EXAMS, JSON.stringify(updated));
-  }
+  writeScoped(STORAGE_KEY_SAVED_EXAMS, [newExam, ...getSavedCustomExams()]);
   return newExam;
 }
 
 export function deleteCustomExam(id: string): void {
-  if (typeof window !== 'undefined') {
-    const current = getSavedCustomExams();
-    const updated = current.filter(e => e.id !== id);
-    localStorage.setItem(STORAGE_KEY_SAVED_EXAMS, JSON.stringify(updated));
-  }
+  writeScoped(STORAGE_KEY_SAVED_EXAMS, getSavedCustomExams().filter(e => e.id !== id));
 }
 
 export interface GeminiInlineDataPart {

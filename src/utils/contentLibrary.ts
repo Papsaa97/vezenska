@@ -2,6 +2,8 @@ import { supabase } from '../lib/supabase';
 import { MatchingCategory, MatchingPair, MatchingDiagramPart } from '../types';
 import { SubjectInfo, subjectsMeta } from '../data/questions/subjectsInfo';
 import { Scenario, ScenarioStep, ScenarioChoice } from '../data/scenariosData';
+import { StoppageDrill, WeaponData, WeaponStep } from '../data/weaponsData';
+import { Jidelnicek } from '../data/jidelnicek';
 
 // ─── Editovatelný obsah záložek ──────────────────────────────────────────────
 //
@@ -14,12 +16,24 @@ import { Scenario, ScenarioStep, ScenarioChoice } from '../data/scenariosData';
 //   • řádek s novým id                         → přidá položku navíc
 //   • is_deleted = true                        → schová výchozí položku
 //   • is_hidden  = true                        → skryje ji studentům, lektor ji vidí
+//   • is_deleted = true a is_hidden = true     → smazáno natrvalo: nevidí ji ani
+//                                                lektor, v přehledu nepřekáží
 //
 // Výchozí data tím zůstávají nedotčená: smazáním řádku překryvu se aplikace
 // vrátí přesně k tomu, co je v repozitáři. Proto se výchozí položka nemaže
 // natvrdo, ale „náhrobkem" (is_deleted) — jinak by ji zpátky nedostal nikdo.
 
-export type ContentKind = 'subject' | 'matching_category' | 'scenario';
+/**
+ * Druhy obsahu. Musí odpovídat CHECK `content_blocks_kind_check` v databázi —
+ * 'weapon', 'stoppage_drill' a 'jidelnicek' přidává migrace 040.
+ */
+export type ContentKind =
+  | 'subject'
+  | 'matching_category'
+  | 'scenario'
+  | 'weapon'
+  | 'stoppage_drill'
+  | 'jidelnicek';
 
 /**
  * Předměty tak, jak jsou v repozitáři. Překryv z databáze je může přepsat,
@@ -268,10 +282,126 @@ function normalizeScenario(value: unknown): Scenario | null {
   };
 }
 
+function normalizeWeaponSteps(value: unknown): WeaponStep[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((s) => {
+      const sr = record(s);
+      if (!sr) return null;
+      const title = str(sr.title).trim();
+      const actionInstruction = str(sr.actionInstruction).trim();
+      if (!title || !actionInstruction) return null;
+      return {
+        title,
+        actionInstruction,
+        whyCrucial: str(sr.whyCrucial),
+        dangerIfOmitted: str(sr.dangerIfOmitted),
+      };
+    })
+    .filter((s): s is Omit<WeaponStep, 'stepNumber'> => s !== null)
+    .map((s, i) => ({ ...s, stepNumber: i + 1 }));
+}
+
+function normalizeWeapon(value: unknown): WeaponData | null {
+  const raw = record(value);
+  if (!raw) return null;
+  const id = str(raw.id).trim();
+  const name = str(raw.name).trim();
+  if (!id || !name) return null;
+
+  const safetySteps = normalizeWeaponSteps(raw.safetySteps);
+  const disassemblySteps = normalizeWeaponSteps(raw.disassemblySteps);
+  // Zbraň bez postupu by se otevřela na prázdném nácviku.
+  if (safetySteps.length === 0 || disassemblySteps.length === 0) return null;
+
+  const technicalSpecs = Array.isArray(raw.technicalSpecs)
+    ? raw.technicalSpecs
+        .map((t) => {
+          const tr = record(t);
+          if (!tr) return null;
+          const label = str(tr.label).trim();
+          const specValue = str(tr.value).trim();
+          return label && specValue ? { label, value: specValue } : null;
+        })
+        .filter((t): t is { label: string; value: string } => t !== null)
+    : [];
+
+  return {
+    id,
+    name,
+    caliber: str(raw.caliber),
+    capacity: str(raw.capacity),
+    serviceRole: str(raw.serviceRole),
+    technicalSpecs,
+    safetySteps,
+    disassemblySteps,
+  };
+}
+
+function normalizeStoppageDrill(value: unknown): StoppageDrill | null {
+  const raw = record(value);
+  if (!raw) return null;
+  const id = str(raw.id).trim();
+  const name = str(raw.name).trim();
+  if (!id || !name) return null;
+
+  const options = Array.isArray(raw.options)
+    ? raw.options
+        .map((o) => {
+          const or = record(o);
+          if (!or) return null;
+          const text = str(or.text).trim();
+          if (!text) return null;
+          return { text, isCorrect: or.isCorrect === true, feedback: str(or.feedback) };
+        })
+        .filter((o): o is StoppageDrill['options'][number] => o !== null)
+    : [];
+  // Bez správné volby by závada nešla splnit.
+  if (options.length < 2 || !options.some((o) => o.isCorrect)) return null;
+
+  return {
+    id,
+    name,
+    symptom: str(raw.symptom),
+    cause: str(raw.cause),
+    correctAction: str(raw.correctAction),
+    whyCorrect: str(raw.whyCorrect),
+    dangerOfWrongAction: str(raw.dangerOfWrongAction),
+    options,
+  };
+}
+
+function normalizeJidelnicek(value: unknown): Jidelnicek | null {
+  const raw = record(value);
+  if (!raw) return null;
+  const id = str(raw.id).trim();
+  if (!id) return null;
+  const days = Array.isArray(raw.days)
+    ? raw.days
+        .map((d) => {
+          const dr = record(d);
+          if (!dr) return null;
+          const day = str(dr.day).trim();
+          if (!day) return null;
+          return { day, meals: str(dr.meals) };
+        })
+        .filter((d): d is Jidelnicek['days'][number] => d !== null)
+    : [];
+  return {
+    id,
+    weekLabel: str(raw.weekLabel),
+    note: str(raw.note),
+    days,
+  };
+}
+
 const NORMALIZERS: Record<ContentKind, (value: unknown) => unknown> = {
   subject: normalizeSubject,
   matching_category: normalizeMatchingCategory,
   scenario: normalizeScenario,
+  weapon: normalizeWeapon,
+  stoppage_drill: normalizeStoppageDrill,
+  jidelnicek: normalizeJidelnicek,
 };
 
 // ─── Čtení překryvu ──────────────────────────────────────────────────────────
@@ -355,6 +485,15 @@ export interface MergeOptions {
   includeHidden?: boolean;
 }
 
+/**
+ * Výchozí položka smazaná natrvalo. Náhrobek zůstává (výchozí data jsou
+ * v repozitáři a bez něj by se vrátila), ale lektorovi už se nenabízí
+ * k obnovení — jinak by v přehledu visel navždy.
+ */
+function isPurged(block: ContentBlock<unknown>): boolean {
+  return block.isDeleted && block.isHidden;
+}
+
 export function mergeContent<T extends { id: string }>(
   defaults: T[],
   blocks: Record<string, ContentBlock<T>>,
@@ -373,6 +512,7 @@ export function mergeContent<T extends { id: string }>(
       continue;
     }
 
+    if (isPurged(block)) continue;
     if (block.isDeleted && !includeHidden) continue;
     if (block.isHidden && !includeHidden) continue;
 
@@ -392,6 +532,7 @@ export function mergeContent<T extends { id: string }>(
     .sort((a, b) => a.sortOrder - b.sortOrder || a.updatedAt.localeCompare(b.updatedAt));
 
   for (const block of custom) {
+    if (isPurged(block)) continue;
     if (block.isDeleted && !includeHidden) continue;
     if (block.isHidden && !includeHidden) continue;
     entries.push({
@@ -505,6 +646,8 @@ export async function deleteContentItem<T extends { id: string }>(
           // Obsah se schovává, ne zahazuje — jinak by nebylo co obnovovat.
           payload: normalized ?? {},
           is_deleted: true,
+          // Výslovně: náhrobek se skrytím znamená „smazáno natrvalo“.
+          is_hidden: false,
           updated_at: now,
           updated_by: userEmail ?? null,
         },
@@ -537,6 +680,51 @@ export async function deleteContentItem<T extends { id: string }>(
     dropFromCache(kind, item.id);
   }
 
+  return { persisted: persistError === null, error: persistError };
+}
+
+/**
+ * Smaže položku natrvalo — zmizí i z lektorova přehledu odebraných položek.
+ *
+ * Vlastní položka přijde o řádek. U výchozí to nejde (vrátila by se
+ * z repozitáře), proto zůstane náhrobek označený zároveň jako skrytý.
+ */
+export async function purgeContentItem<T extends { id: string }>(
+  kind: ContentKind,
+  item: T,
+  isBuiltIn: boolean
+): Promise<PersistResult> {
+  if (!isBuiltIn) return deleteContentItem(kind, item, false);
+
+  const now = new Date().toISOString();
+  const normalized = NORMALIZERS[kind](item);
+  let persistError: string | null = null;
+  try {
+    const { error } = await supabase.from('content_blocks').upsert(
+      {
+        id: rowId(kind, item.id),
+        kind,
+        payload: normalized ?? {},
+        is_deleted: true,
+        is_hidden: true,
+        updated_at: now,
+      },
+      { onConflict: 'id' }
+    );
+    if (error) persistError = `Položku se nepodařilo smazat (${error.message}).`;
+  } catch (err) {
+    persistError = `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`;
+  }
+
+  cacheBlock(kind, {
+    itemId: item.id,
+    kind,
+    payload: (normalized as T) ?? null,
+    sortOrder: 0,
+    isHidden: true,
+    isDeleted: true,
+    updatedAt: now,
+  });
   return { persisted: persistError === null, error: persistError };
 }
 

@@ -7,6 +7,7 @@ import { useEditableContent } from '../hooks/useEditableContent';
 import { useProgressRevision } from '../hooks/useProgressRevision';
 import { loadCompletedScenarios, saveCompletedScenarios, updateDailyStreak } from '../utils/gamification';
 import ScenarioEditModal from './common/ScenarioEditModal';
+import ConfirmDialog from './common/ConfirmDialog';
 
 export default function Scenarios() {
   const { profile } = useAuth();
@@ -19,6 +20,7 @@ export default function Scenarios() {
     save: saveScenario,
     remove: removeScenario,
     restore: restoreScenario,
+    purge: purgeScenario,
     toggleHidden: toggleScenarioHidden,
   } = useEditableContent<Scenario>('scenario', tacticalScenarios, canEdit);
 
@@ -26,6 +28,7 @@ export default function Scenarios() {
   const [editingScenario, setEditingScenario] = useState<Scenario | null>(null);
   const [confirmDeleteScenarioId, setConfirmDeleteScenarioId] = useState<string | null>(null);
   const [scenarioError, setScenarioError] = useState<string | null>(null);
+  const [purgeScenarioId, setPurgeScenarioId] = useState<string | null>(null);
 
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
@@ -340,7 +343,7 @@ export default function Scenarios() {
 
         {canEdit && deletedEntries.length > 0 && (
           <div className="mt-5 flex items-center gap-2 flex-wrap text-[11px] text-slate-500 dark:text-slate-400">
-            <span className="font-semibold">Odebrané situace:</span>
+            <span className="font-semibold">Odebrané situace (vrátit / smazat natrvalo):</span>
             {deletedEntries.map(entry => (
               <button
                 key={entry.id}
@@ -352,7 +355,35 @@ export default function Scenarios() {
                 {entry.item.title}
               </button>
             ))}
+            {deletedEntries.map(entry => (
+              <button
+                key={`purge-${entry.id}`}
+                type="button"
+                onClick={() => setPurgeScenarioId(entry.id)}
+                aria-label={`Smazat situaci ${entry.item.title} natrvalo`}
+                className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-semibold transition-colors cursor-pointer"
+              >
+                <Trash2 className="w-3 h-3" />
+                {entry.item.title}
+              </button>
+            ))}
           </div>
+        )}
+
+        {canEdit && (
+          <ConfirmDialog
+            isOpen={purgeScenarioId !== null}
+            title="Smazat situaci natrvalo?"
+            description="Situace zmizí i z přehledu odebraných a vrátit ji půjde jen zásahem do databáze."
+            confirmLabel="Smazat natrvalo"
+            tone="danger"
+            onCancel={() => setPurgeScenarioId(null)}
+            onConfirm={() => {
+              const id = purgeScenarioId;
+              setPurgeScenarioId(null);
+              if (id) purgeScenario(id).then(r => setScenarioError(r.error));
+            }}
+          />
         )}
 
         {canEdit && (

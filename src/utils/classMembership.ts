@@ -184,11 +184,16 @@ interface AssignmentDbRow {
   nominace_tridy: string | null;
 }
 
+const STAFF_ROLES = new Set<string>(['lektor', 'admin']);
+
 export async function fetchAssignmentList(): Promise<RpcResult<AssignmentRow[]>> {
   const res = await call<AssignmentDbRow[]>('seznam_zarazeni');
   if (res.error || !res.data) return { data: null, error: res.error };
   return {
-    data: res.data.map((r) => ({
+    // Lektoři a správci do tříd nepatří: seznam zařazení je o studentech
+    // a velitelích. Server je lektorovi vrací (vidí všechny účty), takže by
+    // jinak v seznamu visel každý lektor jako „nezařazený“.
+    data: res.data.filter((r) => !STAFF_ROLES.has(r.role)).map((r) => ({
       id: r.id,
       fullName: r.full_name,
       email: r.email,

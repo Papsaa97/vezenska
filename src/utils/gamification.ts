@@ -1,6 +1,7 @@
 import { QuizSessionRecord, MatchingRecord, UserRank, Badge } from '../types';
 import { VSCR_RANKS, RAW_BADGES } from '../data/gamificationData';
-import { readScoped, writeScoped } from './userScopedStorage';
+import { getStorageOwner, readScoped, writeScoped } from './userScopedStorage';
+import { ProgressKind, pullCompleted, pushCompleted } from './progressSync';
 
 const MATCHING_HISTORY_KEY = 'vscr_matching_history';
 const STREAK_KEY = 'vscr_streak_info';
@@ -33,6 +34,7 @@ export function loadCompletedScenarios(): string[] {
 
 export function saveCompletedScenarios(ids: string[]): void {
   writeScoped(COMPLETED_SCENARIOS_KEY, ids);
+  void pushCompleted('scenario', ids);
 }
 
 /** Splněné zbraňové drily přihlášeného uživatele. */
@@ -42,6 +44,32 @@ export function loadCompletedDrills(): string[] {
 
 export function saveCompletedDrills(ids: string[]): void {
   writeScoped(COMPLETED_DRILLS_KEY, ids);
+  void pushCompleted('drill', ids);
+}
+
+const PROGRESS_KEYS: Record<ProgressKind, string> = {
+  scenario: COMPLETED_SCENARIOS_KEY,
+  drill: COMPLETED_DRILLS_KEY,
+};
+
+/**
+ * Sloučí splněné scénáře a drily ze serveru s tím, co je v zařízení.
+ * Volá se po přihlášení (AuthContext). Sjednocení: co je splněné kdekoli,
+ * je splněné všude; co server ještě nemá, se mu pošle.
+ */
+export async function syncCompletedProgress(userId: string): Promise<void> {
+  const remote = await pullCompleted(userId);
+  // Mezitím se mohl přihlásit někdo jiný — cizí postup do jeho úložiště nepatří.
+  if (!remote || getStorageOwner() !== userId) return;
+
+  for (const kind of Object.keys(PROGRESS_KEYS) as ProgressKind[]) {
+    const key = PROGRESS_KEYS[kind];
+    const local = readScoped<string[]>(key, []);
+    const merged = Array.from(new Set([...local, ...remote[kind]]));
+    if (merged.length !== local.length) writeScoped(key, merged);
+    const missingOnServer = local.filter((id) => !remote[kind].includes(id));
+    if (missingOnServer.length > 0) await pushCompleted(kind, missingOnServer);
+  }
 }
 
 export function recordMatchingCompletion(record: Omit<MatchingRecord, 'id' | 'timestamp' | 'xpEarned'>): { record: MatchingRecord; newHistory: MatchingRecord[] } {
