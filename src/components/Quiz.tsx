@@ -17,6 +17,11 @@ interface QuizProps {
   presetSubject?: string;
   /** Okruh (`Question.topic`), na který se má test zúžit — např. „Drilovat“ ve Statistikách. */
   presetTopic?: string;
+  /**
+   * Hlásí App, jestli právě běží test. Podle toho se App před přepnutím záložky
+   * zeptá — odchod komponentu odpojí a rozepsaný test by zmizel beze stopy.
+   */
+  onPlayingChange?: (isPlaying: boolean) => void;
   questionsSource?: 'supabase' | 'local';
 }
 
@@ -59,6 +64,7 @@ export default function Quiz({
   onNavigateToBadges,
   presetSubject,
   presetTopic,
+  onPlayingChange,
   questionsSource = 'local'
 }: QuizProps) {
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
@@ -136,6 +142,14 @@ export default function Quiz({
   // Dřív ho obsluhoval přepínač pro vícenásobný výběr: každá volba se přičítala
   // k předchozím, select přitom ukazoval jen první předmět a test se tiše skládal
   // ze všech dosud zvolených — a ukládal jako „Kombinace předmětů“.
+  // Stav běhu testu pro App (viz onPlayingChange). Úklid při odpojení hlásí
+  // konec, ať po odchodu ze záložky nezůstane viset „test běží“.
+  const isPlaying = gameState === 'playing';
+  useEffect(() => {
+    onPlayingChange?.(isPlaying);
+  }, [isPlaying, onPlayingChange]);
+  useEffect(() => () => onPlayingChange?.(false), [onPlayingChange]);
+
   const handleSubjectSelect = (subject: string) => {
     // Okruh patří k předmětu z předvolby; jiná volba předmětu ho ruší.
     setSelectedTopic(null);
@@ -493,7 +507,8 @@ export default function Quiz({
     if (isExamMode && gameState === 'playing') {
       const answeredCount = Object.keys(answers).length;
       return (
-        <aside className="w-full md:w-72 flex flex-col gap-4 shrink-0">
+        // data-no-swipe: vodorovný tah přes paletu otázek nesmí přepnout záložku.
+        <aside data-no-swipe className="w-full md:w-72 flex flex-col gap-4 shrink-0">
           <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-5">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
@@ -1164,8 +1179,10 @@ export default function Quiz({
     const progressPercent = ((currentIndex + 1) / quizQuestions.length) * 100;
     const isFlagged = flaggedQuestions.has(currentQ.id);
 
+    // data-no-swipe: během testu vodorovný tah záložku nepřepíná (viz swipe v App).
+    // Dřív stačil nechtěný tah při listování otázkou a test se ztratil.
     return (
-      <section className="flex-1 flex flex-col gap-4 h-full">
+      <section data-no-swipe className="flex-1 flex flex-col gap-4 h-full">
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col h-full overflow-hidden">
           
           {/* Progress Bar */}

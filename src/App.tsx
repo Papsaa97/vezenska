@@ -28,6 +28,7 @@ const Statistics           = lazy(() => import('./components/Statistics'));
 const MaterialLibrary      = lazy(() => import('./components/MaterialLibrary'));
 const ContentManager       = lazy(() => import('./components/ContentManager'));
 import { useDialog } from './hooks/useDialog';
+import ConfirmDialog from './components/common/ConfirmDialog';
 import { matchingCategories } from './data/questions/matching';
 import { tacticalScenarios } from './data/scenariosData';
 import { 
@@ -419,7 +420,7 @@ export default function App() {
    * maže: jinak „Zkouška“ ve spodní liště navždy startovala s předmětem
    * z posledního kliknutí v Předmětech.
    */
-  const navigateToTab = useCallback((tab: NavTab, options?: { keepContext?: boolean }) => {
+  const navigateToTabNow = useCallback((tab: NavTab, options?: { keepContext?: boolean }) => {
     if (!options?.keepContext && (tab === 'quiz' || tab === 'flashcards')) {
       setCustomQuestions(null);
       setQuizPreset({});
@@ -437,7 +438,7 @@ export default function App() {
     window.history.pushState({ tab }, '', `#${tab}`);
   }, [historyIndex, navHistory]);
 
-  const handleGoBack = useCallback(() => {
+  const goBackNow = useCallback(() => {
     if (historyIndex > 0) {
       const prevIndex = historyIndex - 1;
       const prevTab = navHistory[prevIndex];
@@ -449,7 +450,7 @@ export default function App() {
     }
   }, [historyIndex, navHistory]);
 
-  const handleGoForward = useCallback(() => {
+  const goForwardNow = useCallback(() => {
     if (historyIndex < navHistory.length - 1) {
       const nextIndex = historyIndex + 1;
       const nextTab = navHistory[nextIndex];
@@ -460,6 +461,55 @@ export default function App() {
       window.history.forward();
     }
   }, [historyIndex, navHistory]);
+
+  // Pojistka proti ztrátě rozepsaného testu.
+  //
+  // Přepnutí záložky Quiz odpojí a s ním celý stav testu — odpovědi, odpočet
+  // i ostrou zkoušku. Dřív na to stačilo ťuknout do spodní lišty nebo nechtěně
+  // švihnout prstem do strany. Quiz proto hlásí, že test běží (onPlayingChange),
+  // a navigace se v tu chvíli nejdřív zeptá. Odložená akce čeká v refu: je to
+  // funkce, a ta se do stavu ukládat nemá (setState by ji zavolal jako updater).
+  const [isQuizPlaying, setIsQuizPlaying] = useState<boolean>(false);
+  const [isLeaveQuizDialogOpen, setIsLeaveQuizDialogOpen] = useState<boolean>(false);
+  const pendingNavigationRef = useRef<(() => void) | null>(null);
+
+  const guardQuizNavigation = useCallback((action: () => void) => {
+    if (activeTab === 'quiz' && isQuizPlaying) {
+      pendingNavigationRef.current = action;
+      setIsLeaveQuizDialogOpen(true);
+      return;
+    }
+    action();
+  }, [activeTab, isQuizPlaying]);
+
+  const navigateToTab = useCallback((tab: NavTab, options?: { keepContext?: boolean }) => {
+    // Na tutéž záložku se test neodpojí, není se na co ptát.
+    if (tab === activeTab) {
+      navigateToTabNow(tab, options);
+      return;
+    }
+    guardQuizNavigation(() => navigateToTabNow(tab, options));
+  }, [activeTab, guardQuizNavigation, navigateToTabNow]);
+
+  const handleGoBack = useCallback(() => {
+    guardQuizNavigation(goBackNow);
+  }, [guardQuizNavigation, goBackNow]);
+
+  const handleGoForward = useCallback(() => {
+    guardQuizNavigation(goForwardNow);
+  }, [guardQuizNavigation, goForwardNow]);
+
+  const confirmLeaveQuiz = () => {
+    const action = pendingNavigationRef.current;
+    pendingNavigationRef.current = null;
+    setIsLeaveQuizDialogOpen(false);
+    action?.();
+  };
+
+  const cancelLeaveQuiz = () => {
+    pendingNavigationRef.current = null;
+    setIsLeaveQuizDialogOpen(false);
+  };
 
   // Synchronizace aktivní záložky do URL hash a localStorage pro zachování pozice při refresh
   useEffect(() => {
@@ -729,6 +779,7 @@ export default function App() {
               onNavigateToBadges={() => navigateToTab('badges')}
               presetSubject={quizPreset.subject}
               presetTopic={quizPreset.topic}
+              onPlayingChange={setIsQuizPlaying}
               questionsSource={questionsSource}
             />
           )
@@ -1186,6 +1237,22 @@ export default function App() {
           </>
         )}
       </AnimatePresence>
+
+      <ConfirmDialog
+        isOpen={isLeaveQuizDialogOpen}
+        tone="danger"
+        title="Opustit rozpracovaný test?"
+        description={
+          <>
+            Test ještě není dokončený. Když teď odejdete, <strong>vaše odpovědi se neuloží</strong>{' '}
+            a do statistik ani XP se nezapočítají.
+          </>
+        }
+        confirmLabel="Opustit test"
+        cancelLabel="Pokračovat v testu"
+        onConfirm={confirmLeaveQuiz}
+        onCancel={cancelLeaveQuiz}
+      />
         </div>
       </ProtectedRoute>
     </ErrorBoundary>
