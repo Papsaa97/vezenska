@@ -7,6 +7,29 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
+import { useStudySections } from '../../hooks/useStudySections';
+import StudySectionsEditor from '../common/StudySectionsEditor';
+import CustomStudySections from '../common/CustomStudySections';
+import RichText from '../common/RichText';
+
+/** Barvy a ikony karet zásad v pořadí, v jakém byly natvrdo; další se opakují dokola. */
+const PRINCIPLE_TONES: { box: string; title: string; icon: React.ReactNode }[] = [
+  {
+    box: 'bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40',
+    title: 'text-amber-800 dark:text-amber-300',
+    icon: <Shield className="w-4 h-4" />,
+  },
+  {
+    box: 'bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/40',
+    title: 'text-blue-800 dark:text-blue-300',
+    icon: <ArrowRight className="w-4 h-4" />,
+  },
+  {
+    box: 'bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40',
+    title: 'text-red-800 dark:text-red-300',
+    icon: <AlertTriangle className="w-4 h-4" />,
+  },
+];
 
 // ─── Component ─────────────────────────────────────────────────────────────────
 
@@ -17,6 +40,11 @@ import {
 export default function PrisonAdminETR() {
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
   const fieldIds = useId();
+  // Bloky z repozitáře přepsané úpravami lektora (contentLibrary.ts, druh 'study_section').
+  const sectionState = useStudySections('etr');
+  const { byId, custom } = sectionState;
+  const principles = byId('etr-zasady');
+  const operations = byId('etr-operace');
 
   const [cjOrg, setCjOrg] = useState('VS');
   const [cjSpisNumber, setCjSpisNumber] = useState('123');
@@ -45,6 +73,8 @@ export default function PrisonAdminETR() {
 
   return (
     <div className="space-y-6 no-print print:hidden">
+
+      <StudySectionsEditor area="etr" state={sectionState} />
 
       {/* Interactive Číslo Jednací Decoder */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
@@ -192,86 +222,55 @@ export default function PrisonAdminETR() {
         </div>
 
         {/* Educational Breakdown Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-          <div className="p-4 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 space-y-2 text-xs">
-            <div className="font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
-              <Shield className="w-4 h-4" />
-              <span>1. krok: Určení zpracovatele</span>
-            </div>
-            <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
-              Při založení spisu je <strong>nejdůležitější krok</strong> přidat zpracovatele přes záložku <em>„Přiděleno"</em>.
-              Pokud není zpracovatel určen, vidí spis <strong>všichni z celé OJ</strong>. Po přidělení jej vidí zpracovatel a jeho vedoucí.
-            </p>
+        {principles && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            {principles.items.map((item, idx) => {
+              const tone = PRINCIPLE_TONES[idx % PRINCIPLE_TONES.length];
+              return (
+                <div key={idx} className={`p-4 rounded-2xl ${tone.box} space-y-2 text-xs`}>
+                  <div className={`font-bold ${tone.title} flex items-center gap-1.5`}>
+                    {tone.icon}
+                    <span>{item.title}</span>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                    <RichText text={item.text} />
+                  </p>
+                </div>
+              );
+            })}
           </div>
-
-          <div className="p-4 rounded-2xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/40 space-y-2 text-xs">
-            <div className="font-bold text-blue-800 dark:text-blue-300 flex items-center gap-1.5">
-              <ArrowRight className="w-4 h-4" />
-              <span>Hierarchie změny typu spisu</span>
-            </div>
-            <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
-              Ke změně typu spisu může dojít pouze v jednosměrné hierarchii: <strong>ČJ → Přestupek (PŘ) → Trestný čin (TČ)</strong>.
-              Nikdy v opačném pořadí (zpětnou výjimku může provést pouze administrátor).
-            </p>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 space-y-2 text-xs">
-            <div className="font-bold text-red-800 dark:text-red-300 flex items-center gap-1.5">
-              <AlertTriangle className="w-4 h-4" />
-              <span>Pravidlo políčka „ZAMKNOUT"</span>
-            </div>
-            <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
-              Při běžné úpravě popisu ČJ (např. doplnění oddělení LOG/02) se <strong>NIKDY nekliká na „ZAMKNOUT"</strong>!
-              Zamčení omezí viditelnost na deliktní režim a komplikuje běžný oběh dokumentu.
-            </p>
-          </div>
-        </div>
+        )}
 
       </div>
 
       {/* Step-by-Step Interactive Guide to ETŘ Operations */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <Layers className="w-5 h-5 text-amber-500" />
-          <span>Klíčové operace se spisem v ETŘ</span>
-        </h3>
+      {operations && (
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <Layers className="w-5 h-5 text-amber-500" />
+            <span>{operations.title}</span>
+          </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-          {[
-            {
-              num: '1',
-              title: 'Vkládání dokumentů',
-              desc: 'Možnost vložení 2 formátů: <strong>Formuláře</strong> (přes ikonu tiskárny, vlastní typ souboru pro ETŘ, při odeslání ven konverze do PDF) a <strong>Soubory</strong> (přes ikonu adresáře).'
-            },
-            {
-              num: '2',
-              title: 'Podpisová kniha',
-              desc: 'Interní podpisy v ETŘ jsou platné (logování akcí). Mimo ETŘ se používají <strong>kvalifikované certifikáty a časové razítko</strong>. Sekretariát může podepsat za ředitele s doložkou <em>v. r.</em> (při schválení adminem).'
-            },
-            {
-              num: '3',
-              title: 'Slučování spisů',
-              desc: 'Slučuje se, pokud věc dorazí více cestami (pošta, datová zpráva). <strong>Spis TČ se nesmí sloučit do ČJ</strong>, naopak je to povoleno (vyšší typ je důležitější).'
-            },
-            {
-              num: '4',
-              title: 'Skartační řízení',
-              desc: 'Skartační znaky: <strong>„S"</strong> (stoupa/skart), <strong>„V"</strong> (výběr – nutno nejprve přehodnotit na S nebo A) a <strong>„A"</strong> (archiválie). Skartační návrh schvaluje komise a archiv PČR.'
-            },
-          ].map(({ num, title, desc }) => (
-            <div key={num} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 space-y-2 text-xs">
-              <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-sm">
-                {num}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {operations.items.map((item, idx) => (
+              <div key={idx} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 space-y-2 text-xs">
+                <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-sm">
+                  {item.label || idx + 1}
+                </div>
+                <h4 className="font-bold text-slate-900 dark:text-slate-100">{item.title}</h4>
+                {/* Dřív tu byl dangerouslySetInnerHTML s HTML v textu. Text teď
+                    může upravit lektor, proto jen bezpečné **tučně** / *kurzíva*. */}
+                <p className="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
+                  <RichText text={item.text} />
+                </p>
               </div>
-              <h4 className="font-bold text-slate-900 dark:text-slate-100">{title}</h4>
-              {/* safe — content is hardcoded, not user input */}
-              <p className="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed" dangerouslySetInnerHTML={{ __html: desc }} />
-            </div>
-          ))}
-
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Bloky přidané lektorem */}
+      <CustomStudySections sections={custom} tone="adaptive" />
 
     </div>
   );

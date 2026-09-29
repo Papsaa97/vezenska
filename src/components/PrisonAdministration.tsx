@@ -24,6 +24,46 @@ import PrisonAdminStyleRules from './prison-admin/PrisonAdminStyleRules';
 import ConfirmDialog from './common/ConfirmDialog';
 import { useStorageOwner } from '../hooks/useProgressRevision';
 import { readScoped, removeScoped, writeScoped } from '../utils/userScopedStorage';
+import {
+  BODY_PARTS,
+  FIELD_LABELS,
+  RECORD_TEMPLATE_MANDATORY_FIELDS,
+  RecordTemplate,
+  defaultRecordTemplates,
+} from '../data/prisonAdminData';
+import { useAuth } from '../context/AuthContext';
+import { useEditableContent } from '../hooks/useEditableContent';
+import ContentEditorBar from './common/ContentEditorBar';
+import RecordTemplateEditModal from './common/RecordTemplateEditModal';
+
+/**
+ * Náhradní tiskopis, když lektor všechny skryl nebo odebral. Hooky níže
+ * potřebují objekt i tehdy; obrazovka místo formuláře ukáže upozornění.
+ */
+const EMPTY_TEMPLATE: RecordTemplate = {
+  id: '',
+  title: '',
+  subtitle: '',
+  badge: '',
+  normReference: '',
+  defaultData: {},
+};
+
+/** Drží formulář přesně ukázkový vzor daného tiskopisu? */
+function matchesTemplate(
+  formData: Record<string, string>,
+  bodyParts: string[],
+  tpl: RecordTemplate
+): boolean {
+  const sameFields = Object.keys(tpl.defaultData).every(
+    (key) => (formData[key] || '') === (tpl.defaultData[key] || '')
+  );
+  const sameParts =
+    (tpl.affectedBodyPartsDefault || []).slice().sort().join(',') === bodyParts.slice().sort().join(',');
+  return sameFields && sameParts;
+}
+
+const BUILT_IN_TEMPLATES = new Map(defaultRecordTemplates.map((t) => [t.id, t]));
 
 export type AdminSection = 'generator' | 'etr' | 'vis' | 'style-rules';
 
@@ -41,191 +81,6 @@ const NAV_SECTIONS: NavSectionConfig[] = [
   { id: 'etr', label: 'ETŘ: Spisová služba & Číslo jednací', shortLabel: 'ETŘ Trenažér', icon: FolderOpen },
   { id: 'vis', label: 'VIS: Evidence & Lustrace (§ 23a)', shortLabel: 'VIS Evidence', icon: Search },
   { id: 'style-rules', label: '7 pravidel úředního stylu & Kontrola chyb', shortLabel: 'Styl & kontrola chyb', icon: Sparkles }
-];
-
-// Human-readable labels for mandatory field keys, used to build validation messages.
-const FIELD_LABELS: Record<string, string> = {
-  prisonName: 'Věznice & Adresa',
-  refNumber: 'Číslo jednací (Č.j.)',
-  officer: 'Zakročující příslušník',
-  dutyOrder: 'Velení do služby rozkazem',
-  targetPerson: 'Použito proti komu / Vězněná osoba',
-  targetCode: 'Kód / identifikační kód vězněné osoby',
-  datetimePlace: 'Datum, čas a místo použití DP',
-  precedingEvents: 'Co předcházelo použití DP',
-  officerAction: 'Popis jednání příslušníka (zákonná výzva)',
-  targetBehavior: 'Popis jednání vězněné osoby',
-  dpUsedDetails: 'Popis použitého donucovacího prostředku',
-  injuryDamage: 'Škoda a zranění',
-  firstAid: 'Poskytnutí první pomoci',
-  medicalExam: 'Lékařské ošetření',
-  bossInformed: 'Informování nadřízeného',
-  photoDoc: 'Fotodokumentace',
-  evaluation: 'Vyhodnocení zakročujícího příslušníka',
-  departmentHeadOpinion: 'Stanovisko vedoucího oddělení',
-  zrvReport: 'Zpráva o prošetření (1. ZŘV)',
-  directorDecision: 'Rozhodnutí ředitele věznice',
-  targetBirth: 'Datum narození',
-  prisonType: 'Typ věznice / stupeň zabezpečení',
-  actDescription: 'Popis skutku',
-  targetStatement: 'Vyjádření podezřelého',
-  evidenceList: 'Další důkazní prostředky',
-  docTitle: 'Název záznamu',
-  eventStory: 'Popis děje a zjištěné skutečnosti',
-  actionsTimeline: 'Provedená opatření',
-  witnesses: 'Svědci',
-  datetime: 'Datum a čas odnětí věci',
-  itemsList: 'Soupis odňatých věcí',
-  seizureReason: 'Důvod odnětí věcí',
-  surrenderedTo: 'Předání a naložení s věcí',
-  housingCell: 'Ubytování (oddíl, cela)',
-  officerReport: 'Opatření, informování IDS a VISS',
-  signatureDate: 'Místo a datum podpisu',
-  officerSignature: 'Podpisová doložka příslušníka'
-};
-
-// Pre-defined official templates based directly on VS ČR training documents
-interface RecordTemplate {
-  id: string;
-  title: string;
-  subtitle: string;
-  badge: string;
-  normReference: string;
-  defaultData: Record<string, string>;
-  affectedBodyPartsDefault?: string[];
-  mandatoryFields: string[];
-}
-
-const RECORD_TEMPLATES: RecordTemplate[] = [
-  {
-    id: 'dp',
-    title: 'Záznam o použití donucovacího prostředku',
-    subtitle: 'Příloha k PGŘ č. 3/2024 a §§ 6, 17–20 zákona č. 555/1992 Sb.',
-    badge: 'PGŘ č. 3/2024',
-    normReference: '§ 6 odst. 3 písm. b), §§ 17–20 zákona č. 555/1992 Sb.',
-    mandatoryFields: ['officer', 'dutyOrder', 'targetPerson', 'targetCode', 'datetimePlace', 'precedingEvents', 'officerAction', 'targetBehavior', 'dpUsedDetails', 'injuryDamage', 'firstAid', 'medicalExam', 'bossInformed', 'photoDoc', 'evaluation', 'departmentHeadOpinion', 'zrvReport', 'directorDecision'],
-    affectedBodyPartsDefault: ['hlava-oblicej', 'rameno-prave', 'zady-pouta', 'predlokti-prave'],
-    defaultData: {
-      prisonName: 'Věznice Ostrov, Vykmanov 22, 363 50 Ostrov',
-      refNumber: 'VS-1234-1/ČJ-2024-801345-VYS',
-      officer: 'pprap. Jan Mokrý, sl. č. 26 569, dozorce OVT',
-      dutyOrder: '02.05.2024 / DR VOVT č. 19/2024 - 801345',
-      cameraUsed: 'ANO',
-      targetPerson: 'ods. Jan Čonka, nar. 18.09.2000, odsouzený',
-      targetCode: '8G9R7T',
-      datetimePlace: 'Dne 02.05.2024 v čase 18:10 hod. na oddíle UO, ubytovny č. 02 Věznice Ostrov na cele č. 5.',
-      precedingEvents: 'Odsouzený začal demolovat zařízení cely č. 5 a opakovaně kopal do zdi a umyvadla. Přítomen byl prap. Josef Suchý.',
-      officerAction: 'Dle § 6 odst. 3 písm. b) z. č. 555/1992 Sb. bylo odsouzenému nejprve domlouváno. Následně v 18:12 použita výstraha a zákonná výzva slovy: „Jménem zákona, vyzývám Vás, zanechte svého protiprávního jednání nebo proti Vám bude použito donucovacích prostředků.“',
-      targetBehavior: 'Odsouzený na výzvy nereagoval, stupňoval agresi a křičel: „...pojďte do mě vy mrdky, už se těším až Vám rozbiju hubu!“ a v 18:15 rozbil umyvadlo.',
-      dpUsedDetails: 'V čase 18:13 byl skrze výdejní okénko aplikován slzotvorný prostředek. V 18:16 vstup se štítem, natlačení na zeď cely, prap. Suchý za pomoci hmatů a chvatů (páka na rameno, podkopnutí nohou) svedl odsouzeného na podlahu na břicho a byla přiložena služební pouta za záda.',
-      injuryDamage: 'U příslušníků ke zranění nedošlo. Odsouzený si způsobil řezné poranění na pravém předloktí cca 5 cm o rozbité umyvadlo. Škoda na majetku VS ČR: rozbité keramické umyvadlo na cele č. 5.',
-      firstAid: 'V čase 18:18 hod. na cele č. 5 poskytnuta první pomoc prap. Suchým (ošetření a sterilní krytí řezné rány).',
-      medicalExam: 'V 18:19 přivolána ZZS. V 18:45 převezen posádkou ZZS MUDr. Davidem Hedvábným k chirurgickému ošetření do Krajské nemocnice Karlovy Vary. Zpět eskortován ve 20:10 hod.',
-      bossInformed: 'V čase 18:20 hod. byl osobně informován IDS ppor. Eduard Hebký.',
-      photoDoc: 'Pořízena v čase 20:30 hod., pořídil VISS ppor. Milan Slizký.',
-      witnesses: 'prap. Josef Suchý, sl. č. 25 014, dozorce OVT',
-      evaluation: 'Ze svého pohledu považuji použití DP za nutné, neboť jsem se domníval, že jinak nelze zajistit bezpečnost mou ani okolí, a jednání odsouzeného bezprostředně předcházelo. Ve 20:20 byl odsouzený ubytován na KO, cela č. 7.',
-      departmentHeadOpinion: 'Stanovisko vedoucího oddělení: Postup zakročujícího příslušníka pprap. Jana Mokrého odpovídal § 6 odst. 3 písm. b) a §§ 17–20 zákona č. 555/1992 Sb., zákonná výzva i použití slzotvorného prostředku a hmatů a chvatů byly přiměřené intenzitě útoku. Doporučuji uznat zákrok za oprávněný a přiměřený.',
-      zrvReport: 'Zpráva o prošetření okolností a důvodů použití DP (1. ZŘV): Na základě prošetření záznamu, fotodokumentace a vyjádření svědka prap. Josefa Suchého bylo zjištěno, že k použití DP došlo v souladu se zákonem a vnitřními předpisy. Nebyly zjištěny skutečnosti nasvědčující excesu ani nepřiměřenosti zákroku.',
-      directorDecision: 'Rozhodnutí ředitele věznice: Na základě stanoviska vedoucího oddělení a zprávy 1. ZŘV o prošetření okolností a důvodů podle Přílohy k PGŘ č. 3/2024 rozhoduji, že použití donucovacího prostředku dne 02.05.2024 bylo OPRÁVNĚNÉ A PŘIMĚŘENÉ.',
-      signatureDate: 'V Ostrově nad Ohří dne 02.05.2024',
-      officerSignature: 'v. ref. pprap. Jan Mokrý, sl. č. 26 569, dozorce OVT'
-    }
-  },
-  {
-    id: 'zkp',
-    title: 'Záznam o kázeňském přestupku',
-    subtitle: 'Dle NGŘ č. 41/2024 (§ 16) a zákona č. 169/1999 Sb. (§ 28)',
-    badge: 'NGŘ č. 41/2024',
-    normReference: '§ 16 NGŘ č. 41/2024, § 28 zákona č. 169/1999 Sb.',
-    mandatoryFields: ['prisonName', 'targetPerson', 'targetBirth', 'prisonType', 'actDescription', 'targetStatement', 'evidenceList', 'signatureDate', 'officerSignature'],
-    defaultData: {
-      prisonName: 'Vězeňská služba České republiky / Věznice Stráž pod Ralskem',
-      targetPerson: 'Jan Nováček',
-      targetBirth: '16.06.2001',
-      prisonType: 'OSTRAHA - oddělení s vysokým stupněm zabezpečení (VSZ)',
-      actDescription: 'Dne 14.01.2024 v čase 10:01 jsem přistihl jmenovaného odsouzeného na ubytovně C, ložnici č. 211 Věznice Stráž pod Ralskem, jak spí na neustlaném lůžku v době určené pro denní činnost. Odsouzený musel být buzen. Po vstupu na ložnici nepovstal a užil vůči mně vulgarismu, cituji: „Švestko blbá, co mě budíš, nech mě spát.“ Při následné kontrole osobních věcí v přidělené skříňce odsouzeného na ložnici č. 211 v čase 10:10 byly dále nalezeny 2 šablony formátu A4 s motivem hada a nápisem A.C.A.B. určené k nepovolenému tetování.\n\nOdsouzený Jan Nováček je podezřelý ze spáchání kázeňského přestupku dle § 28 odst. 1 zákona č. 169/1999 Sb., tím že nedodržel stanovený pořádek a kázeň, nesplnil příkaz příslušníka a nedodržel zásady slušného jednání s osobou, se kterou přišel do styku, a dále dle § 28 odst. 3 písm. e) zákona č. 169/1999 Sb., kdy měl v držení pomůcky sloužící k tetování. Rovněž porušil Vnitřní řád Věznice Stráž pod Ralskem čl. 14.',
-      targetStatement: '„Není to vůbec pravda, všichni si na mě zasedli.“',
-      evidenceList: '1. Svědecká výpověď: vychovatel Bc. J. Ondráka\n2. Záznam o odnětí věci ze dne 14.01.2024 (2 ks šablon)\n3. Kamerový záznam chodby oddílu C ze dne 14.01.2024 v čase 10:00–10:15',
-      signatureDate: 'Ve Stráži pod Ralskem dne 14.01.2024',
-      officerSignature: 'Zpracoval: inspektor, prap. Jiří Červinka, sl. č. 29000, dozorce OVT'
-    }
-  },
-  {
-    id: 'sz',
-    title: 'Služební záznam',
-    subtitle: 'Základní úřední písemnost o mimořádné nebo evidenční události',
-    badge: 'Standard VS ČR',
-    normReference: 'Zákon č. 555/1992 Sb., spisový řád VS ČR',
-    mandatoryFields: ['prisonName', 'docTitle', 'dutyOrder', 'eventStory', 'actionsTimeline', 'witnesses', 'signatureDate', 'officerSignature'],
-    defaultData: {
-      prisonName: 'Vězeňská služba České republiky / Věznice Rýnovice',
-      docTitle: 'SLUŽEBNÍ ZÁZNAM o nálezu nepovoleného předmětu při filcunku cely',
-      dutyOrder: 'Dne 15.03.2024 jsem byl velen Denním rozkazem VO VS č. 45/2024 jako strážný na stanovišti dozorčího oddílu B v době od 06:00 do 18:00 hod.',
-      eventStory: 'V čase 14:20 hod. jsem společně s prap. Petrem Kovářem prováděl technickou a bezpečnostní prohlídku ložnice č. 114 na oddíle B. Během prohlídky byl v dutině kovové nohy stolu nalezen ukrytý funkční mobilní telefon zn. Nokia černé barvy s vloženou SIM kartou a nabíjecím kabelem. Na ložnici byli v danou chvíli přítomni odsouzení K. M. (nar. 1995) a L. S. (nar. 1989). Na dotaz, komu telefon patří, oba shodně uvedli, že o předmětu nic nevědí.',
-      actionsTimeline: '14:25 hod. – Telefon a příslušenství zajištěny dle § 12 zákona č. 555/1992 Sb.\n14:30 hod. – Událost ohlášena ISS-O a VISS npor. M. Veselému.\n14:40 hod. – Zpracován Záznam o odnětí věci.\n15:00 hod. – Předmět předán VISS k provedení forenzní expertizy a zjištění původu.',
-      witnesses: 'prap. Petr Kovář, sl. č. 31 220, dozorce oddílu B',
-      signatureDate: 'V Jablonci nad Nisou dne 15.03.2024',
-      officerSignature: 'v. ref. strm. Bc. Jan Novák, DiS., sl. č. 12345, strážný'
-    }
-  },
-  {
-    id: 'odneti',
-    title: 'Záznam o odnětí věci',
-    subtitle: 'Dle § 12 odst. 1 a 2 zákona č. 555/1992 Sb.',
-    badge: '§ 12 Z. 555/1992 Sb.',
-    normReference: '§ 12 odst. 1 a 2 zákona č. 555/1992 Sb. o VS a JS ČR',
-    mandatoryFields: ['prisonName', 'datetime', 'targetPerson', 'itemsList', 'seizureReason', 'surrenderedTo', 'signatureDate', 'officerSignature'],
-    defaultData: {
-      prisonName: 'Věznice Mírov, 789 53 Mírov',
-      datetime: 'Dne 14.03.2024 v čase 14:10 hod.',
-      targetPerson: 'Jan Nohák, nar. 01.02.1990, odsouzený (typ věznice: ostraha)',
-      itemsList: '1. 1 ks baterie do mobilního telefonu zn. NOKIA, výr. č. 7852140Z47\n2. 21 tablet oranžové barvy kulatého tvaru bez originálního balení (želatinové tobolky)\n3. 2 ks bankovek: 1x 1000 Kč (sér. číslo H 28201925), 1x 500 Kč (sér. číslo K 299329)\n4. 1 ks tetovací strojek vlastní výroby (motorek z magnetofonu, tělo z propisky, jehla z kytarové struny)\n5. 1 ks zavírací nůž s dřevěnou rukojetí a čepelí o délce 12 cm',
-      seizureReason: 'Dne 14.03.2024 po skončení návštěvy byly u odsouzeného Jana Noháka při důkladné osobní prohlídce nalezeny výše uvedené předměty. Jelikož se jedná o věci, jejichž držení je vězněným osobám zákonem i Vnitřním řádem zakázáno, byly věci na místě odňaty dle § 12 odst. 1 zákona č. 555/1992 Sb.',
-      surrenderedTo: 'Věci byly uloženy a předány: VISS ppor. P. Nový, sl. č. 15897',
-      signatureDate: 'V Mírově dne 14.03.2024 v 14:20 hod.',
-      officerSignature: 'Odnětí provedl: v. ref. strm. K. Peřina, sl. č. 19349'
-    }
-  },
-  {
-    id: 'nasilie',
-    title: 'Záznam o zjištění fyzického násilí a ponižujícího jednání',
-    subtitle: 'Příloha č. 1 k NGŘ č. 24/2022',
-    badge: 'NGŘ č. 24/2022',
-    normReference: 'NGŘ č. 24/2022 o postupu při zjištění násilí',
-    mandatoryFields: ['prisonName', 'targetPerson', 'targetCode', 'housingCell', 'eventStory', 'officerReport', 'signatureDate', 'officerSignature'],
-    defaultData: {
-      prisonName: 'Věznice Valdice, Náměstí Míru 55, 507 11 Valdice',
-      targetPerson: 'Josef Novák',
-      targetCode: 'Y6X5C4',
-      housingCell: 'Oddíl C, cela č. 205',
-      eventStory: 'Dne 13.12.2022 v čase 15:30 hod. během koupání odsouzených z cel 203, 204 a 205 na umývárně č. 231 mi odsouzený Josef Novák sdělil, že byl dne 12.12.2022 v čase cca 20:00 hod. napaden jiným odsouzeným na kulturní místnosti č. 223, a to několika údery otevřenou dlaní pravé ruky do obličejové části hlavy (pravá a levá tvář). Jméno útočníka a důvod napadení odmítl sdělit. U odsouzeného byla na místě v 15:32 provedena prohlídka těla bez zjevných viditelných stop zranění.',
-      officerReport: 'V čase 15:34 hod. informován IDS ppor. Jan Novák a VISS ppor. Josef Drobý. V 16:00 hod. zajištěna lékařská prohlídka na zdravotnickém středisku Věznice Valdice. Záznam postoupen k odbornému posouzení psychologovi a oddělení prevence a stížností.',
-      signatureDate: 'Ve Valdicích dne 13.12.2022',
-      officerSignature: 'dozorce OVT, prap. Daniel Nekonečný, sl. č. 24105'
-    }
-  }
-];
-
-// Selectable body-part zones for the DP body-scheme widget — hoisted to module scope.
-interface BodyPart {
-  id: string;
-  label: string;
-}
-
-const BODY_PARTS: BodyPart[] = [
-  { id: 'hlava-oblicej', label: 'Hlava & Obličej' },
-  { id: 'krk', label: 'Krk' },
-  { id: 'hrudnik', label: 'Hrudník' },
-  { id: 'bricho', label: 'Břicho' },
-  { id: 'rameno-leve', label: 'Levé rameno' },
-  { id: 'rameno-prave', label: 'Pravé rameno' },
-  { id: 'predlokti-leve', label: 'Levé předloktí' },
-  { id: 'predlokti-prave', label: 'Pravé předloktí' },
-  { id: 'zady-pouta', label: 'Záda (přiložení pout)' },
-  { id: 'bedra', label: 'Bedra' },
-  { id: 'stehna', label: 'Stehna' },
-  { id: 'kotniky-nohy', label: 'Kotníky & Nohy' }
 ];
 
 /**
@@ -291,12 +146,22 @@ export default function PrisonAdministration() {
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
   const fieldIds = useId();
 
+  const { profile } = useAuth();
+  const canEdit = profile?.role === 'lektor' || profile?.role === 'admin';
+
+  // Tiskopisy z repozitáře přepsané úpravami lektora (contentLibrary.ts,
+  // druh 'admin_template'). Lektor mění popis a ukázkový vzor vyplnění;
+  // rozvržení formuláře a tisku zůstává v kódu níže.
+  const templateContent = useEditableContent<RecordTemplate>('admin_template', defaultRecordTemplates, canEdit);
+  const templates = templateContent.items;
+  const [templateModalOpen, setTemplateModalOpen] = useState(false);
+
   const [activeSection, setActiveSection] = useState<AdminSection>('generator');
 
   // Generator state
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('dp');
-  const [formData, setFormData] = useState<Record<string, string>>(() => RECORD_TEMPLATES[0].defaultData);
-  const [selectedBodyParts, setSelectedBodyParts] = useState<string[]>(() => RECORD_TEMPLATES[0].affectedBodyPartsDefault || []);
+  const [formData, setFormData] = useState<Record<string, string>>(() => defaultRecordTemplates[0].defaultData);
+  const [selectedBodyParts, setSelectedBodyParts] = useState<string[]>(() => defaultRecordTemplates[0].affectedBodyPartsDefault || []);
   const [copiedSuccess, setCopiedSuccess] = useState(false);
   const [copyError, setCopyError] = useState(false);
   /** Selhalo kopírování Č.j. Vlastní stav, protože `copyError` patří k tlačítku „Kopírovat záznam". */
@@ -318,9 +183,12 @@ export default function PrisonAdministration() {
   // záložka otevřená.
   const draftsOwner = useStorageOwner();
 
+  // Zvolený tiskopis mohl lektor skrýt či odebrat — pak se ukáže první
+  // dostupný. Všechno níže proto pracuje s `templateId`, ne se zvoleným id.
   const currentTemplate = useMemo(() => {
-    return RECORD_TEMPLATES.find(t => t.id === selectedTemplateId) || RECORD_TEMPLATES[0];
-  }, [selectedTemplateId]);
+    return templates.find(t => t.id === selectedTemplateId) ?? templates[0] ?? EMPTY_TEMPLATE;
+  }, [templates, selectedTemplateId]);
+  const templateId = currentTemplate.id;
 
   const handleFieldChange = useCallback((field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -363,15 +231,25 @@ export default function PrisonAdministration() {
    *
    * Dřív to bylo rozdělené na efekt „jen při připojení“ (s `eslint-disable`
    * na chybějící závislost, což AGENTS.md zakazuje) a na tutéž logiku znovu
-   * v `handleSelectTemplate`. Jeden efekt se závislostí na `selectedTemplateId`
+   * v `handleSelectTemplate`. Jeden efekt se závislostí na zvoleném tiskopisu
    * dělá totéž, obsluhuje i přepnutí šablony a nic nemlčí.
    */
   useEffect(() => {
     // Koncepty ze staré, nezabezpečené podoby klíče se zahodí.
     purgeLegacyDrafts();
 
-    const tpl = RECORD_TEMPLATES.find((t) => t.id === selectedTemplateId) ?? RECORD_TEMPLATES[0];
-    const draft = loadDraft(selectedTemplateId);
+    const tpl = currentTemplate;
+    if (!tpl.id) return;
+    let draft = loadDraft(tpl.id);
+
+    // Dřív se koncept ukládal i nerozepsaný, takže mnoho zařízení má uložený
+    // jen původní vzor z aplikace. Takový „koncept“ by zakryl vzor, který
+    // mezitím upravil lektor — nic rozepsaného v něm není, proto se zahodí.
+    const builtIn = BUILT_IN_TEMPLATES.get(tpl.id);
+    if (draft && builtIn && builtIn !== tpl && matchesTemplate(draft.formData, draft.selectedBodyParts || [], builtIn)) {
+      clearDraft(tpl.id);
+      draft = null;
+    }
 
     setShowValidation(false);
     setCopyError(false);
@@ -379,7 +257,7 @@ export default function PrisonAdministration() {
     if (draft) {
       setFormData(draft.formData);
       setSelectedBodyParts(draft.selectedBodyParts || []);
-      loadedTemplateRef.current = selectedTemplateId;
+      loadedTemplateRef.current = tpl.id;
       setDraftNotice(true);
       const timer = window.setTimeout(() => setDraftNotice(false), 4000);
       return () => clearTimeout(timer);
@@ -387,23 +265,37 @@ export default function PrisonAdministration() {
 
     setFormData({ ...tpl.defaultData });
     setSelectedBodyParts(tpl.affectedBodyPartsDefault || []);
-    loadedTemplateRef.current = selectedTemplateId;
-  }, [selectedTemplateId, draftsOwner]);
+    loadedTemplateRef.current = tpl.id;
+    // Závislost na celém tiskopisu, ne jen na id: když se po načtení
+    // překryvu objeví lektorem upravený vzor, formulář se na něj přepne.
+    // Objekt tiskopisu je stabilní, dokud se jeho obsah nezmění.
+  }, [currentTemplate, draftsOwner]);
+
+  const isFormDirty = useMemo(
+    () => !matchesTemplate(formData, selectedBodyParts, currentTemplate),
+    [formData, selectedBodyParts, currentTemplate]
+  );
 
   // Autosave the in-progress record as a draft (debounced) so a reload/tab-close doesn't lose it.
   useEffect(() => {
     // Formulář ještě nese obsah předchozí šablony — ukládat ho pod klíč té
     // nové by data prohodilo.
-    if (loadedTemplateRef.current !== selectedTemplateId) return;
+    if (!templateId || loadedTemplateRef.current !== templateId) return;
 
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
     autosaveTimer.current = setTimeout(() => {
-      saveDraft(selectedTemplateId, { formData, selectedBodyParts });
+      // Ukládá se jen skutečně rozepsaný záznam. Nerozepsaný vzor jako
+      // koncept by po úpravě vzoru lektorem dál ukazoval ten starý.
+      if (isFormDirty) {
+        saveDraft(templateId, { formData, selectedBodyParts });
+      } else {
+        clearDraft(templateId);
+      }
     }, 400);
     return () => {
       if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
     };
-  }, [formData, selectedBodyParts, selectedTemplateId]);
+  }, [formData, selectedBodyParts, templateId, isFormDirty]);
 
   /** Přepnutí šablony. Načtení konceptu obstará efekt výše. */
   const handleSelectTemplate = useCallback((tplId: string) => {
@@ -418,33 +310,9 @@ export default function PrisonAdministration() {
 
   // Real validation: which of the current template's mandatory fields are still empty.
   const missingMandatoryFields = useMemo(() => {
-    return currentTemplate.mandatoryFields.filter(field => !(formData[field] || '').trim());
+    return (RECORD_TEMPLATE_MANDATORY_FIELDS[currentTemplate.id] ?? []).filter(field => !(formData[field] || '').trim());
   }, [currentTemplate, formData]);
 
-  const isFormDirty = useMemo(() => {
-    const defaultKeys = Object.keys(currentTemplate.defaultData);
-    const changedField = defaultKeys.some(key => (formData[key] || '') !== (currentTemplate.defaultData[key] || ''));
-    const defaultParts = (currentTemplate.affectedBodyPartsDefault || []).slice().sort().join(',');
-    const currentParts = selectedBodyParts.slice().sort().join(',');
-    return changedField || defaultParts !== currentParts;
-  }, [formData, selectedBodyParts, currentTemplate]);
-
-  const handleCopyRecord = useCallback(() => {
-    if (missingMandatoryFields.length > 0) {
-      setShowValidation(true);
-      return;
-    }
-    navigator.clipboard.writeText(recordText).then(() => {
-      setCopiedSuccess(true);
-      setCopyError(false);
-      updateDailyStreak();
-      setTimeout(() => setCopiedSuccess(false), 2500);
-    }).catch(() => {
-      setCopyError(true);
-      setTimeout(() => setCopyError(false), 3000);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [missingMandatoryFields]);
 
   const handlePrint = useCallback(() => {
     if (missingMandatoryFields.length > 0) {
@@ -462,20 +330,20 @@ export default function PrisonAdministration() {
       setSelectedBodyParts(currentTemplate.affectedBodyPartsDefault || []);
       setShowValidation(false);
       setCopyError(false);
-      clearDraft(selectedTemplateId);
+      clearDraft(templateId);
       return;
     }
     setPendingFormAction('reset');
-  }, [isFormDirty, currentTemplate, selectedTemplateId]);
+  }, [isFormDirty, currentTemplate, templateId]);
 
   const doResetToDefault = useCallback(() => {
     setFormData({ ...currentTemplate.defaultData });
     setSelectedBodyParts(currentTemplate.affectedBodyPartsDefault || []);
     setShowValidation(false);
     setCopyError(false);
-    clearDraft(selectedTemplateId);
+    clearDraft(templateId);
     setPendingFormAction(null);
-  }, [currentTemplate, selectedTemplateId]);
+  }, [currentTemplate, templateId]);
 
   const handleClearForm = useCallback(() => {
     setPendingFormAction('clear');
@@ -488,9 +356,9 @@ export default function PrisonAdministration() {
     setSelectedBodyParts([]);
     setShowValidation(false);
     setCopyError(false);
-    clearDraft(selectedTemplateId);
+    clearDraft(templateId);
     setPendingFormAction(null);
-  }, [currentTemplate, selectedTemplateId]);
+  }, [currentTemplate, templateId]);
 
   /**
    * Smaže rozepsané koncepty VŠECH šablon.
@@ -499,7 +367,8 @@ export default function PrisonAdministration() {
    * vězněných osob se ukládaly automaticky a uživatel je neměl jak odstranit.
    */
   const doPurgeDrafts = useCallback(() => {
-    clearAllDrafts(RECORD_TEMPLATES.map((t) => t.id));
+    // Všechny známé tiskopisy, i ty, které lektor právě skryl.
+    clearAllDrafts(defaultRecordTemplates.map((t) => t.id));
     setFormData({ ...currentTemplate.defaultData });
     setSelectedBodyParts(currentTemplate.affectedBodyPartsDefault || []);
     setShowValidation(false);
@@ -508,7 +377,7 @@ export default function PrisonAdministration() {
   }, [currentTemplate]);
 
   const recordText = useMemo((): string => {
-    if (selectedTemplateId === 'dp') {
+    if (templateId === 'dp') {
       return `VĚZEŇSKÁ SLUŽBA ČESKÉ REPUBLIKY\n${formData.prisonName || ''}\nČ. j.: ${formData.refNumber || ''}\n\n` +
         `ZÁZNAM O POUŽITÍ DONUCOVACÍHO PROSTŘEDKU (Část první)\n` +
         `------------------------------------------------------------------\n` +
@@ -538,7 +407,7 @@ export default function PrisonAdministration() {
         `Stanovisko vedoucího oddělení: ${formData.departmentHeadOpinion || ''}\n\n` +
         `Zpráva o prošetření okolností a důvodů (1. ZŘV): ${formData.zrvReport || ''}\n\n` +
         `Rozhodnutí ředitele věznice o oprávněnosti a přiměřenosti: ${formData.directorDecision || ''}`;
-    } else if (selectedTemplateId === 'zkp') {
+    } else if (templateId === 'zkp') {
       return `${formData.prisonName || ''}\n\n` +
         `ZÁZNAM O KÁZEŇSKÉM PŘESTUPKU\n` +
         `------------------------------------------------------------------\n` +
@@ -551,7 +420,7 @@ export default function PrisonAdministration() {
         `${formData.signatureDate || ''}\n` +
         `Podpis odsouzeného: ........................................\n\n` +
         `${formData.officerSignature || ''}`;
-    } else if (selectedTemplateId === 'odneti') {
+    } else if (templateId === 'odneti') {
       return `${formData.prisonName || ''}\n\n` +
         `ZÁZNAM O ODNĚTÍ VĚCI dle § 12 zákona č. 555/1992 Sb.\n` +
         `------------------------------------------------------------------\n` +
@@ -573,7 +442,25 @@ export default function PrisonAdministration() {
         `${formData.signatureDate || ''}\n` +
         `${formData.officerSignature || ''}`;
     }
-  }, [selectedTemplateId, formData, selectedBodyParts]);
+  }, [templateId, formData, selectedBodyParts]);
+
+  // Pod recordText, aby text šel do závislostí — dřív se kopíroval text
+  // z prvního vykreslení a umlčení pravidla to skrývalo.
+  const handleCopyRecord = useCallback(() => {
+    if (missingMandatoryFields.length > 0) {
+      setShowValidation(true);
+      return;
+    }
+    navigator.clipboard.writeText(recordText).then(() => {
+      setCopiedSuccess(true);
+      setCopyError(false);
+      updateDailyStreak();
+      setTimeout(() => setCopiedSuccess(false), 2500);
+    }).catch(() => {
+      setCopyError(true);
+      setTimeout(() => setCopyError(false), 3000);
+    });
+  }, [missingMandatoryFields, recordText]);
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6 pb-12 print:max-w-none print:w-full print:p-0 print:m-0 print:space-y-0 print:pb-0">
@@ -619,8 +506,35 @@ export default function PrisonAdministration() {
         })}
       </div>
 
+      {/* Správa tiskopisů — jen lektor a správce. Přidat nový tiskopis nejde:
+          formulář i tisková podoba každého jsou v kódu. */}
+      {activeSection === 'generator' && canEdit && (
+        <>
+          <ContentEditorBar
+            content={templateContent}
+            targets={templateContent.entries.filter((e) => e.id === templateId && !e.isDeleted)}
+            deleted={templateContent.entries.filter((e) => e.isDeleted)}
+            getName={(t) => t.title}
+            noun="tiskopis"
+            onEdit={() => setTemplateModalOpen(true)}
+          />
+          <RecordTemplateEditModal
+            template={templateId ? currentTemplate : null}
+            isOpen={templateModalOpen}
+            onClose={() => setTemplateModalOpen(false)}
+            onSave={(t) => templateContent.save(t)}
+          />
+        </>
+      )}
+
+      {activeSection === 'generator' && templates.length === 0 && (
+        <p className="text-center text-sm text-slate-500 dark:text-slate-400 italic py-8 no-print print:hidden">
+          V generátoru teď nejsou žádné tiskopisy{canEdit ? ' — vraťte některý z přehledu odebraných.' : '.'}
+        </p>
+      )}
+
       {/* SECTION 1: OFFICIAL RECORDS GENERATOR & BODY SCHEME */}
-      {activeSection === 'generator' && (
+      {activeSection === 'generator' && templates.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 print:block print:w-full print:p-0 print:m-0">
           
           {/* Left Column: Template Selection & Form Fields */}
@@ -637,8 +551,8 @@ export default function PrisonAdministration() {
                 </span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {RECORD_TEMPLATES.map(tpl => {
-                  const isSelected = tpl.id === selectedTemplateId;
+                {templates.map(tpl => {
+                  const isSelected = tpl.id === templateId;
                   return (
                     <button
                       key={tpl.id}
@@ -733,7 +647,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* SPECIFIC FIELDS FOR DONUCOVACÍ PROSTŘEDEK */}
-              {selectedTemplateId === 'dp' && (
+              {templateId === 'dp' && (
                 <div className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
@@ -1081,7 +995,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* SPECIFIC FIELDS FOR KÁZEŇSKÝ PŘESTUPEK */}
-              {selectedTemplateId === 'zkp' && (
+              {templateId === 'zkp' && (
                 <div className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
@@ -1164,7 +1078,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* SPECIFIC FIELDS FOR SLUŽEBNÍ ZÁZNAM */}
-              {selectedTemplateId === 'sz' && (
+              {templateId === 'sz' && (
                 <div className="space-y-4 text-xs">
                   <div>
                     <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-25`}>
@@ -1221,7 +1135,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* SPECIFIC FIELDS FOR ODNĚTÍ VĚCI */}
-              {selectedTemplateId === 'odneti' && (
+              {templateId === 'odneti' && (
                 <div className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
@@ -1279,7 +1193,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* SPECIFIC FIELDS FOR FYZICKÉ NÁSILÍ */}
-              {selectedTemplateId === 'nasilie' && (
+              {templateId === 'nasilie' && (
                 <div className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
@@ -1494,7 +1408,7 @@ export default function PrisonAdministration() {
               </div>
 
               {/* TEMPLATE 1: DONUCOVACÍ PROSTŘEDEK (DP) */}
-              {selectedTemplateId === 'dp' && (
+              {templateId === 'dp' && (
                 <div>
                   <div className="text-center my-3">
                     <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">
@@ -1662,7 +1576,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* TEMPLATE 2: KÁZEŇSKÝ PŘESTUPEK (ZKP) */}
-              {selectedTemplateId === 'zkp' && (
+              {templateId === 'zkp' && (
                 <div>
                   <div className="text-center my-3">
                     <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">
@@ -1764,7 +1678,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* TEMPLATE 3: ODNĚTÍ VĚCI */}
-              {selectedTemplateId === 'odneti' && (
+              {templateId === 'odneti' && (
                 <div>
                   <div className="text-center my-3">
                     <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">
@@ -1834,7 +1748,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* TEMPLATE 4: SLUŽEBNÍ ZÁZNAM (SZ) */}
-              {(selectedTemplateId === 'sz' || (selectedTemplateId !== 'dp' && selectedTemplateId !== 'zkp' && selectedTemplateId !== 'odneti')) && (
+              {(templateId === 'sz' || (templateId !== 'dp' && templateId !== 'zkp' && templateId !== 'odneti')) && (
                 <div>
                   <div className="text-center my-3">
                     <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">
@@ -1951,7 +1865,7 @@ export default function PrisonAdministration() {
             </>
           ) : (
             <>
-              Smažou se <strong>rozepsané koncepty všech {RECORD_TEMPLATES.length} tiskopisů</strong>{' '}
+              Smažou se <strong>rozepsané koncepty všech {templates.length} tiskopisů</strong>{' '}
               z tohoto prohlížeče, včetně osobních údajů, které jste do nich zadal. Doporučeno po
               práci na sdíleném počítači. Vrátit to zpět nelze.
             </>

@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { writeFailure } from '../utils/supabaseWrite';
+import { dismissCommander } from '../utils/classMembership';
 import { useAuth, useIsAdmin, UserRole } from '../context/AuthContext';
 import { getUserRank } from '../utils/gamification';
 import { useDialog } from '../hooks/useDialog';
@@ -214,26 +215,48 @@ function UserManagerInner() {
     );
   }, [users, searchQuery]);
 
-  // Role se mění jedinou cestou v celé aplikaci — přes updateRole() z AuthContextu.
-  // Ten zapisuje výhradně do databáze (oprávnění vynucuje RLS) a hlásí i zamítnutí,
-  // které se u UPDATE projeví jako nula zasažených řádků, nikoli jako chyba.
+  // Role se mění přes updateRole() z AuthContextu (u velitele třídy navíc přes
+  // odvolat_velitele, viz níže). Ten zapisuje výhradně do databáze (oprávnění
+  // vynucuje RLS) a hlásí i zamítnutí, které se u UPDATE projeví jako nula
+  // zasažených řádků, nikoli jako chyba.
   const handleRoleChange = useCallback(async (target: UserProfileItem, newRole: UserRole) => {
     if (newRole === target.role) return;
     setUpdatingRoleId(target.id);
-    const { error } = await updateRole(target.id, newRole);
+
+    // Role, kterou účet po této akci v databázi opravdu má.
+    let actualRole: UserRole = target.role;
+    let error: string | null = null;
+
+    // Velitele nejdřív odvolá funkce odvolat_velitele (migrace 038), ne holý
+    // UPDATE role. Jen ona zruší zástupce třídy v tridni_zastupce, zapíše
+    // odvolání do historie a pošle odvolanému oznámení. Přímá změna role
+    // nechávala zástupce velet třídě, která už velitele neměla.
+    if (target.role === 'velitel_tridy') {
+      const dismissed = await dismissCommander(target.id);
+      error = dismissed.error;
+      if (!error) actualRole = 'student';
+    }
+
+    if (!error && newRole !== actualRole) {
+      const res = await updateRole(target.id, newRole);
+      error = res.error;
+      if (!error) actualRole = newRole;
+    }
+
+    if (actualRole !== target.role) {
+      setUsers((prev) => prev.map((u) => (u.id === target.id ? { ...u, role: actualRole } : u)));
+    }
     if (error) {
       setNotice({
         tone: 'error',
-        title: 'Role se nezměnila',
+        title: actualRole === target.role ? 'Role se nezměnila' : 'Role se změnila jen zčásti',
         description: (
           <>
-            Uživatel má dál roli <strong>{target.role}</strong>.
+            Uživatel má teď roli <strong>{ROLE_LABELS[actualRole]}</strong>.
             <span className="mt-2 block font-mono text-xs text-slate-500 dark:text-slate-400">{error}</span>
           </>
         ),
       });
-    } else {
-      setUsers((prev) => prev.map((u) => (u.id === target.id ? { ...u, role: newRole } : u)));
     }
     setUpdatingRoleId(null);
   }, [updateRole]);
@@ -325,6 +348,9 @@ function UserManagerInner() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Hledat podle jména nebo e-mailu…"
+          // Zástupný text odečítač obrazovky za jméno pole spolehlivě nečte
+          // a po prvním napsaném znaku zmizí úplně.
+          aria-label="Hledat uživatele podle jména nebo e-mailu"
           className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
         />
       </div>
@@ -454,10 +480,13 @@ interface RoleSelectProps {
   value: UserRole;
   disabled: boolean;
   onChange: (role: UserRole) => void;
+  /** Jméno nebo e-mail účtu, aby se výběry v seznamu daly od sebe rozeznat. */
+  userLabel: string;
 }
 
 /**
- * Velitele třídy odsud jmenovat nejde, jen odvolat (změnit roli na jinou).
+ * Velitele třídy odsud jmenovat nejde, jen odvolat (změnit roli na jinou —
+ * handleRoleChange ho přitom odvolá přes odvolat_velitele).
  *
  * Přímá změna role by obešla funkci jmenovat_velitele (migrace 038): ta
  * ověří, že účet má třídu, dosavadního velitele téže třídy vrátí mezi
@@ -467,10 +496,12 @@ interface RoleSelectProps {
  */
 const COMMANDER_HINT = 'Velitele třídy jmenujte na Nástěnce tříd v panelu Zařazení.';
 
-function RoleSelect({ value, disabled, onChange }: RoleSelectProps) {
+function RoleSelect({ value, disabled, onChange, userLabel }: RoleSelectProps) {
   const isCommander = value === 'velitel_tridy';
   return (
     <select
+      // Bez jména by odečítač v každém řádku ohlásil jen „seznam, Student“.
+      aria-label={`Role uživatele ${userLabel}`}
       value={value}
       disabled={disabled}
       title={isCommander ? undefined : COMMANDER_HINT}
@@ -571,7 +602,7 @@ function UserTableRow({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, 
           <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border whitespace-nowrap ${ROLE_BADGE_CLASSES[item.role]}`}>
             {ROLE_LABELS[item.role]}
           </span>
-          <RoleSelect value={item.role} disabled={busyRole} onChange={onRoleChange} />
+          <RoleSelect value={item.role} disabled={busyRole} onChange={onRoleChange} userLabel={item.full_name || item.email} />
         </div>
       </td>
       <td className="px-4 py-3">
@@ -620,7 +651,7 @@ function UserCard({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, onMe
       </div>
 
       <div className="flex items-center justify-between gap-2 pt-1">
-        <RoleSelect value={item.role} disabled={busyRole} onChange={onRoleChange} />
+        <RoleSelect value={item.role} disabled={busyRole} onChange={onRoleChange} userLabel={item.full_name || item.email} />
         <RowActions isSelf={isSelf} deleting={deleting} onEdit={onEdit} onMessage={onMessage} onDeleteRequest={onDeleteRequest} />
       </div>
     </div>

@@ -1056,13 +1056,13 @@ export default function Statistics({
         description={
           <>
             {/* Text musí odpovídat tomu, co handleClearHistory v App opravdu dělá:
-                výsledky testů maže na serveru, historii pexesa jen v úložišti
-                tohoto zařízení (na server se nikdy neposílá) a splněných scénářů
-                a drilů se nedotkne. Dřív tu stálo, že se vše smaže na všech
-                zařízeních — pexeso ale na ostatních zařízeních zůstávalo. */}
-            Smaže se <strong>všech {history.length} záznamů</strong> o absolvovaných testech,
-            a to i ze serveru, takže zmizí na všech vašich zařízeních. Historie pexesa se
-            smaže <strong>jen v tomto zařízení</strong>. Přijdete tím o statistiky a XP z testů
+                výsledky testů i historii pexesa maže v zařízení i na serveru
+                (pexeso od migrace 042) a splněných scénářů a drilů se nedotkne.
+                Jiné zařízení si pexeso drží v úložišti a při sloučení po
+                přihlášení ho serveru vrátí — proto to tu stojí výslovně. */}
+            Smaže se <strong>všech {history.length} záznamů</strong> o absolvovaných testech
+            i historie pexesa, a to i ze serveru. Pexeso uložené na jiném vašem zařízení se
+            může po přihlášení na něm vrátit. Přijdete tím o statistiky a XP z testů
             a pexesa; splněné scénáře a drily zůstávají. Vrátit to zpět nelze.
           </>
         }

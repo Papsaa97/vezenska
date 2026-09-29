@@ -23,9 +23,9 @@ interface ClassEditModalProps {
   canRename: boolean;
   /**
    * Smí účet nahrát obrázek do úložiště? Politika kbelíku studijni-materialy
-   * (migrace 031) pouští lektora, správce a velitele třídy. Zástupce velitele
-   * má roli „student“, takže by nahrání selhalo a rozvrh by se potichu uložil
-   * jako data: URL přímo do řádku nástěnky.
+   * (migrace 031) pouští lektora, správce a velitele třídy, migrace 042 navíc
+   * platného zástupce do složky rozvrhy/. Komu politika nahrání nepovolí,
+   * tomu by se rozvrh uložil jako data: URL přímo do řádku nástěnky.
    */
   canUploadSchedule: boolean;
   onClose: () => void;
@@ -249,7 +249,7 @@ export default function ClassEditModal({ item, canRename, canUploadSchedule, onC
 
             {!canUploadSchedule && (
               <p className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2">
-                Nový obrázek rozvrhu může nahrát velitel třídy, lektor nebo správce. Ostatní údaje nástěnky můžete upravit.
+                Nový obrázek rozvrhu může nahrát velitel třídy, jeho zástupce, lektor nebo správce. Ostatní údaje nástěnky můžete upravit.
               </p>
             )}
 

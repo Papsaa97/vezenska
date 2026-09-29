@@ -80,6 +80,17 @@ export default function CaptainExamAssistant({
   const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false);
   const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(0);
   const audioTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /**
+   * Časovače, které během analýzy přepínají text kroku. Musí se po skončení
+   * zrušit: jinak po rychlé chybě (třeba neplatný klíč) doběhly až do dalšího
+   * spuštění a přepsaly jeho krok zastaralým textem z toho předchozího.
+   */
+  const stepTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const clearStepTimers = () => {
+    stepTimersRef.current.forEach(clearTimeout);
+    stepTimersRef.current = [];
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -92,6 +103,11 @@ export default function CaptainExamAssistant({
       if (audioTimerRef.current) clearTimeout(audioTimerRef.current);
     };
   }, [imagePreviewUrl]);
+
+  // Při odchodu ze záložky uprostřed analýzy už text kroku nemá kdo číst.
+  useEffect(() => () => {
+    stepTimersRef.current.forEach(clearTimeout);
+  }, []);
 
   const handleSaveApiKey = () => {
     setSavedApiKey(tempKey);
@@ -147,9 +163,12 @@ export default function CaptainExamAssistant({
     setLoadingStep('Předávání zadání modelu Gemini...');
 
     try {
-      setTimeout(() => setLoadingStep('Provádění OCR přepisu a právní analýzy VS ČR...'), 1000);
-      setTimeout(() => setLoadingStep('Dohledávání paragrafů v zákonech 555/1992 a 169/1999 Sb...'), 2500);
-      setTimeout(() => setLoadingStep('Generování testových otázek a zkušebních tipů...'), 4000);
+      clearStepTimers();
+      stepTimersRef.current = [
+        setTimeout(() => setLoadingStep('Provádění OCR přepisu a právní analýzy VS ČR...'), 1000),
+        setTimeout(() => setLoadingStep('Dohledávání paragrafů v zákonech 555/1992 a 169/1999 Sb...'), 2500),
+        setTimeout(() => setLoadingStep('Generování testových otázek a zkušebních tipů...'), 4000),
+      ];
 
       const result = await analyzeExamContent(
         key,
@@ -171,6 +190,7 @@ export default function CaptainExamAssistant({
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : 'Chyba při zpracování zadání.');
     } finally {
+      clearStepTimers();
       setIsLoading(false);
     }
   };

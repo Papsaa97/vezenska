@@ -33,6 +33,16 @@ const ROLE_COLORS: Record<UserRole, string> = {
 
 const MAX_AVATAR_SIZE_BYTES = 5 * 1024 * 1024;
 
+/**
+ * Formáty, které nahrání avataru přijme.
+ *
+ * Dřív stačilo `image/*`. Tím prošlo i SVG, které může nést skript a do
+ * veřejného bucketu avatarů nepatří, a HEIC/TIFF, které prohlížeč v <img>
+ * nezobrazí, takže místo fotky zůstal rozbitý obrázek. Hláška přitom
+ * odjakživa slibovala jen JPG, PNG a WEBP.
+ */
+const AVATAR_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
 interface FormMessage {
   type: 'success' | 'error';
   text: string;
@@ -190,7 +200,9 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
       type: 'success',
       text: previewChanged
         ? `Profil uložen. Rozhraní teď ukazuje náhled role ${ROLE_LABELS[selectedRole]} — účet i oprávnění zůstávají beze změny.`
-        : 'Profil a zařazení ke třídě byly úspěšně uloženy.',
+        : // Třída je v profilu jen ke čtení (viz userClass výše), uložilo se
+          // tedy jen jméno — hláška nesmí slibovat změnu zařazení.
+          'Jméno bylo úspěšně uloženo.',
     });
   };
 
@@ -198,8 +210,8 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      setAvatarMessage({ type: 'error', text: 'Vyberte prosím obrázkový soubor (JPG, PNG, WEBP).' });
+    if (!AVATAR_MIME_TYPES.includes(file.type)) {
+      setAvatarMessage({ type: 'error', text: 'Vyberte prosím obrázek ve formátu JPG, PNG, WEBP nebo GIF.' });
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
@@ -334,7 +346,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept={AVATAR_MIME_TYPES.join(',')}
                 onChange={handleAvatarFileChange}
                 className="hidden"
               />
@@ -498,7 +510,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               {nameSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-              Uložit osobní údaje & zařazení
+              Uložit osobní údaje
             </button>
           </form>
 
@@ -514,6 +526,9 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder={`Nové heslo (min. ${MIN_PASSWORD_LENGTH} znaků)`}
+                // Pole nemá viditelný popisek; zástupný text po prvním znaku
+                // zmizí a odečítač ho za jméno pole spolehlivě nečte.
+                aria-label="Nové heslo"
                 minLength={MIN_PASSWORD_LENGTH}
                 autoComplete="new-password"
                 className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 pr-11 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
@@ -532,6 +547,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Potvrzení nového hesla"
+              aria-label="Potvrzení nového hesla"
               minLength={MIN_PASSWORD_LENGTH}
               autoComplete="new-password"
               className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"

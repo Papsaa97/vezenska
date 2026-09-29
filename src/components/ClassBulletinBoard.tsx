@@ -1173,7 +1173,9 @@ export default function ClassBulletinBoard() {
           <ClassEditModal
             item={editingItem}
             canRename={isPrivileged}
-            canUploadSchedule={isPrivileged || profile?.role === 'velitel_tridy'}
+            // Zástupce (role student, ale `commandsClass`) smí nahrát rozvrh od
+            // migrace 042 — politika úložiště ho pustí jen do složky rozvrhy/.
+            canUploadSchedule={isPrivileged || profile?.role === 'velitel_tridy' || Boolean(membership?.commandsClass)}
             onClose={() => {
               setIsEditModalOpen(false);
               setEditingItem(null);
