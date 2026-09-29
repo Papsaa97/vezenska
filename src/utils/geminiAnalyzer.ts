@@ -84,6 +84,23 @@ export async function fileToGenerativePart(file: File): Promise<GeminiInlineData
   });
 }
 
+/**
+ * Index správné možnosti, nebo `null`, když se určit nedá.
+ *
+ * Platný je jen celočíselný index uvnitř pole `options` (AGENTS.md). Jinak se
+ * správná možnost hledá podle shody s textem `answer`; hádat ji nejde.
+ */
+function resolveCorrectOption(q: Question, options: string[]): number | null {
+  const idx = q.correctOption;
+  if (typeof idx === 'number' && Number.isInteger(idx) && idx >= 0 && idx < options.length) {
+    return idx;
+  }
+  const answer = typeof q.answer === 'string' ? q.answer.trim().toLowerCase() : '';
+  if (!answer) return null;
+  const match = options.findIndex((o) => o.trim().toLowerCase() === answer);
+  return match >= 0 ? match : null;
+}
+
 const SYSTEM_INSTRUCTION = `Jsi elitní zkušební komisař, instruktor a metodik Akademie Vězeňské služby České republiky (ZOP A).
 Tvým úkolem je analyzovat zadání testu, otázek, písemky či modelové situace (buď z textu, nebo z vyfoceného papíru/skenu), které studentům zadali kapitáni nebo učitelé.
 
@@ -185,9 +202,19 @@ export async function analyzeExamContent(
       // doslova slovo „Správná možnost“, a ta se přes onStartCustomQuiz
       // dostala do ostrého testu i do uložených výsledků a XP. Lepší je
       // otázku vynechat a říct to.
-      const usable = parsed.questions.filter(
-        (q) => Array.isArray(q.options) && q.options.length >= 2 && Boolean(q.question)
-      );
+      //
+      // Stejně tak otázka bez platného indexu správné možnosti. Model občas
+      // vrátí index od jedničky, písmeno „B“ nebo číslo mimo pole — Quiz pak
+      // při míchání možností nenašel správnou a za správnou tiše označil
+      // první možnost. Test tak hodnotil špatnou odpověď jako dobrou.
+      // Neplatný index se ještě zkusí dohledat podle textu `answer`.
+      const usable = parsed.questions.flatMap((q) => {
+        const options = q.options;
+        if (!Array.isArray(options) || options.length < 2 || !q.question) return [];
+        if (!options.every((o) => typeof o === 'string' && o.trim() !== '')) return [];
+        const correctOption = resolveCorrectOption(q, options);
+        return correctOption === null ? [] : [{ ...q, options, correctOption }];
+      });
       const zahozeno = parsed.questions.length - usable.length;
 
       if (usable.length === 0) {
@@ -205,9 +232,9 @@ export async function analyzeExamContent(
         subject: q.subject || parsed.subject || 'Služební příprava',
         topic: q.topic || 'Zadání od kapitána',
         question: q.question,
-        answer: q.answer || (q.correctOption !== undefined ? q.options?.[q.correctOption] : '') || '',
+        answer: q.answer || q.options[q.correctOption],
         options: q.options,
-        correctOption: typeof q.correctOption === 'number' ? q.correctOption : 0,
+        correctOption: q.correctOption,
         // Chybějící odůvodnění se NEDOPLŇUJE.
         //
         // Dřív se sem dosadilo „Ověřeno dle interních norem VS ČR.“ — u výstupu
@@ -219,7 +246,7 @@ export async function analyzeExamContent(
       }));
 
       if (zahozeno > 0) {
-        parsed.summary = `${parsed.summary || ''}\n\nPozn.: ${zahozeno} otázek se nepodařilo zpracovat do testové podoby (chyběly možnosti) a nejsou v seznamu.`.trim();
+        parsed.summary = `${parsed.summary || ''}\n\nPozn.: ${zahozeno} otázek se nepodařilo zpracovat do testové podoby (chyběly možnosti nebo platné označení správné odpovědi) a nejsou v seznamu.`.trim();
       }
 
       return parsed;
