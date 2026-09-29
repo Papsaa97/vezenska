@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { writeFailure } from '../utils/supabaseWrite';
+import { dismissCommander } from '../utils/classMembership';
 import { useAuth, useIsAdmin, UserRole } from '../context/AuthContext';
 import { getUserRank } from '../utils/gamification';
 import { useDialog } from '../hooks/useDialog';
@@ -214,26 +215,48 @@ function UserManagerInner() {
     );
   }, [users, searchQuery]);
 
-  // Role se mění jedinou cestou v celé aplikaci — přes updateRole() z AuthContextu.
-  // Ten zapisuje výhradně do databáze (oprávnění vynucuje RLS) a hlásí i zamítnutí,
-  // které se u UPDATE projeví jako nula zasažených řádků, nikoli jako chyba.
+  // Role se mění přes updateRole() z AuthContextu (u velitele třídy navíc přes
+  // odvolat_velitele, viz níže). Ten zapisuje výhradně do databáze (oprávnění
+  // vynucuje RLS) a hlásí i zamítnutí, které se u UPDATE projeví jako nula
+  // zasažených řádků, nikoli jako chyba.
   const handleRoleChange = useCallback(async (target: UserProfileItem, newRole: UserRole) => {
     if (newRole === target.role) return;
     setUpdatingRoleId(target.id);
-    const { error } = await updateRole(target.id, newRole);
+
+    // Role, kterou účet po této akci v databázi opravdu má.
+    let actualRole: UserRole = target.role;
+    let error: string | null = null;
+
+    // Velitele nejdřív odvolá funkce odvolat_velitele (migrace 038), ne holý
+    // UPDATE role. Jen ona zruší zástupce třídy v tridni_zastupce, zapíše
+    // odvolání do historie a pošle odvolanému oznámení. Přímá změna role
+    // nechávala zástupce velet třídě, která už velitele neměla.
+    if (target.role === 'velitel_tridy') {
+      const dismissed = await dismissCommander(target.id);
+      error = dismissed.error;
+      if (!error) actualRole = 'student';
+    }
+
+    if (!error && newRole !== actualRole) {
+      const res = await updateRole(target.id, newRole);
+      error = res.error;
+      if (!error) actualRole = newRole;
+    }
+
+    if (actualRole !== target.role) {
+      setUsers((prev) => prev.map((u) => (u.id === target.id ? { ...u, role: actualRole } : u)));
+    }
     if (error) {
       setNotice({
         tone: 'error',
-        title: 'Role se nezměnila',
+        title: actualRole === target.role ? 'Role se nezměnila' : 'Role se změnila jen zčásti',
         description: (
           <>
-            Uživatel má dál roli <strong>{target.role}</strong>.
+            Uživatel má teď roli <strong>{ROLE_LABELS[actualRole]}</strong>.
             <span className="mt-2 block font-mono text-xs text-slate-500 dark:text-slate-400">{error}</span>
           </>
         ),
       });
-    } else {
-      setUsers((prev) => prev.map((u) => (u.id === target.id ? { ...u, role: newRole } : u)));
     }
     setUpdatingRoleId(null);
   }, [updateRole]);
@@ -457,7 +480,8 @@ interface RoleSelectProps {
 }
 
 /**
- * Velitele třídy odsud jmenovat nejde, jen odvolat (změnit roli na jinou).
+ * Velitele třídy odsud jmenovat nejde, jen odvolat (změnit roli na jinou —
+ * handleRoleChange ho přitom odvolá přes odvolat_velitele).
  *
  * Přímá změna role by obešla funkci jmenovat_velitele (migrace 038): ta
  * ověří, že účet má třídu, dosavadního velitele téže třídy vrátí mezi
