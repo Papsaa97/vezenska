@@ -516,6 +516,9 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder={`Nové heslo (min. ${MIN_PASSWORD_LENGTH} znaků)`}
+                // Pole nemá viditelný popisek; zástupný text po prvním znaku
+                // zmizí a odečítač ho za jméno pole spolehlivě nečte.
+                aria-label="Nové heslo"
                 minLength={MIN_PASSWORD_LENGTH}
                 autoComplete="new-password"
                 className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 pr-11 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
@@ -534,6 +537,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Potvrzení nového hesla"
+              aria-label="Potvrzení nového hesla"
               minLength={MIN_PASSWORD_LENGTH}
               autoComplete="new-password"
               className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
