@@ -190,7 +190,9 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
       type: 'success',
       text: previewChanged
         ? `Profil uložen. Rozhraní teď ukazuje náhled role ${ROLE_LABELS[selectedRole]} — účet i oprávnění zůstávají beze změny.`
-        : 'Profil a zařazení ke třídě byly úspěšně uloženy.',
+        : // Třída je v profilu jen ke čtení (viz userClass výše), uložilo se
+          // tedy jen jméno — hláška nesmí slibovat změnu zařazení.
+          'Jméno bylo úspěšně uloženo.',
     });
   };
 
@@ -498,7 +500,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               {nameSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-              Uložit osobní údaje & zařazení
+              Uložit osobní údaje
             </button>
           </form>
 
