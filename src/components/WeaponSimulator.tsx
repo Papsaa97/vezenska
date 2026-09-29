@@ -71,6 +71,10 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
   // Drily, ve kterých student v této návštěvě odpověděl špatně. Dril se
   // započítá jen napoprvé správně — jinak by stačilo proklikat možnosti.
   const [missedDrills, setMissedDrills] = useState<string[]>([]);
+  // Co přinesla poslední správná odpověď: nové XP, nic (dril už byl
+  // započítaný), nebo nic kvůli dřívější chybě. Určí se v okamžiku odpovědi —
+  // po ní je dril v completedDrills vždy a nové splnění by nešlo odlišit.
+  const [drillAward, setDrillAward] = useState<'xp' | 'already' | 'missed'>('xp');
 
   // Postup se přečte znovu při každé změně úložiště — i po přihlášení, kdy se
   // vlastník klíče změní z „anon“ na id účtu.
@@ -152,6 +156,11 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
     const drill = drills[drillIndex];
     if (drill && !drill.options[index]?.isCorrect) {
       setMissedDrills(prev => (prev.includes(drill.id) ? prev : [...prev, drill.id]));
+    }
+    if (drill?.options[index]?.isCorrect) {
+      setDrillAward(
+        missedDrills.includes(drill.id) ? 'missed' : completedDrills.includes(drill.id) ? 'already' : 'xp'
+      );
     }
     if (drill?.options[index]?.isCorrect && !missedDrills.includes(drill.id)) {
       setCompletedDrills(prev => {
@@ -606,9 +615,11 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
                     <div className="flex items-center gap-2">
                       {drill.options[selectedDrillOption].isCorrect ? (
                         <span className="px-2.5 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
-                          {missedDrills.includes(drill.id)
+                          {drillAward === 'missed'
                             ? 'SPRÁVNĚ — XP jen za odpověď napoprvé'
-                            : `SPRÁVNÉ ROZHODNUTÍ (+${DRILL_XP} XP)`}
+                            : drillAward === 'already'
+                              ? 'SPRÁVNÉ ROZHODNUTÍ (XP už máte připsané)'
+                              : `SPRÁVNÉ ROZHODNUTÍ (+${DRILL_XP} XP)`}
                         </span>
                       ) : (
                         <span className="px-2.5 py-1 rounded-md bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-bold text-xs">

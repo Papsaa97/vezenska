@@ -38,7 +38,7 @@ import FeedbackModal from './FeedbackModal';
 import UserProfileModal from './UserProfileModal';
 import NotificationBell from './NotificationBell';
 import { useAuth } from '../context/AuthContext';
-import { resolveAvatarDisplay } from '../utils/avatar';
+import { getInitials, resolveAvatarDisplay } from '../utils/avatar';
 import { useLocalProgress } from '../hooks/useLocalProgress';
 
 import { NavTab, NAV_TAB_LABELS, NAV_TAB_SHORT_LABELS } from '../data/navTabs';
@@ -155,13 +155,7 @@ export default function Header({
 
   const userInitials = useMemo(() => {
     if (!user) return 'VS';
-    const name = (profile?.full_name || user.email || '').trim();
-    if (!name) return 'VS';
-    const parts = name.split(/\s+/);
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    }
-    return name.slice(0, 2).toUpperCase() || 'VS';
+    return getInitials(profile?.full_name || user.email);
   }, [user, profile]);
 
   const role = profile?.role ?? 'student';

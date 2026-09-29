@@ -20,7 +20,7 @@ import {
 import { useAuth, useIsAdmin, UserRole, UserProfile } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { UserRank } from '../types';
-import { AVATAR_PRESETS, resolveAvatarDisplay, toPresetAvatarUrl } from '../utils/avatar';
+import { AVATAR_PRESETS, getInitials, resolveAvatarDisplay, toPresetAvatarUrl } from '../utils/avatar';
 import { useDialog } from '../hooks/useDialog';
 import DisplayScalePicker from './DisplayScalePicker';
 import { MIN_PASSWORD_LENGTH, ROLE_LABELS, translateAuthError } from '../constants/auth';
@@ -157,13 +157,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
 
   // Odznak ukazuje roli z profilu, ne rozepsaný výběr v seznamu — ten platí teprve po uložení.
   const role: UserRole = effectiveProfile.role;
-  const initials = (() => {
-    const name = (effectiveProfile.full_name || user.email || '').trim();
-    if (!name) return 'VS';
-    const parts = name.split(/\s+/);
-    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    return name.slice(0, 2).toUpperCase() || 'VS';
-  })();
+  const initials = getInitials(effectiveProfile.full_name || user.email);
 
   const handleSaveName = async (e: React.FormEvent) => {
     e.preventDefault();

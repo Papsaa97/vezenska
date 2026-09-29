@@ -34,8 +34,10 @@ import {
   evaluateBadges, 
   getUserRank, 
   calculateBaseXp, 
+  countsTowardProgress,
   getTierColor 
 } from '../utils/gamification';
+import { MIN_XP_PERCENT } from '../constants/grading';
 import { useDialog } from '../hooks/useDialog';
 import { useLocalProgress } from '../hooks/useLocalProgress';
 
@@ -170,6 +172,11 @@ export default function BadgesView({
     [quizHistory, matchingHistory, extraXp]
   );
 
+  const countedQuizCount = useMemo(
+    () => quizHistory.filter(countsTowardProgress).length,
+    [quizHistory]
+  );
+
 
   const { badges, totalXpWithBadges, unlockedCount } = useMemo(() => {
     return evaluateBadges(quizHistory, matchingHistory, streakInfo, baseXp, availableSubjects);
@@ -302,8 +309,15 @@ export default function BadgesView({
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-lg font-bold text-white leading-tight">{quizHistory.length}</div>
-              <div className="text-[0.6875rem] text-slate-400 font-medium">Dokončených testů</div>
+              {/* Do XP a odznaků se počítají jen testy od MIN_XP_PERCENT. Bez
+                  rozlišení tu stálo „1 dokončený test“ vedle odznaku „0 / 1“. */}
+              <div className="text-lg font-bold text-white leading-tight">
+                {countedQuizCount}
+                {countedQuizCount !== quizHistory.length && (
+                  <span className="text-xs font-normal text-slate-400"> / {quizHistory.length}</span>
+                )}
+              </div>
+              <div className="text-[0.6875rem] text-slate-400 font-medium">Testů od {MIN_XP_PERCENT} % (do odznaků)</div>
             </div>
           </div>
 

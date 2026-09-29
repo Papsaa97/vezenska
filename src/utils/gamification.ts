@@ -265,6 +265,24 @@ export function countsTowardProgress(session: Pick<QuizSessionRecord, 'accuracy'
   return (session.accuracy ?? 0) >= MIN_XP_PERCENT;
 }
 
+/**
+ * XP za jeden test: 15 za správnou odpověď, 50 za dokončení a bonus za 80 %
+ * nebo 100 %. Test pod MIN_XP_PERCENT dává 0. Jediné místo s tímto
+ * pravidlem — používá ho souhrn XP, obrazovka výsledku i přehled uživatelů.
+ */
+export function quizSessionXp(
+  session: Pick<QuizSessionRecord, 'accuracy' | 'correctAnswers' | 'totalQuestions'>
+): number {
+  if (!countsTowardProgress(session)) return 0;
+  let xp = (session.correctAnswers || 0) * 15 + 50;
+  if (session.accuracy === 100 && session.totalQuestions >= 5) {
+    xp += 100;
+  } else if (session.accuracy >= 80 && session.totalQuestions >= 5) {
+    xp += 50;
+  }
+  return xp;
+}
+
 export function calculateBaseXp(
   quizHistory: QuizSessionRecord[],
   matchingHistory: MatchingRecord[],
@@ -273,17 +291,8 @@ export function calculateBaseXp(
   let xp = extraXp;
 
   // 1. XP from quizzes
-  quizHistory.filter(countsTowardProgress).forEach(session => {
-    // 15 XP per correct answer
-    xp += (session.correctAnswers || 0) * 15;
-    // 50 XP completion bonus
-    xp += 50;
-    // Accuracy bonuses
-    if (session.accuracy === 100 && session.totalQuestions >= 5) {
-      xp += 100;
-    } else if (session.accuracy >= 80 && session.totalQuestions >= 5) {
-      xp += 50;
-    }
+  quizHistory.forEach(session => {
+    xp += quizSessionXp(session);
   });
 
   // 2. XP from matching games
