@@ -311,7 +311,7 @@ export default function Statistics({
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center h-full gap-3 text-slate-400">
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-3 text-slate-400">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
         <span className="text-sm font-medium">Načítám vaše statistiky…</span>
       </div>
@@ -320,7 +320,7 @@ export default function Statistics({
 
   if (history.length === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center h-full max-w-xl mx-auto w-full p-4 text-center">
+      <div className="flex flex-col items-center justify-center min-h-[50vh] max-w-xl mx-auto w-full p-4 text-center">
         <div className="w-full bg-white dark:bg-slate-900 p-8 sm:p-10 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center">
           <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-4">
             <BarChart3 className="w-8 h-8" />
@@ -358,7 +358,7 @@ export default function Statistics({
   }
 
   return (
-    <div className="flex-1 flex flex-col gap-6 h-full overflow-y-auto max-w-7xl mx-auto w-full p-2 md:p-4 pb-20">
+    <div className="w-full flex flex-col gap-6 pb-8">
       
       {/* Header & Controls */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">

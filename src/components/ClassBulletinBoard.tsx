@@ -615,7 +615,7 @@ export default function ClassBulletinBoard() {
   ]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6 pb-16 print:p-0 print:m-0 print:space-y-0">
+    <div className="w-full space-y-6 pb-16 print:p-0 print:m-0 print:space-y-0">
       {/* ─── Tisková hlavička ─────────────────────────────────────────────── */}
       <PrintHeader
         subject={printingItem ? `Rozvrh hodin třídy ${printingItem.className}` : 'Informační tabule tříd ZOP'}

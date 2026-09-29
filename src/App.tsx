@@ -12,6 +12,7 @@ import UpdatePrompt from './components/UpdatePrompt';
 import FeedbackButton from './components/FeedbackButton';
 import { fetchQuizQuestionsFromSupabase } from './utils/quizQuestionsLoader';
 import { lazyWithReload } from './utils/lazyWithReload';
+import { PAGE_CONTAINER, PAGE_CONTAINER_FILL } from './constants/layout';
 
 // Lazy-loaded view components — načteny až při první návštěvě daného tabu.
 // lazyWithReload: chunk smazaný novým nasazením vyřeší jedním obnovením stránky.
@@ -793,24 +794,28 @@ export default function App() {
         <Suspense fallback={<TabLoader isDark={isDarkMode} />}>
         {activeTab === 'dashboard' && (
           <div className="w-full h-full overflow-y-auto pr-1">
-            <ClassBulletinBoard />
+            <div className={PAGE_CONTAINER}>
+              <ClassBulletinBoard />
+            </div>
           </div>
         )}
 
         {activeTab === 'subjects' && (
           <div className="w-full h-full overflow-y-auto pr-1">
-            {questionsPending ? (
-              <TabLoader isDark={isDarkMode} />
-            ) : (
-              <SubjectsHub
-                questions={allQuestions}
-                favorites={favorites}
-                toggleFavorite={toggleFavorite}
-                onStartQuiz={handleStartSubjectQuiz}
-                onStartFlashcards={handleStartSubjectFlashcards}
-                onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
-              />
-            )}
+            <div className={PAGE_CONTAINER}>
+              {questionsPending ? (
+                <TabLoader isDark={isDarkMode} />
+              ) : (
+                <SubjectsHub
+                  questions={allQuestions}
+                  favorites={favorites}
+                  toggleFavorite={toggleFavorite}
+                  onStartQuiz={handleStartSubjectQuiz}
+                  onStartFlashcards={handleStartSubjectFlashcards}
+                  onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
+                />
+              )}
+            </div>
           </div>
         )}
 
@@ -819,61 +824,73 @@ export default function App() {
           questionsPending && !customQuestions ? (
             <TabLoader isDark={isDarkMode} />
           ) : (
-            <Quiz
-              questions={(customQuestions || allQuestions).filter(q => isPrivileged || !isQuestionHidden(q))}
-              favorites={favorites}
-              toggleFavorite={toggleFavorite}
-              onSaveQuizResult={handleSaveQuizResult}
-              onNavigateToBadges={() => navigateToTab('badges')}
-              presetSubject={quizPreset.subject}
-              presetTopic={quizPreset.topic}
-              onPlayingChange={setIsQuizPlaying}
-              questionsSource={questionsSource}
-            />
+            <div className={PAGE_CONTAINER_FILL}>
+              <Quiz
+                questions={(customQuestions || allQuestions).filter(q => isPrivileged || !isQuestionHidden(q))}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                onSaveQuizResult={handleSaveQuizResult}
+                onNavigateToBadges={() => navigateToTab('badges')}
+                presetSubject={quizPreset.subject}
+                presetTopic={quizPreset.topic}
+                onPlayingChange={setIsQuizPlaying}
+                questionsSource={questionsSource}
+              />
+            </div>
           )
         )}
 
         {activeTab === 'assistant' && (
           <div className="w-full h-full overflow-y-auto pr-1">
-            <CaptainExamAssistant
-              onStartCustomQuiz={handleStartCustomQuiz}
-              onStartCustomFlashcards={handleStartCustomFlashcards}
-            />
+            <div className={PAGE_CONTAINER}>
+              <CaptainExamAssistant
+                onStartCustomQuiz={handleStartCustomQuiz}
+                onStartCustomFlashcards={handleStartCustomFlashcards}
+              />
+            </div>
           </div>
         )}
 
         {activeTab === 'compass' && (
-          <div className="w-full h-full min-h-[calc(100dvh-170px)] md:min-h-0 flex flex-col overflow-hidden">
+          <div className="w-full max-w-6xl mx-auto print:max-w-none h-full min-h-[calc(100dvh-170px)] md:min-h-0 flex flex-col overflow-hidden">
             <LegalCompass />
           </div>
         )}
 
         {activeTab === 'admin' && (
           <div className="w-full h-full overflow-y-auto pr-1 print:h-auto print:overflow-visible print:p-0 print:m-0">
-            <PrisonAdministration />
+            <div className={PAGE_CONTAINER}>
+              <PrisonAdministration />
+            </div>
           </div>
         )}
 
         {activeTab === 'ethics' && (
           <div className="w-full h-full overflow-y-auto pr-1">
-            <ProfessionalEthics
-              onStartSubjectQuiz={handleStartSubjectQuiz}
-              questionCount={allQuestions.filter(q => q.subject === 'Profesní etika' && (isPrivileged || !isQuestionHidden(q))).length}
-            />
+            <div className={PAGE_CONTAINER}>
+              <ProfessionalEthics
+                onStartSubjectQuiz={handleStartSubjectQuiz}
+                questionCount={allQuestions.filter(q => q.subject === 'Profesní etika' && (isPrivileged || !isQuestionHidden(q))).length}
+              />
+            </div>
           </div>
         )}
 
         {activeTab === 'scenarios' && (
           <div className="w-full h-full overflow-y-auto pr-1">
-            <Scenarios />
+            <div className={PAGE_CONTAINER}>
+              <Scenarios />
+            </div>
           </div>
         )}
 
         {activeTab === 'weapons' && (
           <div className="w-full h-full overflow-y-auto pr-1">
-            <WeaponSimulator 
-              onNavigateToBadges={() => navigateToTab('badges')}
-            />
+            <div className={PAGE_CONTAINER}>
+              <WeaponSimulator 
+                onNavigateToBadges={() => navigateToTab('badges')}
+              />
+            </div>
           </div>
         )}
         
@@ -881,51 +898,63 @@ export default function App() {
           questionsPending && !customQuestions ? (
             <TabLoader isDark={isDarkMode} />
           ) : (
-            <Flashcards
-              questions={customQuestions || allQuestions}
-              favorites={favorites}
-              toggleFavorite={toggleFavorite}
-              presetSubject={flashcardPresetSubject}
-              onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
-            />
+            <div className={PAGE_CONTAINER_FILL}>
+              <Flashcards
+                questions={customQuestions || allQuestions}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                presetSubject={flashcardPresetSubject}
+                onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
+              />
+            </div>
           )
         )}
         
         {activeTab === 'matching' && (
-          <MatchingGame 
-            categories={matchingCategories} 
-            onGameComplete={handleMatchingGameComplete}
-            onNavigateToBadges={() => navigateToTab('badges')}
-          />
-        )}
-
-        {activeTab === 'badges' && (
-          <div className="w-full h-full overflow-y-auto pr-1">
-            <BadgesView 
-              quizHistory={effectiveQuizHistory}
-              matchingHistory={matchingHistory}
-              onStartQuiz={() => navigateToTab('quiz')}
-              onStartMatching={() => navigateToTab('matching')}
-              availableSubjects={availableSubjects}
+          <div className={PAGE_CONTAINER_FILL}>
+            <MatchingGame
+              categories={matchingCategories}
+              onGameComplete={handleMatchingGameComplete}
+              onNavigateToBadges={() => navigateToTab('badges')}
             />
           </div>
         )}
 
+        {activeTab === 'badges' && (
+          <div className="w-full h-full overflow-y-auto pr-1">
+            <div className={PAGE_CONTAINER}>
+              <BadgesView 
+                quizHistory={effectiveQuizHistory}
+                matchingHistory={matchingHistory}
+                onStartQuiz={() => navigateToTab('quiz')}
+                onStartMatching={() => navigateToTab('matching')}
+                availableSubjects={availableSubjects}
+              />
+            </div>
+          </div>
+        )}
+
         {activeTab === 'statistics' && (
-          <Statistics
-            questions={allQuestions}
-            history={effectiveQuizHistory}
-            isLoading={quizHistoryLoading || questionsPending}
-            onStartTopicQuiz={handleStartSubjectQuiz}
-            onClearHistory={handleClearHistory}
-            onStartQuiz={() => navigateToTab('quiz')}
-            onStartScenario={() => navigateToTab('scenarios')}
-          />
+          <div className="w-full h-full overflow-y-auto pr-1">
+            <div className={PAGE_CONTAINER}>
+              <Statistics
+                questions={allQuestions}
+                history={effectiveQuizHistory}
+                isLoading={quizHistoryLoading || questionsPending}
+                onStartTopicQuiz={handleStartSubjectQuiz}
+                onClearHistory={handleClearHistory}
+                onStartQuiz={() => navigateToTab('quiz')}
+                onStartScenario={() => navigateToTab('scenarios')}
+              />
+            </div>
+          </div>
         )}
 
         {activeTab === 'library' && (
           <div className="w-full h-full overflow-y-auto pr-1">
-            <MaterialLibrary />
+            <div className={PAGE_CONTAINER}>
+              <MaterialLibrary />
+            </div>
           </div>
         )}
 
@@ -937,7 +966,9 @@ export default function App() {
             </div>
           ) : isPrivileged ? (
             <div className="w-full h-full overflow-y-auto pr-1">
-              <ContentManager onQuestionsUpdated={loadQuestions} />
+              <div className={PAGE_CONTAINER}>
+                <ContentManager onQuestionsUpdated={loadQuestions} />
+              </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-24 gap-4 text-slate-500">

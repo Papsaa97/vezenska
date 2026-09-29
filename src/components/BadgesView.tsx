@@ -219,7 +219,7 @@ export default function BadgesView({
   }, [badges, selectedCategory, selectedStatus, searchQuery]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-6 pb-8">
+    <div className="w-full space-y-6 pb-8">
       
       {/* 1. HERO RANK & PROGRESS BANNER */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 text-white p-5 sm:p-7 border border-slate-700/80 shadow-xl">

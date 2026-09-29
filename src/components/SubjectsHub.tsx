@@ -364,14 +364,14 @@ export default function SubjectsHub({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.2 }}
-          className="max-w-6xl mx-auto px-4 py-6 space-y-6"
+          className="w-full space-y-6 pb-8"
         >
         {/* Tisková hlavička – viditelná výhradně při tisku */}
         {activeSubjectInfo && (
           <PrintHeader 
             subject={`Předmět ZOP A: ${activeSubjectInfo.name} (${activeSubjectInfo.code})`} 
             docTitle={`Kompletní přehled testových otázek a pramenů práva (${filteredQuestions?.length ?? 0} otázek)`} 
-            subtext="Akademie Vězeňské služby ČR – Oficiální studijní materiály pro přípravu na zkoušky" 
+            subtext="Akademie Vězeňské služby ČR – studijní materiály pro přípravu na zkoušky" 
           />
         )}
 
@@ -809,7 +809,7 @@ export default function SubjectsHub({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.2 }}
-      className="max-w-6xl mx-auto px-4 py-8 space-y-8"
+      className="w-full space-y-8 pb-8"
     >
       {canEdit && (
         <SubjectEditModal

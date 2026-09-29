@@ -203,7 +203,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
 
   return (
     <section className="flex-1 flex flex-col h-full overflow-hidden items-center justify-start min-h-[600px] md:min-h-0">
-      <div className="w-full max-w-4xl bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-full">
+      <div className="w-full bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-full">
         {/* Header toolbar */}
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex flex-col sm:flex-row justify-between items-center gap-3 shrink-0 no-print">
           <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
