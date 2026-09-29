@@ -9,6 +9,17 @@
     <!-- PWA & Offline Support -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#0f172a" />
+    <!-- Barva pozadí dokumentu musí sedět s motivem dřív, než se načte
+         aplikace: jinak prohlížeč krátce (a při rychlém scrollování na
+         slabším zařízení opakovaně) ukazuje bílou plochu. Stejné pravidlo
+         jako výchozí stav v App.tsx. -->
+    <script>
+      try {
+        var t = localStorage.getItem('vscr_theme');
+        var dark = t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (dark) document.documentElement.classList.add('dark');
+      } catch (e) { /* bez přístupu k úložišti zůstane světlé pozadí */ }
+    </script>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

@@ -42,6 +42,27 @@
 }
 
 /* ==========================================================================
+   POZADÍ DOKUMENTU
+   --------------------------------------------------------------------------
+   Aplikace kreslí své pozadí na vnitřní <div>, ale Chrome při rychlém
+   scrollování ještě nevykreslené dlaždice vyplní barvou pozadí dokumentu.
+   Bez těchto pravidel je to bílá, takže na slabším zařízení (Chromebook)
+   se spodek obrazovky na chvíli změní v bílou plochu. Třídu `dark` na <html>
+   nastavuje App.tsx a ještě před načtením skriptů i index.html.
+   ========================================================================== */
+html {
+  background-color: #f8fafc; /* slate-50, světlý režim aplikace */
+  color-scheme: light;
+}
+html.dark {
+  background-color: #020617; /* slate-950, tmavý režim aplikace */
+  color-scheme: dark;
+}
+body {
+  background-color: inherit;
+}
+
+/* ==========================================================================
    NÁHLED DOKUMENTU V APLIKACI (prohlížeč .docx)
    --------------------------------------------------------------------------
    Převedený Word nenese vlastní styly a Tailwind výchozí vzhled značek ruší,

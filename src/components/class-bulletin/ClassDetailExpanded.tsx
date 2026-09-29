@@ -242,6 +242,8 @@ export default function ClassDetailExpanded({
               <img
                 src={item.scheduleUrl}
                 alt={`Rozvrh ${item.className}`}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-contain p-2 group-hover:scale-102 transition-transform duration-300"
               />
               <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white font-bold text-sm">
