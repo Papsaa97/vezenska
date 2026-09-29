@@ -311,8 +311,12 @@ export default function Flashcards({
     writeScoped(LEITNER_BOXES_KEY, nextBoxes);
 
     // Datum opakování je to, co dělá z krabiček rozložené opakování: podle něj
-    // se kartička zase objeví ve frontě „ke zopakování dnes“.
-    const nextReviews = { ...leitnerReviews, [currentQuestion.id]: new Date().toISOString() };
+    // se kartička zase objeví ve frontě „ke zopakování dnes“. Kartička „Ještě
+    // neumím“ datum nedostane, takže zůstane ve dnešní frontě a vrátí se v
+    // dalším kole — dřív čekala do zítřka.
+    const nextReviews = { ...leitnerReviews };
+    if (known) nextReviews[currentQuestion.id] = new Date().toISOString();
+    else delete nextReviews[currentQuestion.id];
     setLeitnerReviews(nextReviews);
     leitnerReviewsRef.current = nextReviews;
     writeScoped(LEITNER_REVIEWS_KEY, nextReviews);

@@ -22,11 +22,10 @@ import { supabase } from '../lib/supabase';
 import { writeFailure } from '../utils/supabaseWrite';
 import { dismissCommander } from '../utils/classMembership';
 import { useAuth, useIsAdmin, UserRole } from '../context/AuthContext';
-import { getUserRank } from '../utils/gamification';
+import { getUserRank, quizSessionXp } from '../utils/gamification';
 import { useDialog } from '../hooks/useDialog';
 import NoticeDialog, { Notice } from './common/NoticeDialog';
 import ConfirmDialog from './common/ConfirmDialog';
-import { MIN_XP_PERCENT } from '../constants/grading';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -102,12 +101,11 @@ function formatDate(iso: string): string {
  * přihlášeného správce ke každému zobrazenému uživateli.
  */
 function calculateQuizXpForResult(row: QuizResultXpRow): number {
-  // Stejné pravidlo jako v gamification.countsTowardProgress.
-  if ((row.accuracy ?? 0) < MIN_XP_PERCENT) return 0;
-  let xp = (row.correct_answers || 0) * 15 + 50;
-  if (row.accuracy === 100 && row.total_questions >= 5) xp += 100;
-  else if (row.accuracy >= 80 && row.total_questions >= 5) xp += 50;
-  return xp;
+  return quizSessionXp({
+    accuracy: row.accuracy ?? 0,
+    correctAnswers: row.correct_answers || 0,
+    totalQuestions: row.total_questions,
+  });
 }
 
 // ─── Access guard ─────────────────────────────────────────────────────────────

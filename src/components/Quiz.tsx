@@ -7,7 +7,8 @@ import { speakText, isSpeechSupported, stopSpeaking } from '../utils/speech';
 import { getSubjectInfo } from '../data/questions/subjectsInfo';
 import PrintHeader from './common/PrintHeader';
 import ConfirmDialog from './common/ConfirmDialog';
-import { DISTINCTION_PERCENT, PASS_PERCENT } from '../constants/grading';
+import { DISTINCTION_PERCENT, MIN_XP_PERCENT, PASS_PERCENT } from '../constants/grading';
+import { quizSessionXp } from '../utils/gamification';
 
 interface QuizProps {
   questions: Question[];
@@ -527,7 +528,9 @@ export default function Quiz({
       const answeredCount = Object.keys(answers).length;
       return (
         // data-no-swipe: vodorovný tah přes paletu otázek nesmí přepnout záložku.
-        <aside data-no-swipe className="w-full md:w-72 flex flex-col gap-4 shrink-0">
+        // Na telefonu je paleta až pod otázkou (order-last) — dřív musel
+        // student u každé otázky přejíždět 50 čísel. Časomíra je v otázce.
+        <aside data-no-swipe className="w-full md:w-72 flex flex-col gap-4 shrink-0 order-last md:order-none">
           <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-5">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
@@ -878,9 +881,13 @@ export default function Quiz({
 
             {/* XP Award & Progress Banner (Screen only) */}
             {(() => {
-              let earnedXp = (correctCount * 15) + 50;
-              if (percentage === 100 && totalCount >= 5) earnedXp += 100;
-              else if (percentage >= 80 && totalCount >= 5) earnedXp += 50;
+              // Stejný výpočet jako souhrn XP v Odznacích, včetně hranice
+              // MIN_XP_PERCENT — dřív tu stálo „+80 XP“ i za 20 %.
+              const earnedXp = quizSessionXp({
+                accuracy: percentage,
+                correctAnswers: correctCount,
+                totalQuestions: totalCount,
+              });
 
               return (
                 <div className="my-5 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-blue-500/10 border border-amber-400/30 dark:border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-3 no-print">
@@ -893,7 +900,9 @@ export default function Quiz({
                         Získané zkušenosti (XP)
                       </div>
                       <div className="text-lg font-extrabold text-amber-600 dark:text-amber-400">
-                        +{earnedXp} XP do hodnostního postupu VS ČR
+                        {earnedXp > 0
+                          ? `+${earnedXp} XP do hodnostního postupu VS ČR`
+                          : `Bez XP — do postupu a odznaků se počítají testy od ${MIN_XP_PERCENT} %`}
                       </div>
                     </div>
                   </div>

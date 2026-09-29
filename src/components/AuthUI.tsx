@@ -5,6 +5,7 @@ import { useAuth, UserRole } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
 import { MIN_PASSWORD_LENGTH, translateAuthError, weakPasswordNotice } from '../constants/auth';
 import CaptchaWidget, { isCaptchaConfigured, type CaptchaWidgetHandle } from './CaptchaWidget';
+import { getInitials } from '../utils/avatar';
 import {
   isBiometricsSupported,
   storeBrowserCredential,
@@ -476,11 +477,7 @@ export function UserBadge({ onLoginClick }: UserBadgeProps) {
   const roleColor = ROLE_COLORS[role] ?? 'bg-slate-700/40 text-slate-300 border-slate-600';
 
   const displayName = profile?.full_name || user.email || 'Uživatel';
-  const initials = displayName
-    .split(' ')
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? '')
-    .join('');
+  const initials = getInitials(displayName, '');
 
   return (
     <div className="flex items-center gap-2">

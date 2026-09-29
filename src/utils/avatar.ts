@@ -45,3 +45,21 @@ export function resolveAvatarDisplay(avatarUrl: string | null | undefined): Avat
 
   return { type: 'image', url: avatarUrl };
 }
+
+/**
+ * Iniciály do kolečka avataru: první písmeno prvního a posledního slova, které
+ * začíná písmenem. Slova jako „(test)“ nebo „-“ se přeskočí — dřív z nich
+ * vznikalo „C(“.
+ */
+export function getInitials(name: string | null | undefined, fallback = 'VS'): string {
+  const words = (name ?? '')
+    .trim()
+    .split(/\s+/)
+    .filter((word) => /^\p{L}/u.test(word));
+  if (words.length === 0) return fallback;
+  if (words.length === 1) {
+    const letters = words[0].match(/\p{L}/gu) ?? [];
+    return letters.slice(0, 2).join('').toUpperCase() || fallback;
+  }
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+}
