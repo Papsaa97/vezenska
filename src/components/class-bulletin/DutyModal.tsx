@@ -198,7 +198,7 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
               required
               value={attendees}
               onChange={(e) => setAttendees(e.target.value)}
-              placeholder="např. stržm. Novák, stržm. Dvořák, stržm. Svoboda"
+              placeholder="např. Novák, Dvořák, Svoboda"
               className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-semibold"
             />
           </div>
