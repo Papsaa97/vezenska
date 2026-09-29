@@ -378,7 +378,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                         name="name"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        placeholder="nstržm. Jan Novák"
+                        placeholder="Jan Novák"
                         required
                         autoComplete="name"
                         className="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
