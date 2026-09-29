@@ -162,7 +162,7 @@ export default function FileViewerModal({ material, isOpen, onClose }: FileViewe
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-2 sm:p-6"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm sm:p-3 lg:p-4"
         >
           <motion.div
             ref={dialogRef}
@@ -174,12 +174,12 @@ export default function FileViewerModal({ material, isOpen, onClose }: FileViewe
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 8 }}
             transition={{ duration: 0.18 }}
-            className="w-full max-w-5xl h-full sm:h-[88vh] bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col overflow-hidden"
+            className="w-full max-w-6xl h-[100dvh] sm:h-[calc(100dvh-1.5rem)] lg:h-[calc(100dvh-2rem)] bg-white dark:bg-slate-900 sm:rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col overflow-hidden"
           >
             {/* Hlavička */}
-            <div className="flex items-start justify-between gap-3 p-4 border-b border-slate-200 dark:border-slate-800 shrink-0">
-              <div className="flex items-start gap-3 min-w-0">
-                <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
+            <div className="flex items-center justify-between gap-3 px-3 sm:px-4 py-2 border-b border-slate-200 dark:border-slate-800 shrink-0">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="hidden sm:flex w-8 h-8 rounded-lg bg-indigo-600 text-white items-center justify-center shrink-0">
                   {kind === 'presentation' ? (
                     <Presentation className="w-5 h-5" />
                   ) : (
