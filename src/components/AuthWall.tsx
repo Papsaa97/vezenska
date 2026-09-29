@@ -273,7 +273,7 @@ export default function AuthWall({ isDarkMode }: AuthWallProps) {
                 <div>
                   <h2 className="text-xs font-bold text-white">9 studijních předmětů</h2>
                   <p className="text-[0.6875rem] text-slate-400 mt-0.5 leading-snug">
-                    Oficiální testové sady, zkouškový simulátor i 3D Leitner kartičky.
+                    Testové sady, zkouškový simulátor i 3D Leitner kartičky.
                   </p>
                 </div>
               </div>
