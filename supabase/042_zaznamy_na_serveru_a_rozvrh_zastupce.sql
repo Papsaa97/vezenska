@@ -1,5 +1,6 @@
 -- ============================================================================
--- 042  Historie poznávaček a série na serveru; rozvrh smí nahrát i zástupce
+-- 042  Historie poznávaček a série na serveru; rozvrh smí nahrát i zástupce;
+--      upravitelný obsah Profesní etiky a Vězeňské administrativy
 -- ============================================================================
 --
 -- Spouští se PO 041.
@@ -12,6 +13,8 @@
 -- 2. Zástupce velitele má od 038 práva velitele (can_manage_class), jen
 --    obrázek rozvrhu nahrát nesměl — politika úložiště z 031 pouští podle
 --    role, a zástupce má roli „student“.
+-- 3. Studijní obsah Profesní etiky a Vězeňské administrativy byl natvrdo
+--    v kódu, lektor ho nemohl upravit.
 --
 -- CO TENHLE SKRIPT DĚLÁ
 -- 1. Tabulka public.studijni_zaznamy: jeden řádek = jeden záznam uživatele
@@ -19,9 +22,13 @@
 -- 2. Funkce public.smim_nahrat_rozvrh() a dvě politiky nad storage.objects,
 --    které platnému zástupci povolí nahrát a přepsat soubor ve složce
 --    rozvrhy/ kbelíku studijni-materialy. Mazat dál smí jen lektor a správce.
+-- 3. Rozšíří výčet druhů v public.content_blocks o 'ethics_dilemma',
+--    'study_section', 'admin_template' a 'admin_exercise'. Zapisovat je smí
+--    jako dosud jen lektor a správce (politiky z 027 se nemění).
 --
 -- Aplikace bez této migrace funguje dál jako dřív (záznamy jen v zařízení,
--- zástupci se rozvrh uloží přímo do řádku nástěnky).
+-- zástupci se rozvrh uloží přímo do řádku nástěnky, úpravy etiky
+-- a administrativy skončí chybou kontroly content_blocks_kind_check).
 -- Skript je idempotentní.
 -- ============================================================================
 
@@ -124,11 +131,20 @@ CREATE POLICY "Rozvrh přepisuje i zástupce velitele"
     AND (select public.smim_nahrat_rozvrh())
   );
 
+-- ─── 3. Nové druhy editovatelného obsahu ─────────────────────────────────────
+
+ALTER TABLE public.content_blocks DROP CONSTRAINT IF EXISTS content_blocks_kind_check;
+ALTER TABLE public.content_blocks ADD CONSTRAINT content_blocks_kind_check
+  CHECK (kind IN ('subject', 'matching_category', 'scenario', 'weapon', 'stoppage_drill', 'jidelnicek',
+                  'regulation', 'ethics_dilemma', 'study_section', 'admin_template', 'admin_exercise'));
+
 COMMIT;
 
--- ─── Ověření (spusťte zvlášť, má vrátit true, 4, true, 2) ───────────────────
+-- ─── Ověření (spusťte zvlášť, má vrátit true, 4, true, 2, true) ─────────────
 -- SELECT to_regclass('public.studijni_zaznamy') IS NOT NULL,
 --        (SELECT count(*) FROM pg_policies WHERE tablename = 'studijni_zaznamy'),
 --        to_regprocedure('public.smim_nahrat_rozvrh()') IS NOT NULL,
 --        (SELECT count(*) FROM pg_policies WHERE tablename = 'objects'
---           AND policyname LIKE 'Rozvrh%zástupce velitele');
+--           AND policyname LIKE 'Rozvrh%zástupce velitele'),
+--        (SELECT pg_get_constraintdef(oid) LIKE '%admin_exercise%'
+--           FROM pg_constraint WHERE conname = 'content_blocks_kind_check');
