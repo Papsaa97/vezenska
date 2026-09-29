@@ -1,15 +1,21 @@
 import React from 'react';
 import { Award, FileText } from 'lucide-react';
-import { defaultEthicsSections } from '../../data/professionalEthicsData';
+import { useStudySections } from '../../hooks/useStudySections';
+import StudySectionsEditor from '../common/StudySectionsEditor';
+import CustomStudySections from '../common/CustomStudySections';
 import RichText from '../common/RichText';
 
 export const PECodeOfEthics: React.FC = () => {
-  const sections = defaultEthicsSections;
-  const desatero = sections.find((s) => s.id === 'kodex-desatero');
-  const articles = sections.find((s) => s.id === 'kodex-clanky');
+  // Bloky z repozitáře přepsané úpravami lektora (contentLibrary.ts, druh 'study_section').
+  const sectionState = useStudySections('kodex');
+  const { byId, custom } = sectionState;
+  const desatero = byId('kodex-desatero');
+  const articles = byId('kodex-clanky');
 
   return (
     <div className="space-y-6">
+      <StudySectionsEditor area="kodex" state={sectionState} />
+
       {/* Desatero Zásad Banner */}
       {desatero && (
         <div className="bg-slate-900 border border-slate-800 print:border-slate-300 rounded-2xl p-6 print:p-4 print-card break-inside-avoid print:bg-white print:text-[#111827] print:shadow-none" style={{ breakInside: 'avoid' }}>
@@ -64,6 +70,9 @@ export const PECodeOfEthics: React.FC = () => {
           ))}
         </div>
       )}
+
+      {/* Bloky přidané lektorem */}
+      <CustomStudySections sections={custom} tone="dark" />
     </div>
   );
 };

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Globe2, Scale, Building, HeartHandshake } from 'lucide-react';
-import { defaultEthicsSections } from '../../data/professionalEthicsData';
+import { useStudySections } from '../../hooks/useStudySections';
+import StudySectionsEditor from '../common/StudySectionsEditor';
+import CustomStudySections from '../common/CustomStudySections';
 import { StudySection } from '../../data/studySections';
 import RichText, { textLines } from '../common/RichText';
 
@@ -32,14 +34,18 @@ function BulletCard({ section, icon, color }: { section: StudySection; icon: Rea
 }
 
 export const PEConventions: React.FC = () => {
-  const sections = defaultEthicsSections;
-  const evp = sections.find((s) => s.id === 'evp-evp');
-  const mandela = sections.find((s) => s.id === 'evp-mandela');
-  const institutions = sections.find((s) => s.id === 'evp-instituce');
-  const spiritual = sections.find((s) => s.id === 'evp-duchovni');
+  // Bloky z repozitáře přepsané úpravami lektora (contentLibrary.ts, druh 'study_section').
+  const sectionState = useStudySections('evp');
+  const { byId, custom } = sectionState;
+  const evp = byId('evp-evp');
+  const mandela = byId('evp-mandela');
+  const institutions = byId('evp-instituce');
+  const spiritual = byId('evp-duchovni');
 
   return (
     <div className="space-y-6">
+      <StudySectionsEditor area="evp" state={sectionState} />
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 print:grid-cols-2">
 
         {/* EVP Card */}
@@ -86,6 +92,9 @@ export const PEConventions: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Bloky přidané lektorem */}
+      <CustomStudySections sections={custom} tone="dark" />
     </div>
   );
 };

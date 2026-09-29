@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Calculator, ShieldAlert, AlertTriangle, Building, Mail, Phone } from 'lucide-react';
-import { defaultEthicsSections } from '../../data/professionalEthicsData';
+import { useStudySections } from '../../hooks/useStudySections';
+import StudySectionsEditor from '../common/StudySectionsEditor';
+import CustomStudySections from '../common/CustomStudySections';
 import RichText from '../common/RichText';
 
 /**
@@ -24,13 +26,15 @@ const matchesDept = (dept: string, filter: string) => dept.toLowerCase().include
 const CONTACT_COLORS = ['text-emerald-400', 'text-blue-400'];
 
 export const PEAnticorruption: React.FC = () => {
-  const sections = defaultEthicsSections;
+  // Bloky z repozitáře přepsané úpravami lektora (contentLibrary.ts, druh 'study_section').
+  const sectionState = useStudySections('protikorupce');
+  const { byId, custom } = sectionState;
   const [probScore, setProbScore] = useState<number>(2);
   const [impactScore, setImpactScore] = useState<number>(3);
   const [catalogFilter, setCatalogFilter] = useState<string>('all');
 
-  const contacts = sections.find((s) => s.id === 'protikorupce-linky');
-  const catalog = sections.find((s) => s.id === 'protikorupce-katalog');
+  const contacts = byId('protikorupce-linky');
+  const catalog = byId('protikorupce-katalog');
   const riskCatalogItems = catalog?.items ?? [];
 
   const filterOptions = [
@@ -56,6 +60,8 @@ export const PEAnticorruption: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <StudySectionsEditor area="protikorupce" state={sectionState} />
+
       {/* Risk Calculator & Matrix */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 print:block print:space-y-4">
         <div className="lg:col-span-6 bg-slate-900 print:bg-white p-6 print:p-4 rounded-2xl border border-slate-800 print:border-slate-300 print-card break-inside-avoid print:text-[#111827] space-y-5 print:shadow-none" style={{ breakInside: 'avoid' }}>
@@ -198,6 +204,9 @@ export const PEAnticorruption: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Bloky přidané lektorem */}
+      <CustomStudySections sections={custom} tone="dark" />
     </div>
   );
 };
