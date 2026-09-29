@@ -140,6 +140,10 @@ export interface UpcomingUniformInfo {
 }
 
 export function getUpcomingUniformInfo(guidance?: UniformGuidance): UpcomingUniformInfo {
+  // Bez zadané ústroje nic nevymýšlet: normalizeUniformDays by vrátilo výchozí
+  // šablonu (jen pro předvyplnění editoru) a karta třídy pak hlásila „Zítra: PS II“,
+  // zatímco detail třídy správně psal, že ústroj zadaná není.
+  if (!guidance) return { targetDayLabel: 'Ústroj' };
   const days = normalizeUniformDays(guidance);
   if (!days || days.length === 0) {
     return { targetDayLabel: 'Ústroj' };

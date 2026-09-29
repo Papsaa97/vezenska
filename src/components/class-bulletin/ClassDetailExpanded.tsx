@@ -256,7 +256,7 @@ export default function ClassDetailExpanded({
                 Rozvrh pro třídu {item.className} zatím nebyl nahrán
               </span>
               <span className="text-xs text-slate-500 mt-1 max-w-xs">
-                Lektor nebo velitel výcviku může nahrát aktuální obrázek rozvrhu v editaci třídy.
+                Lektor nebo velitel třídy může nahrát aktuální obrázek rozvrhu v editaci třídy.
               </span>
               {isManager && (
                 <button
@@ -509,7 +509,7 @@ export default function ClassDetailExpanded({
               loading={materialsLoading}
               emptyText={
                 isManager
-                  ? 'K téhle třídě zatím není přiřazený žádný soubor. Přiřadíte ho ve Správě obsahu → Správce souborů, kde souboru dáte štítek třídy.'
+                  ? 'K téhle třídě zatím není přiřazený žádný soubor. Soubory třídám přiřazuje lektor nebo správce ve Správě obsahu → Správce souborů štítkem třídy.'
                   : 'K této třídě nejsou přiřazeny žádné specifické soubory. Všechny studijní texty naleznete v hlavní Knihovně.'
               }
             />

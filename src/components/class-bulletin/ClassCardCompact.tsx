@@ -133,7 +133,7 @@ export default function ClassCardCompact({
       <div className="px-4 pt-3 flex items-center justify-between gap-2 text-[0.6875rem] text-slate-600 dark:text-slate-300">
         <span className="flex items-center gap-1.5 min-w-0">
           <Shield className="w-3.5 h-3.5 text-purple-500 shrink-0" />
-          <span className="font-semibold">Velitel:</span>
+          <span className="font-semibold">Velitel třídy:</span>
           <span className="truncate">
             {commanderName || 'zatím nejmenován'}
             {deputyName ? ` (zastupuje ${deputyName})` : ''}
