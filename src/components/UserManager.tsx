@@ -348,6 +348,9 @@ function UserManagerInner() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Hledat podle jména nebo e-mailu…"
+          // Zástupný text odečítač obrazovky za jméno pole spolehlivě nečte
+          // a po prvním napsaném znaku zmizí úplně.
+          aria-label="Hledat uživatele podle jména nebo e-mailu"
           className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
         />
       </div>
@@ -477,6 +480,8 @@ interface RoleSelectProps {
   value: UserRole;
   disabled: boolean;
   onChange: (role: UserRole) => void;
+  /** Jméno nebo e-mail účtu, aby se výběry v seznamu daly od sebe rozeznat. */
+  userLabel: string;
 }
 
 /**
@@ -491,10 +496,12 @@ interface RoleSelectProps {
  */
 const COMMANDER_HINT = 'Velitele třídy jmenujte na Nástěnce tříd v panelu Zařazení.';
 
-function RoleSelect({ value, disabled, onChange }: RoleSelectProps) {
+function RoleSelect({ value, disabled, onChange, userLabel }: RoleSelectProps) {
   const isCommander = value === 'velitel_tridy';
   return (
     <select
+      // Bez jména by odečítač v každém řádku ohlásil jen „seznam, Student“.
+      aria-label={`Role uživatele ${userLabel}`}
       value={value}
       disabled={disabled}
       title={isCommander ? undefined : COMMANDER_HINT}
@@ -595,7 +602,7 @@ function UserTableRow({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, 
           <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border whitespace-nowrap ${ROLE_BADGE_CLASSES[item.role]}`}>
             {ROLE_LABELS[item.role]}
           </span>
-          <RoleSelect value={item.role} disabled={busyRole} onChange={onRoleChange} />
+          <RoleSelect value={item.role} disabled={busyRole} onChange={onRoleChange} userLabel={item.full_name || item.email} />
         </div>
       </td>
       <td className="px-4 py-3">
@@ -644,7 +651,7 @@ function UserCard({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, onMe
       </div>
 
       <div className="flex items-center justify-between gap-2 pt-1">
-        <RoleSelect value={item.role} disabled={busyRole} onChange={onRoleChange} />
+        <RoleSelect value={item.role} disabled={busyRole} onChange={onRoleChange} userLabel={item.full_name || item.email} />
         <RowActions isSelf={isSelf} deleting={deleting} onEdit={onEdit} onMessage={onMessage} onDeleteRequest={onDeleteRequest} />
       </div>
     </div>
