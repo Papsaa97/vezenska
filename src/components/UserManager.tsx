@@ -25,6 +25,7 @@ import { useAuth, useIsAdmin, UserRole } from '../context/AuthContext';
 import { getUserRank } from '../utils/gamification';
 import { useDialog } from '../hooks/useDialog';
 import NoticeDialog, { Notice } from './common/NoticeDialog';
+import ConfirmDialog from './common/ConfirmDialog';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -146,6 +147,9 @@ function UserManagerInner() {
 
   const [editingUser, setEditingUser] = useState<UserProfileItem | null>(null);
   const [confirmDeleteUser, setConfirmDeleteUser] = useState<UserProfileItem | null>(null);
+  // Změna role se dřív provedla hned při výběru v selectu — jedním překliknutím
+  // šlo udělat správcem kohokoli. Teď se nejdřív potvrzuje.
+  const [pendingRoleChange, setPendingRoleChange] = useState<{ target: UserProfileItem; role: UserRole } | null>(null);
   const [messageTarget, setMessageTarget] = useState<UserProfileItem | 'all' | null>(null);
 
   const loadUsers = useCallback(async () => {
@@ -389,7 +393,7 @@ function UserManagerInner() {
                 isSelf={item.id === currentUserId}
                 busyRole={updatingRoleId === item.id}
                 deleting={deletingId === item.id}
-                onRoleChange={(role) => handleRoleChange(item, role)}
+                onRoleChange={(role) => setPendingRoleChange({ target: item, role })}
                 onEdit={() => setEditingUser(item)}
                 onMessage={() => setMessageTarget(item)}
                 onDeleteRequest={() => setConfirmDeleteUser(item)}
@@ -405,7 +409,7 @@ function UserManagerInner() {
                   <th className="px-4 py-3 font-bold">Jméno</th>
                   <th className="px-4 py-3 font-bold">E-mail</th>
                   <th className="px-4 py-3 font-bold">Registrace</th>
-                  <th className="px-4 py-3 font-bold">Hodnost / XP</th>
+                  <th className="px-4 py-3 font-bold"><span title="Jen ověřené testy, bez XP za odznaky — proto může být nižší než v záhlaví uživatele.">Hodnost / XP z testů</span></th>
                   <th className="px-4 py-3 font-bold">Role</th>
                   <th className="px-4 py-3 font-bold text-right">Akce</th>
                 </tr>
@@ -418,7 +422,7 @@ function UserManagerInner() {
                     isSelf={item.id === currentUserId}
                     busyRole={updatingRoleId === item.id}
                     deleting={deletingId === item.id}
-                    onRoleChange={(role) => handleRoleChange(item, role)}
+                    onRoleChange={(role) => setPendingRoleChange({ target: item, role })}
                     onEdit={() => setEditingUser(item)}
                     onMessage={() => setMessageTarget(item)}
                     onDeleteRequest={() => setConfirmDeleteUser(item)}
@@ -456,6 +460,30 @@ function UserManagerInner() {
           />
         )}
       </AnimatePresence>
+
+      <ConfirmDialog
+        isOpen={pendingRoleChange !== null}
+        tone={pendingRoleChange?.role === 'admin' ? 'danger' : 'neutral'}
+        title="Změnit roli uživatele?"
+        description={
+          pendingRoleChange && (
+            <>
+              <strong>{pendingRoleChange.target.full_name || pendingRoleChange.target.email}</strong> bude mít místo role{' '}
+              <strong>{ROLE_LABELS[pendingRoleChange.target.role]}</strong> roli{' '}
+              <strong>{ROLE_LABELS[pendingRoleChange.role]}</strong>.
+              {pendingRoleChange.role === 'admin' && ' Správce může mazat účty a měnit role všem ostatním.'}
+              {pendingRoleChange.target.role === 'velitel_tridy' && ' Tím ho zároveň odvoláte z funkce velitele třídy.'}
+            </>
+          )
+        }
+        confirmLabel="Změnit roli"
+        onConfirm={() => {
+          const pending = pendingRoleChange;
+          setPendingRoleChange(null);
+          if (pending) void handleRoleChange(pending.target, pending.role);
+        }}
+        onCancel={() => setPendingRoleChange(null)}
+      />
 
       <AnimatePresence>
         {messageTarget !== null && (
@@ -504,16 +532,16 @@ function RoleSelect({ value, disabled, onChange, userLabel }: RoleSelectProps) {
       aria-label={`Role uživatele ${userLabel}`}
       value={value}
       disabled={disabled}
-      title={isCommander ? undefined : COMMANDER_HINT}
+      title={isCommander ? undefined : disabled ? 'Vlastní roli změnit nelze.' : COMMANDER_HINT}
       onChange={(e) => onChange(e.target.value as UserRole)}
-      className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all disabled:opacity-50 cursor-pointer"
+      className="w-full sm:w-auto max-w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all disabled:opacity-50 cursor-pointer"
     >
       <option value="student">Student</option>
       {isCommander ? (
         <option value="velitel_tridy">Velitel třídy</option>
       ) : (
         <option value="velitel_tridy" disabled>
-          Velitel třídy (jmenuje se v panelu Zařazení)
+          Velitel třídy (jmenuje se v Zařazení)
         </option>
       )}
       <option value="lektor">Lektor</option>
@@ -602,7 +630,7 @@ function UserTableRow({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, 
           <span className={`text-[0.625rem] font-extrabold px-2 py-0.5 rounded-full border whitespace-nowrap ${ROLE_BADGE_CLASSES[item.role]}`}>
             {ROLE_LABELS[item.role]}
           </span>
-          <RoleSelect value={item.role} disabled={busyRole} onChange={onRoleChange} userLabel={item.full_name || item.email} />
+          <RoleSelect value={item.role} disabled={busyRole || isSelf} onChange={onRoleChange} userLabel={item.full_name || item.email} />
         </div>
       </td>
       <td className="px-4 py-3">
@@ -651,7 +679,10 @@ function UserCard({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, onMe
       </div>
 
       <div className="flex items-center justify-between gap-2 pt-1">
-        <RoleSelect value={item.role} disabled={busyRole} onChange={onRoleChange} userLabel={item.full_name || item.email} />
+        {/* min-w-0: nejdelší volba selectu jinak roztáhla kartu za okraj telefonu. */}
+        <div className="min-w-0 flex-1">
+          <RoleSelect value={item.role} disabled={busyRole || isSelf} onChange={onRoleChange} userLabel={item.full_name || item.email} />
+        </div>
         <RowActions isSelf={isSelf} deleting={deleting} onEdit={onEdit} onMessage={onMessage} onDeleteRequest={onDeleteRequest} />
       </div>
     </div>

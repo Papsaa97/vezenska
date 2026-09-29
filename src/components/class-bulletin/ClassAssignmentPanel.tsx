@@ -19,6 +19,7 @@ import {
   nominateToMyClass,
 } from '../../utils/classMembership';
 import { MEMBERSHIP_CHANGED_EVENT, announceMembershipChange } from './ClassMembershipGate';
+import ConfirmDialog from '../common/ConfirmDialog';
 
 interface ClassAssignmentPanelProps {
   classes: ClassOverview[];
@@ -49,6 +50,13 @@ export default function ClassAssignmentPanel({ classes, leadsClass }: ClassAssig
   const [showAssigned, setShowAssigned] = useState<boolean>(false);
   const [targetClass, setTargetClass] = useState<Record<string, string>>({});
   const [now, setNow] = useState<Date>(() => new Date());
+  // Akce, které mění funkci velitele, mají vedlejší účinky (sesazení dosavadního
+  // velitele, zrušení zástupce) — proto se nejdřív potvrzují.
+  const [pendingAction, setPendingAction] = useState<{
+    kind: 'appoint' | 'dismiss' | 'assign';
+    row: AssignmentRow;
+    className: string;
+  } | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -280,7 +288,11 @@ export default function ClassAssignmentPanel({ classes, leadsClass }: ClassAssig
                     <button
                       type="button"
                       disabled={busy || sameClass(r.userClass, selected)}
-                      onClick={() => void run(r.id, () => assignClass(r.id, selected || null))}
+                      onClick={() =>
+                        r.role === 'velitel_tridy'
+                          ? setPendingAction({ kind: 'assign', row: r, className: selected })
+                          : void run(r.id, () => assignClass(r.id, selected || null))
+                      }
                       className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white text-xs font-bold cursor-pointer"
                     >
                       Přiřadit
@@ -289,7 +301,7 @@ export default function ClassAssignmentPanel({ classes, leadsClass }: ClassAssig
                       <button
                         type="button"
                         disabled={busy}
-                        onClick={() => void run(r.id, () => dismissCommander(r.id))}
+                        onClick={() => setPendingAction({ kind: 'dismiss', row: r, className: r.userClass ?? '' })}
                         className="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 disabled:opacity-50 text-slate-700 dark:text-slate-200 text-xs font-bold cursor-pointer"
                       >
                         Odvolat velitele
@@ -300,7 +312,7 @@ export default function ClassAssignmentPanel({ classes, leadsClass }: ClassAssig
                           type="button"
                           disabled={busy || !selected}
                           title={selected ? undefined : 'Nejdřív vyberte třídu'}
-                          onClick={() => void run(r.id, () => appointCommander(r.id, selected))}
+                          onClick={() => setPendingAction({ kind: 'appoint', row: r, className: selected })}
                           className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white text-xs font-bold flex items-center gap-1 cursor-pointer"
                         >
                           <Shield className="w-3.5 h-3.5" />
@@ -318,6 +330,61 @@ export default function ClassAssignmentPanel({ classes, leadsClass }: ClassAssig
       </ul>
 
       {isStaff && <CommandHistory />}
+
+      <ConfirmDialog
+        isOpen={pendingAction !== null}
+        tone={pendingAction?.kind === 'appoint' ? 'neutral' : 'danger'}
+        title={
+          pendingAction?.kind === 'appoint'
+            ? 'Jmenovat velitelem třídy?'
+            : pendingAction?.kind === 'dismiss'
+            ? 'Odvolat velitele třídy?'
+            : 'Přeřadit velitele do jiné třídy?'
+        }
+        description={
+          pendingAction && (
+            <>
+              {pendingAction.kind === 'appoint' && (
+                <>
+                  <strong>{pendingAction.row.fullName}</strong> se stane velitelem třídy{' '}
+                  <strong>{pendingAction.className}</strong>. Pokud třída velitele už má, vrátí se mezi
+                  studenty a případný zástupce se zruší.
+                </>
+              )}
+              {pendingAction.kind === 'dismiss' && (
+                <>
+                  <strong>{pendingAction.row.fullName}</strong> přestane být velitelem třídy a vrátí se mezi
+                  studenty. Zástupce třídy se zruší.
+                </>
+              )}
+              {pendingAction.kind === 'assign' && (
+                <>
+                  <strong>{pendingAction.row.fullName}</strong> je velitelem třídy. Přeřazením{' '}
+                  {pendingAction.className ? (
+                    <>do třídy <strong>{pendingAction.className}</strong></>
+                  ) : (
+                    'mezi nezařazené'
+                  )}{' '}
+                  ho zároveň z funkce velitele odvoláte.
+                </>
+              )}
+            </>
+          )
+        }
+        confirmLabel={
+          pendingAction?.kind === 'appoint' ? 'Jmenovat' : pendingAction?.kind === 'dismiss' ? 'Odvolat' : 'Přeřadit'
+        }
+        onConfirm={() => {
+          const pending = pendingAction;
+          setPendingAction(null);
+          if (!pending) return;
+          const { row, className } = pending;
+          if (pending.kind === 'appoint') void run(row.id, () => appointCommander(row.id, className));
+          else if (pending.kind === 'dismiss') void run(row.id, () => dismissCommander(row.id));
+          else void run(row.id, () => assignClass(row.id, className || null));
+        }}
+        onCancel={() => setPendingAction(null)}
+      />
     </section>
   );
 }

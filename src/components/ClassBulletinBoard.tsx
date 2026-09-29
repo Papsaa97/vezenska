@@ -438,8 +438,10 @@ export default function ClassBulletinBoard() {
     if (!deleteConfirmItem) return;
     setIsDeleting(true);
     try {
-      if (reportWrite(await deleteClassBoard(deleteConfirmItem.id))) void loadData();
-      setClasses((prev) => prev.filter((c) => c.id !== deleteConfirmItem.id));
+      if (reportWrite(await deleteClassBoard(deleteConfirmItem.id))) {
+        void loadData();
+        setClasses((prev) => prev.filter((c) => c.id !== deleteConfirmItem.id));
+      }
       setDeleteConfirmItem(null);
     } catch (err) {
       console.error('[ClassBulletinBoard] Smazání třídy selhalo:', err);
@@ -551,8 +553,10 @@ export default function ClassBulletinBoard() {
   };
 
   const handleDeleteGlobalAnnouncement = async (id: string) => {
-    reportWrite(await deleteGlobalAnnouncement(id));
-    setGlobalAnnouncements((prev) => prev.filter((x) => x.id !== id));
+    // Při zamítnutí serverem hlášení v seznamu zůstane — ostatní ho dál vidí.
+    if (reportWrite(await deleteGlobalAnnouncement(id))) {
+      setGlobalAnnouncements((prev) => prev.filter((x) => x.id !== id));
+    }
     setDeleteAnnouncementId(null);
   };
 

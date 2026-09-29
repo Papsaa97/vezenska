@@ -660,9 +660,12 @@ export async function saveGlobalAnnouncement(
 export async function deleteGlobalAnnouncement(id: string): Promise<DeleteResult> {
   let persistError: string | null = null;
   try {
-    const { error } = await supabase.from('global_announcements').delete().eq('id', id);
+    // Bez .select() by zamítnutí politikou (nula smazaných řádků) prošlo jako úspěch.
+    const { data, error } = await supabase.from('global_announcements').delete().eq('id', id).select('id');
     if (error) {
       persistError = `Hlášení se nepodařilo smazat na serveru (${error.message}).`;
+    } else if (!data || data.length === 0) {
+      persistError = 'Hlášení se nepodařilo smazat na serveru — server ho nesmazal. Zkontrolujte, že na to máte oprávnění, a obnovte stránku.';
     }
   } catch (err) {
     persistError = `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`;
@@ -860,9 +863,12 @@ export async function deleteClassBoard(id: string): Promise<DeleteResult> {
   // zůstala na nástěnce dál.
   let persistError: string | null = null;
   try {
-    const { error } = await supabase.from('class_boards').delete().eq('id', id);
+    // Bez .select() by zamítnutí politikou (nula smazaných řádků) prošlo jako úspěch.
+    const { data, error } = await supabase.from('class_boards').delete().eq('id', id).select('id');
     if (error) {
       persistError = `Třídu se nepodařilo smazat na serveru (${error.message}).`;
+    } else if (!data || data.length === 0) {
+      persistError = 'Třídu se nepodařilo smazat na serveru — server ho nesmazal. Zkontrolujte, že na to máte oprávnění, a obnovte stránku.';
     }
   } catch (err) {
     persistError = `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`;
