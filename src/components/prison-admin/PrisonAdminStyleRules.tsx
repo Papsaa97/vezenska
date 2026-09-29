@@ -2,50 +2,10 @@ import React, { useState, useCallback } from 'react';
 import { CheckCircle2, RefreshCw, Check } from 'lucide-react';
 import { updateDailyStreak } from '../../utils/gamification';
 import { activateOnKey } from '../../utils/a11y';
+import { defaultAdminSections, defaultStyleExercises } from '../../data/prisonAdminData';
+import RichText from '../common/RichText';
 
-// ─── Types ─────────────────────────────────────────────────────────────────────
-
-interface StyleExerciseSegment {
-  id: number;
-  text: string;
-  isError: boolean;
-  correction: string;
-}
-
-interface StyleExercise {
-  title: string;
-  badge: string;
-  instruction: string;
-  originalTextSegments: StyleExerciseSegment[];
-}
-
-// ─── Static data ───────────────────────────────────────────────────────────────
-
-const STYLE_EXERCISES: StyleExercise[] = [
-  {
-    title: 'Hledání chyb ve Služebním záznamu',
-    badge: 'Cvičení 1: Služební záznam',
-    instruction: 'V níže uvedeném textu označte všechny závažné chyby proti metodice VS ČR (kliknutím na problematická místa):',
-    originalTextSegments: [
-      { id: 1, text: 'Včera odpoledne kolem třetí hodiny ', isError: true, correction: 'Chyba: Vágní časové určení. Správně: „Dne 14.03.2024 v čase 15:10 hod."' },
-      { id: 2, text: 'jsme byli s kolegou na oddíle ', isError: true, correction: 'Chyba: 1. osoba množného čísla bez uvedení rozkazu. Správně: „Dne ... jsem byl velen rozkazem... byl jsem přítomen s prap. Novákem..."' },
-      { id: 3, text: 'a viděli jsme tam tohoto vězně, jak dělal bordel na cele. ', isError: true, correction: 'Chyba: Nespisovný a obecný výraz („bordel", „tento vězeň"). Správně: „ods. Petr Král, nar. ..., kopal do dveří cely č. 12."' },
-      { id: 4, text: 'Řekl jsem mu, ať se uklidní, jinak dostane. ', isError: true, correction: 'Chyba: Chybí přesná zákonná výzva a citace. Správně: „Použil jsem zákonnou výzvu dle § 6 odst. 3 písm. b) z. č. 555/1992 Sb. slovy: ..."' },
-      { id: 5, text: 'Potom jsme ho odvedli k doktorovi a bylo to nahlášeno.', isError: true, correction: 'Chyba: Neurčitý časový sled a anonymní trpný rod. Správně: Uvést přesný čas předvedení k MUDr. a konkrétní orgány, kterým byla událost ohlášena (ISS-O, VISS).' }
-    ]
-  },
-  {
-    title: 'Hledání chyb v Záznamu o kázeňském přestupku',
-    badge: 'Cvičení 2: Kázeňský přestupek',
-    instruction: 'Najděte nedostatky v popisu skutku a právní kvalifikaci:',
-    originalTextSegments: [
-      { id: 1, text: 'Dne 10.02.2024 v čase 09:15 jsem zjistil odsouzeného Jana Malého na ložnici č. 201, ', isError: false, correction: 'V pořádku (přesný datum, čas, jméno i místo).' },
-      { id: 2, text: 'který porušil vnitřní řád věznice tím, že neměl uklizeno. ', isError: true, correction: 'Chyba: Nelze uvést POUZE porušení Vnitřního řádu! Vždy musí být uvedeno porušení zákonné povinnosti dle § 28 zákona č. 169/1999 Sb.' },
-      { id: 3, text: 'Odsouzený mi řekl, že na to kašle a uklízet nebude. ', isError: true, correction: 'Chyba: Chybí doslovná přímá řeč v uvozovkách. Správně: užil slov, cituji: „..."' },
-      { id: 4, text: 'Odsouzený odmítl se k věci vyjádřit, tak jsem to nechal být a podepsal sám bez svědků.', isError: true, correction: 'Chyba: Do protokolu se musí výslovně zapsat, že odsouzený odmítl vyjádření/podpis, a uvést svědky přítomné incidentu.' }
-    ]
-  }
-];
+const STYLE_EXERCISES = defaultStyleExercises;
 
 // ─── Component ─────────────────────────────────────────────────────────────────
 
@@ -55,6 +15,9 @@ const STYLE_EXERCISES: StyleExercise[] = [
  * označení chyb, vyhodnocení).
  */
 export default function PrisonAdminStyleRules() {
+  const sections = defaultAdminSections;
+  const rules = sections.find((s) => s.id === 'styl-pravidla');
+  const signature = sections.find((s) => s.id === 'styl-dolozka');
   const [selectedExercise, setSelectedExercise] = useState<number>(0);
   const [userErrorsFound, setUserErrorsFound] = useState<number[]>([]);
   const [exerciseChecked, setExerciseChecked] = useState(false);
@@ -82,48 +45,50 @@ export default function PrisonAdminStyleRules() {
     <div className="space-y-6 no-print print:hidden">
 
       {/* The 7 Golden Rules */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
-        <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
-          <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
-            Metodika tvorby úředních písemností VS ČR
-          </span>
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-slate-100">
-            7 základních požadavků kladených na úřední písemnost
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-
-          {[
-            { num: '1', title: 'Spisovná čeština a odbornost', desc: 'Užití spisovného jazyka včetně přesné terminologie bezpečnostního sboru. Žádné hovorové výrazy ani slang.' },
-            { num: '2', title: '1. osoba jednotného čísla', desc: 'Vždy minulý čas: „Já jsem viděl, zjistil, vyzval, zajistil..." (nikoli neurčitý trpný rod nebo množné číslo).' },
-            { num: '3', title: 'Max. 3 věty v souvětí', desc: 'Krátká, srozumitelná souvětí zabraňující zkreslení výpovědi a zmatení chronologického děje.' },
-            { num: '4', title: 'Konkrétní čas a místo', desc: 'Zákaz vágních příslovcí (tam, zde, v odpoledních hodinách, asi, hned, potom). Vždy uvést přesný čas a číslo ložnice/cely.' },
-            { num: '5', title: 'Zákaz vycpávkových slov', desc: 'Nepoužívat bezobsahová ukazovací zájmena (ten, tento, onen, jakoby).' },
-            { num: '6', title: 'Přesný pravopis přímé řeči', desc: 'Doslovná citace verbálních projevů a vulgarismů v uvozovkách: „Sledujte dobře, jak se píší mezery v přímé řeči."' },
-          ].map(({ num, title, desc }) => (
-            <div key={num} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
-              <div className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                <span>{num}. {title}</span>
+      {(rules || signature) && (
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+          {rules && (
+            <>
+              <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
+                {rules.kicker && (
+                  <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                    {rules.kicker}
+                  </span>
+                )}
+                <h2 className="text-xl font-extrabold text-slate-900 dark:text-slate-100">
+                  {rules.title}
+                </h2>
               </div>
-              <p className="text-slate-600 dark:text-slate-300 text-[11px]">{desc}</p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+                {rules.items.map((item, idx) => (
+                  <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                    <div className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                      <span>{item.label ? `${item.label}. ` : ''}{item.title}</span>
+                    </div>
+                    <p className="text-slate-600 dark:text-slate-300 text-[11px]"><RichText text={item.text} /></p>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {signature && (
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs space-y-1.5">
+              <div className="font-bold text-amber-700 dark:text-amber-300">
+                {signature.title}
+              </div>
+              {signature.items.map((item, idx) => (
+                <p key={idx} className="text-slate-700 dark:text-slate-200 font-mono text-[11px]">
+                  {item.text && <>{item.text}<br /></>}
+                  <strong>{item.title}</strong>
+                  {item.note && <><br /><span className="text-[10px] text-slate-500">{item.note}</span></>}
+                </p>
+              ))}
             </div>
-          ))}
-
+          )}
         </div>
-
-        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs space-y-1.5">
-          <div className="font-bold text-amber-700 dark:text-amber-300">
-            7. Kompletní podpisová doložka příslušníka:
-          </div>
-          <p className="text-slate-700 dark:text-slate-200 font-mono text-[11px]">
-            vlastnoruční podpis<br />
-            <strong>v. ref. strm. Bc. Jan Novák, DiS., sl. č. 12345, strážný</strong><br />
-            <span className="text-[10px] text-slate-500">(služ. hodnost, hodn. označení, titul, jméno, příjmení, služební číslo, služební zařazení / funkce)</span>
-          </p>
-        </div>
-
-      </div>
+      )}
 
       {/* Interactive Error Detection Training Exercise */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
