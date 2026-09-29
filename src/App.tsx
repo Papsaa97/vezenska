@@ -738,7 +738,7 @@ export default function App() {
 
   return (
     <ErrorBoundary scope="app" screenLabel={NAV_TAB_LABELS[activeTab] ?? activeTab}>
-      <ProtectedRoute isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}>
+      <ProtectedRoute isDarkMode={isDarkMode}>
         <div className={`flex flex-col min-h-[100dvh] h-[100dvh] w-full font-sans overflow-hidden transition-colors print:h-auto print:overflow-visible print:bg-white print:text-black ${isDarkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
       {/* Přeskočit navigaci. Vidí ho jen ten, kdo dojde Tabem — styl je
           v index.css (.skip-to-content). */}

@@ -4,7 +4,6 @@ import AuthWall from './AuthWall';
 
 interface ProtectedRouteProps {
   isDarkMode: boolean;
-  toggleDarkMode: () => void;
   children: React.ReactNode;
 }
 
@@ -13,7 +12,7 @@ interface ProtectedRouteProps {
  * Pokud session neexistuje, rovnou vykreslí AuthWall místo chráněného obsahu
  * (zamezení "zábleskům" chráněného obsahu před přesměrováním nepřihlášeným uživatelům).
  */
-export default function ProtectedRoute({ isDarkMode, toggleDarkMode, children }: ProtectedRouteProps) {
+export default function ProtectedRoute({ isDarkMode, children }: ProtectedRouteProps) {
   const { session, loading } = useAuth();
 
   if (loading) {
@@ -38,7 +37,7 @@ export default function ProtectedRoute({ isDarkMode, toggleDarkMode, children }:
   }
 
   if (!session) {
-    return <AuthWall isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />;
+    return <AuthWall isDarkMode={isDarkMode} />;
   }
 
   return <>{children}</>;

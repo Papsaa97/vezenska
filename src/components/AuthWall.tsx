@@ -11,8 +11,6 @@ import {
   EyeOff, 
   Loader2, 
   AlertCircle, 
-  Sun, 
-  Moon, 
   BookOpen, 
   Sparkles, 
   Scale, 
@@ -35,10 +33,11 @@ type AuthMode = 'signin' | 'signup' | 'reset';
 
 interface AuthWallProps {
   isDarkMode: boolean;
-  toggleDarkMode: () => void;
 }
 
-export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) {
+// Přepínač motivu tu schválně není: přihlašovací stránka je tmavá v obou
+// režimech, takže tlačítko měnilo jen ikonu. Motiv se přepíná po přihlášení.
+export default function AuthWall({ isDarkMode }: AuthWallProps) {
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
   const fieldIds = useId();
 
@@ -72,11 +71,9 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
     });
   }, []);
 
+  // Přepnutí záložky maže jen hlášky, ne rozepsané údaje — kdo se překlikne
+  // mezi Přihlášením a Registrací, nemá psát vše znovu.
   const resetForm = () => {
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
-    setFullName('');
     setErrorMsg(null);
     setSuccessMsg(null);
     setShowPasswordHint(false);
@@ -226,15 +223,6 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>Zabezpečený přístup</span>
           </div>
-
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors cursor-pointer border border-slate-800 hover:border-slate-700"
-            title={isDarkMode ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim'}
-            aria-label="Přepnout motiv"
-          >
-            {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-300" />}
-          </button>
         </div>
       </header>
 
@@ -604,6 +592,14 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                     <FingerprintIcon className="w-4 h-4 text-emerald-400" />
                     <span>Přihlásit se biometrikou (Face ID / Otisk)</span>
                   </button>
+                )}
+
+                {/* Kdo se registruje, má vědět, k čemu jméno a e-mail slouží
+                    a kdo je uvidí — jinak nedůvěřivý uživatel formulář opustí. */}
+                {mode === 'signup' && (
+                  <p className="text-[0.6875rem] text-slate-400 text-center leading-relaxed">
+                    Jméno a e-mail se uloží k vašemu účtu a slouží jen k přihlášení a vedení studia v portálu. Jméno uvidí lektoři a členové vaší třídy.
+                  </p>
                 )}
               </form>
 

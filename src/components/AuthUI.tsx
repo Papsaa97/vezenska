@@ -73,11 +73,9 @@ export function AuthModal({ onClose }: AuthModalProps) {
   // Escape, past na fokus a jeho návrat po zavření — viz hooks/useDialog.
   const dialogRef = useDialog<HTMLDivElement>({ isOpen: true, onClose });
 
+  // Přepnutí záložky maže jen hlášky, ne rozepsané údaje — kdo se překlikne
+  // mezi Přihlášením a Registrací, nemá psát vše znovu.
   const resetForm = () => {
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
-    setFullName('');
     setErrorMsg(null);
     setSuccessMsg(null);
     setShowPasswordHint(false);
