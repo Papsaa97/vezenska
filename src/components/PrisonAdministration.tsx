@@ -313,22 +313,6 @@ export default function PrisonAdministration() {
     return (RECORD_TEMPLATE_MANDATORY_FIELDS[currentTemplate.id] ?? []).filter(field => !(formData[field] || '').trim());
   }, [currentTemplate, formData]);
 
-  const handleCopyRecord = useCallback(() => {
-    if (missingMandatoryFields.length > 0) {
-      setShowValidation(true);
-      return;
-    }
-    navigator.clipboard.writeText(recordText).then(() => {
-      setCopiedSuccess(true);
-      setCopyError(false);
-      updateDailyStreak();
-      setTimeout(() => setCopiedSuccess(false), 2500);
-    }).catch(() => {
-      setCopyError(true);
-      setTimeout(() => setCopyError(false), 3000);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [missingMandatoryFields]);
 
   const handlePrint = useCallback(() => {
     if (missingMandatoryFields.length > 0) {
@@ -459,6 +443,24 @@ export default function PrisonAdministration() {
         `${formData.officerSignature || ''}`;
     }
   }, [templateId, formData, selectedBodyParts]);
+
+  // Pod recordText, aby text šel do závislostí — dřív se kopíroval text
+  // z prvního vykreslení a umlčení pravidla to skrývalo.
+  const handleCopyRecord = useCallback(() => {
+    if (missingMandatoryFields.length > 0) {
+      setShowValidation(true);
+      return;
+    }
+    navigator.clipboard.writeText(recordText).then(() => {
+      setCopiedSuccess(true);
+      setCopyError(false);
+      updateDailyStreak();
+      setTimeout(() => setCopiedSuccess(false), 2500);
+    }).catch(() => {
+      setCopyError(true);
+      setTimeout(() => setCopyError(false), 3000);
+    });
+  }, [missingMandatoryFields, recordText]);
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6 pb-12 print:max-w-none print:w-full print:p-0 print:m-0 print:space-y-0 print:pb-0">
