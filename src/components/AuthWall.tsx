@@ -128,6 +128,19 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
     setErrorMsg(null);
     setSuccessMsg(null);
 
+    // Chyby ve vyplnění ohlásit dřív než chybějící captchu — jinak se uživatel
+    // o neshodě hesel dozví až po vyřešení výzvy.
+    if (mode === 'signup') {
+      if (!fullName.trim()) {
+        setErrorMsg('Zadejte prosím své celé jméno a příjmení.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setErrorMsg('Zadaná hesla se neshodují. Zkontrolujte prosím obě pole.');
+        return;
+      }
+    }
+
     // Je-li ochrana proti robotům nastavená, bez tokenu by server formulář
     // odmítl s technickou hláškou. Lepší je říct rovnou, na co se čeká.
     if (isCaptchaConfigured() && !captchaToken) {
@@ -164,16 +177,6 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
         await storeBrowserCredential(email, password);
       }
     } else {
-      if (!fullName.trim()) {
-        setErrorMsg('Zadejte prosím své celé jméno a příjmení.');
-        setLoading(false);
-        return;
-      }
-      if (password !== confirmPassword) {
-        setErrorMsg('Zadaná hesla se neshodují. Zkontrolujte prosím obě pole.');
-        setLoading(false);
-        return;
-      }
       const { error } = await signUp(email, password, fullName, captchaToken ?? undefined);
       captchaRef.current?.reset();
       if (error) {
@@ -478,7 +481,9 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       required
-                      minLength={MIN_PASSWORD_LENGTH}
+                      // Při přihlášení délku nehlídáme: platné je heslo, které účet má,
+                      // i když vzniklo za mírnějšího minima. Hranici drží registrace a server.
+                      minLength={mode === 'signin' ? undefined : MIN_PASSWORD_LENGTH}
                       autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
                       className="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-10 pr-11 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
                     />
