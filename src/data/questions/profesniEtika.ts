@@ -253,14 +253,14 @@ export const profesniEtikaQuestions: Question[] = [
             ],
     correctOption: 2,
     rationale: 'Korupci nelze zužovat jen na finanční úplatky; zahrnuje veškeré formy neoprávněného zvýhodňování na úkor rovnosti, veřejného zájmu a zákona.',
-    source: 'NGŘ č. 28/2018 Sb. Příloha 1; Studijní opora str. 12',
-      explanation: `Korupci nelze zužovat jen na finanční úplatky; zahrnuje veškeré formy neoprávněného zvýhodňování na úkor rovnosti, veřejného zájmu a zákona. (Právní úprava: NGŘ č. 28/2018 Sb. Příloha 1; Studijní opora str. 12)`
+    source: 'NGŘ č. 28/2018 Příloha 1; Studijní opora str. 12',
+      explanation: `Korupci nelze zužovat jen na finanční úplatky; zahrnuje veškeré formy neoprávněného zvýhodňování na úkor rovnosti, veřejného zájmu a zákona. (Právní úprava: NGŘ č. 28/2018 Příloha 1; Studijní opora str. 12)`
 },
   {
     id: 'pe_16',
     subject: 'Profesní etika',
     topic: 'Katalog korupčních rizik',
-    question: 'Co obsahuje Katalog korupčních rizik, který je přílohou NGŘ č. 28/2018 Sb.?',
+    question: 'Co obsahuje Katalog korupčních rizik, který je přílohou NGŘ č. 28/2018?',
     answer: 'Strukturovaný přehled činností ve VS ČR, popisy konkrétních korupčních rizik, jejich pravděpodobnost (1–5), dopad (1–5), celkovou míru rizika (1–25) a stanovená preventivní/kontrolní protikorupční opatření.',
     options: [
               `Trestní sazby za zneužití pravomoci úřední osoby a sazebník odměn pro informátory z řad vězněných osob poskytujících operativní poznatky. Pravděpodobnost ani dopad rizika se v katalogu nevyčíslují, jde o prostý výčet zakázaných jednání.`,
@@ -270,8 +270,8 @@ export const profesniEtikaQuestions: Question[] = [
             ],
     correctOption: 2,
     rationale: 'Katalog korupčních rizik je klíčovým nástrojem Interního protikorupčního programu pro identifikaci a eliminaci rizik na všech úrovních řízení VS ČR.',
-    source: 'NGŘ č. 28/2018 Sb., Přílohy 2–5',
-      explanation: `Katalog korupčních rizik je klíčovým nástrojem Interního protikorupčního programu pro identifikaci a eliminaci rizik na všech úrovních řízení VS ČR. (Právní úprava: NGŘ č. 28/2018 Sb., Přílohy 2–5)`
+    source: 'NGŘ č. 28/2018, Přílohy 2–5',
+      explanation: `Katalog korupčních rizik je klíčovým nástrojem Interního protikorupčního programu pro identifikaci a eliminaci rizik na všech úrovních řízení VS ČR. (Právní úprava: NGŘ č. 28/2018, Přílohy 2–5)`
 },
   {
     id: 'pe_17',
@@ -287,8 +287,8 @@ export const profesniEtikaQuestions: Question[] = [
             ],
     correctOption: 1,
     rationale: 'Katalog slouží jako interní manažerský a kontrolní nástroj k prevenci, nikoli jako trestní kodex.',
-    source: 'NGŘ č. 28/2018 Sb., § 1 a Přílohy 2–5; Studijní opora str. 12',
-      explanation: `Katalog slouží jako interní manažerský a kontrolní nástroj k prevenci, nikoli jako trestní kodex. (Právní úprava: NGŘ č. 28/2018 Sb., § 1 a Přílohy 2–5; Studijní opora str. 12)`
+    source: 'NGŘ č. 28/2018, § 1 a Přílohy 2–5; Studijní opora str. 12',
+      explanation: `Katalog slouží jako interní manažerský a kontrolní nástroj k prevenci, nikoli jako trestní kodex. (Právní úprava: NGŘ č. 28/2018, § 1 a Přílohy 2–5; Studijní opora str. 12)`
 },
   {
     id: 'pe_18',
@@ -634,7 +634,7 @@ export const profesniEtikaQuestions: Question[] = [
     id: 'pe_38',
     subject: 'Profesní etika',
     topic: 'Kodex profesní etiky VS ČR',
-    question: 'Jaká základní doporučení a zásady obsahuje Kodex profesní etiky zaměstnance a příslušníka VS ČR (Příloha č. 6 NGŘ č. 28/2018 Sb.)?',
+    question: 'Jaká základní doporučení a zásady obsahuje Kodex profesní etiky zaměstnance a příslušníka VS ČR (Příloha č. 6 NGŘ č. 28/2018)?',
     answer: 'Zákonnost a rovné zacházení, respekt k lidské důstojnosti, zákaz korupce a nepřijímání darů, mlčenlivost a ochrana osobních údajů, zdvořilé a nestranné vystupování a povinnost oznámit neetické či protiprávní jednání.',
     options: [
               `Zásadu profesní solidarity vyžadující utajení jakýchkoli excesů a nezákonných zákroků kolegů před inspekčními orgány sboru. Oznámení protiprávního jednání kolegy kodex naopak výslovně zakazuje.`,
@@ -644,8 +644,8 @@ export const profesniEtikaQuestions: Question[] = [
             ],
     correctOption: 1,
     rationale: 'Kodex definuje žádoucí etické standardy personálu vůči veřejnosti, vězňům i spolupracovníkům a jeho porušení je porušením služební kázně.',
-    source: 'Příloha č. 6 k NGŘ č. 28/2018 Sb., Čl. 1–8',
-      explanation: `Kodex definuje žádoucí etické standardy personálu vůči veřejnosti, vězňům i spolupracovníkům a jeho porušení je porušením služební kázně. (Právní úprava: Příloha č. 6 k NGŘ č. 28/2018 Sb., Čl. 1–8)`
+    source: 'Příloha č. 6 k NGŘ č. 28/2018, Čl. 1–8',
+      explanation: `Kodex definuje žádoucí etické standardy personálu vůči veřejnosti, vězňům i spolupracovníkům a jeho porušení je porušením služební kázně. (Právní úprava: Příloha č. 6 k NGŘ č. 28/2018, Čl. 1–8)`
 },
   {
     id: 'pe_39',
@@ -660,9 +660,9 @@ export const profesniEtikaQuestions: Question[] = [
               `Upevňuje profesionální vystupování, autoritu sboru, vzájemný respekt, jednoznačnost velení a předchází zbytečné eskalaci konfliktů a projevům neúcty.`
             ],
     correctOption: 3,
-    rationale: 'Služební zdvořilost (NGŘ č. 38/2018 Sb.) vytváří profesionální odstup a rámec pro důstojnou a bezpečnou komunikaci.',
-    source: 'Studijní opora str. 9; NGŘ č. 38/2018 Sb.',
-      explanation: `Služební zdvořilost (NGŘ č. 38/2018 Sb.) vytváří profesionální odstup a rámec pro důstojnou a bezpečnou komunikaci. (Právní úprava: Studijní opora str. 9; NGŘ č. 38/2018 Sb.)`
+    rationale: 'Služební zdvořilost (NGŘ č. 38/2018) vytváří profesionální odstup a rámec pro důstojnou a bezpečnou komunikaci.',
+    source: 'Studijní opora str. 9; NGŘ č. 38/2018',
+      explanation: `Služební zdvořilost (NGŘ č. 38/2018) vytváří profesionální odstup a rámec pro důstojnou a bezpečnou komunikaci. (Právní úprava: Studijní opora str. 9; NGŘ č. 38/2018)`
 },
   {
     id: 'pe_40',
@@ -797,8 +797,8 @@ export const profesniEtikaQuestions: Question[] = [
             ],
     correctOption: 3,
     rationale: 'Neoprávněný únik osobních údajů z VIS je závažným porušením mlčenlivosti (§ 9 a § 23a z. 555/1992 Sb., Čl. 6 Etického kodexu) a nese vysoké korupční riziko.',
-    source: '§ 9, § 23a zákona č. 555/1992 Sb.; NGŘ č. 28/2018 Sb.',
-      explanation: `Neoprávněný únik osobních údajů z VIS je závažným porušením mlčenlivosti (§ 9 a § 23a z. 555/1992 Sb., Čl. 6 Etického kodexu) a nese vysoké korupční riziko. (Právní úprava: § 9, § 23a zákona č. 555/1992 Sb.; NGŘ č. 28/2018 Sb.)`
+    source: '§ 9, § 23a zákona č. 555/1992 Sb.; NGŘ č. 28/2018',
+      explanation: `Neoprávněný únik osobních údajů z VIS je závažným porušením mlčenlivosti (§ 9 a § 23a z. 555/1992 Sb., Čl. 6 Etického kodexu) a nese vysoké korupční riziko. (Právní úprava: § 9, § 23a zákona č. 555/1992 Sb.; NGŘ č. 28/2018)`
 },
   {
     id: 'pe_48',
@@ -814,8 +814,8 @@ export const profesniEtikaQuestions: Question[] = [
             ],
     correctOption: 0,
     rationale: 'Zamezení nepotismu a klientelismu je základním požadavkem Etického kodexu (Čl. 5 a 7) a Protikorupčního programu VS ČR.',
-    source: 'NGŘ č. 28/2018 Sb. Příloha 6 Čl. 5, 7; Studijní opora str. 12, 15',
-      explanation: `Zamezení nepotismu a klientelismu je základním požadavkem Etického kodexu (Čl. 5 a 7) a Protikorupčního programu VS ČR. (Právní úprava: NGŘ č. 28/2018 Sb. Příloha 6 Čl. 5, 7; Studijní opora str. 12, 15)`
+    source: 'NGŘ č. 28/2018 Příloha 6 Čl. 5, 7; Studijní opora str. 12, 15',
+      explanation: `Zamezení nepotismu a klientelismu je základním požadavkem Etického kodexu (Čl. 5 a 7) a Protikorupčního programu VS ČR. (Právní úprava: NGŘ č. 28/2018 Příloha 6 Čl. 5, 7; Studijní opora str. 12, 15)`
 },
   {
     id: 'pe_49',
@@ -848,8 +848,8 @@ export const profesniEtikaQuestions: Question[] = [
             ],
     correctOption: 1,
     rationale: 'Korupční jednání narušuje princip rovnosti a nestrannosti, způsobuje finanční škody státu a podkopává samotné základy právního státu.',
-    source: 'NGŘ č. 28/2018 Sb. Příloha 1 Preambule; Studijní opora str. 12, 15',
-      explanation: `Korupční jednání narušuje princip rovnosti a nestrannosti, způsobuje finanční škody státu a podkopává samotné základy právního státu. (Právní úprava: NGŘ č. 28/2018 Sb. Příloha 1 Preambule; Studijní opora str. 12, 15)`
+    source: 'NGŘ č. 28/2018 Příloha 1 Preambule; Studijní opora str. 12, 15',
+      explanation: `Korupční jednání narušuje princip rovnosti a nestrannosti, způsobuje finanční škody státu a podkopává samotné základy právního státu. (Právní úprava: NGŘ č. 28/2018 Příloha 1 Preambule; Studijní opora str. 12, 15)`
 }
   ,
   // 46. Zásady bezúhonnosti
@@ -885,8 +885,8 @@ export const profesniEtikaQuestions: Question[] = [
             ],
     correctOption: 2,
     rationale: 'Oznamovací povinnost (tzv. whistleblowing) je stěžejním nástrojem boje proti korupci. Zaměstnanec, který upozorní na korupci, je chráněn před odvetnými opatřeními (šikanou na pracovišti).',
-    source: 'Protikorupční program VS ČR (NGŘ č. 28/2018 Sb.)',
-      explanation: `Oznamovací povinnost (tzv. whistleblowing) je stěžejním nástrojem boje proti korupci. Zaměstnanec, který upozorní na korupci, je chráněn před odvetnými opatřeními (šikanou na pracovišti). (Právní úprava: Protikorupční program VS ČR (NGŘ č. 28/2018 Sb.))`
+    source: 'Protikorupční program VS ČR (NGŘ č. 28/2018)',
+      explanation: `Oznamovací povinnost (tzv. whistleblowing) je stěžejním nástrojem boje proti korupci. Zaměstnanec, který upozorní na korupci, je chráněn před odvetnými opatřeními (šikanou na pracovišti). (Právní úprava: Protikorupční program VS ČR (NGŘ č. 28/2018))`
 },
   // 48. Nulová tolerance
   {

@@ -59,7 +59,7 @@ export const ProfessionalEthics: React.FC<ProfessionalEthicsProps> = ({ onStartS
             activeSubTab === 'concepts'
               ? `Přehled ${conceptsList.length} klíčových pojmů pro zkoušku ZOP A`
               : activeSubTab === 'code'
-              ? 'Etický kodex VS ČR (Příloha č. 6 k NGŘ č. 28/2018 Sb.)'
+              ? 'Etický kodex VS ČR (Příloha č. 6 k NGŘ č. 28/2018)'
               : activeSubTab === 'anticorruption'
               ? 'Protikorupční program a katalog korupčních rizik VS ČR'
               : activeSubTab === 'conventions'

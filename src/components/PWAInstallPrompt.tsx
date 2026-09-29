@@ -51,6 +51,8 @@ export default function PWAInstallPrompt() {
     () => safeGetFlag(STORAGE_KEY_FIRST_VISIT_SEEN) || safeGetFlag(STORAGE_KEY_DISMISSED)
   );
   const [readyToShow, setReadyToShow] = useState(false);
+  /** „Později“ nebo křížek — pak už nabídka nevisí ani jako plovoucí tlačítko. */
+  const [dismissed, setDismissed] = useState<boolean>(() => safeGetFlag(STORAGE_KEY_DISMISSED));
   const [showIOSGuide, setShowIOSGuide] = useState(false);
 
   useEffect(() => {
@@ -80,8 +82,15 @@ export default function PWAInstallPrompt() {
 
   useEffect(() => {
     if (isStandalone || installed) return;
-    const timer = setTimeout(() => setReadyToShow(true), 2500);
-    return () => clearTimeout(timer);
+    // Nabídka čeká, dokud je otevřený jiný povinný dialog (typicky volba třídy po
+    // první přihlášce) — dřív se otevřela přes něj a student měl dvě okna nad sebou.
+    const timer = setInterval(() => {
+      if (!document.querySelector('[role="dialog"][aria-modal="true"]')) {
+        setReadyToShow(true);
+        clearInterval(timer);
+      }
+    }, 2500);
+    return () => clearInterval(timer);
   }, [isStandalone, installed]);
 
   const markSeen = useCallback(() => {
@@ -91,6 +100,7 @@ export default function PWAInstallPrompt() {
 
   const dismiss = useCallback(() => {
     safeSetFlag(STORAGE_KEY_DISMISSED);
+    setDismissed(true);
     markSeen();
     setShowIOSGuide(false);
   }, [markSeen]);
@@ -117,7 +127,7 @@ export default function PWAInstallPrompt() {
   const visible = !isStandalone && !installed && canInstall;
 
   const showFirstVisitModal = visible && readyToShow && !hasSeenPrompt && !showIOSGuide;
-  const showFab = visible && hasSeenPrompt && !showIOSGuide;
+  const showFab = visible && hasSeenPrompt && !dismissed && !showIOSGuide;
   const showIOSModal = visible && showIOSGuide;
 
   const closeIOSGuide = () => setShowIOSGuide(false);

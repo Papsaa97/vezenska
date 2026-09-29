@@ -144,6 +144,14 @@ export default function ClassBulletinBoard() {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   /** Id celoškolního hlášení, u kterého se ptáme na potvrzení smazání. */
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
+  // Potvrzení smazání služby nebo sekce na nástěnce třídy (dřív mazalo hned
+  // na klepnutí, a na dotykovém displeji ještě neviditelným tlačítkem).
+  const [pendingBoardDelete, setPendingBoardDelete] = useState<{
+    kind: 'duty' | 'section';
+    classItem: ClassBoardItem;
+    id: string;
+    label: string;
+  } | null>(null);
 
   // Lightbox pro rozvrh
   const [lightboxItem, setLightboxItem] = useState<ClassBoardItem | null>(null);
@@ -430,8 +438,10 @@ export default function ClassBulletinBoard() {
     if (!deleteConfirmItem) return;
     setIsDeleting(true);
     try {
-      if (reportWrite(await deleteClassBoard(deleteConfirmItem.id))) void loadData();
-      setClasses((prev) => prev.filter((c) => c.id !== deleteConfirmItem.id));
+      if (reportWrite(await deleteClassBoard(deleteConfirmItem.id))) {
+        void loadData();
+        setClasses((prev) => prev.filter((c) => c.id !== deleteConfirmItem.id));
+      }
       setDeleteConfirmItem(null);
     } catch (err) {
       console.error('[ClassBulletinBoard] Smazání třídy selhalo:', err);
@@ -543,8 +553,10 @@ export default function ClassBulletinBoard() {
   };
 
   const handleDeleteGlobalAnnouncement = async (id: string) => {
-    reportWrite(await deleteGlobalAnnouncement(id));
-    setGlobalAnnouncements((prev) => prev.filter((x) => x.id !== id));
+    // Při zamítnutí serverem hlášení v seznamu zůstane — ostatní ho dál vidí.
+    if (reportWrite(await deleteGlobalAnnouncement(id))) {
+      setGlobalAnnouncements((prev) => prev.filter((x) => x.id !== id));
+    }
     setDeleteAnnouncementId(null);
   };
 
@@ -754,14 +766,15 @@ export default function ClassBulletinBoard() {
               <span>Informační tabule tříd ZOP</span>
             </h1>
 
-            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
+            <p className="hidden sm:block text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
               Denní operativní rozvrhy, ústrojová kázeň, nepravidelné výpomoci na Pankráci, služby na
               recepci Akademie a zkouškové termíny.
             </p>
 
             <div className="flex items-center gap-2 text-xs sm:text-sm text-amber-300/90 font-medium pt-1">
               <Calendar className="w-4 h-4 text-amber-400" />
-              <span className="capitalize">{todayFormatted}</span>
+              {/* Velké jen první písmeno — `capitalize` dělalo „Úterý 29. Září“. */}
+              <span>{todayFormatted.charAt(0).toUpperCase() + todayFormatted.slice(1)}</span>
             </div>
           </div>
 
@@ -832,7 +845,7 @@ export default function ClassBulletinBoard() {
                   className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-600/30 flex items-center gap-2 border border-blue-400/40 transition-all transform active:scale-95 cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>+ Přidat třídu</span>
+                  <span>Přidat třídu</span>
                 </button>
               )}
             </div>
@@ -1075,9 +1088,23 @@ export default function ClassBulletinBoard() {
             }}
             onEditUniform={() => setUniformModalItem(myClassItem)}
             onAddDuty={() => setDutyModalItem(myClassItem)}
-            onDeleteDuty={(dutyId) => handleDeleteDuty(myClassItem, dutyId)}
+            onDeleteDuty={(dutyId) =>
+              setPendingBoardDelete({
+                kind: 'duty',
+                classItem: myClassItem,
+                id: dutyId,
+                label: myClassItem.dutyRoster?.find((d) => d.id === dutyId)?.title ?? '',
+              })
+            }
             onAddSection={() => setSectionModalItem(myClassItem)}
-            onDeleteSection={(secId) => handleDeleteSection(myClassItem, secId)}
+            onDeleteSection={(secId) =>
+              setPendingBoardDelete({
+                kind: 'section',
+                classItem: myClassItem,
+                id: secId,
+                label: myClassItem.sections?.find((sec) => sec.id === secId)?.title ?? '',
+              })
+            }
             onOpenLightbox={() => {
               setLightboxItem(myClassItem);
               setLightboxZoom(1);
@@ -1173,6 +1200,7 @@ export default function ClassBulletinBoard() {
           <ClassEditModal
             item={editingItem}
             canRename={isPrivileged}
+            otherClassNames={classes.filter((c) => c.id !== editingItem?.id).map((c) => c.className)}
             // Zástupce (role student, ale `commandsClass`) smí nahrát rozvrh od
             // migrace 042 — politika úložiště ho pustí jen do složky rozvrhy/.
             canUploadSchedule={isPrivileged || profile?.role === 'velitel_tridy' || Boolean(membership?.commandsClass)}
@@ -1263,6 +1291,27 @@ export default function ClassBulletinBoard() {
           if (deleteAnnouncementId) void handleDeleteGlobalAnnouncement(deleteAnnouncementId);
         }}
         onCancel={() => setDeleteAnnouncementId(null)}
+      />
+
+      {/* ─── Potvrzení smazání služby nebo sekce ─────────────────────────── */}
+      <ConfirmDialog
+        isOpen={pendingBoardDelete !== null}
+        tone="danger"
+        title={pendingBoardDelete?.kind === 'section' ? 'Smazat sekci?' : 'Smazat záznam služby?'}
+        description={
+          <>
+            <strong>„{pendingBoardDelete?.label ?? ''}“</strong> zmizí z nástěnky celé třídy. Vrátit to zpět nelze.
+          </>
+        }
+        confirmLabel={pendingBoardDelete?.kind === 'section' ? 'Smazat sekci' : 'Smazat záznam'}
+        onConfirm={() => {
+          const pending = pendingBoardDelete;
+          setPendingBoardDelete(null);
+          if (!pending) return;
+          if (pending.kind === 'duty') void handleDeleteDuty(pending.classItem, pending.id);
+          else void handleDeleteSection(pending.classItem, pending.id);
+        }}
+        onCancel={() => setPendingBoardDelete(null)}
       />
 
       {/* ─── Lightbox pro rozvrh ─────────────────────────────────────────── */}

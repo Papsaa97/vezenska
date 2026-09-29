@@ -13,6 +13,7 @@ import {
 import {
   ClassBoardItem,
   getUpcomingUniformInfo,
+  DUTY_TYPE_LABELS,
 } from '../../utils/classBoardService';
 import CourseCountdownWidget from './CourseCountdownWidget';
 
@@ -132,7 +133,7 @@ export default function ClassCardCompact({
       <div className="px-4 pt-3 flex items-center justify-between gap-2 text-[0.6875rem] text-slate-600 dark:text-slate-300">
         <span className="flex items-center gap-1.5 min-w-0">
           <Shield className="w-3.5 h-3.5 text-purple-500 shrink-0" />
-          <span className="font-semibold">Velitel:</span>
+          <span className="font-semibold">Velitel třídy:</span>
           <span className="truncate">
             {commanderName || 'zatím nejmenován'}
             {deputyName ? ` (zastupuje ${deputyName})` : ''}
@@ -244,7 +245,7 @@ export default function ClassCardCompact({
             <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[0.6875rem] leading-snug space-y-0.5">
               <div className="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1 text-[0.625rem]">
                 <Building2 className="w-3 h-3" />
-                <span>{item.dutyRoster[0].type === 'pankrac' ? 'Pankrác' : 'Recepce'}</span>
+                <span>{DUTY_TYPE_LABELS[item.dutyRoster[0].type] ?? item.dutyRoster[0].type}</span>
                 <span className="text-slate-500 font-normal">({item.dutyRoster[0].date})</span>
               </div>
               <div className="truncate text-slate-700 dark:text-slate-300 font-medium">

@@ -257,7 +257,7 @@ export default function DiagramGame({ category, onGameComplete, onNavigateToBadg
              <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
                <div className="text-[0.6875rem] text-slate-400">Přesnost</div>
                <div className="text-sm font-bold flex items-center gap-1">
-                 {completedRecord.flawless ? <span className="text-emerald-500"><Zap className="w-3.5 h-3.5"/> Bez chyby!</span> : <span>{completedRecord.errorsCount} chyby</span>}
+                 {completedRecord.flawless ? <span className="text-emerald-500"><Zap className="w-3.5 h-3.5"/> Bez chyby!</span> : <span>{completedRecord.errorsCount} {completedRecord.errorsCount === 1 ? 'chyba' : completedRecord.errorsCount < 5 ? 'chyby' : 'chyb'}</span>}
                </div>
              </div>
           </div>

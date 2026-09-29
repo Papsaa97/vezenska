@@ -99,7 +99,7 @@ export const defaultDilemmaScenarios: DilemmaScenario[] = [
       {
         text: 'Pokyn nadřízeného odmítnout splnit, zbraň zásadně nevydat, vozidlo do objektu bez řádné kontroly nevpustit a trvat na dodržení zákona a strážního řádu (příslušník na stanovišti požívá zákonné ochrany a nesmí plnit pokyny v rozporu se zákonem).',
         correct: true,
-        explanation: 'Výborně! Dle § 19 a § 28 NGŘ č. 38/2018 Sb. i zákona č. 555/1992 Sb. nesmí pokyn nadřízeného odporovat zákonným povinnostem stráže na stanovišti. Strážný zbraň nevydává a kontrolu provést musí.'
+        explanation: 'Výborně! Dle § 19 a § 28 NGŘ č. 38/2018 i zákona č. 555/1992 Sb. nesmí pokyn nadřízeného odporovat zákonným povinnostem stráže na stanovišti. Strážný zbraň nevydává a kontrolu provést musí.'
       },
       {
         text: 'Okamžitě odevzdat zbraň a vpustit dodávku, protože rozkaz nadřízeného má vždy přednost před všemi zákony.',
@@ -141,7 +141,7 @@ export const defaultEthicsSections: StudySection[] = [
   {
     id: 'kodex-clanky',
     area: 'kodex',
-    title: 'Znění Kodexu profesní etiky (Příloha č. 6 k NGŘ č. 28/2018 Sb.)',
+    title: 'Znění Kodexu profesní etiky (Příloha č. 6 k NGŘ č. 28/2018)',
     kicker: '',
     intro: '',
     outro: '',

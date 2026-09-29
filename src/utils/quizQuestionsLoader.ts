@@ -103,7 +103,7 @@ export function mapRowToQuestion(row: SupabaseQuizQuestionRow): Question {
     row.answer || (options.length > correctIdx ? options[correctIdx] : '')
   );
   const topic = row.topic ? String(row.topic) : subject;
-  const source = row.source ? String(row.source) : 'Banka otázek Supabase';
+  const source = row.source ? String(row.source) : 'Banka otázek Akademie VS ČR';
   const explanation = row.explanation
     ? String(row.explanation)
     : row.rationale

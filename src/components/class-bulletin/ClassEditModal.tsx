@@ -28,11 +28,17 @@ interface ClassEditModalProps {
    * tomu by se rozvrh uložil jako data: URL přímo do řádku nástěnky.
    */
   canUploadSchedule: boolean;
+  /**
+   * Názvy ostatních tříd. Dvě karty se stejným názvem (lišící se jen velikostí
+   * písmen nebo mezerami) server bere jako jednu třídu — smazání duplikátu by
+   * vyřadilo členy té skutečné.
+   */
+  otherClassNames: string[];
   onClose: () => void;
   onSave: (input: ClassBoardInput) => Promise<void>;
 }
 
-export default function ClassEditModal({ item, canRename, canUploadSchedule, onClose, onSave }: ClassEditModalProps) {
+export default function ClassEditModal({ item, canRename, canUploadSchedule, otherClassNames, onClose, onSave }: ClassEditModalProps) {
   // Novou třídu zakládá jen lektor nebo správce; u existující rozhoduje prop.
   const nameEditable = canRename || !item;
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
@@ -85,6 +91,15 @@ export default function ClassEditModal({ item, canRename, canUploadSchedule, onC
     e.preventDefault();
     if (!className.trim()) {
       setErrorMsg('Vyplňte prosím název třídy (např. ZOP A11).');
+      return;
+    }
+    const normalizedName = className.trim().toLowerCase();
+    if (otherClassNames.some((name) => name.trim().toLowerCase() === normalizedName)) {
+      setErrorMsg(`Třída „${className.trim()}“ už existuje. Zvolte jiný název.`);
+      return;
+    }
+    if (courseStartDate && courseEndDate && courseEndDate < courseStartDate) {
+      setErrorMsg('Konec kurzu nemůže být dřív než jeho začátek.');
       return;
     }
 

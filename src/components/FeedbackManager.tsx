@@ -310,7 +310,7 @@ export default function FeedbackManager({ onNewCountChange }: FeedbackManagerPro
                     : 'bg-slate-50/60 dark:bg-slate-800/30 border-slate-200 dark:border-slate-700'
                 }`}
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                   <div className="space-y-1.5 flex-1 min-w-0">
                     {/* Meta row */}
                     <div className="flex flex-wrap items-center gap-2">
@@ -348,7 +348,7 @@ export default function FeedbackManager({ onNewCountChange }: FeedbackManagerPro
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col items-stretch gap-1.5 shrink-0">
+                  <div className="flex flex-row sm:flex-col items-stretch gap-1.5 shrink-0">
                     {isConfirming ? (
                       <div className="flex items-center gap-1.5 p-1 bg-red-50 dark:bg-red-950/40 rounded-xl border border-red-200 dark:border-red-800">
                         <span className="text-xs text-red-600 dark:text-red-400 font-semibold px-1">Smazat?</span>

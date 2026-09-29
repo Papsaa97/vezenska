@@ -43,6 +43,7 @@ export default function ClassMembershipGate() {
   const { user, realRole, loading, refreshProfile } = useAuth();
   const [membership, setMembership] = useState<MyMembership | null>(null);
   const [classes, setClasses] = useState<ClassOverview[]>([]);
+  const [classesError, setClassesError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!user) {
@@ -53,6 +54,7 @@ export default function ClassMembershipGate() {
     // Chyba (typicky chybějící migrace) = nic neblokovat.
     setMembership(m.error ? null : m.data);
     setClasses(c.data ?? []);
+    setClassesError(c.error ? 'Seznam tříd se nepodařilo načíst.' : null);
   }, [user]);
 
   useEffect(() => {
@@ -101,7 +103,14 @@ export default function ClassMembershipGate() {
     !membership.pending.some((p) => p.kind === 'zadost');
 
   if (needsChoice) {
-    return <ChooseClassDialog classes={classes} onDone={announceMembershipChange} />;
+    return (
+      <ChooseClassDialog
+        classes={classes}
+        loadError={classesError}
+        onRetry={() => void load()}
+        onDone={announceMembershipChange}
+      />
+    );
   }
 
   return null;
@@ -113,9 +122,14 @@ export function ChooseClassDialog({
   classes,
   onDone,
   onCancel,
+  loadError,
+  onRetry,
 }: {
   classes: ClassOverview[];
   onDone: () => void;
+  /** Seznam tříd se nenačetl — dialog nabídne nové načtení místo prázdného výběru. */
+  loadError?: string | null;
+  onRetry?: () => void;
   /** Bez onCancel je dialog povinný a nejde zavřít. */
   onCancel?: () => void;
 }) {
@@ -123,6 +137,7 @@ export function ChooseClassDialog({
   const [note, setNote] = useState<string>('');
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const { signOut } = useAuth();
   const ids = useId();
   const dialogRef = useDialog<HTMLDivElement>({
     isOpen: true,
@@ -139,11 +154,13 @@ export function ChooseClassDialog({
     setSaving(true);
     setError(null);
     const res = missing ? await declareMissingClass(note.trim()) : await requestClass(choice);
-    setSaving(false);
     if (res.error) {
+      setSaving(false);
       setError(res.error);
       return;
     }
+    // Tlačítko zůstane zablokované, dokud se dialog nezavře — druhé ťuknutí by
+    // poslalo žádost znovu a velitel by dostal další oznámení.
     onDone();
   };
 
@@ -181,6 +198,17 @@ export function ChooseClassDialog({
             </button>
           )}
         </div>
+
+        {loadError && (
+          <div role="alert" className="flex items-center justify-between gap-3 rounded-xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 px-3.5 py-2.5 text-xs text-amber-900 dark:text-amber-200">
+            <span>{loadError}</span>
+            {onRetry && (
+              <button type="button" onClick={onRetry} className="shrink-0 font-bold text-blue-600 dark:text-blue-400 cursor-pointer">
+                Zkusit znovu
+              </button>
+            )}
+          </div>
+        )}
 
         <form onSubmit={submit} className="space-y-3">
           <fieldset className="space-y-2">
@@ -265,6 +293,19 @@ export function ChooseClassDialog({
             {missing ? 'Uložit poznámku' : 'Požádat o zařazení'}
           </button>
         </form>
+
+        {/* Povinný dialog překrývá hlavičku, takže odhlášení musí být i tady. */}
+        {!onCancel && (
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => void signOut()}
+              className="text-xs font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white cursor-pointer"
+            >
+              Odhlásit se
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

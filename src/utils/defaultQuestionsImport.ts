@@ -109,7 +109,19 @@ export async function importDefaultQuestionsToSupabase(
 
     if (forceOverwrite) {
       // Kompletní reset: smaž všechny řádky, upsert níže je pak nahraje od nuly
-      await supabase.from('quiz_questions').delete().not('id', 'is', null);
+      // Výsledek mazání se musí zkontrolovat — jinak by import při selhání
+      // hlásil úspěch a v bance by zůstaly staré i nové verze otázek.
+      const { error: deleteErr } = await supabase.from('quiz_questions').delete().not('id', 'is', null);
+      if (deleteErr) {
+        return {
+          success: false,
+          importedCount: 0,
+          updatedCount: 0,
+          alreadyExistingCount,
+          totalLocalCount,
+          errorMessage: `Banku se nepodařilo vyprázdnit, nic se nezměnilo: ${deleteErr.message}`,
+        };
+      }
       existingNormalized.clear();
     }
 

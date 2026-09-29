@@ -42,6 +42,15 @@ export interface FetchResult<T> {
 
 export type DutyType = 'pankrac' | 'recepce' | 'strelby' | 'zkouska' | 'jine';
 
+/** Jeden název pro každý druh služby — karta i detail třídy ho berou odsud. */
+export const DUTY_TYPE_LABELS: Record<DutyType, string> = {
+  pankrac: 'Výpomoc Pankrác',
+  recepce: 'Recepce Akademie',
+  strelby: 'Střelby',
+  zkouska: 'Zkouška',
+  jine: 'Jiné / Stáž',
+};
+
 export interface DutyRosterItem {
   id: string;
   type: DutyType;
@@ -131,6 +140,10 @@ export interface UpcomingUniformInfo {
 }
 
 export function getUpcomingUniformInfo(guidance?: UniformGuidance): UpcomingUniformInfo {
+  // Bez zadané ústroje nic nevymýšlet: normalizeUniformDays by vrátilo výchozí
+  // šablonu (jen pro předvyplnění editoru) a karta třídy pak hlásila „Zítra: PS II“,
+  // zatímco detail třídy správně psal, že ústroj zadaná není.
+  if (!guidance) return { targetDayLabel: 'Ústroj' };
   const days = normalizeUniformDays(guidance);
   if (!days || days.length === 0) {
     return { targetDayLabel: 'Ústroj' };
@@ -268,7 +281,7 @@ export function getCourseCountdown(
         status: 'completed',
         formattedPeriod,
         headline: 'Stav kurzu',
-        remainingText: 'Kurz úspěšně ukončen',
+        remainingText: 'Kurz ukončen',
         totalDaysRemaining: 0,
         progressPercent: 100,
       };
@@ -325,7 +338,7 @@ export function getCourseCountdown(
         status: 'completed',
         formattedPeriod,
         headline: 'Stav kurzu',
-        remainingText: 'Kurz úspěšně ukončen',
+        remainingText: 'Kurz ukončen',
         totalDaysRemaining: 0,
         progressPercent: 100,
         elapsedText: '100 % dokončeno',
@@ -647,9 +660,12 @@ export async function saveGlobalAnnouncement(
 export async function deleteGlobalAnnouncement(id: string): Promise<DeleteResult> {
   let persistError: string | null = null;
   try {
-    const { error } = await supabase.from('global_announcements').delete().eq('id', id);
+    // Bez .select() by zamítnutí politikou (nula smazaných řádků) prošlo jako úspěch.
+    const { data, error } = await supabase.from('global_announcements').delete().eq('id', id).select('id');
     if (error) {
       persistError = `Hlášení se nepodařilo smazat na serveru (${error.message}).`;
+    } else if (!data || data.length === 0) {
+      persistError = 'Hlášení se nepodařilo smazat na serveru — server ho nesmazal. Zkontrolujte, že na to máte oprávnění, a obnovte stránku.';
     }
   } catch (err) {
     persistError = `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`;
@@ -847,9 +863,12 @@ export async function deleteClassBoard(id: string): Promise<DeleteResult> {
   // zůstala na nástěnce dál.
   let persistError: string | null = null;
   try {
-    const { error } = await supabase.from('class_boards').delete().eq('id', id);
+    // Bez .select() by zamítnutí politikou (nula smazaných řádků) prošlo jako úspěch.
+    const { data, error } = await supabase.from('class_boards').delete().eq('id', id).select('id');
     if (error) {
       persistError = `Třídu se nepodařilo smazat na serveru (${error.message}).`;
+    } else if (!data || data.length === 0) {
+      persistError = 'Třídu se nepodařilo smazat na serveru — server ho nesmazal. Zkontrolujte, že na to máte oprávnění, a obnovte stránku.';
     }
   } catch (err) {
     persistError = `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`;

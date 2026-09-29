@@ -220,10 +220,10 @@ export const subjectsMeta: Record<string, SubjectInfo> = {
     iconName: 'HeartHandshake',
     badgeColor: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
     accentColor: 'emerald',
-    description: 'Etické základy výkonu služby v bezpečnostním sboru, teorie normativních systémů (mravnost, morálka, právo), axiologie a deontologie. Protikorupční program VS ČR (NGŘ č. 28/2018 Sb.), Kodex profesní etiky, matice a katalogy korupčních rizik, mezinárodní konvence ochrany lidských práv (EVP Rec(2006)2-rev, Mandelova pravidla OSN), instituce ochrany LP (ESLP, CPT, Veřejný ochránce práv) a etika použití zbraně.',
+    description: 'Etické základy výkonu služby v bezpečnostním sboru, teorie normativních systémů (mravnost, morálka, právo), axiologie a deontologie. Protikorupční program VS ČR (NGŘ č. 28/2018), Kodex profesní etiky, matice a katalogy korupčních rizik, mezinárodní konvence ochrany lidských práv (EVP Rec(2006)2-rev, Mandelova pravidla OSN), instituce ochrany LP (ESLP, CPT, Veřejný ochránce práv) a etika použití zbraně.',
     legalFramework: [
-      'Příloha č. 6 k NGŘ č. 28/2018 Sb., Kodex profesní etiky zaměstnance a příslušníka VS ČR',
-      'NGŘ č. 28/2018 Sb., Interní protikorupční program VS ČR a Katalogy korupčních rizik',
+      'Příloha č. 6 k NGŘ č. 28/2018, Kodex profesní etiky zaměstnance a příslušníka VS ČR',
+      'NGŘ č. 28/2018, Interní protikorupční program VS ČR a Katalogy korupčních rizik',
       'Doporučení Rec(2006)2-rev Výboru ministrů k Evropským vězeňským pravidlům (rev. 2020)',
       'Standardní minimální pravidla OSN pro zacházení s vězni (Mandelova pravidla 2015)',
       'Listina základních práv a svobod (ústavní zákon č. 2/1993 Sb.)',

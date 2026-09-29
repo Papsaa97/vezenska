@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { foldSearchText } from '../utils/searchText';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   BookOpen,
@@ -118,7 +119,7 @@ export default function MaterialLibrary() {
   }, [materials, classOptions]);
 
   const filtered = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
+    const q = foldSearchText(searchQuery).trim();
     return materials.filter((material) => {
       const matchSubject =
         activeSubject === 'Vše' ||
@@ -128,8 +129,8 @@ export default function MaterialLibrary() {
       const matchClass = activeClassId === 'Vše' || material.classIds.includes(activeClassId);
       const matchSearch =
         !q ||
-        material.displayName.toLowerCase().includes(q) ||
-        material.subjects.some((s) => s.toLowerCase().includes(q));
+        foldSearchText(material.displayName).includes(q) ||
+        material.subjects.some((s) => foldSearchText(s).includes(q));
       return matchSubject && matchClass && matchSearch;
     });
   }, [materials, activeSubject, activeClassId, searchQuery]);
@@ -138,7 +139,11 @@ export default function MaterialLibrary() {
   const sections = useMemo(() => {
     const groups: { subject: string; items: TaggedMaterial[] }[] = [];
 
-    for (const subject of presentSubjects) {
+    // Při filtru na jeden předmět jen jeho sekce — soubor se dvěma štítky by
+    // jinak vytáhl i sekci druhého předmětu.
+    const shownSubjects =
+      activeSubject === 'Vše' ? presentSubjects : presentSubjects.filter((s) => s === activeSubject);
+    for (const subject of shownSubjects) {
       const items = filtered.filter((m) => m.subjects.includes(subject));
       if (items.length > 0) groups.push({ subject, items });
     }
@@ -147,7 +152,7 @@ export default function MaterialLibrary() {
     if (unsorted.length > 0) groups.push({ subject: UNSORTED, items: unsorted });
 
     return groups;
-  }, [filtered, presentSubjects]);
+  }, [filtered, presentSubjects, activeSubject]);
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-6 pb-8">

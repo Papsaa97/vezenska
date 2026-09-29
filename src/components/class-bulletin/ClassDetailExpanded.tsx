@@ -18,6 +18,7 @@ import {
   ClassBoardItem,
   normalizeUniformDays,
   getTodayCzechName,
+  DUTY_TYPE_LABELS,
 } from '../../utils/classBoardService';
 import CourseCountdownWidget from './CourseCountdownWidget';
 import ClassMembersPanel from './ClassMembersPanel';
@@ -134,7 +135,7 @@ export default function ClassDetailExpanded({
                 title="Přidat termín služby (Pankrác, Recepce...)"
               >
                 <Building2 className="w-3.5 h-3.5" />
-                <span>+ Služba / Pankrác</span>
+                <span>Přidat službu</span>
               </button>
               <button
                 onClick={onAddSection}
@@ -142,7 +143,7 @@ export default function ClassDetailExpanded({
                 title="Přidat novou modulární sekci"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>+ Sekce</span>
+                <span>Přidat sekci</span>
               </button>
             </>
           )}
@@ -255,7 +256,7 @@ export default function ClassDetailExpanded({
                 Rozvrh pro třídu {item.className} zatím nebyl nahrán
               </span>
               <span className="text-xs text-slate-500 mt-1 max-w-xs">
-                Lektor nebo velitel výcviku může nahrát aktuální obrázek rozvrhu v editaci třídy.
+                Lektor nebo velitel třídy může nahrát aktuální obrázek rozvrhu v editaci třídy.
               </span>
               {isManager && (
                 <button
@@ -424,9 +425,7 @@ export default function ClassDetailExpanded({
                       >
                         {duty.type === 'pankrac'
                           ? 'VÝPOMOC PANKRÁC'
-                          : duty.type === 'recepce'
-                          ? 'RECEPCE AKADEMIE'
-                          : duty.type.toUpperCase()}
+                          : (DUTY_TYPE_LABELS[duty.type] ?? duty.type).toUpperCase()}
                       </span>
                       <span className="text-xs font-bold text-slate-900 dark:text-white">
                         {duty.date}
@@ -441,9 +440,11 @@ export default function ClassDetailExpanded({
 
                     {isManager && (
                       <button
+                        type="button"
                         onClick={() => onDeleteDuty(duty.id)}
-                        className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-opacity p-1"
+                        className="opacity-100 md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 hover:text-red-500 transition-opacity p-1"
                         title="Odstranit záznam"
+                        aria-label="Odstranit záznam"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -510,7 +511,7 @@ export default function ClassDetailExpanded({
               loading={materialsLoading}
               emptyText={
                 isManager
-                  ? 'K téhle třídě zatím není přiřazený žádný soubor. Přiřadíte ho ve Správě obsahu → Správce souborů, kde souboru dáte štítek třídy.'
+                  ? 'K téhle třídě zatím není přiřazený žádný soubor. Soubory třídám přiřazuje lektor nebo správce ve Správě obsahu → Správce souborů štítkem třídy.'
                   : 'K této třídě nejsou přiřazeny žádné specifické soubory. Všechny studijní texty naleznete v hlavní Knihovně.'
               }
             />
@@ -540,9 +541,11 @@ export default function ClassDetailExpanded({
                       </div>
                       {isManager && (
                         <button
+                          type="button"
                           onClick={() => onDeleteSection(sec.id)}
-                          className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-opacity p-1"
+                          className="opacity-100 md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 hover:text-red-500 transition-opacity p-1"
                           title="Smazat sekci"
+                          aria-label="Smazat sekci"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>

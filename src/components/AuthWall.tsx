@@ -289,7 +289,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                 <div>
                   <h2 className="text-xs font-bold text-white">Právní kompas</h2>
                   <p className="text-[0.6875rem] text-slate-400 mt-0.5 leading-snug">
-                    Plná znění zákonů 555/1992, 169/1999, 293/1993 a NGŘ.
+                    Úplná znění zákonů 555/1992, 169/1999, 293/1993 z e-Sbírky a studijní výběr z NGŘ.
                   </p>
                 </div>
               </div>
@@ -308,8 +308,8 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
             </motion.div>
           </div>
 
-          {/* Right Login / Register Form Card */}
-          <div className="lg:col-span-5 w-full">
+          {/* Right Login / Register Form Card — na telefonu nahoře, aby byl formulář vidět bez posouvání */}
+          <div className="lg:col-span-5 w-full order-first lg:order-none">
             <motion.div
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -414,6 +414,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                     <label className="block text-xs font-semibold text-slate-300" htmlFor={`${fieldIds}-3`}>
                       Heslo *
                     </label>
+                    {mode === 'signup' && (
                     <button
                       type="button"
                       onClick={() => setShowPasswordHint((prev) => !prev)}
@@ -423,9 +424,10 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                       <HelpCircle className="w-3.5 h-3.5" />
                       <span className="text-[0.6875rem]">Nápověda</span>
                     </button>
+                    )}
                   </div>
 
-                  {showPasswordHint && (
+                  {mode === 'signup' && showPasswordHint && (
                     <div className="mb-2 p-3 bg-slate-800/90 border border-slate-700/80 rounded-xl text-xs text-slate-300 space-y-1 animate-in fade-in duration-200">
                       <div className="font-semibold text-white text-[0.6875rem] flex items-center gap-1">
                         <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />

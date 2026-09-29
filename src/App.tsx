@@ -1008,7 +1008,7 @@ export default function App() {
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className={`flex flex-1 flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all cursor-pointer ${
-            isMobileMenuOpen || ['compass', 'flashcards', 'matching', 'badges', 'statistics'].includes(activeTab)
+            isMobileMenuOpen || ['dashboard', 'compass', 'flashcards', 'matching', 'badges', 'statistics', 'library', 'content-manager'].includes(activeTab)
               ? 'text-indigo-600 dark:text-indigo-400 font-bold' 
               : 'text-slate-400 dark:text-slate-500 hover:text-slate-700'
           }`}

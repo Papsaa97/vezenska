@@ -322,6 +322,12 @@ export default function LegalRegistryView({
           </div>
         </div>
 
+        {filteredRegulations.length === 0 && (
+          <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-10">
+            Hledání ani filtru neodpovídá žádný předpis. Zkuste jiný výraz nebo zvolte „Vše“.
+          </p>
+        )}
+
         {/* Regulations Grid / Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredRegulations.map(reg => {
@@ -359,7 +365,7 @@ export default function LegalRegistryView({
                           className="px-2 py-0.5 rounded-md text-[0.625rem] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
                           title={`Úřední znění z e-Sbírky staženo ${source.summary.stazenoDne.slice(0, 10)}`}
                         >
-                          ✓ Úplné znění od {source.summary.ucinnostOd}
+                          ✓ Úplné znění od {source.summary.ucinnostOd.split('-').reverse().map(Number).join('. ')}
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded-md text-[0.625rem] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
@@ -717,7 +723,8 @@ export default function LegalRegistryView({
               </div>
 
               {/* Blok 1b: doslovné znění z e-Sbírky */}
-              <OfficialSectionPanel article={currentArticle} />
+              {/* key: panel si drží stažené znění, a bez něj by po přepnutí článku filtroval text předchozího zákona */}
+              <OfficialSectionPanel key={currentArticle.id} article={currentArticle} />
 
               {/* Block 2: Methodological Explanation */}
               <div className="space-y-2 print-card">
@@ -799,11 +806,22 @@ export default function LegalRegistryView({
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-slate-400 text-sm p-8 text-center space-y-3">
             <Scale className="w-12 h-12 text-slate-300 dark:text-slate-700" />
+            {/* Na telefonu je seznam skrytý, dokud je otevřený detail — bez tlačítka by se
+                sem student (např. po odebrání poslední oblíbené) dostal a nevrátil. */}
+            {mobileDetailOpen && (
+              <button
+                type="button"
+                onClick={() => setMobileDetailOpen(false)}
+                className="md:hidden flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 cursor-pointer min-h-[44px] px-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Zpět na přehled předpisů</span>
+              </button>
+            )}
             {searchQuery.trim() || selectedCategory !== 'all' ? (
               <p>
                 Zadanému hledání neodpovídá žádná norma. Zkuste jiný výraz nebo zrušte filtr
-                kategorie — dřív se tu místo toho ukázala první norma v databázi, která
-                s hledáním nesouvisela.
+                kategorie.
               </p>
             ) : (
               <p>Vyberte zákonnou normu ze seznamu pro zobrazení přesného textu a metodického výkladu.</p>
