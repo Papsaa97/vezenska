@@ -5,6 +5,15 @@ import { Scenario, ScenarioStep, ScenarioChoice } from '../data/scenariosData';
 import { StoppageDrill, WeaponData, WeaponStep } from '../data/weaponsData';
 import { Jidelnicek } from '../data/jidelnicek';
 import { VscrRegulation } from '../data/vscrRegulationsRegistry';
+import { DilemmaOption, DilemmaScenario } from '../data/professionalEthicsData';
+import { STUDY_SECTION_AREAS, StudySection, StudySectionItem } from '../data/studySections';
+import {
+  BODY_PARTS,
+  RecordTemplate,
+  StyleExercise,
+  StyleExerciseSegment,
+  defaultRecordTemplates,
+} from '../data/prisonAdminData';
 
 // ─── Editovatelný obsah záložek ──────────────────────────────────────────────
 //
@@ -26,7 +35,8 @@ import { VscrRegulation } from '../data/vscrRegulationsRegistry';
 
 /**
  * Druhy obsahu. Musí odpovídat CHECK `content_blocks_kind_check` v databázi —
- * 'weapon', 'stoppage_drill' a 'jidelnicek' přidává migrace 040, 'regulation' migrace 041.
+ * 'weapon', 'stoppage_drill' a 'jidelnicek' přidává migrace 040, 'regulation' migrace 041,
+ * 'ethics_dilemma', 'study_section', 'admin_template' a 'admin_exercise' migrace 042.
  */
 export type ContentKind =
   | 'subject'
@@ -35,7 +45,11 @@ export type ContentKind =
   | 'weapon'
   | 'stoppage_drill'
   | 'jidelnicek'
-  | 'regulation';
+  | 'regulation'
+  | 'ethics_dilemma'
+  | 'study_section'
+  | 'admin_template'
+  | 'admin_exercise';
 
 /**
  * Předměty tak, jak jsou v repozitáři. Překryv z databáze je může přepsat,
@@ -434,6 +448,145 @@ function normalizeRegulation(value: unknown): VscrRegulation | null {
   };
 }
 
+function normalizeEthicsDilemma(value: unknown): DilemmaScenario | null {
+  const raw = record(value);
+  if (!raw) return null;
+  const id = str(raw.id).trim();
+  const title = str(raw.title).trim();
+  if (!id || !title) return null;
+
+  const options = Array.isArray(raw.options)
+    ? raw.options
+        .map((o): DilemmaOption | null => {
+          const or = record(o);
+          if (!or) return null;
+          const text = str(or.text).trim();
+          if (!text) return null;
+          return { text, correct: or.correct === true, explanation: str(or.explanation) };
+        })
+        .filter((o): o is DilemmaOption => o !== null)
+    : [];
+  // Situace bez správné volby by nešla vyřešit a bez alternativy není co volit.
+  if (options.length < 2 || !options.some((o) => o.correct)) return null;
+
+  return { id, title, description: str(raw.description), options };
+}
+
+/** Stupeň 1–5 pro katalog korupčních rizik; cokoli jiného se zahodí. */
+function ratingValue(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 5 ? value : undefined;
+}
+
+function normalizeStudySection(value: unknown): StudySection | null {
+  const raw = record(value);
+  if (!raw) return null;
+  const id = str(raw.id).trim();
+  const title = str(raw.title).trim();
+  const area = STUDY_SECTION_AREAS.find((a) => a === raw.area);
+  // Bez podzáložky by blok nebylo kam vykreslit.
+  if (!id || !title || !area) return null;
+
+  const items = Array.isArray(raw.items)
+    ? raw.items
+        .map((i): StudySectionItem | null => {
+          const ir = record(i);
+          if (!ir) return null;
+          const item: StudySectionItem = {
+            label: str(ir.label).trim(),
+            title: str(ir.title).trim(),
+            text: str(ir.text).trim(),
+            note: str(ir.note).trim(),
+          };
+          if (!item.label && !item.title && !item.text && !item.note) return null;
+          const probability = ratingValue(ir.probability);
+          const impact = ratingValue(ir.impact);
+          // Míra rizika je součin — jedno číslo bez druhého nedává smysl.
+          if (probability !== undefined && impact !== undefined) {
+            item.probability = probability;
+            item.impact = impact;
+          }
+          return item;
+        })
+        .filter((i): i is StudySectionItem => i !== null)
+    : [];
+
+  const intro = str(raw.intro).trim();
+  const outro = str(raw.outro).trim();
+  // Prázdný blok by na obrazovce zůstal jako osiřelý nadpis.
+  if (items.length === 0 && !intro && !outro) return null;
+
+  return { id, area, title, kicker: str(raw.kicker).trim(), intro, items, outro };
+}
+
+const RECORD_TEMPLATES_BY_ID = new Map(defaultRecordTemplates.map((t) => [t.id, t]));
+const BODY_PART_IDS = new Set(BODY_PARTS.map((p) => p.id));
+
+function normalizeAdminTemplate(value: unknown): RecordTemplate | null {
+  const raw = record(value);
+  if (!raw) return null;
+  const id = str(raw.id).trim();
+  const title = str(raw.title).trim();
+  // Formulář i tisková podoba každého tiskopisu jsou v kódu, takže nový
+  // tiskopis by neměl čím se vykreslit. Přijímá se jen úprava stávajícího.
+  const base = RECORD_TEMPLATES_BY_ID.get(id);
+  if (!base || !title) return null;
+
+  // Vzor smí vyplnit jen pole, která formulář daného tiskopisu má; neznámé
+  // klíče by se nikde nezobrazily, ale do konceptů by se tiše kopírovaly.
+  const rawData = record(raw.defaultData) ?? {};
+  const defaultData: Record<string, string> = {};
+  for (const key of Object.keys(base.defaultData)) {
+    defaultData[key] = typeof rawData[key] === 'string' ? (rawData[key] as string) : '';
+  }
+
+  const template: RecordTemplate = {
+    id,
+    title,
+    subtitle: str(raw.subtitle),
+    badge: str(raw.badge).trim() || base.badge,
+    normReference: str(raw.normReference) || base.normReference,
+    defaultData,
+  };
+  if (base.affectedBodyPartsDefault) {
+    template.affectedBodyPartsDefault = strArray(raw.affectedBodyPartsDefault).filter((p) => BODY_PART_IDS.has(p));
+  }
+  return template;
+}
+
+function normalizeAdminExercise(value: unknown): StyleExercise | null {
+  const raw = record(value);
+  if (!raw) return null;
+  const id = str(raw.id).trim();
+  const title = str(raw.title).trim();
+  if (!id || !title) return null;
+
+  const segments = Array.isArray(raw.originalTextSegments)
+    ? raw.originalTextSegments
+        .map((seg) => {
+          const sr = record(seg);
+          if (!sr) return null;
+          // Mezery na okrajích se neořezávají: úseky se skládají za sebe
+          // do jednoho odstavce a mezera na konci úseku odděluje slova.
+          const text = str(sr.text);
+          if (!text.trim()) return null;
+          return { text, isError: sr.isError === true, correction: str(sr.correction).trim() };
+        })
+        .filter((seg): seg is Omit<StyleExerciseSegment, 'id'> => seg !== null)
+        // Id úseku jen rozlišuje, co student označil — stačí pořadí.
+        .map((seg, i) => ({ ...seg, id: i + 1 }))
+    : [];
+  // Cvičení bez jediné chyby by nebylo co hledat.
+  if (segments.length === 0 || !segments.some((seg) => seg.isError)) return null;
+
+  return {
+    id,
+    title,
+    badge: str(raw.badge).trim() || title,
+    instruction: str(raw.instruction),
+    originalTextSegments: segments,
+  };
+}
+
 const NORMALIZERS: Record<ContentKind, (value: unknown) => unknown> = {
   subject: normalizeSubject,
   matching_category: normalizeMatchingCategory,
@@ -442,6 +595,10 @@ const NORMALIZERS: Record<ContentKind, (value: unknown) => unknown> = {
   stoppage_drill: normalizeStoppageDrill,
   jidelnicek: normalizeJidelnicek,
   regulation: normalizeRegulation,
+  ethics_dilemma: normalizeEthicsDilemma,
+  study_section: normalizeStudySection,
+  admin_template: normalizeAdminTemplate,
+  admin_exercise: normalizeAdminExercise,
 };
 
 // ─── Čtení překryvu ──────────────────────────────────────────────────────────
