@@ -33,6 +33,16 @@ const ROLE_COLORS: Record<UserRole, string> = {
 
 const MAX_AVATAR_SIZE_BYTES = 5 * 1024 * 1024;
 
+/**
+ * Formáty, které nahrání avataru přijme.
+ *
+ * Dřív stačilo `image/*`. Tím prošlo i SVG, které může nést skript a do
+ * veřejného bucketu avatarů nepatří, a HEIC/TIFF, které prohlížeč v <img>
+ * nezobrazí, takže místo fotky zůstal rozbitý obrázek. Hláška přitom
+ * odjakživa slibovala jen JPG, PNG a WEBP.
+ */
+const AVATAR_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
 interface FormMessage {
   type: 'success' | 'error';
   text: string;
@@ -200,8 +210,8 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      setAvatarMessage({ type: 'error', text: 'Vyberte prosím obrázkový soubor (JPG, PNG, WEBP).' });
+    if (!AVATAR_MIME_TYPES.includes(file.type)) {
+      setAvatarMessage({ type: 'error', text: 'Vyberte prosím obrázek ve formátu JPG, PNG, WEBP nebo GIF.' });
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
@@ -336,7 +346,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept={AVATAR_MIME_TYPES.join(',')}
                 onChange={handleAvatarFileChange}
                 className="hidden"
               />
