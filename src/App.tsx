@@ -7,6 +7,7 @@ import RoleSyncBanner from './components/RoleSyncBanner';
 import ClassMembershipGate from './components/class-bulletin/ClassMembershipGate';
 import RolePreviewBanner from './components/RolePreviewBanner';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
+import PasswordRecoveryModal from './components/PasswordRecoveryModal';
 import UpdatePrompt from './components/UpdatePrompt';
 import FeedbackButton from './components/FeedbackButton';
 import { fetchQuizQuestionsFromSupabase } from './utils/quizQuestionsLoader';
@@ -246,15 +247,20 @@ export default function App() {
     setQuizHistoryLoading(false);
   }, []);
 
+  // Efekty níže hlídají jen id účtu. Objekt `user` se mění i při každém
+  // obnovení přihlášení (zhruba jednou za hodinu) a historie by se pokaždé
+  // stahovala znovu.
+  const userId = user?.id ?? null;
+
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       setQuizHistory([]);
       setQuizHistoryError(null);
       setQuizHistoryLoading(false);
       return;
     }
-    void loadQuizHistory(user.id);
-  }, [user, loadQuizHistory]);
+    void loadQuizHistory(userId);
+  }, [userId, loadQuizHistory]);
 
   /** Odešle vše, co čeká ve frontě, a promítne výsledek do stavu. */
   const flushQueue = useCallback(async (userId: string) => {
@@ -285,22 +291,22 @@ export default function App() {
 
   // Fronta se vyprazdňuje při přihlášení, po startu aplikace a při návratu sítě.
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       setPendingResults([]);
       return;
     }
 
-    setPendingResults(pendingResultsForUser(user.id));
-    void flushQueue(user.id);
+    setPendingResults(pendingResultsForUser(userId));
+    void flushQueue(userId);
 
     const handleOnline = () => {
-      void flushQueue(user.id);
+      void flushQueue(userId);
     };
     window.addEventListener('online', handleOnline);
     return () => {
       window.removeEventListener('online', handleOnline);
     };
-  }, [user, flushQueue]);
+  }, [userId, flushQueue]);
 
   // Čekající výsledky patří do zobrazené historie — jinak by test po dokončení
   // z přehledu zmizel, dokud se neodešle, a působilo by to jako ztráta dat.
@@ -763,6 +769,7 @@ export default function App() {
         <RolePreviewBanner />
       </div>
       <PWAInstallPrompt />
+      <PasswordRecoveryModal />
       <UpdatePrompt />
       {/* Povinná volba třídy po registraci a potvrzení nominace od velitele. */}
       <ClassMembershipGate />

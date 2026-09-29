@@ -3,6 +3,7 @@ import { VSCR_RANKS, RAW_BADGES } from '../data/gamificationData';
 import { getStorageOwner, readScoped, writeScoped } from './userScopedStorage';
 import { ProgressKind, pullCompleted, pushCompleted, replaceRemoteSet } from './progressSync';
 import { clearRemoteMatching, mergeStreaks, pullRecords, pushMatchingRecords, pushStreak } from './recordsSync';
+import { MIN_XP_PERCENT } from '../constants/grading';
 
 const MATCHING_HISTORY_KEY = 'vscr_matching_history';
 const STREAK_KEY = 'vscr_streak_info';
@@ -255,6 +256,15 @@ export const DRILL_XP = 40;
  * Odznaky se připojila znovu a XP viděla. Ukázaly se dvě různá čísla.
  * Hodnota předaná parametrem je normální závislost, kterou React uhlídá.
  */
+/**
+ * Počítá se test do XP a odznaků? Jen od MIN_XP_PERCENT úspěšnosti — jinak by
+ * se dalo body i odznaky „za počet testů“ nahrabat odklikáním náhodných
+ * odpovědí. V historii a statistikách test zůstává.
+ */
+export function countsTowardProgress(session: Pick<QuizSessionRecord, 'accuracy'>): boolean {
+  return (session.accuracy ?? 0) >= MIN_XP_PERCENT;
+}
+
 export function calculateBaseXp(
   quizHistory: QuizSessionRecord[],
   matchingHistory: MatchingRecord[],
@@ -263,7 +273,7 @@ export function calculateBaseXp(
   let xp = extraXp;
 
   // 1. XP from quizzes
-  quizHistory.forEach(session => {
+  quizHistory.filter(countsTowardProgress).forEach(session => {
     // 15 XP per correct answer
     xp += (session.correctAnswers || 0) * 15;
     // 50 XP completion bonus
@@ -355,6 +365,9 @@ export function evaluateBadges(
   baseXp: number,
   availableSubjects: readonly string[] = []
 ): { badges: Badge[]; totalXpWithBadges: number; unlockedCount: number } {
+  // Do odznaků se počítají jen testy od MIN_XP_PERCENT — viz countsTowardProgress.
+  quizHistory = quizHistory.filter(countsTowardProgress);
+
   // Aggregate helper values
   const totalQuizCount = quizHistory.length;
   const totalCorrectAnswers = quizHistory.reduce((acc, s) => acc + (s.correctAnswers || 0), 0);

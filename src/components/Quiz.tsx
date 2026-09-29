@@ -7,6 +7,7 @@ import { speakText, isSpeechSupported, stopSpeaking } from '../utils/speech';
 import { getSubjectInfo } from '../data/questions/subjectsInfo';
 import PrintHeader from './common/PrintHeader';
 import ConfirmDialog from './common/ConfirmDialog';
+import { DISTINCTION_PERCENT, PASS_PERCENT } from '../constants/grading';
 
 interface QuizProps {
   questions: Question[];
@@ -808,15 +809,12 @@ export default function Quiz({
       
       let gradeLabel = 'Neprospěl';
       let gradeColor = 'text-rose-600 dark:text-rose-400';
-      if (percentage >= 90) {
+      if (percentage >= DISTINCTION_PERCENT) {
         gradeLabel = 'Výborně (Prospěl s vyznamenáním)';
         gradeColor = 'text-emerald-600 dark:text-emerald-400';
-      } else if (percentage >= 75) {
-        gradeLabel = 'Velmi dobře (Prospěl)';
+      } else if (percentage >= PASS_PERCENT) {
+        gradeLabel = 'Prospěl';
         gradeColor = 'text-blue-600 dark:text-blue-400';
-      } else if (percentage >= 60) {
-        gradeLabel = 'Dobře (Prospěl)';
-        gradeColor = 'text-amber-600 dark:text-amber-400';
       }
 
       // Per-subject breakdown
@@ -939,7 +937,7 @@ export default function Quiz({
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {Object.entries(subjectBreakdown).map(([sub, stats]) => {
                   const subPct = Math.round((stats.correct / stats.total) * 100);
-                  const isPass = subPct >= 60;
+                  const isPass = subPct >= PASS_PERCENT;
                   return (
                     <div key={sub} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
                       <div>

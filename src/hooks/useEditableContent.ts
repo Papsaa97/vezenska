@@ -96,11 +96,18 @@ export function useEditableContent<T extends { id: string }>(
 
   const restore = useCallback(
     async (id: string) => {
-      const result = await restoreContentItem(kind, id);
+      // Výchozí položka se vrací smazáním překryvu (znovu platí verze
+      // z aplikace). Vlastní položka žádnou výchozí verzi nemá — smazáním
+      // řádku by zmizela úplně, proto se jen zruší náhrobek.
+      const entry = findEntry(id);
+      const result =
+        entry && !entry.isBuiltIn
+          ? await saveContentItem(kind, entry.item, { isHidden: false })
+          : await restoreContentItem(kind, id);
       await reload();
       return result;
     },
-    [kind, reload]
+    [kind, findEntry, reload]
   );
 
   const purge = useCallback(

@@ -10,6 +10,15 @@ interface DutyModalProps {
   onSave: (duty: DutyRosterItem) => Promise<void>;
 }
 
+// Výběr data vrací RRRR-MM-DD; nástěnka i dosavadní záznamy ukazují datum
+// česky („22. 9. 2026“), takže se ukládá v tomto tvaru.
+function formatDutyDate(isoDate: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDate);
+  if (!match) return isoDate.trim() || new Date().toLocaleDateString('cs-CZ');
+  const [, year, month, day] = match;
+  return `${Number(day)}. ${Number(month)}. ${year}`;
+}
+
 export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
   const fieldIds = useId();
@@ -18,10 +27,10 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
   const [title, setTitle] = useState('Výpomoc VV Praha - Pankrác');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('06:30 \u2013 15:30');
-  const [location, setLocation] = useState('Vazební věznice Praha - Pankrác (hlavní vchod)');
+  const [location, setLocation] = useState('Vazební věznice Praha - Pankrác (hlavní brána)');
   const [attendees, setAttendees] = useState('');
   const [uniform, setUniform] = useState('Pracovní stejnokroj PS II, vysoká obuv, taktický opasek, služební průkaz');
-  const [notes, setNotes] = useState('Sraz před vchodem Akademie 15 minut předem.');
+  const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
 
   const handleTypeChange = (newType: DutyType) => {
@@ -50,7 +59,7 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
         id: `duty-${Date.now()}`,
         type,
         title: title.trim(),
-        date: date.trim() || new Date().toLocaleDateString('cs-CZ'),
+        date: formatDutyDate(date),
         time: time.trim(),
         location: location.trim(),
         attendees: attendees.trim(),
@@ -165,11 +174,10 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
               </label>
               <input
                 id={`${fieldIds}-1`}
-                type="text"
+                type="date"
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                placeholder="např. 22. 9. 2026"
                 className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white"
               />
             </div>
@@ -225,6 +233,7 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
+              placeholder="např. Sraz před vchodem Akademie 15 minut předem."
               className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white"
             />
           </div>

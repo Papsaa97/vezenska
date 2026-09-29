@@ -20,6 +20,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import { MIN_PASSWORD_LENGTH, translateAuthError, weakPasswordNotice } from '../constants/auth';
 import CaptchaWidget, { isCaptchaConfigured, type CaptchaWidgetHandle } from './CaptchaWidget';
 import {
@@ -28,6 +29,9 @@ import {
   getStoredBrowserCredential,
   FingerprintIcon,
 } from '../utils/biometrics';
+
+// 'reset' je žádost o odkaz na nové heslo — jen e-mail a ověření proti robotům.
+type AuthMode = 'signin' | 'signup' | 'reset';
 
 interface AuthWallProps {
   isDarkMode: boolean;
@@ -39,7 +43,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
   const fieldIds = useId();
 
   const { signIn, signUp } = useAuth();
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const [mode, setMode] = useState<AuthMode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -78,7 +82,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
     setShowPasswordHint(false);
   };
 
-  const switchMode = (newMode: 'signin' | 'signup') => {
+  const switchMode = (newMode: AuthMode) => {
     resetForm();
     setMode(newMode);
   };
@@ -133,7 +137,20 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
 
     setLoading(true);
 
-    if (mode === 'signin') {
+    if (mode === 'reset') {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/`,
+        captchaToken: captchaToken ?? undefined,
+      });
+      captchaRef.current?.reset();
+      if (error) {
+        setErrorMsg(translateAuthError(error));
+      } else {
+        // Stejná odpověď pro existující i neexistující účet — formulář nesmí
+        // prozradit, kdo v aplikaci má účet.
+        setSuccessMsg('Pokud k této adrese existuje účet, poslali jsme na ni odkaz pro nastavení nového hesla. Zkontrolujte i složku nevyžádané pošty.');
+      }
+    } else if (mode === 'signin') {
       const { error, signedIn } = await signIn(email, password, captchaToken ?? undefined);
       // Token je jednorázový — po odeslání ho server spotřebuje, takže další
       // pokus potřebuje novou výzvu.
@@ -326,12 +343,14 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-lg leading-tight">
-                    {mode === 'signin' ? 'Přihlášení do systému' : 'Registrace nového účtu'}
+                    {mode === 'signin' ? 'Přihlášení do systému' : mode === 'reset' ? 'Zapomenuté heslo' : 'Registrace nového účtu'}
                   </h3>
                   <p className="text-slate-400 text-xs">
-                    {mode === 'signin' 
-                      ? 'Zadejte své přihlašovací údaje' 
-                      : 'Vytvořte si profil pro přístup k portálu'}
+                    {mode === 'signin'
+                      ? 'Zadejte své přihlašovací údaje'
+                      : mode === 'reset'
+                        ? 'Pošleme vám e-mailem odkaz na nové heslo'
+                        : 'Vytvořte si profil pro přístup k portálu'}
                   </p>
                 </div>
               </div>
@@ -409,6 +428,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                   </div>
                 </div>
 
+                {mode !== 'reset' && (
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="block text-xs font-semibold text-slate-300" htmlFor={`${fieldIds}-3`}>
@@ -423,6 +443,15 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                     >
                       <HelpCircle className="w-3.5 h-3.5" />
                       <span className="text-[0.6875rem]">Nápověda</span>
+                    </button>
+                    )}
+                    {mode === 'signin' && (
+                    <button
+                      type="button"
+                      onClick={() => switchMode('reset')}
+                      className="text-[0.6875rem] text-blue-400 hover:text-blue-300 underline underline-offset-2 cursor-pointer transition-colors"
+                    >
+                      Zapomněli jste heslo?
                     </button>
                     )}
                   </div>
@@ -464,6 +493,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                     </button>
                   </div>
                 </div>
+                )}
 
                 {mode === 'signup' && (
                   <div>
@@ -545,6 +575,11 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                       <LogIn className="w-4 h-4" />
                       Přihlásit se do portálu
                     </>
+                  ) : mode === 'reset' ? (
+                    <>
+                      <Mail className="w-4 h-4" />
+                      Poslat odkaz na nové heslo
+                    </>
                   ) : (
                     <>
                       <UserPlus className="w-4 h-4" />
@@ -578,6 +613,17 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                       className="text-blue-400 hover:text-blue-300 font-semibold underline underline-offset-2 cursor-pointer"
                     >
                       Zaregistrujte se
+                    </button>
+                  </p>
+                ) : mode === 'reset' ? (
+                  <p className="text-xs text-slate-400">
+                    Heslo si pamatujete?{' '}
+                    <button
+                      type="button"
+                      onClick={() => switchMode('signin')}
+                      className="text-blue-400 hover:text-blue-300 font-semibold underline underline-offset-2 cursor-pointer"
+                    >
+                      Zpět na přihlášení
                     </button>
                   </p>
                 ) : (

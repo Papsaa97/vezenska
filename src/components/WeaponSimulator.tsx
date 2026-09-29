@@ -23,7 +23,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { loadCompletedDrills, saveCompletedDrills, updateDailyStreak } from '../utils/gamification';
+import { DRILL_XP, loadCompletedDrills, saveCompletedDrills, updateDailyStreak } from '../utils/gamification';
 import { useProgressRevision } from '../hooks/useProgressRevision';
 import { useAuth } from '../context/AuthContext';
 import { useEditableContent } from '../hooks/useEditableContent';
@@ -68,6 +68,9 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
   const [selectedDrillOption, setSelectedDrillOption] = useState<number | null>(null);
   const [isDrillAnswered, setIsDrillAnswered] = useState<boolean>(false);
   const [completedDrills, setCompletedDrills] = useState<string[]>(loadCompletedDrills);
+  // Drily, ve kterých student v této návštěvě odpověděl špatně. Dril se
+  // započítá jen napoprvé správně — jinak by stačilo proklikat možnosti.
+  const [missedDrills, setMissedDrills] = useState<string[]>([]);
 
   // Postup se přečte znovu při každé změně úložiště — i po přihlášení, kdy se
   // vlastník klíče změní z „anon“ na id účtu.
@@ -147,7 +150,10 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
     setIsDrillAnswered(true);
 
     const drill = drills[drillIndex];
-    if (drill?.options[index]?.isCorrect) {
+    if (drill && !drill.options[index]?.isCorrect) {
+      setMissedDrills(prev => (prev.includes(drill.id) ? prev : [...prev, drill.id]));
+    }
+    if (drill?.options[index]?.isCorrect && !missedDrills.includes(drill.id)) {
       setCompletedDrills(prev => {
         if (prev.includes(drill.id)) return prev;
         const next = [...prev, drill.id];
@@ -600,7 +606,9 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
                     <div className="flex items-center gap-2">
                       {drill.options[selectedDrillOption].isCorrect ? (
                         <span className="px-2.5 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
-                          SPRÁVNÉ ROZHODNUTÍ (+40 XP)
+                          {missedDrills.includes(drill.id)
+                            ? 'SPRÁVNĚ — XP jen za odpověď napoprvé'
+                            : `SPRÁVNÉ ROZHODNUTÍ (+${DRILL_XP} XP)`}
                         </span>
                       ) : (
                         <span className="px-2.5 py-1 rounded-md bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-bold text-xs">
