@@ -62,9 +62,8 @@ export default function OfficialSectionPanel({ article }: { article: LegalArticl
           Úřední znění
         </span>
         <p className="text-xs text-slate-500 dark:text-slate-400 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-          Pro tento předpis není staženo úřední znění — buď se ve Sbírce zákonů nevyhlašuje
-          (vnitřní předpis VS ČR, mezinárodní dokument), nebo ho doplní příkaz{' '}
-          <code>npm run sync:laws</code>.
+          Pro tento předpis úřední znění v aplikaci není — ve Sbírce zákonů se nevyhlašuje
+          (vnitřní předpis VS ČR, mezinárodní dokument) nebo ho aplikace zatím nemá staženo.
         </p>
       </div>
     );

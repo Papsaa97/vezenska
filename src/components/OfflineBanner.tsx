@@ -49,7 +49,7 @@ export default function OfflineBanner({
               <span>
                 <strong>Offline režim aktivní:</strong> Studijní obsah (předpisy, paragrafy, testy i kartičky) máte uložený v zařízení a funguje dál.
                 {pendingResultCount > 0
-                  ? ` Dokončené testy (${pendingResultCount}) se uloží do vašeho účtu, jakmile se připojíte — nezavírejte prosím aplikaci.`
+                  ? ` Dokončené testy (${pendingResultCount}) se uloží do vašeho účtu, jakmile se připojíte, i když aplikaci mezitím zavřete.`
                   : ' Dokončené testy se do vašeho účtu uloží po obnovení připojení.'}
               </span>
             </div>

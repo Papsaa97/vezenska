@@ -377,7 +377,7 @@ export const tacticalScenarios: Scenario[] = [
             text: 'Nabídku jednoznačně a důrazně odmítnout, zachovat chladný profesionální odstup, nevstupovat do další diskuze a nepřijímat žádné kompromisy.',
             isCorrect: true,
             feedback: 'SPRÁVNĚ: Striktní odmítnutí korupčního jednání v souladu s Kodexem etiky a okamžité ukončení neformální komunikace.',
-            legalBasis: 'Kodex profesní etiky VS ČR a NGŘ č. 28/2018 Sb.',
+            legalBasis: 'Kodex profesní etiky VS ČR a NGŘ č. 28/2018',
             nextStepId: 'step-2'
           },
           {

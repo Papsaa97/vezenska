@@ -119,7 +119,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
     setMistakesCount(0);
     setTimeElapsed(0);
     setCompletedRecord(null);
-    setIsTimerRunning(true);
+    setIsTimerRunning(activeCategory.type !== 'diagram');
     startTimeRef.current = Date.now();
     setGameKey(prev => prev + 1);
   }, [activeCategory]);
@@ -214,7 +214,8 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
               <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 tracking-tight">Poznávačka & Pexeso</h2>
             </div>
 
-            {/* Live stats pill */}
+            {/* Live stats pill — schémata (type 'diagram') mají vlastní počítadla */}
+            {activeCategory?.type !== 'diagram' && (
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-200/70 dark:bg-slate-800 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300">
                 <Timer className="w-3.5 h-3.5 text-blue-500" />
@@ -228,6 +229,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
                 <span>Chyby: {mistakesCount}</span>
               </div>
             </div>
+            )}
           </div>
           
           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -447,7 +449,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
                             </span>
                           ) : (
                             <span className="text-slate-700 dark:text-slate-300">
-                              {completedRecord.errorsCount} {completedRecord.errorsCount === 1 ? 'chyba' : 'chyby'}
+                              {completedRecord.errorsCount} {completedRecord.errorsCount === 1 ? 'chyba' : completedRecord.errorsCount < 5 ? 'chyby' : 'chyb'}
                             </span>
                           )}
                         </div>

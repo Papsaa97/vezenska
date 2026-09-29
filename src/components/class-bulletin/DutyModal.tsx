@@ -182,7 +182,7 @@ export default function DutyModal({ item, onClose, onSave }: DutyModalProps) {
                 type="text"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                placeholder="např. 06:30 \u2013 15:30"
+                placeholder="např. 06:30 – 15:30"
                 className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white"
               />
             </div>

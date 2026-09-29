@@ -452,7 +452,7 @@ export default function Header({
               aria-haspopup="menu"
               aria-expanded={openDropdown === 'more'}
               aria-controls="hlavicka-menu-dalsi"
-              className={`flex xl:hidden px-2.5 lg:px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
+              className={`flex min-[1800px]:hidden px-2.5 lg:px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
                 isMoreActive
                   ? 'bg-amber-500 text-slate-950 shadow-sm shadow-amber-500/20'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
@@ -469,7 +469,7 @@ export default function Header({
 
             {/* Desktop-only full menu (xl+ view) */}
             {/* 4. Practice & Simulator Dropdown */}
-            <div className="relative shrink-0 hidden xl:block">
+            <div className="relative shrink-0 hidden min-[1800px]:block">
               <button
                 onClick={(e) => toggleDropdown('practice', e)}
               type="button"
@@ -489,7 +489,7 @@ export default function Header({
             </div>
 
             {/* 5. Drill & Knowledge Dropdown */}
-            <div className="relative shrink-0 hidden xl:block">
+            <div className="relative shrink-0 hidden min-[1800px]:block">
               <button
                 onClick={(e) => toggleDropdown('drill', e)}
               type="button"
@@ -513,7 +513,7 @@ export default function Header({
               onClick={() => { setActiveTab('badges'); setOpenDropdown(null); setDropdownPos(null); }}
               type="button"
               aria-current={activeTab === 'badges' ? 'page' : undefined}
-              className={`hidden xl:flex px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
+              className={`hidden min-[1800px]:flex px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'badges' 
                   ? 'bg-amber-500 text-slate-950 shadow-sm shadow-amber-500/20' 
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
@@ -533,7 +533,7 @@ export default function Header({
               onClick={() => { setActiveTab('statistics'); setOpenDropdown(null); setDropdownPos(null); }}
               type="button"
               aria-current={activeTab === 'statistics' ? 'page' : undefined}
-              className={`hidden xl:flex px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
+              className={`hidden min-[1800px]:flex px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'statistics' 
                   ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
@@ -548,7 +548,7 @@ export default function Header({
               onClick={() => { setActiveTab('library'); setOpenDropdown(null); setDropdownPos(null); }}
               type="button"
               aria-current={activeTab === 'library' ? 'page' : undefined}
-              className={`hidden xl:flex px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
+              className={`hidden min-[1800px]:flex px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'library'
                   ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
@@ -559,7 +559,7 @@ export default function Header({
             </button>
 
             {/* 9. Správa obsahu — hlavní pracovní záložka lektora a správce.
-                Tlačítko „Další“, které ji jinak obsahuje, je `flex xl:hidden`,
+                Tlačítko „Další“, které ji jinak obsahuje, je `flex min-[1800px]:hidden`,
                 takže právě na velkém monitoru, kde lektor pracuje, mu záložka
                 z navigace mizela a zbývalo jen profilové rozbalovátko. */}
             {isPrivileged && (
@@ -567,7 +567,7 @@ export default function Header({
                 onClick={() => { setActiveTab('content-manager'); setOpenDropdown(null); setDropdownPos(null); }}
                 type="button"
                 aria-current={activeTab === 'content-manager' ? 'page' : undefined}
-                className={`hidden xl:flex px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
+                className={`hidden min-[1800px]:flex px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
                   activeTab === 'content-manager'
                     ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-500/20'
                     : 'text-emerald-300 hover:text-white hover:bg-slate-800/80'
@@ -1008,7 +1008,7 @@ export default function Header({
               >
                 <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'statistics' ? 'text-white' : 'text-blue-400'}`} />
                 <div>
-                  <div className="font-bold">Statistiky & Úspěšnost</div>
+                  <div className="font-bold">{NAV_TAB_LABELS['statistics']}</div>
                   <div className="text-[0.625rem] opacity-75">Detailní grafy a slabé okruhy</div>
                 </div>
               </button>

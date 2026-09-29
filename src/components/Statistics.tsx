@@ -135,20 +135,24 @@ export default function Statistics({
     const map = new Map<string, { topic: string; subject: string; total: number; correct: number; lastTime: number }>();
 
     // First seed with known topics from questions catalog if needed
+    // Klíčem je předmět + okruh: stejně pojmenovaný okruh (např. „Program zacházení“)
+    // je v Pedagogice i Penologii a dřív se oba slily do jednoho řádku.
     questions.forEach(q => {
       const t = q.topic || 'Základní okruh';
-      if (!map.has(t)) {
-        map.set(t, { topic: t, subject: q.subject, total: 0, correct: 0, lastTime: 0 });
+      const key = `${q.subject}\u0000${t}`;
+      if (!map.has(key)) {
+        map.set(key, { topic: t, subject: q.subject, total: 0, correct: 0, lastTime: 0 });
       }
     });
 
     // Populate with actual attempts
     allAttempts.forEach(att => {
       const t = att.topic || 'Základní okruh';
-      const entry = map.get(t) || { topic: t, subject: att.subject, total: 0, correct: 0, lastTime: 0 };
+      const key = `${att.subject}\u0000${t}`;
+      const entry = map.get(key) || { topic: t, subject: att.subject, total: 0, correct: 0, lastTime: 0 };
       entry.total += 1;
       if (att.isCorrect) entry.correct += 1;
-      map.set(t, entry);
+      map.set(key, entry);
     });
 
     const result: TopicPerformance[] = [];
@@ -325,8 +329,8 @@ export default function Statistics({
             Zatím žádná data k zobrazení
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-sm">
-            Vaše statistiky úspěšnosti, XP a přehled slabých okruhů se zde zobrazí, jakmile absolvujete
-            svůj první test nebo taktický scénář.
+            Vaše statistiky úspěšnosti, XP a přehled slabých okruhů se zde zobrazí, jakmile dokončíte
+            svůj první test.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 mt-6 w-full sm:w-auto">
             {onStartQuiz && (
@@ -786,7 +790,7 @@ export default function Statistics({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {weakestTopics.map((topic) => (
               <div 
-                key={topic.topic} 
+                key={`${topic.subject}-${topic.topic}`} 
                 className="bg-slate-50 dark:bg-slate-800/60 p-5 rounded-xl border border-slate-200 dark:border-slate-700/80 flex flex-col justify-between hover:border-red-300 dark:hover:border-red-800/80 transition-all"
               >
                 <div>
@@ -846,7 +850,7 @@ export default function Statistics({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {strongestTopics.map((topic) => (
                 <div
-                  key={topic.topic}
+                  key={`${topic.subject}-${topic.topic}`}
                   className="bg-emerald-50/60 dark:bg-emerald-950/20 p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-900/40"
                 >
                   <div className="flex items-center justify-between gap-2 mb-1">

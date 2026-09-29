@@ -18,6 +18,7 @@ import {
   ClassBoardItem,
   normalizeUniformDays,
   getTodayCzechName,
+  DUTY_TYPE_LABELS,
 } from '../../utils/classBoardService';
 import CourseCountdownWidget from './CourseCountdownWidget';
 import ClassMembersPanel from './ClassMembersPanel';
@@ -424,9 +425,7 @@ export default function ClassDetailExpanded({
                       >
                         {duty.type === 'pankrac'
                           ? 'VÝPOMOC PANKRÁC'
-                          : duty.type === 'recepce'
-                          ? 'RECEPCE AKADEMIE'
-                          : duty.type.toUpperCase()}
+                          : (DUTY_TYPE_LABELS[duty.type] ?? duty.type).toUpperCase()}
                       </span>
                       <span className="text-xs font-bold text-slate-900 dark:text-white">
                         {duty.date}

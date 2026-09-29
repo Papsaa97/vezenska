@@ -3,7 +3,7 @@ import { BookOpen, Clock, Play, CheckCircle2, XCircle, Star, RotateCcw, Volume2,
 import { motion, AnimatePresence } from 'motion/react';
 import { Question, QuizSessionRecord, QuestionAttempt } from '../types';
 import { normalizeSubject } from './SubjectsHub';
-import { speakText, isSpeechSupported } from '../utils/speech';
+import { speakText, isSpeechSupported, stopSpeaking } from '../utils/speech';
 import { getSubjectInfo } from '../data/questions/subjectsInfo';
 import PrintHeader from './common/PrintHeader';
 import ConfirmDialog from './common/ConfirmDialog';
@@ -115,6 +115,7 @@ export default function Quiz({
 
   const timerRef = useRef<number | null>(null);
   const examTimerRef = useRef<number | null>(null);
+  const examTimeLeftRef = useRef<number>(EXAM_TIME_LIMIT_MINUTES * 60);
 
   // Ukazatel na vždy aktuální finishExam, aby ho odpočet mohl zavolat, aniž by ho
   // musel mít v závislostech. Jako závislost se nehodí: finishExam čte spoustu stavu
@@ -131,6 +132,9 @@ export default function Quiz({
   // Předvolba z navigace (Předměty, Statistiky). Okruh se nastavuje spolu
   // s předmětem: dřív se z tlačítek „Procvičit nejslabší okruh“ a „Drilovat“
   // do testu dostal jen předmět a okruh se cestou ztratil.
+  // Předčítání nesmí pokračovat, když student přepne na jinou záložku.
+  useEffect(() => () => stopSpeaking(), []);
+
   useEffect(() => {
     if (presetSubject) {
       setSelectedSubjects([presetSubject]);
@@ -266,7 +270,7 @@ export default function Quiz({
     const finalQuestions = shuffleArray(pool);
     
     const selected = finalQuestions
-      .slice(0, questionCount === 0 ? pool.length : Math.min(questionCount, pool.length))
+      .slice(0, questionCount === 0 || isMistakesMode ? pool.length : Math.min(questionCount, pool.length))
       .map(q => shuffleQuestionOptions(q));
     
     if (selected.length === 0) {
@@ -298,11 +302,20 @@ export default function Quiz({
   // examGlobalTimeLeft, takže se každou vteřinu rušil a zakládal znovu, pokaždé
   // znovu od plné vteřiny; za 45 minut se ta prodleva nasčítala. Updater si vystačí
   // s předchozí hodnotou, takže stav v závislostech vůbec být nemusí.
+  //
+  // Zbývající čas se počítá z pevného konce zkoušky, ne sčítáním tiků: zamčený
+  // telefon nebo karta na pozadí intervaly brzdí či úplně zastaví, a pak by
+  // zkouška trvala déle než 45 minut.
+  useEffect(() => {
+    examTimeLeftRef.current = examGlobalTimeLeft;
+  });
+
   useEffect(() => {
     if (gameState !== 'playing' || !isExamMode) return;
 
+    const deadline = Date.now() + examTimeLeftRef.current * 1000;
     const id = window.setInterval(() => {
-      setExamGlobalTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
+      setExamGlobalTimeLeft(Math.max(0, Math.round((deadline - Date.now()) / 1000)));
     }, 1000);
     examTimerRef.current = id;
 
@@ -442,9 +455,14 @@ export default function Quiz({
     const correctInLimit = finishedAttempts.filter(a => a.isCorrect && !a.timedOut).length;
     const correctAfterLimit = finishedAttempts.filter(a => a.isCorrect && a.timedOut).length;
 
+    // V režimu chyb pocházejí otázky ze všech předmětů bez ohledu na filtr,
+    // takže se test zapíše podle skutečných otázek, ne podle rozbalovacího seznamu.
+    const attemptSubjects = [...new Set(quizQuestions.map(q => q.subject).filter(Boolean))];
     const recordedSubject = isExamMode 
       ? 'Závěrečná zkouška ZOP A' 
-      : (selectedSubjects.length === 1 ? selectedSubjects[0] : (selectedSubjects.length > 1 ? 'Kombinace předmětů' : 'all'));
+      : isMistakesMode
+        ? (attemptSubjects.length === 1 ? attemptSubjects[0] : 'Kombinace předmětů')
+        : (selectedSubjects.length === 1 ? selectedSubjects[0] : (selectedSubjects.length > 1 ? 'Kombinace předmětů' : 'all'));
 
     const sessionRecord: QuizSessionRecord = {
       id: `${isExamMode ? 'exam' : 'quiz'}-${Date.now()}`,
@@ -601,7 +619,7 @@ export default function Quiz({
                 <span>Načteno zadání od kapitána ({questions.length} otázek)</span>
               </div>
             )}
-            {mistakeHistory.size > 0 && (
+            {(mistakeHistory.size > 0 || isMistakesMode) && (
               <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${isMistakesMode ? 'bg-orange-50 border-orange-200 dark:bg-orange-900/20 dark:border-orange-800' : 'bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700'}`}>
                 <div>
                   <span className={`block text-xs font-bold ${isMistakesMode ? 'text-orange-700 dark:text-orange-400' : 'text-slate-700 dark:text-slate-300'}`}>Procvičování chyb</span>
@@ -699,8 +717,15 @@ export default function Quiz({
               className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs sm:text-sm font-bold transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer mt-2"
             >
               <Play className="w-4 h-4 fill-current" />
-              <span>Spustit cvičný test ({questionCount} ot.)</span>
+              <span>{isMistakesMode ? `Procvičit chyby (${mistakeHistory.size} ot.)` : `Spustit cvičný test (${questionCount} ot.)`}</span>
             </button>
+            {/* Pravý panel s hláškou je na telefonu skrytý, proto se chyba ukáže i tady. */}
+            {setupError && (
+              <div role="alert" className="md:hidden flex items-start gap-2 rounded-lg border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 px-3 py-2 text-xs text-amber-900 dark:text-amber-200">
+                <ShieldAlert className="w-4 h-4 mt-px shrink-0 text-amber-600 dark:text-amber-400" />
+                <span>{setupError}</span>
+              </div>
+            )}
           </div>
         </div>
       </aside>
@@ -726,12 +751,12 @@ export default function Quiz({
               {questionsSource === 'supabase' ? (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                   <Cloud className="w-3.5 h-3.5" />
-                  Banka otázek: Supabase Cloud ({questions.length} otázek)
+                  Banka otázek: {questions.length} otázek
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
                   <Database className="w-3.5 h-3.5" />
-                  Banka otázek: Lokální záloha ({questions.length} otázek)
+                  Banka otázek: {questions.length} otázek (offline kopie)
                 </span>
               )}
             </div>
@@ -818,10 +843,10 @@ export default function Quiz({
             <div className="text-center pb-6 border-b border-slate-200 dark:border-slate-800 no-print">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider mb-2">
                 <Award className="w-4 h-4 text-amber-500" />
-                <span>Protokol o testu ZOP A</span>
+                <span>{isExamMode ? 'Protokol o testu ZOP A' : 'Cvičný test'}</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
-                Hodnocení zkouškového testu
+                {isExamMode ? 'Hodnocení zkouškového testu' : 'Výsledek cvičného testu'}
               </h2>
               <div className="text-5xl sm:text-6xl font-black my-4 text-blue-600 dark:text-blue-400">
                 {percentage} %
@@ -833,7 +858,8 @@ export default function Quiz({
                 Správně zodpovězeno {correctCount} z {totalCount} otázek
               </p>
 
-              {/* In-limit vs after-limit statistics */}
+              {/* In-limit vs after-limit statistics — jen u testu s limitem na otázku */}
+              {timeLimit !== null && !isExamMode && (
               <div className="flex flex-wrap items-center justify-center gap-2.5 mt-3.5 no-print">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold text-emerald-800 dark:text-emerald-300">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
@@ -849,6 +875,7 @@ export default function Quiz({
                   </div>
                 )}
               </div>
+              )}
             </div>
 
             {/* XP Award & Progress Banner (Screen only) */}
@@ -939,13 +966,15 @@ export default function Quiz({
               <div className="text-center border-b-2 border-slate-900 pb-3 mb-4">
                 <h1 className="text-base font-bold uppercase tracking-widest text-slate-950">Generální ředitelství Vězeňské služby ČR</h1>
                 <h2 className="text-sm font-extrabold uppercase mt-1 text-slate-800">Akademie Vězeňské služby • Stráž pod Ralskem</h2>
-                <h3 className="text-sm font-black mt-2 underline uppercase">PROTOKOL O VYKONÁNÍ ZÁVĚREČNÉ ZKOUŠKY ZOP A</h3>
+                <h3 className="text-sm font-black mt-2 underline uppercase">
+                  {isExamMode ? 'Simulace závěrečné zkoušky ZOP A – cvičný protokol' : 'Výsledek cvičného testu'}
+                </h3>
               </div>
 
               <div className="grid grid-cols-2 gap-3 text-xs mb-4">
                 <div><strong>Frekventant:</strong> {examStudentName || 'Frekventant ZOP A'}</div>
                 <div><strong>Datum a čas konání:</strong> {new Date().toLocaleString('cs-CZ')}</div>
-                <div><strong>Typ zkoušky:</strong> Komisionální písemný test ZOP A</div>
+                <div><strong>Typ:</strong> {isExamMode ? 'Simulace písemného testu ZOP A (cvičná, neúřední)' : 'Cvičný test'}</div>
                 <div><strong>Dosažené skóre:</strong> {correctCount} / {totalCount} ({percentage} %)</div>
                 <div><strong>Celkový výsledek:</strong> <span className="font-extrabold">{gradeLabel}</span></div>
                 <div><strong>Časový limit:</strong> 45 minut</div>
@@ -1075,7 +1104,7 @@ export default function Quiz({
                         >
                           <div className="flex items-start justify-between gap-2 mb-2 flex-wrap">
                             <span className="text-xs font-bold text-blue-600 dark:text-blue-400 print:text-slate-700">
-                              {q.subject}{q.topic ? ` • ${q.topic}` : ''}
+                              {q.subject}{q.topic && q.topic !== q.subject ? ` • ${q.topic}` : ''}
                             </span>
                             <div className="flex items-center gap-1.5 flex-wrap justify-end">
                               <span className={`text-[0.6875rem] font-bold px-2 py-0.5 rounded-full ${
@@ -1083,9 +1112,9 @@ export default function Quiz({
                                   ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 print:bg-rose-50 print:text-rose-900 print:border print:border-rose-300' 
                                   : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 print:bg-emerald-50 print:text-emerald-900 print:border print:border-emerald-400'
                               }`}>
-                                {isWrong ? 'Chybná odpověď' : 'Správně zodpovězeno'}
+                                {answers[q.id] === undefined ? 'Nezodpovězeno' : isWrong ? 'Chybná odpověď' : 'Správně zodpovězeno'}
                               </span>
-                              {timedOutMap[q.id] ? (
+                              {timeLimit === null || isExamMode ? null : timedOutMap[q.id] ? (
                                 <span className="text-[0.6875rem] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 flex items-center gap-1 print:bg-amber-50 print:text-amber-900 print:border-amber-300">
                                   <Clock className="w-3 h-3" />
                                   Po limitu (nestihnuto)
@@ -1205,7 +1234,7 @@ export default function Quiz({
                 Otázka {currentIndex + 1} / {quizQuestions.length}
               </span>
               <span className="text-slate-400 dark:text-slate-500 font-semibold text-xs hidden sm:block">
-                {getSubjectInfo(currentQ.subject).name}{currentQ.topic ? ` • ${currentQ.topic}` : ''}
+                {getSubjectInfo(currentQ.subject).name}{currentQ.topic && currentQ.topic !== currentQ.subject && currentQ.topic !== getSubjectInfo(currentQ.subject).name ? ` • ${currentQ.topic}` : ''}
               </span>
             </div>
             

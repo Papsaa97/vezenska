@@ -754,14 +754,15 @@ export default function ClassBulletinBoard() {
               <span>Informační tabule tříd ZOP</span>
             </h1>
 
-            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
+            <p className="hidden sm:block text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
               Denní operativní rozvrhy, ústrojová kázeň, nepravidelné výpomoci na Pankráci, služby na
               recepci Akademie a zkouškové termíny.
             </p>
 
             <div className="flex items-center gap-2 text-xs sm:text-sm text-amber-300/90 font-medium pt-1">
               <Calendar className="w-4 h-4 text-amber-400" />
-              <span className="capitalize">{todayFormatted}</span>
+              {/* Velké jen první písmeno — `capitalize` dělalo „Úterý 29. Září“. */}
+              <span>{todayFormatted.charAt(0).toUpperCase() + todayFormatted.slice(1)}</span>
             </div>
           </div>
 

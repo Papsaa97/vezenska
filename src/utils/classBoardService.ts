@@ -42,6 +42,15 @@ export interface FetchResult<T> {
 
 export type DutyType = 'pankrac' | 'recepce' | 'strelby' | 'zkouska' | 'jine';
 
+/** Jeden název pro každý druh služby — karta i detail třídy ho berou odsud. */
+export const DUTY_TYPE_LABELS: Record<DutyType, string> = {
+  pankrac: 'Výpomoc Pankrác',
+  recepce: 'Recepce Akademie',
+  strelby: 'Střelby',
+  zkouska: 'Zkouška',
+  jine: 'Jiné / Stáž',
+};
+
 export interface DutyRosterItem {
   id: string;
   type: DutyType;
@@ -268,7 +277,7 @@ export function getCourseCountdown(
         status: 'completed',
         formattedPeriod,
         headline: 'Stav kurzu',
-        remainingText: 'Kurz úspěšně ukončen',
+        remainingText: 'Kurz ukončen',
         totalDaysRemaining: 0,
         progressPercent: 100,
       };
@@ -325,7 +334,7 @@ export function getCourseCountdown(
         status: 'completed',
         formattedPeriod,
         headline: 'Stav kurzu',
-        remainingText: 'Kurz úspěšně ukončen',
+        remainingText: 'Kurz ukončen',
         totalDaysRemaining: 0,
         progressPercent: 100,
         elapsedText: '100 % dokončeno',

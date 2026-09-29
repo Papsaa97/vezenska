@@ -5,7 +5,8 @@ import { legalDatabase } from '../data/legalCompasData';
 import { VscrRegulation, VSCR_REGULATIONS_REGISTRY } from '../data/vscrRegulationsRegistry';
 import { auditLegalDatabase, measureRegulationCoverage, AuditReport } from '../utils/legalIntegrity';
 import { prefetchAllSnapshots, formatMegabytes, countCachedSnapshots } from '../utils/esbirka/offline';
-import { speakText } from '../utils/speech';
+import { speakText, stopSpeaking } from '../utils/speech';
+import { foldSearchText } from '../utils/searchText';
 import ConfirmDialog from './common/ConfirmDialog';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -66,6 +67,9 @@ export default function LegalCompass() {
   const [legacyLocalRegs, setLegacyLocalRegs] = useState<VscrRegulation[]>(() =>
     canEditRegulations ? readLegacyLocalRegulations() : []
   );
+  // Předčítání nesmí pokračovat, když student přepne na jinou záložku.
+  useEffect(() => () => stopSpeaking(), []);
+
   useEffect(() => {
     setLegacyLocalRegs(canEditRegulations ? readLegacyLocalRegulations() : []);
   }, [canEditRegulations]);
@@ -356,17 +360,17 @@ export default function LegalCompass() {
         art.category === selectedCategory || 
         (selectedCategory === 'favs' && savedFavorites.includes(art.id));
       
-      const q = searchQuery.toLowerCase().trim();
+      const q = foldSearchText(searchQuery).trim();
       if (!q) return matchCat;
 
       const matchQuery = 
-        art.section.toLowerCase().includes(q) ||
-        art.title.toLowerCase().includes(q) ||
-        art.actNumber.toLowerCase().includes(q) ||
-        art.actTitle.toLowerCase().includes(q) ||
-        art.exactText.toLowerCase().includes(q) ||
-        art.explanation.toLowerCase().includes(q) ||
-        art.examTips.toLowerCase().includes(q);
+        foldSearchText(art.section).includes(q) ||
+        foldSearchText(art.title).includes(q) ||
+        foldSearchText(art.actNumber).includes(q) ||
+        foldSearchText(art.actTitle).includes(q) ||
+        foldSearchText(art.exactText).includes(q) ||
+        foldSearchText(art.explanation).includes(q) ||
+        foldSearchText(art.examTips).includes(q);
 
       return matchCat && matchQuery;
     });
@@ -493,22 +497,22 @@ export default function LegalCompass() {
         selectedRegistryType === 'all' || 
         reg.type === selectedRegistryType;
       
-      const q = searchQuery.toLowerCase().trim();
+      const q = foldSearchText(searchQuery).trim();
       if (!q) return matchType;
 
       const matchQuery = 
-        reg.code.toLowerCase().includes(q) ||
-        reg.title.toLowerCase().includes(q) ||
-        reg.shortTitle.toLowerCase().includes(q) ||
-        reg.authority.toLowerCase().includes(q) ||
-        reg.scope.toLowerCase().includes(q) ||
-        reg.summary.toLowerCase().includes(q) ||
-        reg.practicalApplication.toLowerCase().includes(q) ||
-        reg.keyProvisions.some(p => p.toLowerCase().includes(q)) ||
-        reg.tags.some(t => t.toLowerCase().includes(q)) ||
+        foldSearchText(reg.code).includes(q) ||
+        foldSearchText(reg.title).includes(q) ||
+        foldSearchText(reg.shortTitle).includes(q) ||
+        foldSearchText(reg.authority).includes(q) ||
+        foldSearchText(reg.scope).includes(q) ||
+        foldSearchText(reg.summary).includes(q) ||
+        foldSearchText(reg.practicalApplication).includes(q) ||
+        reg.keyProvisions.some(p => foldSearchText(p).includes(q)) ||
+        reg.tags.some(t => foldSearchText(t).includes(q)) ||
         // Bez tohohle se hledání „donucovací prostředky" netrefilo do předpisu,
         // který je má v textu, ale ne v souhrnu ani ve výčtu klíčových ustanovení.
-        reg.fullLegalText.toLowerCase().includes(q);
+        foldSearchText(reg.fullLegalText).includes(q);
 
       return matchType && matchQuery;
     });

@@ -198,7 +198,7 @@ export const RAW_BADGES: Omit<Badge, 'isUnlocked' | 'progressPercent' | 'current
   {
     id: 'badge-quiz-5',
     title: 'Zkušební dril',
-    description: 'Dokonči úspěšně celkem 5 cvičných testů.',
+    description: 'Dokonči celkem 5 testů.',
     category: 'quiz',
     tier: 'silver',
     iconName: 'GraduationCap',
@@ -390,7 +390,7 @@ export const RAW_BADGES: Omit<Badge, 'isUnlocked' | 'progressPercent' | 'current
   {
     id: 'badge-match-master',
     title: 'Absolutní přehled',
-    description: 'Spoj všechny pojmy a dokonči všech 8 kategorií v Poznávačce.',
+    description: 'Dokonči alespoň 8 různých kategorií v Poznávačce.',
     category: 'matching',
     tier: 'diamond',
     iconName: 'Trophy',
@@ -432,7 +432,7 @@ export const RAW_BADGES: Omit<Badge, 'isUnlocked' | 'progressPercent' | 'current
   {
     id: 'badge-xp-5000',
     title: 'Elitní důstojník',
-    description: 'Dosáhni hranice 5 000 XP a postoup mezi veterány sboru.',
+    description: 'Dosáhni hranice 5 000 XP a postup mezi veterány sboru.',
     category: 'streaks',
     tier: 'platinum',
     iconName: 'Crown',

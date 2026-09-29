@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { Question } from '../types';
 import { normalizeSubject } from './SubjectsHub';
-import { speakText, isSpeechSupported } from '../utils/speech';
+import { speakText, isSpeechSupported, stopSpeaking } from '../utils/speech';
 import { getSubjectInfo } from '../data/questions/subjectsInfo';
 import { useAuth } from '../context/AuthContext';
 import LeitnerHelpModal from './common/LeitnerHelpModal';
@@ -161,6 +161,9 @@ export default function Flashcards({
 
   // Po změně vlastníka klíče (přihlášení / odhlášení) se krabičky načtou znovu.
   const leitnerOwnerRef = useRef<string>(getStorageOwner());
+  // Předčítání nesmí pokračovat, když student přepne na jinou záložku.
+  useEffect(() => () => stopSpeaking(), []);
+
   useEffect(() => {
     const owner = getStorageOwner();
     if (owner === leitnerOwnerRef.current) return;
@@ -815,7 +818,8 @@ export default function Flashcards({
                 }`}>
                   <div className="flex justify-between items-start mb-6">
                     <div className="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-900/30 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-400">
-                      {getSubjectInfo(currentQuestion.subject).name} • {currentQuestion.topic}
+                      {getSubjectInfo(currentQuestion.subject).name}
+                      {currentQuestion.topic && currentQuestion.topic !== currentQuestion.subject && currentQuestion.topic !== getSubjectInfo(currentQuestion.subject).name ? ` • ${currentQuestion.topic}` : ''}
                     </div>
                     
                     <div className="flex items-center gap-1.5 no-print">

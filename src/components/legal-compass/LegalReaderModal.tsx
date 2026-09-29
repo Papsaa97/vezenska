@@ -380,7 +380,7 @@ export default function LegalReaderModal({
                     title={
                       maUplneZneni
                         ? 'Zobrazit úplné znění stažené z e-Sbírky'
-                        : 'Pro tento předpis není úplné znění k dispozici (není ve Sbírce zákonů nebo nebyl spuštěn npm run sync:laws)'
+                        : 'Pro tento předpis není úplné znění k dispozici (nevyhlašuje se ve Sbírce zákonů)'
                     }
                   >
                     <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
