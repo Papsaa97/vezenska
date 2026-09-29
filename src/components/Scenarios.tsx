@@ -148,7 +148,7 @@ export default function Scenarios() {
 
   if (!selectedScenario) {
     return (
-      <div className="w-full h-full flex flex-col overflow-y-auto p-2 sm:p-4 max-w-6xl mx-auto">
+      <div className="w-full flex flex-col pb-8">
         {/* Header */}
         <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-2xl p-5 sm:p-6 mb-6 shadow-md border border-slate-700/50">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -408,7 +408,7 @@ export default function Scenarios() {
   const isFinished = selectedChoice?.isCorrect && !selectedChoice.nextStepId;
 
   return (
-    <div className="w-full h-full flex flex-col overflow-y-auto p-2 sm:p-4 max-w-4xl mx-auto">
+    <div className="w-full flex flex-col pb-8">
       {/* Top Bar */}
       <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-200 dark:border-slate-800">
         <button

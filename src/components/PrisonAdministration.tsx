@@ -463,7 +463,7 @@ export default function PrisonAdministration() {
   }, [missingMandatoryFields, recordText]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6 pb-12 print:max-w-none print:w-full print:p-0 print:m-0 print:space-y-0 print:pb-0">
+    <div className="w-full space-y-6 pb-12 print:max-w-none print:w-full print:p-0 print:m-0 print:space-y-0 print:pb-0">
       
       {/* Header Banner — purely informative, no action buttons (navigation lives in the segmented control below) */}
       <div className="bg-gradient-to-r from-amber-600 via-amber-700 to-amber-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden no-print print:hidden">
@@ -1334,14 +1334,14 @@ export default function PrisonAdministration() {
                   type="button"
                   onClick={handlePrint}
                   className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-950 hover:bg-slate-800 dark:hover:bg-slate-100 font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
-                  title="Vytisknout úřední záznam do oficiálního formátu A4 nebo uložit jako PDF"
+                  title="Vytisknout úřední záznam ve formátu A4 nebo uložit jako PDF"
                 >
                   <Printer className="w-4 h-4" />
                   <span>Vytisknout úřední záznam / PDF</span>
                 </button>
               </div>
               <span className="text-[0.6875rem] font-bold text-amber-600 dark:text-amber-400">
-                Oficiální standard VS ČR
+                Podle vzoru úředního záznamu
               </span>
             </div>
 
@@ -1354,7 +1354,7 @@ export default function PrisonAdministration() {
             <div className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm no-print print:hidden">
               <div className="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-2">
                 <Printer className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                <span className="text-[0.6875rem] sm:text-xs font-medium">Oficiální A4 tiskopis s právním záhlavím, náležitostmi a podpisovými doložkami</span>
+                <span className="text-[0.6875rem] sm:text-xs font-medium">Tiskopis A4 se záhlavím, náležitostmi a podpisovými doložkami</span>
               </div>
               <button
                 type="button"

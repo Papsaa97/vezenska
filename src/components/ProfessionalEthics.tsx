@@ -50,7 +50,7 @@ export const ProfessionalEthics: React.FC<ProfessionalEthicsProps> = ({ onStartS
   };
 
   return (
-    <div className="space-y-6 pb-12 max-w-7xl mx-auto">
+    <div className="w-full space-y-6 pb-12">
       {/* Tisková hlavička – viditelná výhradně při tisku */}
       <div className="hidden print:block">
         <PrintHeader

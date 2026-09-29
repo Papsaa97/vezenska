@@ -307,7 +307,7 @@ export default function CaptainExamAssistant({
   };
 
   return (
-    <div className="w-full h-full flex flex-col overflow-y-auto p-2 sm:p-4 max-w-6xl mx-auto space-y-6 print:p-0 print:m-0 print:space-y-4">
+    <div className="w-full flex flex-col space-y-6 pb-8 print:p-0 print:m-0 print:space-y-4">
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-5 sm:p-7 shadow-md border border-indigo-500/20 no-print">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

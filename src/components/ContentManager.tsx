@@ -119,7 +119,7 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
   return (
     // Tabulka uživatelů má šest sloupců — v šířce 4xl se role a akce ocitly
     // za pravým okrajem a šly vidět jen vodorovným posunem.
-    <div className={`w-full ${activeTab === 'users' ? 'max-w-6xl' : 'max-w-4xl'} mx-auto space-y-8 pb-8`}>
+    <div className="w-full space-y-8 pb-8">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-2xl bg-emerald-600 flex items-center justify-center shadow-md shadow-emerald-500/25">

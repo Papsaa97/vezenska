@@ -186,7 +186,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
   const currentStep = stepsToUse[currentStepIndex];
 
   return (
-    <div className="w-full h-full flex flex-col overflow-y-auto p-2 sm:p-4 max-w-5xl mx-auto">
+    <div className="w-full flex flex-col pb-8">
       {/* Header */}
       <div className="bg-gradient-to-r from-slate-900 via-amber-950/70 to-slate-900 text-white rounded-2xl p-5 sm:p-6 mb-6 shadow-md border border-amber-500/20">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

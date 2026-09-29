@@ -155,7 +155,7 @@ export default function MaterialLibrary() {
   }, [filtered, presentSubjects, activeSubject]);
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6 pb-8">
+    <div className="w-full space-y-6 pb-8">
       <FileViewerModal material={viewed} isOpen={Boolean(viewed)} onClose={() => setViewed(null)} />
 
       {/* Tisková hlavička – viditelná pouze při tisku */}
