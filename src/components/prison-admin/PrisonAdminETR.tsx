@@ -7,7 +7,9 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import { defaultAdminSections } from '../../data/prisonAdminData';
+import { useStudySections } from '../../hooks/useStudySections';
+import StudySectionsEditor from '../common/StudySectionsEditor';
+import CustomStudySections from '../common/CustomStudySections';
 import RichText from '../common/RichText';
 
 /** Barvy a ikony karet zásad v pořadí, v jakém byly natvrdo; další se opakují dokola. */
@@ -38,9 +40,11 @@ const PRINCIPLE_TONES: { box: string; title: string; icon: React.ReactNode }[] =
 export default function PrisonAdminETR() {
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
   const fieldIds = useId();
-  const sections = defaultAdminSections;
-  const principles = sections.find((s) => s.id === 'etr-zasady');
-  const operations = sections.find((s) => s.id === 'etr-operace');
+  // Bloky z repozitáře přepsané úpravami lektora (contentLibrary.ts, druh 'study_section').
+  const sectionState = useStudySections('etr');
+  const { byId, custom } = sectionState;
+  const principles = byId('etr-zasady');
+  const operations = byId('etr-operace');
 
   const [cjOrg, setCjOrg] = useState('VS');
   const [cjSpisNumber, setCjSpisNumber] = useState('123');
@@ -69,6 +73,8 @@ export default function PrisonAdminETR() {
 
   return (
     <div className="space-y-6 no-print print:hidden">
+
+      <StudySectionsEditor area="etr" state={sectionState} />
 
       {/* Interactive Číslo Jednací Decoder */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
@@ -262,6 +268,9 @@ export default function PrisonAdminETR() {
           </div>
         </div>
       )}
+
+      {/* Bloky přidané lektorem */}
+      <CustomStudySections sections={custom} tone="adaptive" />
 
     </div>
   );

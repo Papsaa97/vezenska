@@ -28,10 +28,42 @@ import {
   BODY_PARTS,
   FIELD_LABELS,
   RECORD_TEMPLATE_MANDATORY_FIELDS,
+  RecordTemplate,
   defaultRecordTemplates,
 } from '../data/prisonAdminData';
+import { useAuth } from '../context/AuthContext';
+import { useEditableContent } from '../hooks/useEditableContent';
+import ContentEditorBar from './common/ContentEditorBar';
+import RecordTemplateEditModal from './common/RecordTemplateEditModal';
 
-const RECORD_TEMPLATES = defaultRecordTemplates;
+/**
+ * Náhradní tiskopis, když lektor všechny skryl nebo odebral. Hooky níže
+ * potřebují objekt i tehdy; obrazovka místo formuláře ukáže upozornění.
+ */
+const EMPTY_TEMPLATE: RecordTemplate = {
+  id: '',
+  title: '',
+  subtitle: '',
+  badge: '',
+  normReference: '',
+  defaultData: {},
+};
+
+/** Drží formulář přesně ukázkový vzor daného tiskopisu? */
+function matchesTemplate(
+  formData: Record<string, string>,
+  bodyParts: string[],
+  tpl: RecordTemplate
+): boolean {
+  const sameFields = Object.keys(tpl.defaultData).every(
+    (key) => (formData[key] || '') === (tpl.defaultData[key] || '')
+  );
+  const sameParts =
+    (tpl.affectedBodyPartsDefault || []).slice().sort().join(',') === bodyParts.slice().sort().join(',');
+  return sameFields && sameParts;
+}
+
+const BUILT_IN_TEMPLATES = new Map(defaultRecordTemplates.map((t) => [t.id, t]));
 
 export type AdminSection = 'generator' | 'etr' | 'vis' | 'style-rules';
 
@@ -114,12 +146,22 @@ export default function PrisonAdministration() {
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
   const fieldIds = useId();
 
+  const { profile } = useAuth();
+  const canEdit = profile?.role === 'lektor' || profile?.role === 'admin';
+
+  // Tiskopisy z repozitáře přepsané úpravami lektora (contentLibrary.ts,
+  // druh 'admin_template'). Lektor mění popis a ukázkový vzor vyplnění;
+  // rozvržení formuláře a tisku zůstává v kódu níže.
+  const templateContent = useEditableContent<RecordTemplate>('admin_template', defaultRecordTemplates, canEdit);
+  const templates = templateContent.items;
+  const [templateModalOpen, setTemplateModalOpen] = useState(false);
+
   const [activeSection, setActiveSection] = useState<AdminSection>('generator');
 
   // Generator state
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('dp');
-  const [formData, setFormData] = useState<Record<string, string>>(() => RECORD_TEMPLATES[0].defaultData);
-  const [selectedBodyParts, setSelectedBodyParts] = useState<string[]>(() => RECORD_TEMPLATES[0].affectedBodyPartsDefault || []);
+  const [formData, setFormData] = useState<Record<string, string>>(() => defaultRecordTemplates[0].defaultData);
+  const [selectedBodyParts, setSelectedBodyParts] = useState<string[]>(() => defaultRecordTemplates[0].affectedBodyPartsDefault || []);
   const [copiedSuccess, setCopiedSuccess] = useState(false);
   const [copyError, setCopyError] = useState(false);
   /** Selhalo kopírování Č.j. Vlastní stav, protože `copyError` patří k tlačítku „Kopírovat záznam". */
@@ -141,9 +183,12 @@ export default function PrisonAdministration() {
   // záložka otevřená.
   const draftsOwner = useStorageOwner();
 
+  // Zvolený tiskopis mohl lektor skrýt či odebrat — pak se ukáže první
+  // dostupný. Všechno níže proto pracuje s `templateId`, ne se zvoleným id.
   const currentTemplate = useMemo(() => {
-    return RECORD_TEMPLATES.find(t => t.id === selectedTemplateId) || RECORD_TEMPLATES[0];
-  }, [selectedTemplateId]);
+    return templates.find(t => t.id === selectedTemplateId) ?? templates[0] ?? EMPTY_TEMPLATE;
+  }, [templates, selectedTemplateId]);
+  const templateId = currentTemplate.id;
 
   const handleFieldChange = useCallback((field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -186,15 +231,25 @@ export default function PrisonAdministration() {
    *
    * Dřív to bylo rozdělené na efekt „jen při připojení“ (s `eslint-disable`
    * na chybějící závislost, což AGENTS.md zakazuje) a na tutéž logiku znovu
-   * v `handleSelectTemplate`. Jeden efekt se závislostí na `selectedTemplateId`
+   * v `handleSelectTemplate`. Jeden efekt se závislostí na zvoleném tiskopisu
    * dělá totéž, obsluhuje i přepnutí šablony a nic nemlčí.
    */
   useEffect(() => {
     // Koncepty ze staré, nezabezpečené podoby klíče se zahodí.
     purgeLegacyDrafts();
 
-    const tpl = RECORD_TEMPLATES.find((t) => t.id === selectedTemplateId) ?? RECORD_TEMPLATES[0];
-    const draft = loadDraft(selectedTemplateId);
+    const tpl = currentTemplate;
+    if (!tpl.id) return;
+    let draft = loadDraft(tpl.id);
+
+    // Dřív se koncept ukládal i nerozepsaný, takže mnoho zařízení má uložený
+    // jen původní vzor z aplikace. Takový „koncept“ by zakryl vzor, který
+    // mezitím upravil lektor — nic rozepsaného v něm není, proto se zahodí.
+    const builtIn = BUILT_IN_TEMPLATES.get(tpl.id);
+    if (draft && builtIn && builtIn !== tpl && matchesTemplate(draft.formData, draft.selectedBodyParts || [], builtIn)) {
+      clearDraft(tpl.id);
+      draft = null;
+    }
 
     setShowValidation(false);
     setCopyError(false);
@@ -202,7 +257,7 @@ export default function PrisonAdministration() {
     if (draft) {
       setFormData(draft.formData);
       setSelectedBodyParts(draft.selectedBodyParts || []);
-      loadedTemplateRef.current = selectedTemplateId;
+      loadedTemplateRef.current = tpl.id;
       setDraftNotice(true);
       const timer = window.setTimeout(() => setDraftNotice(false), 4000);
       return () => clearTimeout(timer);
@@ -210,23 +265,37 @@ export default function PrisonAdministration() {
 
     setFormData({ ...tpl.defaultData });
     setSelectedBodyParts(tpl.affectedBodyPartsDefault || []);
-    loadedTemplateRef.current = selectedTemplateId;
-  }, [selectedTemplateId, draftsOwner]);
+    loadedTemplateRef.current = tpl.id;
+    // Závislost na celém tiskopisu, ne jen na id: když se po načtení
+    // překryvu objeví lektorem upravený vzor, formulář se na něj přepne.
+    // Objekt tiskopisu je stabilní, dokud se jeho obsah nezmění.
+  }, [currentTemplate, draftsOwner]);
+
+  const isFormDirty = useMemo(
+    () => !matchesTemplate(formData, selectedBodyParts, currentTemplate),
+    [formData, selectedBodyParts, currentTemplate]
+  );
 
   // Autosave the in-progress record as a draft (debounced) so a reload/tab-close doesn't lose it.
   useEffect(() => {
     // Formulář ještě nese obsah předchozí šablony — ukládat ho pod klíč té
     // nové by data prohodilo.
-    if (loadedTemplateRef.current !== selectedTemplateId) return;
+    if (!templateId || loadedTemplateRef.current !== templateId) return;
 
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
     autosaveTimer.current = setTimeout(() => {
-      saveDraft(selectedTemplateId, { formData, selectedBodyParts });
+      // Ukládá se jen skutečně rozepsaný záznam. Nerozepsaný vzor jako
+      // koncept by po úpravě vzoru lektorem dál ukazoval ten starý.
+      if (isFormDirty) {
+        saveDraft(templateId, { formData, selectedBodyParts });
+      } else {
+        clearDraft(templateId);
+      }
     }, 400);
     return () => {
       if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
     };
-  }, [formData, selectedBodyParts, selectedTemplateId]);
+  }, [formData, selectedBodyParts, templateId, isFormDirty]);
 
   /** Přepnutí šablony. Načtení konceptu obstará efekt výše. */
   const handleSelectTemplate = useCallback((tplId: string) => {
@@ -243,14 +312,6 @@ export default function PrisonAdministration() {
   const missingMandatoryFields = useMemo(() => {
     return (RECORD_TEMPLATE_MANDATORY_FIELDS[currentTemplate.id] ?? []).filter(field => !(formData[field] || '').trim());
   }, [currentTemplate, formData]);
-
-  const isFormDirty = useMemo(() => {
-    const defaultKeys = Object.keys(currentTemplate.defaultData);
-    const changedField = defaultKeys.some(key => (formData[key] || '') !== (currentTemplate.defaultData[key] || ''));
-    const defaultParts = (currentTemplate.affectedBodyPartsDefault || []).slice().sort().join(',');
-    const currentParts = selectedBodyParts.slice().sort().join(',');
-    return changedField || defaultParts !== currentParts;
-  }, [formData, selectedBodyParts, currentTemplate]);
 
   const handleCopyRecord = useCallback(() => {
     if (missingMandatoryFields.length > 0) {
@@ -285,20 +346,20 @@ export default function PrisonAdministration() {
       setSelectedBodyParts(currentTemplate.affectedBodyPartsDefault || []);
       setShowValidation(false);
       setCopyError(false);
-      clearDraft(selectedTemplateId);
+      clearDraft(templateId);
       return;
     }
     setPendingFormAction('reset');
-  }, [isFormDirty, currentTemplate, selectedTemplateId]);
+  }, [isFormDirty, currentTemplate, templateId]);
 
   const doResetToDefault = useCallback(() => {
     setFormData({ ...currentTemplate.defaultData });
     setSelectedBodyParts(currentTemplate.affectedBodyPartsDefault || []);
     setShowValidation(false);
     setCopyError(false);
-    clearDraft(selectedTemplateId);
+    clearDraft(templateId);
     setPendingFormAction(null);
-  }, [currentTemplate, selectedTemplateId]);
+  }, [currentTemplate, templateId]);
 
   const handleClearForm = useCallback(() => {
     setPendingFormAction('clear');
@@ -311,9 +372,9 @@ export default function PrisonAdministration() {
     setSelectedBodyParts([]);
     setShowValidation(false);
     setCopyError(false);
-    clearDraft(selectedTemplateId);
+    clearDraft(templateId);
     setPendingFormAction(null);
-  }, [currentTemplate, selectedTemplateId]);
+  }, [currentTemplate, templateId]);
 
   /**
    * Smaže rozepsané koncepty VŠECH šablon.
@@ -322,7 +383,8 @@ export default function PrisonAdministration() {
    * vězněných osob se ukládaly automaticky a uživatel je neměl jak odstranit.
    */
   const doPurgeDrafts = useCallback(() => {
-    clearAllDrafts(RECORD_TEMPLATES.map((t) => t.id));
+    // Všechny známé tiskopisy, i ty, které lektor právě skryl.
+    clearAllDrafts(defaultRecordTemplates.map((t) => t.id));
     setFormData({ ...currentTemplate.defaultData });
     setSelectedBodyParts(currentTemplate.affectedBodyPartsDefault || []);
     setShowValidation(false);
@@ -331,7 +393,7 @@ export default function PrisonAdministration() {
   }, [currentTemplate]);
 
   const recordText = useMemo((): string => {
-    if (selectedTemplateId === 'dp') {
+    if (templateId === 'dp') {
       return `VĚZEŇSKÁ SLUŽBA ČESKÉ REPUBLIKY\n${formData.prisonName || ''}\nČ. j.: ${formData.refNumber || ''}\n\n` +
         `ZÁZNAM O POUŽITÍ DONUCOVACÍHO PROSTŘEDKU (Část první)\n` +
         `------------------------------------------------------------------\n` +
@@ -361,7 +423,7 @@ export default function PrisonAdministration() {
         `Stanovisko vedoucího oddělení: ${formData.departmentHeadOpinion || ''}\n\n` +
         `Zpráva o prošetření okolností a důvodů (1. ZŘV): ${formData.zrvReport || ''}\n\n` +
         `Rozhodnutí ředitele věznice o oprávněnosti a přiměřenosti: ${formData.directorDecision || ''}`;
-    } else if (selectedTemplateId === 'zkp') {
+    } else if (templateId === 'zkp') {
       return `${formData.prisonName || ''}\n\n` +
         `ZÁZNAM O KÁZEŇSKÉM PŘESTUPKU\n` +
         `------------------------------------------------------------------\n` +
@@ -374,7 +436,7 @@ export default function PrisonAdministration() {
         `${formData.signatureDate || ''}\n` +
         `Podpis odsouzeného: ........................................\n\n` +
         `${formData.officerSignature || ''}`;
-    } else if (selectedTemplateId === 'odneti') {
+    } else if (templateId === 'odneti') {
       return `${formData.prisonName || ''}\n\n` +
         `ZÁZNAM O ODNĚTÍ VĚCI dle § 12 zákona č. 555/1992 Sb.\n` +
         `------------------------------------------------------------------\n` +
@@ -396,7 +458,7 @@ export default function PrisonAdministration() {
         `${formData.signatureDate || ''}\n` +
         `${formData.officerSignature || ''}`;
     }
-  }, [selectedTemplateId, formData, selectedBodyParts]);
+  }, [templateId, formData, selectedBodyParts]);
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6 pb-12 print:max-w-none print:w-full print:p-0 print:m-0 print:space-y-0 print:pb-0">
@@ -442,8 +504,35 @@ export default function PrisonAdministration() {
         })}
       </div>
 
+      {/* Správa tiskopisů — jen lektor a správce. Přidat nový tiskopis nejde:
+          formulář i tisková podoba každého jsou v kódu. */}
+      {activeSection === 'generator' && canEdit && (
+        <>
+          <ContentEditorBar
+            content={templateContent}
+            targets={templateContent.entries.filter((e) => e.id === templateId && !e.isDeleted)}
+            deleted={templateContent.entries.filter((e) => e.isDeleted)}
+            getName={(t) => t.title}
+            noun="tiskopis"
+            onEdit={() => setTemplateModalOpen(true)}
+          />
+          <RecordTemplateEditModal
+            template={templateId ? currentTemplate : null}
+            isOpen={templateModalOpen}
+            onClose={() => setTemplateModalOpen(false)}
+            onSave={(t) => templateContent.save(t)}
+          />
+        </>
+      )}
+
+      {activeSection === 'generator' && templates.length === 0 && (
+        <p className="text-center text-sm text-slate-500 dark:text-slate-400 italic py-8 no-print print:hidden">
+          V generátoru teď nejsou žádné tiskopisy{canEdit ? ' — vraťte některý z přehledu odebraných.' : '.'}
+        </p>
+      )}
+
       {/* SECTION 1: OFFICIAL RECORDS GENERATOR & BODY SCHEME */}
-      {activeSection === 'generator' && (
+      {activeSection === 'generator' && templates.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 print:block print:w-full print:p-0 print:m-0">
           
           {/* Left Column: Template Selection & Form Fields */}
@@ -460,8 +549,8 @@ export default function PrisonAdministration() {
                 </span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {RECORD_TEMPLATES.map(tpl => {
-                  const isSelected = tpl.id === selectedTemplateId;
+                {templates.map(tpl => {
+                  const isSelected = tpl.id === templateId;
                   return (
                     <button
                       key={tpl.id}
@@ -556,7 +645,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* SPECIFIC FIELDS FOR DONUCOVACÍ PROSTŘEDEK */}
-              {selectedTemplateId === 'dp' && (
+              {templateId === 'dp' && (
                 <div className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
@@ -904,7 +993,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* SPECIFIC FIELDS FOR KÁZEŇSKÝ PŘESTUPEK */}
-              {selectedTemplateId === 'zkp' && (
+              {templateId === 'zkp' && (
                 <div className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
@@ -987,7 +1076,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* SPECIFIC FIELDS FOR SLUŽEBNÍ ZÁZNAM */}
-              {selectedTemplateId === 'sz' && (
+              {templateId === 'sz' && (
                 <div className="space-y-4 text-xs">
                   <div>
                     <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-25`}>
@@ -1044,7 +1133,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* SPECIFIC FIELDS FOR ODNĚTÍ VĚCI */}
-              {selectedTemplateId === 'odneti' && (
+              {templateId === 'odneti' && (
                 <div className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
@@ -1102,7 +1191,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* SPECIFIC FIELDS FOR FYZICKÉ NÁSILÍ */}
-              {selectedTemplateId === 'nasilie' && (
+              {templateId === 'nasilie' && (
                 <div className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
@@ -1317,7 +1406,7 @@ export default function PrisonAdministration() {
               </div>
 
               {/* TEMPLATE 1: DONUCOVACÍ PROSTŘEDEK (DP) */}
-              {selectedTemplateId === 'dp' && (
+              {templateId === 'dp' && (
                 <div>
                   <div className="text-center my-3">
                     <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">
@@ -1485,7 +1574,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* TEMPLATE 2: KÁZEŇSKÝ PŘESTUPEK (ZKP) */}
-              {selectedTemplateId === 'zkp' && (
+              {templateId === 'zkp' && (
                 <div>
                   <div className="text-center my-3">
                     <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">
@@ -1587,7 +1676,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* TEMPLATE 3: ODNĚTÍ VĚCI */}
-              {selectedTemplateId === 'odneti' && (
+              {templateId === 'odneti' && (
                 <div>
                   <div className="text-center my-3">
                     <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">
@@ -1657,7 +1746,7 @@ export default function PrisonAdministration() {
               )}
 
               {/* TEMPLATE 4: SLUŽEBNÍ ZÁZNAM (SZ) */}
-              {(selectedTemplateId === 'sz' || (selectedTemplateId !== 'dp' && selectedTemplateId !== 'zkp' && selectedTemplateId !== 'odneti')) && (
+              {(templateId === 'sz' || (templateId !== 'dp' && templateId !== 'zkp' && templateId !== 'odneti')) && (
                 <div>
                   <div className="text-center my-3">
                     <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">
@@ -1774,7 +1863,7 @@ export default function PrisonAdministration() {
             </>
           ) : (
             <>
-              Smažou se <strong>rozepsané koncepty všech {RECORD_TEMPLATES.length} tiskopisů</strong>{' '}
+              Smažou se <strong>rozepsané koncepty všech {templates.length} tiskopisů</strong>{' '}
               z tohoto prohlížeče, včetně osobních údajů, které jste do nich zadal. Doporučeno po
               práci na sdíleném počítači. Vrátit to zpět nelze.
             </>

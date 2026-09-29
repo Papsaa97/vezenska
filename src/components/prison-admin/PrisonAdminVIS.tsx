@@ -6,7 +6,9 @@ import {
   Eye,
   Phone,
 } from 'lucide-react';
-import { defaultAdminSections } from '../../data/prisonAdminData';
+import { useStudySections } from '../../hooks/useStudySections';
+import StudySectionsEditor from '../common/StudySectionsEditor';
+import CustomStudySections from '../common/CustomStudySections';
 import RichText, { textLines } from '../common/RichText';
 
 /** Barvy a ikony evidenčních stavů v pořadí, v jakém byly natvrdo. */
@@ -40,12 +42,16 @@ const RULE_ICONS: React.ReactNode[] = [
  * zákona č. 555/1992 Sb.
  */
 export default function PrisonAdminVIS() {
-  const sections = defaultAdminSections;
-  const states = sections.find((s) => s.id === 'vis-stavy');
-  const rules = sections.find((s) => s.id === 'vis-pravidla');
+  // Bloky z repozitáře přepsané úpravami lektora (contentLibrary.ts, druh 'study_section').
+  const sectionState = useStudySections('vis');
+  const { byId, custom } = sectionState;
+  const states = byId('vis-stavy');
+  const rules = byId('vis-pravidla');
 
   return (
     <div className="space-y-6 no-print print:hidden">
+
+      <StudySectionsEditor area="vis" state={sectionState} />
 
       <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
 
@@ -112,6 +118,9 @@ export default function PrisonAdminVIS() {
         )}
 
       </div>
+
+      {/* Bloky přidané lektorem */}
+      <CustomStudySections sections={custom} tone="adaptive" />
 
     </div>
   );
