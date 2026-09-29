@@ -41,7 +41,7 @@ function DraggablePart({
 
   if (isMatched) {
     return (
-      <div className="w-auto px-2 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 opacity-40 line-through text-[10px] sm:text-xs font-semibold border border-emerald-300 dark:border-emerald-800 select-none">
+      <div className="w-auto px-2 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 opacity-40 line-through text-[0.625rem] sm:text-xs font-semibold border border-emerald-300 dark:border-emerald-800 select-none">
         {part.label}
       </div>
     );
@@ -54,7 +54,7 @@ function DraggablePart({
       onClick={onSelect}
       {...listeners} 
       {...attributes} 
-      className={`touch-none cursor-grab active:cursor-grabbing w-auto px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold border select-none ${
+      className={`touch-none cursor-grab active:cursor-grabbing w-auto px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[0.625rem] sm:text-xs font-bold border select-none ${
         isDragging 
           ? 'bg-blue-50 dark:bg-slate-700 text-blue-900 dark:text-white border-blue-500 ring-2 ring-blue-500 shadow-2xl scale-110 opacity-95 pointer-events-none'
           : isSelected 
@@ -98,7 +98,7 @@ function DroppableZone({
       style={{ top: `${y}%`, left: `${x}%`, transform: 'translate(-50%, -50%)' }}
       className={`absolute z-10 flex items-center justify-center cursor-pointer select-none ${
         isMatched 
-          ? 'bg-emerald-600/95 text-white shadow-md rounded-md px-1.5 py-0.5 text-[8px] sm:text-[10px] font-bold max-w-[85px] sm:max-w-[130px] truncate sm:whitespace-nowrap transition-transform duration-200'
+          ? 'bg-emerald-600/95 text-white shadow-md rounded-md px-1.5 py-0.5 text-[0.5rem] sm:text-[0.625rem] font-bold max-w-[85px] sm:max-w-[130px] truncate sm:whitespace-nowrap transition-transform duration-200'
           : isOver || isSelectedTarget
             ? 'w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-blue-500/60 border-2 border-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)] scale-125 transition-transform duration-100'
             : isActive
@@ -251,11 +251,11 @@ export default function DiagramGame({ category, onGameComplete, onNavigateToBadg
           </div>
           <div className="grid grid-cols-2 gap-2 text-left">
              <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
-               <div className="text-[11px] text-slate-400">Čas</div>
+               <div className="text-[0.6875rem] text-slate-400">Čas</div>
                <div className="text-sm font-bold flex items-center gap-1"><Timer className="w-3.5 h-3.5 text-blue-500"/> {completedRecord.timeSeconds} s</div>
              </div>
              <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
-               <div className="text-[11px] text-slate-400">Přesnost</div>
+               <div className="text-[0.6875rem] text-slate-400">Přesnost</div>
                <div className="text-sm font-bold flex items-center gap-1">
                  {completedRecord.flawless ? <span className="text-emerald-500"><Zap className="w-3.5 h-3.5"/> Bez chyby!</span> : <span>{completedRecord.errorsCount} chyby</span>}
                </div>
@@ -355,7 +355,7 @@ export default function DiagramGame({ category, onGameComplete, onNavigateToBadg
 
           {/* Draggable Parts list at the bottom */}
           <div className="bg-slate-50 dark:bg-slate-800/50 p-2.5 sm:p-4 rounded-xl border border-slate-200 dark:border-slate-700/80 shrink-0">
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mb-2 font-semibold uppercase tracking-wider text-center">
+            <p className="text-[0.625rem] sm:text-xs text-slate-500 dark:text-slate-400 mb-2 font-semibold uppercase tracking-wider text-center">
               Přetáhněte pojem nebo klikněte pro výběr a umístění
             </p>
             <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
@@ -437,7 +437,7 @@ export default function DiagramGame({ category, onGameComplete, onNavigateToBadg
                 <div
                   key={`print-badge-${part.id}`}
                   style={{ top: `${posY}%`, left: `${posX}%`, transform: 'translate(-50%, -50%)' }}
-                  className="absolute z-10 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white border-2 border-slate-900 text-slate-900 font-black text-[11px] flex items-center justify-center shadow-xs"
+                  className="absolute z-10 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white border-2 border-slate-900 text-slate-900 font-black text-[0.6875rem] flex items-center justify-center shadow-xs"
                 >
                   {index + 1}
                 </div>
@@ -467,7 +467,7 @@ export default function DiagramGame({ category, onGameComplete, onNavigateToBadg
             <span className="font-bold text-xs uppercase tracking-wider text-slate-900">
               Klíč správných odpovědí (pro lektora / instruktora výcviku)
             </span>
-            <span className="text-[10px] text-slate-600 italic">
+            <span className="text-[0.625rem] text-slate-600 italic">
               Zde odstřihněte nebo přeložte před zahájením zkoušení
             </span>
           </div>

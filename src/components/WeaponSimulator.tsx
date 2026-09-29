@@ -296,7 +296,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
           </div>
 
           {(deletedWeapons.length > 0 || deletedDrills.length > 0) && (
-            <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-2 flex-wrap text-[0.6875rem] text-slate-500 dark:text-slate-400">
               <span className="font-semibold">Odebrané (vrátit / smazat natrvalo):</span>
               {[
                 ...deletedWeapons.map(e => ({ kind: 'weapon' as const, id: e.id, name: e.item.name })),
@@ -415,7 +415,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
             <Wrench className="w-4 h-4" />
             <span>3. Odstraňování závad</span>
             {completedDrills.length > 0 && (
-              <span className="px-1.5 py-0.2 bg-amber-400 text-slate-950 rounded-full text-[10px] font-black">
+              <span className="px-1.5 py-0.2 bg-amber-400 text-slate-950 rounded-full text-[0.625rem] font-black">
                 {drills.filter(d => completedDrills.includes(d.id)).length}/{drills.length}
               </span>
             )}
@@ -510,7 +510,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
                       <AlertOctagon className="w-6 h-6" />
                     </div>
                     <div>
-                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Modelová střelecká závada</span>
+                      <span className="text-[0.6875rem] font-bold text-slate-400 uppercase tracking-wider">Modelová střelecká závada</span>
                       <h3 className="text-lg font-bold text-slate-900 dark:text-white">{drill.name}</h3>
                     </div>
                   </div>
@@ -712,12 +712,12 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
             </div>
             {stepsToUse.map((step, idx) => (
               <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-200">
-                <div className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[0.625rem] font-bold shrink-0 mt-0.5">
                   ✓
                 </div>
                 <div>
                   <span className="font-bold text-slate-900 dark:text-white">{step.title}</span>
-                  <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">{step.whyCrucial}</p>
+                  <p className="text-[0.6875rem] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">{step.whyCrucial}</p>
                 </div>
               </div>
             ))}

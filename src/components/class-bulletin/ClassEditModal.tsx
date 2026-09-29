@@ -181,7 +181,7 @@ export default function ClassEditModal({ item, canRename, canUploadSchedule, onC
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-semibold read-only:opacity-70 read-only:cursor-not-allowed"
             />
             {!nameEditable && (
-              <p id={`${fieldIds}-0-hint`} className="text-[11px] text-slate-500 dark:text-slate-400">
+              <p id={`${fieldIds}-0-hint`} className="text-[0.6875rem] text-slate-500 dark:text-slate-400">
                 Třídu může přejmenovat jen lektor nebo správce.
               </p>
             )}
@@ -198,11 +198,11 @@ export default function ClassEditModal({ item, canRename, canUploadSchedule, onC
                 <Calendar className="w-4 h-4 text-blue-500" />
                 <span>Termín kurzu (zahájení a ukončení)</span>
               </span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400">Pro odpočet do konce kurzu</span>
+              <span className="text-[0.625rem] text-slate-500 dark:text-slate-400">Pro odpočet do konce kurzu</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="group" aria-labelledby={`${fieldIds}-termin`}>
               <div>
-                <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block mb-1" htmlFor={`${fieldIds}-1`}>
+                <label className="text-[0.6875rem] font-semibold text-slate-500 dark:text-slate-400 block mb-1" htmlFor={`${fieldIds}-1`}>
                   Datum zahájení kurzu
                 </label>
                 <input
@@ -214,7 +214,7 @@ export default function ClassEditModal({ item, canRename, canUploadSchedule, onC
                 />
               </div>
               <div>
-                <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block mb-1" htmlFor={`${fieldIds}-2`}>
+                <label className="text-[0.6875rem] font-semibold text-slate-500 dark:text-slate-400 block mb-1" htmlFor={`${fieldIds}-2`}>
                   Datum ukončení kurzu
                 </label>
                 <input
@@ -226,7 +226,7 @@ export default function ClassEditModal({ item, canRename, canUploadSchedule, onC
                 />
               </div>
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 italic">
+            <p className="text-[0.6875rem] text-slate-500 dark:text-slate-400 italic">
               Informační odpočet zobrazuje zbývající měsíce, týdny a dny i celkový průběh výcviku pro orientaci studentů.
             </p>
           </div>
@@ -248,7 +248,7 @@ export default function ClassEditModal({ item, canRename, canUploadSchedule, onC
             </div>
 
             {!canUploadSchedule && (
-              <p className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2">
+              <p className="text-[0.6875rem] text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2">
                 Nový obrázek rozvrhu může nahrát velitel třídy, jeho zástupce, lektor nebo správce. Ostatní údaje nástěnky můžete upravit.
               </p>
             )}
@@ -290,7 +290,7 @@ export default function ClassEditModal({ item, canRename, canUploadSchedule, onC
                 <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
                   Vyberte obrázek rozvrhu k nahrání
                 </span>
-                <span className="text-[10px] text-slate-500 mt-0.5">
+                <span className="text-[0.625rem] text-slate-500 mt-0.5">
                   Uloženo do Supabase Storage bucketu studijni-materialy/rozvrhy/
                 </span>
               </label>
@@ -302,7 +302,7 @@ export default function ClassEditModal({ item, canRename, canUploadSchedule, onC
               <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300" htmlFor={`${fieldIds}-info`}>
                 Denní informace, změny a pokyny
               </label>
-              <span className="text-[11px] text-slate-500">Podporuje odrážky (•)</span>
+              <span className="text-[0.6875rem] text-slate-500">Podporuje odrážky (•)</span>
             </div>
             <textarea
               id={`${fieldIds}-info`}

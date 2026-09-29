@@ -311,20 +311,20 @@ export function AuthModal({ onClose }: AuthModalProps) {
                   title="Nápověda k heslu"
                 >
                   <HelpCircle className="w-3.5 h-3.5" />
-                  <span className="text-[11px]">Nápověda</span>
+                  <span className="text-[0.6875rem]">Nápověda</span>
                 </button>
               </div>
 
               {showPasswordHint && (
                 <div className="mb-2 p-3 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-slate-300 space-y-1 animate-in fade-in duration-200">
-                  <div className="font-semibold text-white text-[11px] flex items-center gap-1">
+                  <div className="font-semibold text-white text-[0.6875rem] flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
                     Požadavky na heslo:
                   </div>
-                  <p className="text-[11px] text-slate-400">• Minimální délka je {MIN_PASSWORD_LENGTH} znaků</p>
-                  <p className="text-[11px] text-slate-400">• Doporučujeme kombinaci velkých a malých písmen a číslic</p>
-                  <p className="text-[11px] text-slate-300 font-medium">• Musí obsahovat alespoň jeden speciální znak (např. <span className="font-mono">!@#$%^&*</span>)</p>
-                  <p className="text-[11px] text-slate-400">• Heslo je bezpečně šifrováno v Supabase Auth</p>
+                  <p className="text-[0.6875rem] text-slate-400">• Minimální délka je {MIN_PASSWORD_LENGTH} znaků</p>
+                  <p className="text-[0.6875rem] text-slate-400">• Doporučujeme kombinaci velkých a malých písmen a číslic</p>
+                  <p className="text-[0.6875rem] text-slate-300 font-medium">• Musí obsahovat alespoň jeden speciální znak (např. <span className="font-mono">!@#$%^&*</span>)</p>
+                  <p className="text-[0.6875rem] text-slate-400">• Heslo je bezpečně šifrováno v Supabase Auth</p>
                 </div>
               )}
 
@@ -486,14 +486,14 @@ export function UserBadge({ onLoginClick }: UserBadgeProps) {
     <div className="flex items-center gap-2">
       {/* Avatar + name */}
       <div className="flex items-center gap-2 px-2.5 py-1.5 bg-slate-800/70 border border-slate-700/60 rounded-xl">
-        <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-[10px] shrink-0">
+        <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-[0.625rem] shrink-0">
           {initials || '?'}
         </div>
         <div className="flex flex-col leading-none">
-          <span className="text-white text-[11px] font-semibold max-w-[120px] truncate" title={displayName}>
+          <span className="text-white text-[0.6875rem] font-semibold max-w-[120px] truncate" title={displayName}>
             {displayName}
           </span>
-          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border mt-0.5 w-fit ${roleColor}`}>
+          <span className={`text-[0.5625rem] font-bold px-1.5 py-0.5 rounded-full border mt-0.5 w-fit ${roleColor}`}>
             {roleLabel}
           </span>
         </div>

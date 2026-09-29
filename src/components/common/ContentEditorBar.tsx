@@ -86,12 +86,12 @@ export default function ContentEditorBar<T extends { id: string }>({
           <div key={entry.id} className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-semibold max-w-full truncate">{name}</span>
             {entry.isHidden && (
-              <span className="px-1.5 py-0.5 rounded bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 text-[10px] font-bold">
+              <span className="px-1.5 py-0.5 rounded bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 text-[0.625rem] font-bold">
                 Skryto studentům
               </span>
             )}
             {entry.isBuiltIn && entry.isEdited && (
-              <span className="px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200 text-[10px] font-bold">
+              <span className="px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200 text-[0.625rem] font-bold">
                 Upraveno
               </span>
             )}
@@ -145,7 +145,7 @@ export default function ContentEditorBar<T extends { id: string }>({
       )}
 
       {deleted.length > 0 && (
-        <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-500 dark:text-slate-400">
+        <div className="flex items-center gap-2 flex-wrap text-[0.6875rem] text-slate-500 dark:text-slate-400">
           <span className="font-semibold">Odebrané (vrátit / smazat natrvalo):</span>
           {deleted.map((entry) => {
             const name = getName(entry.item);

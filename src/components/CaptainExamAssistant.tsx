@@ -35,6 +35,11 @@ import {
 } from '../utils/geminiAnalyzer';
 import { useDialog } from '../hooks/useDialog';
 import { activateOnKey } from '../utils/a11y';
+import { buildAppSources } from '../utils/aiSources';
+import { readScoped, writeScoped } from '../utils/userScopedStorage';
+
+/** Volba „čerpat i z nahraných materiálů“ — pamatuje se pro účet v zařízení. */
+const STORAGE_KEY_INCLUDE_MATERIALS = 'vscr_ai_include_materials';
 
 interface CaptainExamAssistantProps {
   onStartCustomQuiz: (questions: Question[]) => void;
@@ -69,6 +74,9 @@ export default function CaptainExamAssistant({
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
+  const [includeMaterials, setIncludeMaterials] = useState<boolean>(
+    () => readScoped<boolean>(STORAGE_KEY_INCLUDE_MATERIALS, false) === true
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadingStep, setLoadingStep] = useState<string>('Inicializace...');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -160,20 +168,24 @@ export default function CaptainExamAssistant({
 
     setIsLoading(true);
     setErrorMsg(null);
-    setLoadingStep('Předávání zadání modelu Gemini...');
+    setLoadingStep(includeMaterials ? 'Načítání Právního kompasu a studijních materiálů...' : 'Načítání Právního kompasu...');
 
     try {
+      const sources = await buildAppSources(includeMaterials);
+      setLoadingStep('Předávání zadání modelu Gemini...');
+
       clearStepTimers();
       stepTimersRef.current = [
         setTimeout(() => setLoadingStep('Provádění OCR přepisu a právní analýzy VS ČR...'), 1000),
-        setTimeout(() => setLoadingStep('Dohledávání paragrafů v zákonech 555/1992 a 169/1999 Sb...'), 2500),
+        setTimeout(() => setLoadingStep('Dohledávání odpovědí v Právním kompasu...'), 2500),
         setTimeout(() => setLoadingStep('Generování testových otázek a zkušebních tipů...'), 4000),
       ];
 
       const result = await analyzeExamContent(
         key,
         inputMode === 'text' ? textInput : undefined,
-        inputMode === 'image' ? selectedImage || undefined : undefined
+        inputMode === 'image' ? selectedImage || undefined : undefined,
+        sources
       );
 
       setAnalyzedResult(result);
@@ -470,6 +482,29 @@ export default function CaptainExamAssistant({
               </div>
             )}
 
+            {/* Zdroje odpovědí */}
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-3.5 space-y-2">
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-snug">
+                <BookOpen className="inline w-3.5 h-3.5 mr-1 -mt-0.5 text-indigo-500" aria-hidden="true" />
+                Asistent odpovídá <strong>jen ze zdrojů v aplikaci</strong> — z Právního kompasu (články i registr předpisů).
+                Co v nich není, označí jako nenalezené místo toho, aby si odpověď domýšlel.
+              </p>
+              <label className="flex items-start gap-2.5 text-xs text-slate-700 dark:text-slate-200 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includeMaterials}
+                  onChange={(e) => {
+                    setIncludeMaterials(e.target.checked);
+                    writeScoped(STORAGE_KEY_INCLUDE_MATERIALS, e.target.checked);
+                  }}
+                  className="mt-0.5 w-4 h-4 accent-indigo-600 cursor-pointer"
+                />
+                <span>
+                  Čerpat i z nahraných studijních materiálů (knihovna materiálů — PDF a obrázky)
+                </span>
+              </label>
+            </div>
+
             {/* Error Message */}
             {errorMsg && (
               <div className="p-3.5 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 rounded-xl text-xs sm:text-sm flex items-start gap-2.5">
@@ -528,7 +563,7 @@ export default function CaptainExamAssistant({
                       <h3 className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
                         {exam.title}
                       </h3>
-                      <div className="flex items-center gap-2 text-[10px] text-slate-500">
+                      <div className="flex items-center gap-2 text-[0.625rem] text-slate-500">
                         <span className="px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-medium">
                           {exam.subject}
                         </span>
@@ -745,10 +780,10 @@ export default function CaptainExamAssistant({
                       </span>
                       <div className="space-y-1 print:space-y-0.5 flex-1">
                         <div className="flex items-center gap-2 flex-wrap no-print">
-                          <span className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded">
+                          <span className="text-[0.6875rem] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded">
                             {q.topic}
                           </span>
-                          <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                          <span className="text-[0.6875rem] text-slate-500 dark:text-slate-400">
                             {q.source}
                           </span>
                         </div>
@@ -804,7 +839,7 @@ export default function CaptainExamAssistant({
                           Model k této otázce odůvodnění nedodal. Ověřte si odpověď v Kompasu zákonů.
                         </p>
                       )}
-                      <div className="pt-1.5 print:pt-0 text-[11px] print:text-[7pt] text-indigo-700 dark:text-indigo-400 print:text-slate-500 font-medium">
+                      <div className="pt-1.5 print:pt-0 text-[0.6875rem] print:text-[7pt] text-indigo-700 dark:text-indigo-400 print:text-slate-500 font-medium">
                         <strong>Pramen podle modelu:</strong>{' '}
                         {q.source || <span className="italic font-normal">neuveden — dohledejte si ho</span>}
                       </div>
@@ -860,7 +895,7 @@ export default function CaptainExamAssistant({
               autoComplete="off"
               className="w-full p-3 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-snug flex items-start gap-1.5 pt-0.5">
+            <p className="text-[0.6875rem] text-slate-400 dark:text-slate-500 leading-snug flex items-start gap-1.5 pt-0.5">
               <span className="mt-px shrink-0">🔒</span>
               <span>Klíč se ukládá <strong>pouze lokálně v tomto prohlížeči</strong> (localStorage) — na server této aplikace se neposílá. Volání probíhají přímo z vašeho prohlížeče na Google, takže klíč (a zadání či fotka) jde jedině tam.</span>
             </p>

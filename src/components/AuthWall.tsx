@@ -191,11 +191,11 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
               <span className="font-bold text-white tracking-tight text-sm sm:text-base">
                 AKADEMIE VS ČR
               </span>
-              <span className="text-amber-400 font-bold text-[10px] px-2 py-0.5 bg-amber-400/10 rounded-full border border-amber-400/30 tracking-wider">
+              <span className="text-amber-400 font-bold text-[0.625rem] px-2 py-0.5 bg-amber-400/10 rounded-full border border-amber-400/30 tracking-wider">
                 ZOP A
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 hidden sm:block">
+            <p className="text-[0.6875rem] text-slate-400 hidden sm:block">
               Výukový & zkušební systém Vězeňské služby ČR
             </p>
           </div>
@@ -264,7 +264,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                 </div>
                 <div>
                   <h2 className="text-xs font-bold text-white">9 studijních předmětů</h2>
-                  <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                  <p className="text-[0.6875rem] text-slate-400 mt-0.5 leading-snug">
                     Oficiální testové sady, zkouškový simulátor i 3D Leitner kartičky.
                   </p>
                 </div>
@@ -276,7 +276,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                 </div>
                 <div>
                   <h2 className="text-xs font-bold text-white">AI Asistent zkoušek</h2>
-                  <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                  <p className="text-[0.6875rem] text-slate-400 mt-0.5 leading-snug">
                     Vyhodnocování kapitánských zadání, písemek a cvičných odpovědí.
                   </p>
                 </div>
@@ -288,7 +288,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                 </div>
                 <div>
                   <h2 className="text-xs font-bold text-white">Právní kompas</h2>
-                  <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                  <p className="text-[0.6875rem] text-slate-400 mt-0.5 leading-snug">
                     Plná znění zákonů 555/1992, 169/1999, 293/1993 a NGŘ.
                   </p>
                 </div>
@@ -300,7 +300,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                 </div>
                 <div>
                   <h2 className="text-xs font-bold text-white">Digitální knihovna</h2>
-                  <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                  <p className="text-[0.6875rem] text-slate-400 mt-0.5 leading-snug">
                     Studijní texty, metodické pomůcky a příručky Akademie VS ČR.
                   </p>
                 </div>
@@ -421,20 +421,20 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
                       title="Nápověda k heslu"
                     >
                       <HelpCircle className="w-3.5 h-3.5" />
-                      <span className="text-[11px]">Nápověda</span>
+                      <span className="text-[0.6875rem]">Nápověda</span>
                     </button>
                   </div>
 
                   {showPasswordHint && (
                     <div className="mb-2 p-3 bg-slate-800/90 border border-slate-700/80 rounded-xl text-xs text-slate-300 space-y-1 animate-in fade-in duration-200">
-                      <div className="font-semibold text-white text-[11px] flex items-center gap-1">
+                      <div className="font-semibold text-white text-[0.6875rem] flex items-center gap-1">
                         <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
                         Požadavky na heslo:
                       </div>
-                      <p className="text-[11px] text-slate-400">• Minimální délka je {MIN_PASSWORD_LENGTH} znaků</p>
-                      <p className="text-[11px] text-slate-400">• Doporučujeme kombinaci velkých a malých písmen a číslic</p>
-                      <p className="text-[11px] text-slate-300 font-medium">• Musí obsahovat alespoň jeden speciální znak (např. <span className="font-mono">!@#$%^&*</span>)</p>
-                      <p className="text-[11px] text-slate-400">• Heslo je bezpečně šifrováno v Supabase Auth</p>
+                      <p className="text-[0.6875rem] text-slate-400">• Minimální délka je {MIN_PASSWORD_LENGTH} znaků</p>
+                      <p className="text-[0.6875rem] text-slate-400">• Doporučujeme kombinaci velkých a malých písmen a číslic</p>
+                      <p className="text-[0.6875rem] text-slate-300 font-medium">• Musí obsahovat alespoň jeden speciální znak (např. <span className="font-mono">!@#$%^&*</span>)</p>
+                      <p className="text-[0.6875rem] text-slate-400">• Heslo je bezpečně šifrováno v Supabase Auth</p>
                     </div>
                   )}
 
@@ -594,7 +594,7 @@ export default function AuthWall({ isDarkMode, toggleDarkMode }: AuthWallProps) 
             </motion.div>
 
             {/* Security note */}
-            <p className="text-[11px] text-slate-500 text-center mt-4">
+            <p className="text-[0.6875rem] text-slate-500 text-center mt-4">
               Portál je určen výhradně pro služební a studijní účely Akademie VS ČR.
             </p>
           </div>

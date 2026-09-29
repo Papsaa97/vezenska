@@ -279,7 +279,7 @@ export default function QuestionEditModal({
                           </>
                         )}
                       </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                      <p className="text-[0.6875rem] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                         Pokud je položka skrytá, běžní studenti ji neuvidí v procvičování, kartičkách ani tiskových sestavách. 
                         Lektoři a správci ji uvidí se zřetelným štítkem.
                       </p>

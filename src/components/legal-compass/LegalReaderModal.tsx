@@ -242,13 +242,13 @@ export default function LegalReaderModal({
             <div className="flex items-start justify-between gap-2 no-print">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 uppercase tracking-wider">
+                  <span className="px-2 py-0.5 rounded-md text-[0.625rem] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 uppercase tracking-wider">
                     {activeModalRegulation.code}
                   </span>
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hidden sm:inline">
+                  <span className="px-2 py-0.5 rounded-md text-[0.625rem] font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hidden sm:inline">
                     {activeModalRegulation.authority}
                   </span>
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
+                  <span className="px-2 py-0.5 rounded-md text-[0.625rem] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
                     {activeModalRegulation.importanceForZOP}
                   </span>
                 </div>
@@ -268,7 +268,7 @@ export default function LegalReaderModal({
                   <button
                     type="button"
                     onClick={() => setPdfViewMode('paper')}
-                    className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all flex items-center gap-1 cursor-pointer ${
+                    className={`px-2.5 py-1 text-[0.6875rem] font-bold rounded-lg transition-all flex items-center gap-1 cursor-pointer ${
                       pdfViewMode === 'paper'
                         ? 'bg-white text-slate-900 shadow-xs'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
@@ -281,7 +281,7 @@ export default function LegalReaderModal({
                   <button
                     type="button"
                     onClick={() => setPdfViewMode('dark')}
-                    className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all flex items-center gap-1 cursor-pointer ${
+                    className={`px-2.5 py-1 text-[0.6875rem] font-bold rounded-lg transition-all flex items-center gap-1 cursor-pointer ${
                       pdfViewMode === 'dark'
                         ? 'bg-slate-950 text-white shadow-xs'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-200'
@@ -300,7 +300,7 @@ export default function LegalReaderModal({
                   title="Změnit velikost písma textu"
                 >
                   <Type className="w-3.5 h-3.5" />
-                  <span className="uppercase text-[10px]">{fontSize}</span>
+                  <span className="uppercase text-[0.625rem]">{fontSize}</span>
                 </button>
 
                 {/* Print Button */}
@@ -340,12 +340,12 @@ export default function LegalReaderModal({
                   {copiedId === copyKey ? (
                     <>
                       <Check className="w-3.5 h-3.5 text-emerald-500" />
-                      <span className="hidden sm:inline text-[11px]">Zkopírováno</span>
+                      <span className="hidden sm:inline text-[0.6875rem]">Zkopírováno</span>
                     </>
                   ) : (
                     <>
                       <Copy className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline text-[11px]">Kopírovat</span>
+                      <span className="hidden sm:inline text-[0.6875rem]">Kopírovat</span>
                     </>
                   )}
                 </button>
@@ -372,7 +372,7 @@ export default function LegalReaderModal({
                     type="button"
                     onClick={() => setSourceMode('oficialni')}
                     disabled={!maUplneZneni}
-                    className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+                    className={`px-2.5 py-1 text-[0.6875rem] font-bold rounded-lg transition-all flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
                       sourceMode === 'oficialni'
                         ? 'bg-white dark:bg-slate-950 text-slate-900 dark:text-white shadow-xs'
                         : 'text-slate-600 dark:text-slate-400'
@@ -389,7 +389,7 @@ export default function LegalReaderModal({
                   <button
                     type="button"
                     onClick={() => setSourceMode('vyber')}
-                    className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all flex items-center gap-1 cursor-pointer ${
+                    className={`px-2.5 py-1 text-[0.6875rem] font-bold rounded-lg transition-all flex items-center gap-1 cursor-pointer ${
                       sourceMode === 'vyber'
                         ? 'bg-white dark:bg-slate-950 text-slate-900 dark:text-white shadow-xs'
                         : 'text-slate-600 dark:text-slate-400'
@@ -402,7 +402,7 @@ export default function LegalReaderModal({
                 </div>
 
                 {summary && (
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <span className="text-[0.6875rem] text-slate-500 dark:text-slate-400">
                     znění č. {summary.cisloZneni} od {formatDate(summary.ucinnostOd)}
                     {summary.novely.length > 0 && ` • novely: ${summary.novely.join(', ')}`}
                   </span>
@@ -482,7 +482,7 @@ export default function LegalReaderModal({
               {fileState === 'error' && fileError && (
                 <div
                   role="status"
-                  className="flex items-start gap-2 px-3 py-2 rounded-xl border text-[11px] font-semibold bg-rose-50 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800"
+                  className="flex items-start gap-2 px-3 py-2 rounded-xl border text-[0.6875rem] font-semibold bg-rose-50 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800"
                 >
                   <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                   <span>
@@ -496,7 +496,7 @@ export default function LegalReaderModal({
               {esbirka.freshness && (
                 <div
                   role="status"
-                  className={`flex items-start gap-2 px-3 py-2 rounded-xl border text-[11px] font-semibold ${FRESHNESS_STYLE[esbirka.freshness.stav]}`}
+                  className={`flex items-start gap-2 px-3 py-2 rounded-xl border text-[0.6875rem] font-semibold ${FRESHNESS_STYLE[esbirka.freshness.stav]}`}
                 >
                   {esbirka.freshness.stav === 'aktualni' ? (
                     <ShieldCheck className="w-3.5 h-3.5 shrink-0 mt-0.5" />
@@ -515,7 +515,7 @@ export default function LegalReaderModal({
               {/* Fast Section Navigation Chips */}
               {jumpTargets.length > 0 && (
                 <div className="flex items-center gap-1 overflow-x-auto py-1 no-scrollbar">
-                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider shrink-0 mr-1">
+                  <span className="text-[0.625rem] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider shrink-0 mr-1">
                     Rychlý skok:
                   </span>
                   {jumpTargets.slice(0, 60).map((target) => (
@@ -525,7 +525,7 @@ export default function LegalReaderModal({
                       onClick={() =>
                         showingOfficial ? jumpToSection(target.key) : setModalSearchQuery(target.label)
                       }
-                      className="px-2 py-0.5 rounded-md text-[10px] font-bold transition-all shrink-0 cursor-pointer bg-slate-200/80 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-slate-700 dark:text-slate-300"
+                      className="px-2 py-0.5 rounded-md text-[0.625rem] font-bold transition-all shrink-0 cursor-pointer bg-slate-200/80 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-slate-700 dark:text-slate-300"
                     >
                       {target.label}
                     </button>
@@ -557,7 +557,7 @@ export default function LegalReaderModal({
 
             {/* Poctivé označení toho, co je právě vidět */}
             <div
-              className={`px-3.5 py-2.5 rounded-xl border text-[11px] font-semibold print:border-slate-300 ${
+              className={`px-3.5 py-2.5 rounded-xl border text-[0.6875rem] font-semibold print:border-slate-300 ${
                 showingOfficial
                   ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200'
                   : 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200'
@@ -607,7 +607,7 @@ export default function LegalReaderModal({
                 <div className="bg-white text-slate-900 border border-slate-300 rounded-sm shadow-2xl p-6 sm:p-12 font-serif max-w-3xl mx-auto my-2 border-t-8 border-t-slate-800 print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:border-t-0">
                   {/* Hlavička listu */}
                   <div className="border-b-2 border-slate-900 pb-4 mb-6 text-center space-y-1.5 font-sans">
-                    <div className="text-[11px] uppercase tracking-widest font-black text-slate-600">
+                    <div className="text-[0.6875rem] uppercase tracking-widest font-black text-slate-600">
                       {showingOfficial
                         ? 'Česká republika • Informativní znění předpisu (e-Sbírka)'
                         : 'Akademie VS ČR • Studijní výběr ustanovení'}
@@ -615,7 +615,7 @@ export default function LegalReaderModal({
                     <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-950 uppercase font-serif">
                       {showingOfficial ? 'Sbírka zákonů' : 'Výběr pro přípravu na ZOP'}
                     </h1>
-                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-600 pt-1 border-t border-slate-200 gap-2 flex-wrap">
+                    <div className="flex items-center justify-between text-[0.6875rem] font-bold text-slate-600 pt-1 border-t border-slate-200 gap-2 flex-wrap">
                       <span>{summary?.citace ?? activeModalRegulation.code}</span>
                       <span>
                         {showingOfficial && summary
@@ -663,7 +663,7 @@ export default function LegalReaderModal({
                     )}
                   </div>
 
-                  <div className="mt-12 pt-4 border-t border-slate-300 text-[10px] text-slate-500 flex items-center justify-between font-sans gap-3 flex-wrap">
+                  <div className="mt-12 pt-4 border-t border-slate-300 text-[0.625rem] text-slate-500 flex items-center justify-between font-sans gap-3 flex-wrap">
                     <span>
                       {showingOfficial
                         ? 'Zdroj: e-Sbírka (e-sbirka.gov.cz), REST API — informativní znění'
@@ -711,7 +711,7 @@ export default function LegalReaderModal({
           <div className="p-3.5 sm:p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-950/50 shrink-0">
             <div className="flex items-center gap-1.5 flex-wrap">
               {activeModalRegulation.tags.map(t => (
-                <span key={t} className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-200/60 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                <span key={t} className="text-[0.625rem] font-medium px-2 py-0.5 rounded-md bg-slate-200/60 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                   #{t}
                 </span>
               ))}

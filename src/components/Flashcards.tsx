@@ -510,12 +510,12 @@ export default function Flashcards({
 
               {isLeitnerMode && (
                 <div className="mt-2 space-y-2 pt-2 border-t border-indigo-200/40 dark:border-indigo-900/40">
-                  <div className="flex items-center justify-between text-[11px] text-indigo-900 dark:text-indigo-300 font-semibold mb-1">
+                  <div className="flex items-center justify-between text-[0.6875rem] text-indigo-900 dark:text-indigo-300 font-semibold mb-1">
                     <span>Přihrádky paměti:</span>
                     <button
                       type="button"
                       onClick={() => setIsHelpModalOpen(true)}
-                      className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-0.5"
+                      className="text-[0.625rem] text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-0.5"
                     >
                       <HelpCircle className="w-3 h-3" /> Nápověda
                     </button>
@@ -528,7 +528,7 @@ export default function Flashcards({
                     type="button"
                     onClick={() => setSelectedLeitnerBox('due')}
                     title="Kartičky, u kterých už uplynul odstup opakování pro jejich krabičku"
-                    className={`w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg border text-[11px] font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg border text-[0.6875rem] font-bold transition-all cursor-pointer ${
                       selectedLeitnerBox === 'due'
                         ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs'
                         : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
@@ -552,7 +552,7 @@ export default function Flashcards({
                   </button>
 
                   {/* 5-Box Grid (Box 1 až 5) */}
-                  <div className="grid grid-cols-5 gap-1 text-[10px] font-bold">
+                  <div className="grid grid-cols-5 gap-1 text-[0.625rem] font-bold">
                     <button
                       type="button"
                       onClick={() => setSelectedLeitnerBox(1)}
@@ -564,7 +564,7 @@ export default function Flashcards({
                       }`}
                     >
                       <span>B1</span>
-                      <span className="block text-[9px] opacity-80">{box1Count}</span>
+                      <span className="block text-[0.5625rem] opacity-80">{box1Count}</span>
                     </button>
                     <button
                       type="button"
@@ -577,7 +577,7 @@ export default function Flashcards({
                       }`}
                     >
                       <span>B2</span>
-                      <span className="block text-[9px] opacity-80">{box2Count}</span>
+                      <span className="block text-[0.5625rem] opacity-80">{box2Count}</span>
                     </button>
                     <button
                       type="button"
@@ -590,7 +590,7 @@ export default function Flashcards({
                       }`}
                     >
                       <span>B3</span>
-                      <span className="block text-[9px] opacity-80">{box3Count}</span>
+                      <span className="block text-[0.5625rem] opacity-80">{box3Count}</span>
                     </button>
                     <button
                       type="button"
@@ -603,7 +603,7 @@ export default function Flashcards({
                       }`}
                     >
                       <span>B4</span>
-                      <span className="block text-[9px] opacity-80">{box4Count}</span>
+                      <span className="block text-[0.5625rem] opacity-80">{box4Count}</span>
                     </button>
                     <button
                       type="button"
@@ -616,11 +616,11 @@ export default function Flashcards({
                       }`}
                     >
                       <span>B5</span>
-                      <span className="block text-[9px] opacity-80">{box5Count}</span>
+                      <span className="block text-[0.5625rem] opacity-80">{box5Count}</span>
                     </button>
                   </div>
 
-                  <div className="flex justify-between items-center pt-1 text-[10px] text-indigo-700 dark:text-indigo-400">
+                  <div className="flex justify-between items-center pt-1 text-[0.625rem] text-indigo-700 dark:text-indigo-400">
                     <button
                       type="button"
                       onClick={() => setSelectedLeitnerBox('all')}
@@ -742,7 +742,7 @@ export default function Flashcards({
 
                 {isLeitnerMode && (
                   <div className="flex items-center gap-1">
-                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                    <span className={`text-[0.6875rem] font-bold px-2 py-0.5 rounded-full ${
                       (leitnerBoxes[currentQuestion.id] || 1) === 5
                         ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
                         : (leitnerBoxes[currentQuestion.id] || 1) === 4
@@ -790,7 +790,7 @@ export default function Flashcards({
                 <button
                   type="button"
                   onClick={() => handleToggleVisibility(currentQuestion)}
-                  className="px-2.5 py-1 bg-amber-200 dark:bg-amber-900/60 hover:bg-amber-300 dark:hover:bg-amber-800 rounded-lg text-amber-950 dark:text-amber-100 text-[11px] font-bold transition-colors cursor-pointer"
+                  className="px-2.5 py-1 bg-amber-200 dark:bg-amber-900/60 hover:bg-amber-300 dark:hover:bg-amber-800 rounded-lg text-amber-950 dark:text-amber-100 text-[0.6875rem] font-bold transition-colors cursor-pointer"
                 >
                   Znovu publikovat
                 </button>
@@ -975,7 +975,7 @@ export default function Flashcards({
                     <ChevronRight className="w-6 h-6" />
                   </button>
                 </div>
-                <div className="hidden sm:flex items-center justify-center gap-4 mt-3 text-[10px] text-slate-400 dark:text-slate-600 font-mono no-print">
+                <div className="hidden sm:flex items-center justify-center gap-4 mt-3 text-[0.625rem] text-slate-400 dark:text-slate-600 font-mono no-print">
                   <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500">Space</kbd> otočit</span>
                   <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500">← →</kbd> navigace</span>
                   <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500">F</kbd> oblíbené</span>

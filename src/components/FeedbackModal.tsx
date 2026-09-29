@@ -194,7 +194,7 @@ export default function FeedbackModal({ onClose, screenContext }: FeedbackModalP
                     placeholder="Popište prosím co nejpřesněji, co se stalo nebo co byste chtěli vylepšit…"
                     className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all resize-none"
                   />
-                  <div className="text-[11px] text-slate-400 mt-1 text-right">
+                  <div className="text-[0.6875rem] text-slate-400 mt-1 text-right">
                     {message.trim().length} / min. {MIN_MESSAGE_LENGTH} znaků
                   </div>
                 </div>

@@ -643,17 +643,17 @@ export default function SubjectsHub({
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 flex-wrap">
                             {canEdit && isHidden && (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-800 px-2 py-0.5 rounded">
+                              <span className="inline-flex items-center gap-1 text-[0.6875rem] font-bold text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-800 px-2 py-0.5 rounded">
                                 <EyeOff className="w-3 h-3" />
                                 Skryto pro studenty
                               </span>
                             )}
                             {q.topic && (
-                              <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded print:bg-white print:border print:border-slate-300">
+                              <span className="text-[0.6875rem] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded print:bg-white print:border print:border-slate-300">
                                 {q.topic}
                               </span>
                             )}
-                            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+                            <span className="text-[0.6875rem] text-slate-500 dark:text-slate-400 font-mono">
                               {q.source}
                             </span>
                           </div>
@@ -759,7 +759,7 @@ export default function SubjectsHub({
                             </>
                           )}
                           {q.source && (
-                            <div className="pt-1 text-[11px] text-blue-800 dark:text-blue-400 font-medium print:text-slate-700">
+                            <div className="pt-1 text-[0.6875rem] text-blue-800 dark:text-blue-400 font-medium print:text-slate-700">
                               <strong>Pramen / citace:</strong> {q.source}
                             </div>
                           )}
@@ -893,7 +893,7 @@ export default function SubjectsHub({
                   </div>
                   <div className="flex items-center gap-1.5">
                     {entry.isHidden && (
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                      <span className="text-[0.625rem] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
                         Skryto
                       </span>
                     )}
@@ -977,7 +977,7 @@ export default function SubjectsHub({
                         setEditingSubject(info);
                         setSubjectModalOpen(true);
                       }}
-                      className="flex-1 py-1.5 px-2 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors cursor-pointer"
+                      className="flex-1 py-1.5 px-2 rounded-lg text-[0.6875rem] font-bold flex items-center justify-center gap-1 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors cursor-pointer"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                       Upravit
@@ -1001,7 +1001,7 @@ export default function SubjectsHub({
                             e.stopPropagation();
                             handleSubjectDelete(entry.id);
                           }}
-                          className="px-2 py-1.5 rounded-lg bg-red-600 text-white text-[11px] font-bold cursor-pointer"
+                          className="px-2 py-1.5 rounded-lg bg-red-600 text-white text-[0.6875rem] font-bold cursor-pointer"
                         >
                           Smazat
                         </button>
@@ -1011,7 +1011,7 @@ export default function SubjectsHub({
                             e.stopPropagation();
                             setConfirmDeleteSubjectId(null);
                           }}
-                          className="px-2 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-bold cursor-pointer"
+                          className="px-2 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[0.6875rem] font-bold cursor-pointer"
                         >
                           Ne
                         </button>
@@ -1056,7 +1056,7 @@ export default function SubjectsHub({
                   <button
                     type="button"
                     onClick={() => handleSubjectRestore(entry.id)}
-                    className="px-2.5 py-1.5 rounded-lg bg-slate-900 dark:bg-slate-700 text-white text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg bg-slate-900 dark:bg-slate-700 text-white text-[0.6875rem] font-bold flex items-center gap-1 cursor-pointer"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     Vrátit
@@ -1066,14 +1066,14 @@ export default function SubjectsHub({
                       <button
                         type="button"
                         onClick={() => handleSubjectPurge(entry.id)}
-                        className="px-2.5 py-1.5 rounded-lg bg-red-600 text-white text-[11px] font-bold cursor-pointer"
+                        className="px-2.5 py-1.5 rounded-lg bg-red-600 text-white text-[0.6875rem] font-bold cursor-pointer"
                       >
                         Ano, smazat natrvalo
                       </button>
                       <button
                         type="button"
                         onClick={() => setConfirmPurgeSubjectId(null)}
-                        className="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-bold cursor-pointer"
+                        className="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[0.6875rem] font-bold cursor-pointer"
                       >
                         Ne
                       </button>
@@ -1082,7 +1082,7 @@ export default function SubjectsHub({
                     <button
                       type="button"
                       onClick={() => setConfirmPurgeSubjectId(entry.id)}
-                      className="px-2.5 py-1.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                      className="px-2.5 py-1.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-[0.6875rem] font-bold flex items-center gap-1 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       Smazat natrvalo

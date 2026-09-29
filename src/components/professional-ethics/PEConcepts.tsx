@@ -126,7 +126,7 @@ export const PEConcepts: React.FC = () => {
                   {item.term}
                 </h3>
               </div>
-              <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-800 print:bg-slate-100 text-slate-300 print:text-slate-800 border border-slate-700 print:border-slate-300">
+              <span className="text-[0.625rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-800 print:bg-slate-100 text-slate-300 print:text-slate-800 border border-slate-700 print:border-slate-300">
                 {item.badge}
               </span>
             </div>
@@ -142,7 +142,7 @@ export const PEConcepts: React.FC = () => {
               </p>
             </div>
 
-            <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400 no-print print:hidden">
+            <div className="mt-3 flex items-center justify-between text-[0.6875rem] text-slate-400 no-print print:hidden">
               <span className="text-emerald-400 font-medium">
                 {selectedConceptIndex === item.id ? 'Kliknutím sbalit' : 'Klikněte pro podrobnosti'}
               </span>

@@ -549,7 +549,7 @@ export default function Quiz({
             </div>
 
             <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
-              <div className="flex items-center gap-2 text-[11px] text-slate-500">
+              <div className="flex items-center gap-2 text-[0.6875rem] text-slate-500">
                 <span className="w-3 h-3 rounded bg-emerald-100 dark:bg-emerald-900 border border-emerald-400"></span>
                 <span>Zodpovězeno</span>
                 <span className="w-3 h-3 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 ml-2"></span>
@@ -578,7 +578,7 @@ export default function Quiz({
             <span>Zkouškový standard</span>
           </div>
           <h4 className="font-bold text-sm mb-1.5">Ostrá zkouška ZOP A</h4>
-          <p className="text-[11px] text-slate-300 leading-relaxed mb-3">
+          <p className="text-[0.6875rem] text-slate-300 leading-relaxed mb-3">
             Komisionální simulace: {EXAM_QUESTION_COUNT} otázek poměrně ze všech předmětů v bance, limit {EXAM_TIME_LIMIT_MINUTES} min, závěrečný protokol.
           </p>
           <button
@@ -605,7 +605,7 @@ export default function Quiz({
               <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${isMistakesMode ? 'bg-orange-50 border-orange-200 dark:bg-orange-900/20 dark:border-orange-800' : 'bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700'}`}>
                 <div>
                   <span className={`block text-xs font-bold ${isMistakesMode ? 'text-orange-700 dark:text-orange-400' : 'text-slate-700 dark:text-slate-300'}`}>Procvičování chyb</span>
-                  <span className="block text-[10px] text-slate-500">Otázek k opravě: {mistakeHistory.size}</span>
+                  <span className="block text-[0.625rem] text-slate-500">Otázek k opravě: {mistakeHistory.size}</span>
                 </div>
                 <div className={`w-8 h-5 rounded-full p-0.5 transition-colors ${isMistakesMode ? 'bg-orange-500' : 'bg-slate-300 dark:bg-slate-600'}`}>
                   <div className={`w-4 h-4 rounded-full bg-white shadow-xs transition-transform ${isMistakesMode ? 'translate-x-3' : 'translate-x-0'}`}></div>
@@ -635,7 +635,7 @@ export default function Quiz({
                 ))}
               </select>
               {selectedTopic && (
-                <div className="mt-2 flex items-center justify-between gap-2 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-1.5 text-[11px] text-blue-800 dark:text-blue-200">
+                <div className="mt-2 flex items-center justify-between gap-2 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-1.5 text-[0.6875rem] text-blue-800 dark:text-blue-200">
                   <span className="min-w-0 truncate">Okruh: <strong>{selectedTopic}</strong></span>
                   <button
                     type="button"
@@ -898,7 +898,7 @@ export default function Quiz({
                   className="px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 font-medium focus:ring-2 focus:ring-blue-500 w-full sm:w-64"
                 />
               </div>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[0.6875rem] text-slate-400">
                 Datum zkoušky: {new Date().toLocaleDateString('cs-CZ')}
               </span>
             </div>
@@ -917,7 +917,7 @@ export default function Quiz({
                     <div key={sub} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
                       <div>
                         <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">{sub}</span>
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                        <span className="text-[0.6875rem] text-slate-500 dark:text-slate-400">
                           {stats.correct} z {stats.total} správně
                         </span>
                       </div>
@@ -953,7 +953,7 @@ export default function Quiz({
 
               <div className="mb-4">
                 <h4 className="font-bold text-xs border-b border-slate-900 pb-1 mb-2">Rozpad hodnocení podle předmětů ZOP A:</h4>
-                <table className="w-full text-[11px] text-left border-collapse">
+                <table className="w-full text-[0.6875rem] text-left border-collapse">
                   <thead>
                     <tr className="border-b border-slate-400">
                       <th className="py-1">Předmět</th>
@@ -975,7 +975,7 @@ export default function Quiz({
                 </table>
               </div>
 
-              <div className="mt-8 pt-4 grid grid-cols-3 gap-6 text-center text-[11px]">
+              <div className="mt-8 pt-4 grid grid-cols-3 gap-6 text-center text-[0.6875rem]">
                 <div className="border-t border-slate-800 pt-1">
                   <span>Předseda zkušební komise</span>
                 </div>
@@ -1078,7 +1078,7 @@ export default function Quiz({
                               {q.subject}{q.topic ? ` • ${q.topic}` : ''}
                             </span>
                             <div className="flex items-center gap-1.5 flex-wrap justify-end">
-                              <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                              <span className={`text-[0.6875rem] font-bold px-2 py-0.5 rounded-full ${
                                 isWrong 
                                   ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 print:bg-rose-50 print:text-rose-900 print:border print:border-rose-300' 
                                   : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 print:bg-emerald-50 print:text-emerald-900 print:border print:border-emerald-400'
@@ -1086,12 +1086,12 @@ export default function Quiz({
                                 {isWrong ? 'Chybná odpověď' : 'Správně zodpovězeno'}
                               </span>
                               {timedOutMap[q.id] ? (
-                                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 flex items-center gap-1 print:bg-amber-50 print:text-amber-900 print:border-amber-300">
+                                <span className="text-[0.6875rem] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 flex items-center gap-1 print:bg-amber-50 print:text-amber-900 print:border-amber-300">
                                   <Clock className="w-3 h-3" />
                                   Po limitu (nestihnuto)
                                 </span>
                               ) : (
-                                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 flex items-center gap-1 print:bg-slate-50 print:text-slate-700 print:border-slate-300">
+                                <span className="text-[0.6875rem] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 flex items-center gap-1 print:bg-slate-50 print:text-slate-700 print:border-slate-300">
                                   <CheckCircle2 className="w-3 h-3" />
                                   V limitu
                                 </span>
@@ -1346,7 +1346,7 @@ export default function Quiz({
                     {/* Confidence selector (in training mode only) */}
                     {!isExamMode && !isAnswered && (
                       <div className="mb-6 flex flex-col gap-1.5">
-                        <span className="text-[11px] font-bold text-slate-400 uppercase">Jistota odpovědi:</span>
+                        <span className="text-[0.6875rem] font-bold text-slate-400 uppercase">Jistota odpovědi:</span>
                         <div className="flex gap-2">
                           <button
                             onClick={() => setCurrentConfidence('know')}

@@ -204,7 +204,7 @@ export function ChooseClassDialog({
                   />
                   <span className="text-sm font-bold text-slate-900 dark:text-white">{c.className}</span>
                 </span>
-                <span className="text-[11px] text-slate-500 dark:text-slate-400 text-right">
+                <span className="text-[0.6875rem] text-slate-500 dark:text-slate-400 text-right">
                   {c.commanderName ? `Velitel: ${c.commanderName}` : 'Velitel zatím nejmenován'}
                 </span>
               </label>
@@ -244,7 +244,7 @@ export function ChooseClassDialog({
                 placeholder="Např. ZOP A15, nástup 1. 10. — nebo „nový lektor, předmět Právo“"
                 className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               />
-              <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+              <p className="mt-1 text-[0.6875rem] text-slate-500 dark:text-slate-400">
                 Poznámku uvidí velitelé tříd, lektoři a správce, aby vás mohli zařadit.
               </p>
             </div>

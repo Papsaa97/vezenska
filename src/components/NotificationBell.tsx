@@ -184,7 +184,7 @@ export default function NotificationBell() {
       >
         <Bell className="w-4 h-4" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-red-600 text-white text-[9px] font-bold flex items-center justify-center shadow-sm border border-slate-900">
+          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-red-600 text-white text-[0.5625rem] font-bold flex items-center justify-center shadow-sm border border-slate-900">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
@@ -206,7 +206,7 @@ export default function NotificationBell() {
                   <button
                     type="button"
                     onClick={markAllAsRead}
-                    className="flex items-center gap-1 text-[11px] font-semibold text-blue-400 hover:text-blue-300 cursor-pointer transition-colors"
+                    className="flex items-center gap-1 text-[0.6875rem] font-semibold text-blue-400 hover:text-blue-300 cursor-pointer transition-colors"
                   >
                     <CheckCheck className="w-3.5 h-3.5" /> Vše přečteno
                   </button>
@@ -216,7 +216,7 @@ export default function NotificationBell() {
                     type="button"
                     onClick={() => deleteNotifications(readIds)}
                     disabled={markingId !== null}
-                    className="flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-red-300 cursor-pointer transition-colors disabled:opacity-50"
+                    className="flex items-center gap-1 text-[0.6875rem] font-semibold text-slate-400 hover:text-red-300 cursor-pointer transition-colors disabled:opacity-50"
                   >
                     {markingId === 'bulk' ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -233,7 +233,7 @@ export default function NotificationBell() {
               <div
                 role="alert"
                 aria-live="assertive"
-                className="flex items-start gap-2 bg-red-950/50 border border-red-800/70 rounded-xl px-2.5 py-2 text-[11px] text-red-200 leading-snug"
+                className="flex items-start gap-2 bg-red-950/50 border border-red-800/70 rounded-xl px-2.5 py-2 text-[0.6875rem] text-red-200 leading-snug"
               >
                 <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-red-400" />
                 <span>{notice}</span>
@@ -264,8 +264,8 @@ export default function NotificationBell() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <div className="font-bold text-xs truncate">{n.title}</div>
-                      <div className="text-[11px] mt-1 whitespace-pre-wrap break-words opacity-90">{n.body}</div>
-                      <div className="text-[10px] mt-1.5 opacity-60">{formatDateTime(n.created_at)}</div>
+                      <div className="text-[0.6875rem] mt-1 whitespace-pre-wrap break-words opacity-90">{n.body}</div>
+                      <div className="text-[0.625rem] mt-1.5 opacity-60">{formatDateTime(n.created_at)}</div>
                     </div>
                     {!n.is_read ? (
                       <button

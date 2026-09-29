@@ -22,6 +22,7 @@ import { supabase } from '../lib/supabase';
 import { UserRank } from '../types';
 import { AVATAR_PRESETS, resolveAvatarDisplay, toPresetAvatarUrl } from '../utils/avatar';
 import { useDialog } from '../hooks/useDialog';
+import DisplayScalePicker from './DisplayScalePicker';
 import { MIN_PASSWORD_LENGTH, ROLE_LABELS, translateAuthError } from '../constants/auth';
 
 const ROLE_COLORS: Record<UserRole, string> = {
@@ -353,14 +354,14 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
             </div>
 
             <h2 className="text-white font-bold text-lg leading-tight">{effectiveProfile?.full_name || 'Uživatel'}</h2>
-            <span className={`mt-1.5 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border ${ROLE_COLORS[role]}`}>
+            <span className={`mt-1.5 text-[0.625rem] font-extrabold px-2.5 py-0.5 rounded-full border ${ROLE_COLORS[role]}`}>
               {ROLE_LABELS[role]}
             </span>
 
             <button
               type="button"
               onClick={() => setShowPresets((prev) => !prev)}
-              className="mt-3 text-[11px] font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer transition-colors"
+              className="mt-3 text-[0.6875rem] font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer transition-colors"
             >
               <Sparkles className="w-3 h-3" />
               {showPresets ? 'Skrýt služební avatary' : 'Vybrat ze služebních avatarů'}
@@ -388,7 +389,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
 
             {avatarMessage && (
               <div
-                className={`mt-3 w-full flex items-start gap-2 rounded-xl px-3 py-2 text-[11px] leading-snug ${
+                className={`mt-3 w-full flex items-start gap-2 rounded-xl px-3 py-2 text-[0.6875rem] leading-snug ${
                   avatarMessage.type === 'success'
                     ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-300'
                     : 'bg-red-500/10 border border-red-500/30 text-red-300'
@@ -431,7 +432,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                 aria-describedby={`${fieldIds}-1-hint`}
                 className="w-full border rounded-xl px-4 py-2.5 text-sm transition-all font-semibold bg-slate-800/60 border-slate-700/60 text-slate-400 cursor-not-allowed"
               />
-              <p id={`${fieldIds}-1-hint`} className="mt-1.5 text-[11px] text-slate-500">
+              <p id={`${fieldIds}-1-hint`} className="mt-1.5 text-[0.6875rem] text-slate-500">
                 Třídu mění jen lektor nebo správce. Nezařazení o ni požádají na nástěnce tříd.
               </p>
             </div>
@@ -443,7 +444,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                     <Shield className="w-3.5 h-3.5 text-amber-400" />
                     Náhled role
                   </span>
-                  <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-extrabold border border-amber-500/40">
+                  <span className="text-[0.625rem] uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-extrabold border border-amber-500/40">
                     {previewRole ? 'Náhled běží' : 'Jen zobrazení'}
                   </span>
                 </label>
@@ -458,7 +459,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                   <option value="velitel_tridy">Velitel třídy (Ústrojová kázeň & hlášení)</option>
                   <option value="student">Kadet / Student</option>
                 </select>
-                <p className="text-[10px] text-slate-400 leading-tight">
+                <p className="text-[0.625rem] text-slate-400 leading-tight">
                   Mění se jen to, co vidíte. Role účtu v databázi zůstává{' '}
                   <strong className="text-slate-300">
                     {realRole ? ROLE_LABELS[realRole] : '—'}
@@ -477,11 +478,11 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                 <div className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
                   <Shield className="w-3.5 h-3.5 text-slate-400" />
                   <span>Role účtu</span>
-                  <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${ROLE_COLORS[effectiveProfile.role]}`}>
+                  <span className={`text-[0.625rem] font-extrabold px-2 py-0.5 rounded-full border ${ROLE_COLORS[effectiveProfile.role]}`}>
                     {ROLE_LABELS[effectiveProfile.role]}
                   </span>
                 </div>
-                <div className="text-[10px] text-slate-400 leading-tight mt-1">
+                <div className="text-[0.625rem] text-slate-400 leading-tight mt-1">
                   Roli velitele třídy, lektora nebo správce přiděluje správce systému ve
                   správě uživatelů. Pokud máš velet své třídě, požádej o to svého lektora.
                 </div>
@@ -490,7 +491,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
 
             {nameMessage && (
               <div
-                className={`flex items-start gap-2 rounded-xl px-3 py-2 text-[11px] leading-snug ${
+                className={`flex items-start gap-2 rounded-xl px-3 py-2 text-[0.6875rem] leading-snug ${
                   nameMessage.type === 'success'
                     ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-300'
                     : 'bg-red-500/10 border border-red-500/30 text-red-300'
@@ -513,6 +514,8 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               Uložit osobní údaje
             </button>
           </form>
+
+          <DisplayScalePicker />
 
           {/* Změna hesla */}
           <form onSubmit={handleChangePassword} className="space-y-3 pb-6 mb-6 border-b border-slate-800">
@@ -554,7 +557,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
             />
             {passwordMessage && (
               <div
-                className={`flex items-start gap-2 rounded-xl px-3 py-2 text-[11px] leading-snug ${
+                className={`flex items-start gap-2 rounded-xl px-3 py-2 text-[0.6875rem] leading-snug ${
                   passwordMessage.type === 'success'
                     ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-300'
                     : 'bg-red-500/10 border border-red-500/30 text-red-300'
@@ -595,7 +598,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               <span className="flex items-center gap-2 text-xs text-slate-400">
                 <Shield className="w-3.5 h-3.5" /> Role
               </span>
-              <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${ROLE_COLORS[role]}`}>
+              <span className={`text-[0.625rem] font-extrabold px-2 py-0.5 rounded-full border ${ROLE_COLORS[role]}`}>
                 {ROLE_LABELS[role]}
               </span>
             </div>

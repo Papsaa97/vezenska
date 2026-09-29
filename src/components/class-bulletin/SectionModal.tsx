@@ -94,7 +94,7 @@ export default function SectionModal({ item, onClose, onSave }: SectionModalProp
               value={badge}
               onChange={(e) => setBadge(e.target.value)}
               placeholder="např. DŮLEŽITÉ, UPOZORNĚNÍ, ZKOUŠKA..."
-              className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white uppercase text-[11px]"
+              className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white uppercase text-[0.6875rem]"
             />
           </div>
 

@@ -169,7 +169,7 @@ function ContentManagerInner({ onQuestionsUpdated }: ContentManagerProps) {
           <MessageSquareWarning className="w-4 h-4 text-indigo-500" />
           Zpětná vazba
           {newFeedbackCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center shadow-sm">
+            <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[0.625rem] font-bold flex items-center justify-center shadow-sm">
               {newFeedbackCount > 99 ? '99+' : newFeedbackCount}
             </span>
           )}

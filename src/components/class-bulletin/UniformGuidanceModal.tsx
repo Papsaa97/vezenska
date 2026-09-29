@@ -195,7 +195,7 @@ export default function UniformGuidanceModal({
                 {/* Doplňující poznámka ke cvičení, pokud je aktivní */}
                 {dayItem.hasWorkout && (
                   <div className="mt-2.5 pt-2.5 border-t border-emerald-500/20 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 shrink-0">
+                    <span className="text-[0.6875rem] font-semibold text-emerald-700 dark:text-emerald-300 shrink-0">
                       Upozornění pro třídu:
                     </span>
                     <input
@@ -223,7 +223,7 @@ export default function UniformGuidanceModal({
 
           {/* Poznámka velitele třídy */}
           <div className="pt-1">
-            <label className="block font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px] mb-1" htmlFor={`${fieldIds}-0`}>
+            <label className="block font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[0.625rem] mb-1" htmlFor={`${fieldIds}-0`}>
               Doplňující poznámka pro celou třídu (volitelné)
             </label>
             <textarea

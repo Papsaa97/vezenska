@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useId, useRef, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useId, useRef, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Header from './components/Header';
 import { NavTab, NAV_TAB_LABELS, VALID_TABS, isNavTab } from './data/navTabs';
@@ -10,23 +10,25 @@ import PWAInstallPrompt from './components/PWAInstallPrompt';
 import UpdatePrompt from './components/UpdatePrompt';
 import FeedbackButton from './components/FeedbackButton';
 import { fetchQuizQuestionsFromSupabase } from './utils/quizQuestionsLoader';
+import { lazyWithReload } from './utils/lazyWithReload';
 
-// Lazy-loaded view components — načteny až při první návštěvě daného tabu
-const ClassBulletinBoard   = lazy(() => import('./components/ClassBulletinBoard'));
-const SubjectsHub          = lazy(() => import('./components/SubjectsHub'));
-const Quiz                 = lazy(() => import('./components/Quiz'));
-const CaptainExamAssistant = lazy(() => import('./components/CaptainExamAssistant'));
-const LegalCompass         = lazy(() => import('./components/LegalCompass'));
-const PrisonAdministration = lazy(() => import('./components/PrisonAdministration'));
-const ProfessionalEthics   = lazy(() => import('./components/ProfessionalEthics'));
-const Scenarios            = lazy(() => import('./components/Scenarios'));
-const WeaponSimulator      = lazy(() => import('./components/WeaponSimulator'));
-const Flashcards           = lazy(() => import('./components/Flashcards'));
-const MatchingGame         = lazy(() => import('./components/MatchingGame'));
-const BadgesView           = lazy(() => import('./components/BadgesView'));
-const Statistics           = lazy(() => import('./components/Statistics'));
-const MaterialLibrary      = lazy(() => import('./components/MaterialLibrary'));
-const ContentManager       = lazy(() => import('./components/ContentManager'));
+// Lazy-loaded view components — načteny až při první návštěvě daného tabu.
+// lazyWithReload: chunk smazaný novým nasazením vyřeší jedním obnovením stránky.
+const ClassBulletinBoard   = lazyWithReload(() => import('./components/ClassBulletinBoard'));
+const SubjectsHub          = lazyWithReload(() => import('./components/SubjectsHub'));
+const Quiz                 = lazyWithReload(() => import('./components/Quiz'));
+const CaptainExamAssistant = lazyWithReload(() => import('./components/CaptainExamAssistant'));
+const LegalCompass         = lazyWithReload(() => import('./components/LegalCompass'));
+const PrisonAdministration = lazyWithReload(() => import('./components/PrisonAdministration'));
+const ProfessionalEthics   = lazyWithReload(() => import('./components/ProfessionalEthics'));
+const Scenarios            = lazyWithReload(() => import('./components/Scenarios'));
+const WeaponSimulator      = lazyWithReload(() => import('./components/WeaponSimulator'));
+const Flashcards           = lazyWithReload(() => import('./components/Flashcards'));
+const MatchingGame         = lazyWithReload(() => import('./components/MatchingGame'));
+const BadgesView           = lazyWithReload(() => import('./components/BadgesView'));
+const Statistics           = lazyWithReload(() => import('./components/Statistics'));
+const MaterialLibrary      = lazyWithReload(() => import('./components/MaterialLibrary'));
+const ContentManager       = lazyWithReload(() => import('./components/ContentManager'));
 import { useDialog } from './hooks/useDialog';
 import ConfirmDialog from './components/common/ConfirmDialog';
 import { matchingCategories } from './data/questions/matching';
@@ -955,7 +957,7 @@ export default function App() {
           }`}
         >
           <FolderKanban className="w-5 h-5" />
-          <span className="text-[10px] mt-0.5 font-medium">Předměty</span>
+          <span className="text-[0.625rem] mt-0.5 font-medium">Předměty</span>
         </button>
 
         {/* 2. Quiz & Exam */}
@@ -966,7 +968,7 @@ export default function App() {
           }`}
         >
           <GraduationCap className="w-5 h-5" />
-          <span className="text-[10px] mt-0.5 font-medium">Zkouška</span>
+          <span className="text-[0.625rem] mt-0.5 font-medium">Zkouška</span>
         </button>
 
         {/* 3. AI Assistant (Featured Center Button) */}
@@ -981,7 +983,7 @@ export default function App() {
           }`}>
             <Sparkles className="w-5 h-5 animate-pulse" />
           </div>
-          <span className={`text-[10px] mt-1 font-bold ${activeTab === 'assistant' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500'}`}>
+          <span className={`text-[0.625rem] mt-1 font-bold ${activeTab === 'assistant' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500'}`}>
             AI Asistent
           </span>
         </button>
@@ -999,7 +1001,7 @@ export default function App() {
           }`}
         >
           <ShieldAlert className="w-5 h-5" />
-          <span className="text-[10px] mt-0.5 font-medium">Výcvik</span>
+          <span className="text-[0.625rem] mt-0.5 font-medium">Výcvik</span>
         </button>
 
         {/* 5. More / Tools Hub */}
@@ -1012,7 +1014,7 @@ export default function App() {
           }`}
         >
           <Menu className="w-5 h-5" />
-          <span className="text-[10px] mt-0.5 font-medium">Více</span>
+          <span className="text-[0.625rem] mt-0.5 font-medium">Více</span>
         </button>
       </nav>
 
@@ -1074,19 +1076,19 @@ export default function App() {
                   </div>
                   <div>
                     <div className="text-xs font-bold leading-snug">Informační tabule tříd ZOP</div>
-                    <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    <div className="text-[0.625rem] text-slate-500 dark:text-slate-400 mt-0.5">
                       Rozvrhy hodin, změny v učebnách a termíny výcviku
                     </div>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-400/30 shrink-0">
+                <span className="text-[0.625rem] font-bold px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-400/30 shrink-0">
                   Nástěnka
                 </span>
               </button>
 
               {/* Section 1: Výcvik & Trenažéry */}
               <div className="space-y-2">
-                <div className="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="text-[0.6875rem] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
                   <Shield className="w-3.5 h-3.5" />
                   <span>Výcvik & Praxe</span>
                 </div>
@@ -1101,7 +1103,7 @@ export default function App() {
                   >
                     <ShieldAlert className="w-5 h-5 text-amber-500 mb-1.5" />
                     <div className="text-xs font-bold leading-snug">{NAV_TAB_LABELS['scenarios']}</div>
-                    <div className="text-[10px] text-slate-500 leading-tight mt-0.5">{tacticalScenarios.length} modelových situací</div>
+                    <div className="text-[0.625rem] text-slate-500 leading-tight mt-0.5">{tacticalScenarios.length} modelových situací</div>
                   </button>
 
                   <button
@@ -1114,7 +1116,7 @@ export default function App() {
                   >
                     <Crosshair className="w-5 h-5 text-blue-500 mb-1.5" />
                     <div className="text-xs font-bold leading-snug">{NAV_TAB_LABELS['weapons']}</div>
-                    <div className="text-[10px] text-slate-500 leading-tight mt-0.5">CZ 75 B & Scorpion</div>
+                    <div className="text-[0.625rem] text-slate-500 leading-tight mt-0.5">CZ 75 B & Scorpion</div>
                   </button>
 
                   <button
@@ -1127,7 +1129,7 @@ export default function App() {
                   >
                     <FileText className="w-5 h-5 text-emerald-500 mb-1.5" />
                     <div className="text-xs font-bold leading-snug">{NAV_TAB_LABELS['admin']}</div>
-                    <div className="text-[10px] text-slate-500 leading-tight mt-0.5">Úřední záznamy & Č.j.</div>
+                    <div className="text-[0.625rem] text-slate-500 leading-tight mt-0.5">Úřední záznamy & Č.j.</div>
                   </button>
 
                   <button
@@ -1140,14 +1142,14 @@ export default function App() {
                   >
                     <HeartHandshake className="w-5 h-5 text-rose-500 mb-1.5" />
                     <div className="text-xs font-bold leading-snug">{NAV_TAB_LABELS['ethics']}</div>
-                    <div className="text-[10px] text-slate-500 leading-tight mt-0.5">Kodex & rizika</div>
+                    <div className="text-[0.625rem] text-slate-500 leading-tight mt-0.5">Kodex & rizika</div>
                   </button>
                 </div>
               </div>
 
               {/* Section 2: Znalosti & Dril */}
               <div className="space-y-2">
-                <div className="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="text-[0.6875rem] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
                   <Zap className="w-3.5 h-3.5" />
                   <span>Znalosti & Dril</span>
                 </div>
@@ -1162,7 +1164,7 @@ export default function App() {
                   >
                     <Scale className="w-4 h-4 text-blue-500 mb-1" />
                     <div className="text-xs font-bold">{NAV_TAB_LABELS['compass']}</div>
-                    <div className="text-[9px] text-slate-500 mt-0.5">Zákony, vyhlášky, NGŘ</div>
+                    <div className="text-[0.5625rem] text-slate-500 mt-0.5">Zákony, vyhlášky, NGŘ</div>
                   </button>
 
                   <button
@@ -1175,7 +1177,7 @@ export default function App() {
                   >
                     <Layers className="w-4 h-4 text-amber-500 mb-1" />
                     <div className="text-xs font-bold">{NAV_TAB_LABELS['flashcards']}</div>
-                    <div className="text-[9px] text-slate-500 mt-0.5">3D Leitner dril</div>
+                    <div className="text-[0.5625rem] text-slate-500 mt-0.5">3D Leitner dril</div>
                   </button>
 
                   <button
@@ -1188,14 +1190,14 @@ export default function App() {
                   >
                     <LayoutGrid className="w-4 h-4 text-emerald-500 mb-1" />
                     <div className="text-xs font-bold">{NAV_TAB_LABELS['matching']}</div>
-                    <div className="text-[9px] text-slate-500 mt-0.5">Pexeso pojmů</div>
+                    <div className="text-[0.5625rem] text-slate-500 mt-0.5">Pexeso pojmů</div>
                   </button>
                 </div>
               </div>
 
               {/* Section 3: Profil & Výsledky */}
               <div className="space-y-2">
-                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                   <Award className="w-3.5 h-3.5 text-amber-500" />
                   <span>Profil & Statistiky</span>
                 </div>
@@ -1210,7 +1212,7 @@ export default function App() {
                   >
                     <div>
                       <div className="text-xs font-bold">{NAV_TAB_LABELS['badges']}</div>
-                      <div className="text-[10px] text-slate-500">Hodnostní postup</div>
+                      <div className="text-[0.625rem] text-slate-500">Hodnostní postup</div>
                     </div>
                     <Award className="w-5 h-5 text-amber-500" />
                   </button>
@@ -1225,7 +1227,7 @@ export default function App() {
                   >
                     <div>
                       <div className="text-xs font-bold">{NAV_TAB_LABELS['statistics']}</div>
-                      <div className="text-[10px] text-slate-500">Analýza zkoušky</div>
+                      <div className="text-[0.625rem] text-slate-500">Analýza zkoušky</div>
                     </div>
                     <BarChart3 className="w-5 h-5 text-blue-500" />
                   </button>
@@ -1234,7 +1236,7 @@ export default function App() {
 
               {/* Section 4: Materiály & Správa */}
               <div className="space-y-2">
-                <div className="text-[11px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="text-[0.6875rem] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
                   <BookOpen className="w-3.5 h-3.5" />
                   <span>Studijní materiály</span>
                 </div>
@@ -1249,7 +1251,7 @@ export default function App() {
                   >
                     <div>
                       <div className="text-xs font-bold">{NAV_TAB_LABELS['library']}</div>
-                      <div className="text-[10px] text-slate-500">PDF, DOCX, PPTX</div>
+                      <div className="text-[0.625rem] text-slate-500">PDF, DOCX, PPTX</div>
                     </div>
                     <BookOpen className="w-5 h-5 text-indigo-500" />
                   </button>
@@ -1265,7 +1267,7 @@ export default function App() {
                     >
                       <div>
                         <div className="text-xs font-bold">{NAV_TAB_LABELS['content-manager']}</div>
-                        <div className="text-[10px] text-slate-500">Nahrávání souborů</div>
+                        <div className="text-[0.625rem] text-slate-500">Nahrávání souborů</div>
                       </div>
                       <Settings2 className="w-5 h-5 text-emerald-500" />
                     </button>

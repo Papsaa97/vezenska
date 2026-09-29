@@ -69,7 +69,7 @@ export default function ClassCardCompact({
             {item.className}
           </h3>
           {isMyClass && (
-            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+            <span className="text-[0.5625rem] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
               Moje
             </span>
           )}
@@ -80,7 +80,7 @@ export default function ClassCardCompact({
             <button
               type="button"
               onClick={onSelectAsMyClass}
-              className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 hover:underline px-1.5 py-0.5 cursor-pointer"
+              className="text-[0.625rem] font-semibold text-blue-600 dark:text-blue-400 hover:underline px-1.5 py-0.5 cursor-pointer"
               title="Zobrazit nástěnku této třídy v podrobném přehledu"
             >
               Zobrazit
@@ -129,7 +129,7 @@ export default function ClassCardCompact({
         onEditDates={onEdit}
       />
 
-      <div className="px-4 pt-3 flex items-center justify-between gap-2 text-[11px] text-slate-600 dark:text-slate-300">
+      <div className="px-4 pt-3 flex items-center justify-between gap-2 text-[0.6875rem] text-slate-600 dark:text-slate-300">
         <span className="flex items-center gap-1.5 min-w-0">
           <Shield className="w-3.5 h-3.5 text-purple-500 shrink-0" />
           <span className="font-semibold">Velitel:</span>
@@ -145,12 +145,12 @@ export default function ClassCardCompact({
       <div className="p-4 flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         {/* Rozvrh */}
         <div className="flex flex-col space-y-1.5">
-          <div className="flex items-center justify-between text-[11px] font-bold text-slate-600 dark:text-slate-300">
+          <div className="flex items-center justify-between text-[0.6875rem] font-bold text-slate-600 dark:text-slate-300">
             <span>Rozvrh hodin</span>
             {item.scheduleUrl && (
               <button
                 onClick={onPrintSchedule}
-                className="text-slate-400 hover:text-slate-200 text-[10px]"
+                className="text-slate-400 hover:text-slate-200 text-[0.625rem]"
                 title="Vytisknout v A4"
               >
                 <Printer className="w-3 h-3" />
@@ -169,7 +169,7 @@ export default function ClassCardCompact({
                   alt={`Rozvrh ${item.className}`}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                 />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[11px] font-bold gap-1">
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[0.6875rem] font-bold gap-1">
                   <ZoomIn className="w-3.5 h-3.5" />
                   <span>Zvětšit</span>
                 </div>
@@ -177,7 +177,7 @@ export default function ClassCardCompact({
             ) : (
               <div className="w-full h-full min-h-[140px] rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-3 text-center">
                 <ImageIcon className="w-6 h-6 text-slate-400 mb-1 opacity-50" />
-                <span className="text-[11px] text-slate-500">Bez rozvrhu</span>
+                <span className="text-[0.6875rem] text-slate-500">Bez rozvrhu</span>
               </div>
             )}
           </div>
@@ -185,13 +185,13 @@ export default function ClassCardCompact({
 
         {/* Ústroj & Změny */}
         <div className="flex flex-col space-y-1.5 text-xs">
-          <div className="flex items-center justify-between text-[11px] font-bold text-purple-600 dark:text-purple-400">
+          <div className="flex items-center justify-between text-[0.6875rem] font-bold text-purple-600 dark:text-purple-400">
             <span className="flex items-center gap-1">
               <Shirt className="w-3 h-3" />
               <span>Ústroj</span>
             </span>
             {isManager && (
-              <button onClick={onEditUniform} className="text-[10px] hover:underline cursor-pointer">
+              <button onClick={onEditUniform} className="text-[0.625rem] hover:underline cursor-pointer">
                 Upravit
               </button>
             )}
@@ -206,14 +206,14 @@ export default function ClassCardCompact({
 
             if (!displayOutfit) {
               return (
-                <div className="p-2 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-300/30 text-[11px] leading-snug text-slate-400 italic min-h-[50px] flex items-center">
+                <div className="p-2 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-300/30 text-[0.6875rem] leading-snug text-slate-400 italic min-h-[50px] flex items-center">
                   Nestanoveno
                 </div>
               );
             }
 
             return (
-              <div className="p-2.5 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-300/30 text-[11px] leading-snug text-purple-950 dark:text-purple-200 min-h-[50px] flex flex-col justify-between">
+              <div className="p-2.5 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-300/30 text-[0.6875rem] leading-snug text-purple-950 dark:text-purple-200 min-h-[50px] flex flex-col justify-between">
                 <div className="flex items-start justify-between gap-1.5">
                   <div>
                     <span className="font-bold text-purple-800 dark:text-purple-300">
@@ -224,14 +224,14 @@ export default function ClassCardCompact({
                     </span>
                   </div>
                   {upcoming.hasWorkout && (
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[10px] font-bold shrink-0">
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[0.625rem] font-bold shrink-0">
                       <span>👟</span>
                       <span>Cvičení</span>
                     </span>
                   )}
                 </div>
                 {upcoming.item?.workoutNote && (
-                  <div className="text-[10px] text-emerald-600 dark:text-emerald-400 truncate mt-1">
+                  <div className="text-[0.625rem] text-emerald-600 dark:text-emerald-400 truncate mt-1">
                     {upcoming.item.workoutNote}
                   </div>
                 )}
@@ -241,8 +241,8 @@ export default function ClassCardCompact({
 
           {/* Nejbližší výpomoc Pankrác / Recepce */}
           {item.dutyRoster && item.dutyRoster.length > 0 ? (
-            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] leading-snug space-y-0.5">
-              <div className="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1 text-[10px]">
+            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[0.6875rem] leading-snug space-y-0.5">
+              <div className="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1 text-[0.625rem]">
                 <Building2 className="w-3 h-3" />
                 <span>{item.dutyRoster[0].type === 'pankrac' ? 'Pankrác' : 'Recepce'}</span>
                 <span className="text-slate-500 font-normal">({item.dutyRoster[0].date})</span>
@@ -252,7 +252,7 @@ export default function ClassCardCompact({
               </div>
             </div>
           ) : (
-            <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 text-[10px] text-slate-400 italic">
+            <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 text-[0.625rem] text-slate-400 italic">
               Žádná vypsaná výpomoc
             </div>
           )}

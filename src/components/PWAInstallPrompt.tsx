@@ -202,11 +202,11 @@ export default function PWAInstallPrompt() {
                     <p className="text-xs font-bold text-indigo-700 dark:text-indigo-300 mb-2">Jak nainstalovat na iPhone/iPad:</p>
                     <ol className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
                       <li className="flex items-center gap-2">
-                        <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-[10px]">1</span>
+                        <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-[0.625rem]">1</span>
                         Klepněte na ikonu <Share className="w-3.5 h-3.5 inline mx-0.5" strokeWidth={2.5} /> <strong>Sdílet</strong> v liště Safari
                       </li>
                       <li className="flex items-center gap-2">
-                        <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-[10px]">2</span>
+                        <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-[0.625rem]">2</span>
                         Vyberte <PlusSquare className="w-3.5 h-3.5 inline mx-0.5" strokeWidth={2.5} /> <strong>Přidat na plochu</strong>
                       </li>
                     </ol>
@@ -272,11 +272,11 @@ export default function PWAInstallPrompt() {
               <p id="pwa-ios-guide-title" className="text-sm font-black text-slate-900 dark:text-white mb-3 pr-6">Instalace na iPhone/iPad</p>
               <ol className="space-y-2 text-xs text-slate-600 dark:text-slate-300">
                 <li className="flex items-center gap-2">
-                  <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-[10px]">1</span>
+                  <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-[0.625rem]">1</span>
                   Klepněte na ikonu <Share className="w-3.5 h-3.5 inline mx-0.5" strokeWidth={2.5} /> <strong>Sdílet</strong> v liště Safari
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-[10px]">2</span>
+                  <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-[0.625rem]">2</span>
                   Vyberte <PlusSquare className="w-3.5 h-3.5 inline mx-0.5" strokeWidth={2.5} /> <strong>Přidat na plochu</strong>
                 </li>
               </ol>

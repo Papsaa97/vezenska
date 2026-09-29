@@ -117,11 +117,11 @@ export default function PrisonAdminETR() {
             </button>
           </div>
           {cjCopyFailed && (
-            <div role="alert" className="text-[11px] font-semibold text-red-400">
+            <div role="alert" className="text-[0.6875rem] font-semibold text-red-400">
               Schránka není dostupná — označte ČJ výše a zkopírujte ho ručně.
             </div>
           )}
-          <div className="text-[11px] text-slate-400">
+          <div className="text-[0.6875rem] text-slate-400">
             V systému ETŘ vidí všichni oprávnění uživatelé vždy ČJ a název věci!
           </div>
         </div>
@@ -138,7 +138,7 @@ export default function PrisonAdminETR() {
               onChange={(e) => setCjOrg(e.target.value)}
               className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
             />
-            <span className="text-[10px] text-slate-400 block">VS = Vězeňská služba</span>
+            <span className="text-[0.625rem] text-slate-400 block">VS = Vězeňská služba</span>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
@@ -150,7 +150,7 @@ export default function PrisonAdminETR() {
               onChange={(e) => setCjSpisNumber(e.target.value)}
               className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
             />
-            <span className="text-[10px] text-slate-400 block">Pořadové číslo spisu</span>
+            <span className="text-[0.625rem] text-slate-400 block">Pořadové číslo spisu</span>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
@@ -162,7 +162,7 @@ export default function PrisonAdminETR() {
               onChange={(e) => setCjDocNumber(e.target.value)}
               className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
             />
-            <span className="text-[10px] text-slate-400 block">Pořadí v rámci spisu</span>
+            <span className="text-[0.625rem] text-slate-400 block">Pořadí v rámci spisu</span>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
@@ -177,7 +177,7 @@ export default function PrisonAdminETR() {
               <option value="PŘ">PŘ (Přestupky)</option>
               <option value="TČ">TČ (Trestní řízení)</option>
             </select>
-            <span className="text-[10px] text-slate-400 block">ČJ / PŘ / TČ</span>
+            <span className="text-[0.625rem] text-slate-400 block">ČJ / PŘ / TČ</span>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
@@ -189,7 +189,7 @@ export default function PrisonAdminETR() {
               onChange={(e) => setCjYear(e.target.value)}
               className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
             />
-            <span className="text-[10px] text-slate-400 block">Kalendářní rok</span>
+            <span className="text-[0.625rem] text-slate-400 block">Kalendářní rok</span>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
@@ -201,7 +201,7 @@ export default function PrisonAdminETR() {
               onChange={(e) => setCjOrgCode(e.target.value)}
               className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
             />
-            <span className="text-[10px] text-slate-400 block">80 = VS ČR + kód OJ</span>
+            <span className="text-[0.625rem] text-slate-400 block">80 = VS ČR + kód OJ</span>
           </div>
 
         </div>
@@ -232,7 +232,7 @@ export default function PrisonAdminETR() {
                     {tone.icon}
                     <span>{item.title}</span>
                   </div>
-                  <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                  <p className="text-slate-600 dark:text-slate-300 text-[0.6875rem] leading-relaxed">
                     <RichText text={item.text} />
                   </p>
                 </div>
@@ -260,7 +260,7 @@ export default function PrisonAdminETR() {
                 <h4 className="font-bold text-slate-900 dark:text-slate-100">{item.title}</h4>
                 {/* Dřív tu byl dangerouslySetInnerHTML s HTML v textu. Text teď
                     může upravit lektor, proto jen bezpečné **tučně** / *kurzíva*. */}
-                <p className="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
+                <p className="text-slate-600 dark:text-slate-400 text-[0.6875rem] leading-relaxed">
                   <RichText text={item.text} />
                 </p>
               </div>

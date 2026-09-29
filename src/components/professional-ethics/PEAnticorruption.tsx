@@ -81,7 +81,7 @@ export const PEAnticorruption: React.FC = () => {
                 <span className="text-emerald-400 font-bold font-mono">Stupeň {probScore} / 5</span>
               </div>
               <input type="range" min={1} max={5} value={probScore} onChange={(e) => setProbScore(parseInt(e.target.value))} className="w-full accent-emerald-500 cursor-pointer" />
-              <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+              <div className="flex justify-between text-[0.625rem] text-slate-400 mt-1">
                 <span>1: Výjimečný</span><span>2: Nepravděpodobný</span><span>3: Pravděpodobný</span><span>4: Častý</span><span>5: Téměř jistý</span>
               </div>
             </div>
@@ -91,7 +91,7 @@ export const PEAnticorruption: React.FC = () => {
                 <span className="text-emerald-400 font-bold font-mono">Stupeň {impactScore} / 5</span>
               </div>
               <input type="range" min={1} max={5} value={impactScore} onChange={(e) => setImpactScore(parseInt(e.target.value))} className="w-full accent-emerald-500 cursor-pointer" />
-              <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+              <div className="flex justify-between text-[0.625rem] text-slate-400 mt-1">
                 <span>1: Bez vlivu</span><span>2: Malé ztráty</span><span>3: Střední ztráty</span><span>4: Velké ztráty</span><span>5: Devastující</span>
               </div>
             </div>
@@ -99,7 +99,7 @@ export const PEAnticorruption: React.FC = () => {
 
           <div className="p-4 rounded-xl bg-slate-800/90 print:bg-slate-50 border border-slate-700 print:border-slate-300 flex items-center justify-between print:text-[#111827]">
             <div>
-              <span className="text-[11px] font-semibold text-slate-400 print:text-slate-600 uppercase tracking-wider block">Vypočtená míra rizika:</span>
+              <span className="text-[0.6875rem] font-semibold text-slate-400 print:text-slate-600 uppercase tracking-wider block">Vypočtená míra rizika:</span>
               <span className={`text-2xl font-bold font-mono ${currentRiskColor.text} print:text-slate-900`}>{calculatedRiskLevel} / 25</span>
             </div>
             <div className="text-right">
@@ -130,9 +130,9 @@ export const PEAnticorruption: React.FC = () => {
                     <span>{contact.title}</span>
                   </h4>
                   <div className="space-y-1 text-slate-300 print:text-[#111827]">
-                    {contact.text && <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-slate-400 print:text-slate-600" /><span className="font-mono text-[11px]">{contact.text}</span></div>}
-                    {contact.note && <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-slate-400 print:text-slate-600" /><span className="font-mono text-[11px]">{contact.note}</span></div>}
-                    {contact.label && <p className="text-[10px] text-slate-400 print:text-slate-600">{contact.label}</p>}
+                    {contact.text && <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-slate-400 print:text-slate-600" /><span className="font-mono text-[0.6875rem]">{contact.text}</span></div>}
+                    {contact.note && <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-slate-400 print:text-slate-600" /><span className="font-mono text-[0.6875rem]">{contact.note}</span></div>}
+                    {contact.label && <p className="text-[0.625rem] text-slate-400 print:text-slate-600">{contact.label}</p>}
                   </div>
                 </div>
               ))}
@@ -184,7 +184,7 @@ export const PEAnticorruption: React.FC = () => {
                     <tr key={idx} className="hover:bg-slate-800/40 print:bg-white transition-colors break-inside-avoid print:text-[#111827]" style={{ breakInside: 'avoid' }}>
                       <td className="p-3 font-medium text-white print:text-[#111827] whitespace-nowrap">
                         <span className="text-emerald-400 print:text-slate-900 font-bold block">{item.label}</span>
-                        <span className="text-[11px] text-slate-400 print:text-slate-600">{item.title}</span>
+                        <span className="text-[0.6875rem] text-slate-400 print:text-slate-600">{item.title}</span>
                       </td>
                       <td className="p-3 text-slate-300 print:text-[#111827] max-w-xs"><RichText text={item.text} /></td>
                       <td className="p-3 text-center font-mono text-slate-400 print:text-[#111827] whitespace-nowrap">{hasRating ? `${item.probability} × ${item.impact}` : '—'}</td>

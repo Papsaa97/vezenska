@@ -333,11 +333,11 @@ export default function Header({
             <div className="flex flex-col">
               <span className="text-white font-bold text-xs sm:text-sm lg:text-base tracking-tight flex items-center gap-1.5 sm:gap-2">
                 AKADEMIE VS ČR
-                <span className="text-amber-400 font-bold text-[9px] sm:text-[10px] lg:text-xs px-1.5 sm:px-2 py-0.5 bg-amber-400/10 rounded-full border border-amber-400/30 tracking-wider">
+                <span className="text-amber-400 font-bold text-[0.5625rem] sm:text-[0.625rem] lg:text-xs px-1.5 sm:px-2 py-0.5 bg-amber-400/10 rounded-full border border-amber-400/30 tracking-wider">
                   ZOP A
                 </span>
               </span>
-              <span className="text-[10px] text-slate-400 hidden xl:block tracking-wide">Výukový & zkušební systém</span>
+              <span className="text-[0.625rem] text-slate-400 hidden xl:block tracking-wide">Výukový & zkušební systém</span>
             </div>
           </button>
 
@@ -522,7 +522,7 @@ export default function Header({
               <Award className="w-4 h-4" />
               <span>{NAV_TAB_SHORT_LABELS['badges']}</span>
               {unlockedCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-400 text-slate-950 font-black">
+                <span className="px-1.5 py-0.5 rounded-full text-[0.625rem] bg-amber-400 text-slate-950 font-black">
                   {unlockedCount}
                 </span>
               )}
@@ -615,7 +615,7 @@ export default function Header({
                 />
                 {/* Rank level badge in corner */}
                 <div 
-                  className="absolute -bottom-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 font-black text-[9px] flex items-center justify-center border border-slate-900 shadow-sm leading-none"
+                  className="absolute -bottom-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 font-black text-[0.5625rem] flex items-center justify-center border border-slate-900 shadow-sm leading-none"
                   title={`Hodnostní úroveň ${currentRank.level}: ${currentRank.name}`}
                 >
                   {currentRank.level}
@@ -629,20 +629,20 @@ export default function Header({
                     {user ? displayName : 'Host'}
                   </span>
                   {user && role === 'admin' && (
-                    <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full border bg-amber-500/20 text-amber-300 border-amber-500/40">
+                    <span className="text-[0.5625rem] font-extrabold px-1.5 py-0.2 rounded-full border bg-amber-500/20 text-amber-300 border-amber-500/40">
                       Správce
                     </span>
                   )}
                   {user && role === 'lektor' && (
-                    <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full border bg-emerald-500/20 text-emerald-300 border-emerald-500/40">
+                    <span className="text-[0.5625rem] font-extrabold px-1.5 py-0.2 rounded-full border bg-emerald-500/20 text-emerald-300 border-emerald-500/40">
                       Lektor
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-1 text-[10px] text-amber-400 font-medium">
+                <div className="flex items-center gap-1 text-[0.625rem] text-amber-400 font-medium">
                   <span className="font-bold text-amber-300">{currentRank.shortTitle}</span>
                   <span className="text-slate-500">•</span>
-                  <span className="font-mono text-slate-300 text-[10px]">{totalXpWithBadges.toLocaleString('cs-CZ')} XP</span>
+                  <span className="font-mono text-slate-300 text-[0.625rem]">{totalXpWithBadges.toLocaleString('cs-CZ')} XP</span>
                 </div>
               </div>
 
@@ -705,7 +705,7 @@ export default function Header({
               <ShieldAlert className={`w-4 h-4 shrink-0 ${activeTab === 'scenarios' ? 'text-slate-950' : 'text-amber-400'}`} />
               <div>
                 <div className="font-bold">{NAV_TAB_LABELS['scenarios']}</div>
-                <div className="text-[10px] opacity-75">{tacticalScenarios.length} modelových situací z praxe</div>
+                <div className="text-[0.625rem] opacity-75">{tacticalScenarios.length} modelových situací z praxe</div>
               </div>
             </button>
 
@@ -721,7 +721,7 @@ export default function Header({
               <Crosshair className={`w-4 h-4 shrink-0 ${activeTab === 'weapons' ? 'text-slate-950' : 'text-blue-400'}`} />
               <div>
                 <div className="font-bold">{NAV_TAB_LABELS['weapons']}</div>
-                <div className="text-[10px] opacity-75">CZ 75 B & Scorpion EVO 3A1</div>
+                <div className="text-[0.625rem] opacity-75">CZ 75 B & Scorpion EVO 3A1</div>
               </div>
             </button>
 
@@ -737,7 +737,7 @@ export default function Header({
               <FileText className={`w-4 h-4 shrink-0 ${activeTab === 'admin' ? 'text-slate-950' : 'text-emerald-400'}`} />
               <div>
                 <div className="font-bold">{NAV_TAB_LABELS['admin']}</div>
-                <div className="text-[10px] opacity-75">Úřední záznamy, Č.j. a tiskopisy</div>
+                <div className="text-[0.625rem] opacity-75">Úřední záznamy, Č.j. a tiskopisy</div>
               </div>
             </button>
 
@@ -753,7 +753,7 @@ export default function Header({
               <HeartHandshake className={`w-4 h-4 shrink-0 ${activeTab === 'ethics' ? 'text-slate-950' : 'text-rose-400'}`} />
               <div>
                 <div className="font-bold">{NAV_TAB_LABELS['ethics']}</div>
-                <div className="text-[10px] opacity-75">Kodex & protikorupční modul</div>
+                <div className="text-[0.625rem] opacity-75">Kodex & protikorupční modul</div>
               </div>
             </button>
           </motion.div>
@@ -785,7 +785,7 @@ export default function Header({
               <Scale className={`w-4 h-4 shrink-0 ${activeTab === 'compass' ? 'text-white' : 'text-blue-400'}`} />
               <div>
                 <div className="font-bold">{NAV_TAB_LABELS['compass']}</div>
-                <div className="text-[10px] opacity-75">Zákony 555/1992, 169/1999 & NGŘ</div>
+                <div className="text-[0.625rem] opacity-75">Zákony 555/1992, 169/1999 & NGŘ</div>
               </div>
             </button>
 
@@ -801,7 +801,7 @@ export default function Header({
               <Layers className={`w-4 h-4 shrink-0 ${activeTab === 'flashcards' ? 'text-white' : 'text-amber-400'}`} />
               <div>
                 <div className="font-bold">{NAV_TAB_LABELS['flashcards']}</div>
-                <div className="text-[10px] opacity-75">3D otočné Leitnerovy boxy</div>
+                <div className="text-[0.625rem] opacity-75">3D otočné Leitnerovy boxy</div>
               </div>
             </button>
 
@@ -817,7 +817,7 @@ export default function Header({
               <LayoutGrid className={`w-4 h-4 shrink-0 ${activeTab === 'matching' ? 'text-white' : 'text-emerald-400'}`} />
               <div>
                 <div className="font-bold">{NAV_TAB_LABELS['matching']}</div>
-                <div className="text-[10px] opacity-75">Rychlé pexeso na čas</div>
+                <div className="text-[0.625rem] opacity-75">Rychlé pexeso na čas</div>
               </div>
             </button>
           </motion.div>
@@ -839,7 +839,7 @@ export default function Header({
           >
             {/* Section 1: Výcvik & Praxe */}
             <div className="space-y-1">
-              <div className="px-2 pt-1 text-[10px] font-black uppercase tracking-wider text-amber-400/90 flex items-center gap-1.5">
+              <div className="px-2 pt-1 text-[0.625rem] font-black uppercase tracking-wider text-amber-400/90 flex items-center gap-1.5">
                 <Shield className="w-3 h-3" />
                 <span>Výcvik & Praxe</span>
               </div>
@@ -856,7 +856,7 @@ export default function Header({
                 <ShieldAlert className={`w-4 h-4 shrink-0 ${activeTab === 'scenarios' ? 'text-slate-950' : 'text-amber-400'}`} />
                 <div>
                   <div className="font-bold">{NAV_TAB_LABELS['scenarios']}</div>
-                  <div className="text-[10px] opacity-75">{tacticalScenarios.length} modelových situací z praxe</div>
+                  <div className="text-[0.625rem] opacity-75">{tacticalScenarios.length} modelových situací z praxe</div>
                 </div>
               </button>
 
@@ -872,7 +872,7 @@ export default function Header({
                 <Crosshair className={`w-4 h-4 shrink-0 ${activeTab === 'weapons' ? 'text-slate-950' : 'text-blue-400'}`} />
                 <div>
                   <div className="font-bold">{NAV_TAB_LABELS['weapons']}</div>
-                  <div className="text-[10px] opacity-75">CZ 75 B & Scorpion EVO 3A1</div>
+                  <div className="text-[0.625rem] opacity-75">CZ 75 B & Scorpion EVO 3A1</div>
                 </div>
               </button>
 
@@ -888,7 +888,7 @@ export default function Header({
                 <FileText className={`w-4 h-4 shrink-0 ${activeTab === 'admin' ? 'text-slate-950' : 'text-emerald-400'}`} />
                 <div>
                   <div className="font-bold">{NAV_TAB_LABELS['admin']}</div>
-                  <div className="text-[10px] opacity-75">Úřední záznamy, Č.j. a tiskopisy</div>
+                  <div className="text-[0.625rem] opacity-75">Úřední záznamy, Č.j. a tiskopisy</div>
                 </div>
               </button>
 
@@ -904,14 +904,14 @@ export default function Header({
                 <HeartHandshake className={`w-4 h-4 shrink-0 ${activeTab === 'ethics' ? 'text-slate-950' : 'text-rose-400'}`} />
                 <div>
                   <div className="font-bold">{NAV_TAB_LABELS['ethics']}</div>
-                  <div className="text-[10px] opacity-75">Kodex & protikorupční modul</div>
+                  <div className="text-[0.625rem] opacity-75">Kodex & protikorupční modul</div>
                 </div>
               </button>
             </div>
 
             {/* Section 2: Znalosti & Dril */}
             <div className="pt-2 border-t border-slate-800 space-y-1">
-              <div className="px-2 pt-1 text-[10px] font-black uppercase tracking-wider text-blue-400/90 flex items-center gap-1.5">
+              <div className="px-2 pt-1 text-[0.625rem] font-black uppercase tracking-wider text-blue-400/90 flex items-center gap-1.5">
                 <Zap className="w-3 h-3 text-amber-300" />
                 <span>Znalosti & Dril</span>
               </div>
@@ -928,7 +928,7 @@ export default function Header({
                 <Scale className={`w-4 h-4 shrink-0 ${activeTab === 'compass' ? 'text-white' : 'text-blue-400'}`} />
                 <div>
                   <div className="font-bold">{NAV_TAB_LABELS['compass']}</div>
-                  <div className="text-[10px] opacity-75">Zákony 555/1992, 169/1999 & NGŘ</div>
+                  <div className="text-[0.625rem] opacity-75">Zákony 555/1992, 169/1999 & NGŘ</div>
                 </div>
               </button>
 
@@ -944,7 +944,7 @@ export default function Header({
                 <Layers className={`w-4 h-4 shrink-0 ${activeTab === 'flashcards' ? 'text-white' : 'text-amber-400'}`} />
                 <div>
                   <div className="font-bold">{NAV_TAB_LABELS['flashcards']}</div>
-                  <div className="text-[10px] opacity-75">3D otočné Leitnerovy boxy</div>
+                  <div className="text-[0.625rem] opacity-75">3D otočné Leitnerovy boxy</div>
                 </div>
               </button>
 
@@ -960,14 +960,14 @@ export default function Header({
                 <LayoutGrid className={`w-4 h-4 shrink-0 ${activeTab === 'matching' ? 'text-white' : 'text-emerald-400'}`} />
                 <div>
                   <div className="font-bold">{NAV_TAB_LABELS['matching']}</div>
-                  <div className="text-[10px] opacity-75">Rychlé pexeso na čas</div>
+                  <div className="text-[0.625rem] opacity-75">Rychlé pexeso na čas</div>
                 </div>
               </button>
             </div>
 
             {/* Section 3: Přehledy & Materiály */}
             <div className="pt-2 border-t border-slate-800 space-y-1">
-              <div className="px-2 pt-1 text-[10px] font-black uppercase tracking-wider text-indigo-400/90 flex items-center gap-1.5">
+              <div className="px-2 pt-1 text-[0.625rem] font-black uppercase tracking-wider text-indigo-400/90 flex items-center gap-1.5">
                 <Award className="w-3 h-3" />
                 <span>Přehledy & Systém</span>
               </div>
@@ -985,11 +985,11 @@ export default function Header({
                   <Award className={`w-4 h-4 shrink-0 ${activeTab === 'badges' ? 'text-slate-950' : 'text-amber-400'}`} />
                   <div>
                     <div className="font-bold">Odznaky & Úrovně</div>
-                    <div className="text-[10px] opacity-75">Služební postup a trofeje</div>
+                    <div className="text-[0.625rem] opacity-75">Služební postup a trofeje</div>
                   </div>
                 </div>
                 {unlockedCount > 0 && (
-                  <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-black ${
+                  <span className={`px-1.5 py-0.5 rounded-full text-[0.625rem] font-black ${
                     activeTab === 'badges' ? 'bg-slate-950 text-amber-400' : 'bg-amber-400 text-slate-950'
                   }`}>
                     {unlockedCount}
@@ -1009,7 +1009,7 @@ export default function Header({
                 <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'statistics' ? 'text-white' : 'text-blue-400'}`} />
                 <div>
                   <div className="font-bold">Statistiky & Úspěšnost</div>
-                  <div className="text-[10px] opacity-75">Detailní grafy a slabé okruhy</div>
+                  <div className="text-[0.625rem] opacity-75">Detailní grafy a slabé okruhy</div>
                 </div>
               </button>
 
@@ -1025,7 +1025,7 @@ export default function Header({
                 <BookOpen className={`w-4 h-4 shrink-0 ${activeTab === 'library' ? 'text-white' : 'text-indigo-400'}`} />
                 <div>
                   <div className="font-bold">{NAV_TAB_LABELS['library']}</div>
-                  <div className="text-[10px] opacity-75">Studijní texty a předpisy ke stažení</div>
+                  <div className="text-[0.625rem] opacity-75">Studijní texty a předpisy ke stažení</div>
                 </div>
               </button>
 
@@ -1042,7 +1042,7 @@ export default function Header({
                   <Settings2 className="w-4 h-4 shrink-0 text-emerald-400" />
                   <div>
                     <div className="font-bold">{NAV_TAB_LABELS['content-manager']}</div>
-                    <div className="text-[10px] opacity-75">Administrace otázek a materiálů</div>
+                    <div className="text-[0.625rem] opacity-75">Administrace otázek a materiálů</div>
                   </div>
                 </button>
               )}
@@ -1079,11 +1079,11 @@ export default function Header({
                 <div className="font-bold text-white text-sm truncate" title={user ? displayName : 'Host'}>
                   {user ? displayName : 'Nepřihlášený host'}
                 </div>
-                <div className="text-[11px] text-slate-400 truncate">
+                <div className="text-[0.6875rem] text-slate-400 truncate">
                   {user?.email || 'Data uložena lokálně v prohlížeči'}
                 </div>
                 <div className="mt-1">
-                  <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full border ${
+                  <span className={`text-[0.5625rem] font-extrabold px-2 py-0.5 rounded-full border ${
                     role === 'admin' 
                       ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' 
                       : role === 'lektor' 
@@ -1105,7 +1105,7 @@ export default function Header({
                   </div>
                   <div>
                     <div className="font-bold text-amber-300 text-xs">{currentRank.name}</div>
-                    <div className="text-[10px] text-slate-400">{currentRank.shortTitle} • Úroveň {currentRank.level}</div>
+                    <div className="text-[0.625rem] text-slate-400">{currentRank.shortTitle} • Úroveň {currentRank.level}</div>
                   </div>
                 </div>
                 <div className="text-right font-mono font-bold text-xs text-white">
@@ -1126,7 +1126,7 @@ export default function Header({
                 type="button"
                 role="menuitem"
                 aria-current={activeTab === 'badges' ? 'page' : undefined}
-                className="w-full mt-1 py-1.5 px-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-lg text-amber-300 text-[11px] font-bold flex items-center justify-between transition-colors cursor-pointer"
+                className="w-full mt-1 py-1.5 px-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-lg text-amber-300 text-[0.6875rem] font-bold flex items-center justify-between transition-colors cursor-pointer"
               >
                 <span>Hodnostní žebříček a odznaky</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -1138,7 +1138,7 @@ export default function Header({
                   type="button"
                   role="menuitem"
                   aria-current={activeTab === 'content-manager' ? 'page' : undefined}
-                  className="w-full mt-1.5 py-1.5 px-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-lg text-emerald-300 text-[11px] font-bold flex items-center justify-between transition-colors cursor-pointer"
+                  className="w-full mt-1.5 py-1.5 px-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-lg text-emerald-300 text-[0.6875rem] font-bold flex items-center justify-between transition-colors cursor-pointer"
                 >
                   <div className="flex items-center gap-2">
                     <Settings2 className="w-3.5 h-3.5 text-emerald-400" />

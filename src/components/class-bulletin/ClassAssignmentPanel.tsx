@@ -182,22 +182,22 @@ export default function ClassAssignmentPanel({ classes, leadsClass }: ClassAssig
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm font-bold text-slate-900 dark:text-white">{r.fullName}</span>
                   {isStaff && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                    <span className="text-[0.625rem] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                       {ROLE_LABELS[r.role as UserRole] ?? r.role}
                     </span>
                   )}
                   {r.userClass ? (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">
+                    <span className="text-[0.625rem] font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">
                       {r.userClass}
                     </span>
                   ) : (
-                    <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-400 flex items-center gap-1">
+                    <span className="text-[0.625rem] font-semibold text-amber-700 dark:text-amber-400 flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       v seznamu {formatWaitingTime(r.unassignedSince, now)}
                     </span>
                   )}
                 </div>
-                {r.email && <div className="text-[11px] text-slate-500 dark:text-slate-400">{r.email}</div>}
+                {r.email && <div className="text-[0.6875rem] text-slate-500 dark:text-slate-400">{r.email}</div>}
                 {r.note && (
                   <div className="text-xs text-slate-600 dark:text-slate-300">
                     <span className="font-semibold">Poznámka:</span> {r.note}

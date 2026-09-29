@@ -169,7 +169,7 @@ export default function StudySectionEditModal({
           className={EDIT_INPUT_CLASS}
         />
         {fields.titleHidden && (
-          <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Studentům se tento název nezobrazuje.</p>
+          <p className="mt-1 text-[0.6875rem] text-slate-500 dark:text-slate-400">Studentům se tento název nezobrazuje.</p>
         )}
       </div>
 
@@ -224,7 +224,7 @@ export default function StudySectionEditModal({
             className="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 space-y-2"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Položka {i + 1}</span>
+              <span className="text-[0.6875rem] font-bold text-slate-500 dark:text-slate-400">Položka {i + 1}</span>
               <div className="flex items-center gap-1">
                 <button
                   type="button"

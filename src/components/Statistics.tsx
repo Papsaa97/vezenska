@@ -545,7 +545,7 @@ export default function Statistics({
                 {onStartTopicQuiz && (
                   <button
                     onClick={() => onStartTopicQuiz(weakestTopics[0].subject, weakestTopics[0].topic)}
-                    className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
+                    className="text-[0.6875rem] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
                   >
                     Drilovat <ArrowRight className="w-3 h-3" />
                   </button>
@@ -560,7 +560,7 @@ export default function Statistics({
               <p className="text-xs text-slate-400 mt-1">Všechny okruhy zvládáte nad 75 %.</p>
             </div>
           )}
-          <div className="text-[10px] text-slate-400 mt-3 truncate font-mono">
+          <div className="text-[0.625rem] text-slate-400 mt-3 truncate font-mono">
             {weakestTopics.length > 0 ? `Předmět: ${weakestTopics[0].subject}` : 'Skvělá práce'}
           </div>
         </div>
@@ -759,7 +759,7 @@ export default function Statistics({
             )}
           </div>
 
-          <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-between text-[0.6875rem] text-slate-500 dark:text-slate-400 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
             <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500"></span> &lt; 50 % Kritické</span>
             <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 50-64 % Slabé</span>
             <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span> 65-79 % Dobré</span>
@@ -791,7 +791,7 @@ export default function Statistics({
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                    <span className="text-[0.625rem] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
                       {topic.subject}
                     </span>
                     <span className="text-xs font-extrabold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full">
@@ -809,7 +809,7 @@ export default function Statistics({
                 </div>
 
                 <div className="pt-3 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-[0.6875rem] text-slate-400">
                     Doporučen intenzivní dril
                   </span>
                   {onStartTopicQuiz && (
@@ -850,7 +850,7 @@ export default function Statistics({
                   className="bg-emerald-50/60 dark:bg-emerald-950/20 p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-900/40"
                 >
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300">
+                    <span className="text-[0.625rem] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300">
                       {topic.subject}
                     </span>
                     <span className="text-xs font-extrabold text-emerald-700 dark:text-emerald-300">
@@ -863,7 +863,7 @@ export default function Statistics({
                   >
                     {topic.topic}
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  <p className="text-[0.6875rem] text-slate-500 dark:text-slate-400 mt-0.5">
                     {topic.correctAttempts} z {topic.totalAttempts} správně
                   </p>
                 </div>
@@ -895,7 +895,7 @@ export default function Statistics({
                     {onStartTopicQuiz && (
                       <button
                         onClick={() => onStartTopicQuiz(sub.subject)}
-                        className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer flex items-center gap-0.5"
+                        className="text-[0.625rem] font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer flex items-center gap-0.5"
                         title={`Procvičit předmět ${sub.subject}`}
                       >
                         <span>Procvičit</span>
@@ -904,7 +904,7 @@ export default function Statistics({
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-400 font-mono text-[11px]">{sub.correct}/{sub.total} ot.</span>
+                    <span className="text-slate-400 font-mono text-[0.6875rem]">{sub.correct}/{sub.total} ot.</span>
                     <span className={`font-bold ${sub.accuracy >= 75 ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
                       {sub.accuracy}%
                     </span>
@@ -993,7 +993,7 @@ export default function Statistics({
         {filteredHistory.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
-              <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-400 uppercase font-mono text-[10px] border-y border-slate-200 dark:border-slate-800">
+              <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-400 uppercase font-mono text-[0.625rem] border-y border-slate-200 dark:border-slate-800">
                 <tr>
                   <th className="py-3 px-4">Datum / Čas</th>
                   <th className="py-3 px-4">Předmět</th>
@@ -1027,7 +1027,7 @@ export default function Statistics({
                         </span>
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.625rem] font-bold ${
                           isPass 
                             ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
                             : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
