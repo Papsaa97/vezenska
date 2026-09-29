@@ -405,7 +405,7 @@ export default function MaterialManager() {
                       }
                       className="w-full px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                     />
-                    <div className="text-[10px] text-slate-400 mt-0.5">
+                    <div className="text-[0.625rem] text-slate-400 mt-0.5">
                       {entry.file.name} · {formatFileSize(entry.file.size)}
                     </div>
                   </div>
@@ -434,7 +434,7 @@ export default function MaterialManager() {
               }}
               disabled={uploading}
             />
-            <p className="text-[10px] text-slate-400 mt-2">
+            <p className="text-[0.625rem] text-slate-400 mt-2">
               Štítky se přiřadí všem souborům v tomhle nahrání. Jednotlivě je upravíte
               v seznamu níže.
             </p>
@@ -565,7 +565,7 @@ export default function MaterialManager() {
               <button
                 type="button"
                 onClick={() => setSelected([])}
-                className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:underline cursor-pointer"
+                className="text-[0.6875rem] font-semibold text-slate-600 dark:text-slate-300 hover:underline cursor-pointer"
               >
                 Zrušit výběr
               </button>
@@ -655,7 +655,7 @@ export default function MaterialManager() {
                       {material.subjects.map((subject) => (
                         <span
                           key={subject}
-                          className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
+                          className="text-[0.625rem] font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
                         >
                           {subject}
                         </span>
@@ -663,17 +663,17 @@ export default function MaterialManager() {
                       {material.classIds.map((classId) => (
                         <span
                           key={classId}
-                          className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+                          className="text-[0.625rem] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
                         >
                           {classNameById(classId) ?? 'Smazaná třída'}
                         </span>
                       ))}
                       {material.subjects.length === 0 && material.classIds.length === 0 && (
-                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                        <span className="text-[0.625rem] font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
                           Bez štítků
                         </span>
                       )}
-                      <span className="text-[10px] text-slate-400 font-mono">
+                      <span className="text-[0.625rem] text-slate-400 font-mono">
                         {formatFileSize(material.size)}
                       </span>
                     </div>
@@ -722,7 +722,7 @@ export default function MaterialManager() {
                       <button
                         type="button"
                         onClick={() => (isEditing ? setEditingPath(null) : startEditing(material))}
-                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors cursor-pointer"
+                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[0.6875rem] font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors cursor-pointer"
                       >
                         <Tags className="w-3.5 h-3.5" />
                         <span className="hidden sm:inline">Štítky</span>
@@ -743,7 +743,7 @@ export default function MaterialManager() {
                   <div className="px-3.5 pb-4 pt-1 border-t border-slate-100 dark:border-slate-700/60 space-y-3">
                     <div>
                       <label
-                        className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1"
+                        className="block text-[0.6875rem] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1"
                         htmlFor={`${fieldIds}-edit-nazev`}
                       >
                         Název souboru

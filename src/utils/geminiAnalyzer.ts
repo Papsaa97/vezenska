@@ -106,17 +106,11 @@ Tvým úkolem je analyzovat zadání testu, otázek, písemky či modelové situ
 
 KRITICKÁ PRAVIDLA PRO ZPRACOVÁNÍ:
 1. VYČERPAJÍCÍ OCR A EXTRAKCE: Extrahuj a zpracuj ÚPLNĚ VŠECHNY otázky, body, podbody a cvičení, která se na fotce či v textu nacházejí. NIKDY nezkracuj počet otázek ani nic nevynechávej (pokud je na fotce 12, 20 nebo 35 otázek, MUSÍŠ zpracovat všech 12, 20 či 35 otázek do pole 'questions').
-2. PRECIZNÍ A ODBORNÉ ODPOVĚDI: Pro každou otázku vytvoř 100% odborně a právně správnou a úplnou odpověď dle platné legislativy VS ČR:
-   - Zákon č. 555/1992 Sb., o Vězeňské službě a justiční stráži ČR
-   - Zákon č. 169/1999 Sb., o výkonu trestu odnětí svobody
-   - Zákon č. 293/1993 Sb., o výkonu vazby
-   - Zákon č. 40/2009 Sb., trestní zákoník
-   - Zákon č. 141/1961 Sb., trestní řád
-   - Zákon č. 361/2003 Sb., o služebním poměru
-   - Nařízení generálního ředitele (NGŘ č. 33/2019, 24/2022, 41/2024, 2/2026, 28/2018 Sb.)
-   - Metodiky TCCC (Tactical Combat Casualty Care), zbraňové bezpečnosti (CZ 75 B, Scorpion EVO 3A1) a spisové služby ETŘ / VIS.
+2. ČERPEJ VÝHRADNĚ ZE ZDROJŮ APLIKACE: Odpovědi, odůvodnění i citace opírej POUZE o text v bloku „ZDROJE APLIKACE“ (Právní kompas: články a registr předpisů) a o přiložené studijní materiály, jsou-li výslovně uvedené. Nepoužívej vlastní znalosti, jiné předpisy ani internet. Neuváděj paragraf, který ve zdrojích není.
+   - Pole "source" vyplň předpisem a paragrafem PŘESNĚ tak, jak stojí ve zdroji (např. „Zákon č. 555/1992 Sb., § 18 odst. 1“), u přiloženého materiálu jeho názvem.
+   - Pokud zdroje odpověď na otázku NEOBSAHUJÍ, otázku přesto zpracuj, ale do "source" napiš přesně „NENALEZENO VE ZDROJÍCH APLIKACE“ a v "rationale" stručně uveď, co ve zdrojích chybí. Nic si nedomýšlej jako jistotu.
 3. KVALITNÍ A VYVÁŽENÉ DISTRAKTORY: Pro každou otázku připrav 4 testové možnosti (options A, B, C, D). VŠECHNY 4 MOŽNOSTI MUSÍ MÍT SROVNATELNOU DÉLKU, GRAMATICKOU STRUKTURU A ODBORNÝ TÓN jako správná odpověď. Používej věrohodné chytáky z praxe VS ČR (záměny paragrafů, lhůt, pravomocí, sankcí, stupňů ostrahy), aby správná odpověď NEBYLA poznat pouhou délkou či jednoduchostí špatných odpovědí.
-4. ZÁKONNÉ ODŮVODNĚNÍ: Ke každé otázce uveď podrobné vysvětlení (rationale) s citací přesného paragrafu a odstavce a pramen (source).
+4. ODŮVODNĚNÍ ZE ZDROJE: Ke každé otázce uveď vysvětlení (rationale) opřené o konkrétní místo ze zdrojů aplikace a pramen (source).
 
 VÝSTUP MUSÍ BÝT VÝHRADNĚ VALIDNÍ JSON v tomto formátu (žádný markdown kolem, pouze čistý JSON):
 {
@@ -138,10 +132,22 @@ VÝSTUP MUSÍ BÝT VÝHRADNĚ VALIDNÍ JSON v tomto formátu (žádný markdown 
   ]
 }`;
 
+/** Značka, kterou model vrací u otázky mimo zdroje aplikace. */
+export const NOT_IN_APP_SOURCES = 'NENALEZENO VE ZDROJÍCH APLIKACE';
+
+/** Zdroje aplikace pro jeden dotaz (viz utils/aiSources). */
+export interface AnalysisSources {
+  compassText: string;
+  materialParts: GeminiInlineDataPart[];
+  materialNames: string[];
+  skippedMaterials: string[];
+}
+
 export async function analyzeExamContent(
   apiKey: string,
-  textPrompt?: string,
-  imageFile?: File
+  textPrompt: string | undefined,
+  imageFile: File | undefined,
+  sources: AnalysisSources
 ): Promise<AnalyzedExamResponse> {
   if (!apiKey || apiKey.trim() === '') {
     throw new Error('Chybí Gemini API klíč. Zadejte prosím svůj API klíč v nastavení asistenta.');
@@ -151,12 +157,24 @@ export async function analyzeExamContent(
 
   const contents: GeminiContentPart[] = [];
 
+  contents.push(
+    `ZDROJE APLIKACE — jediný povolený podklad pro odpovědi.\n\n${sources.compassText}`
+  );
+  if (sources.materialParts.length > 0) {
+    contents.push(
+      `Následují přiložené studijní materiály z knihovny aplikace (${sources.materialNames.length}): ${sources.materialNames.join('; ')}. I z nich smíš čerpat.`
+    );
+    contents.push(...sources.materialParts);
+  } else {
+    contents.push('Žádné další studijní materiály přiložené nejsou; čerpej jen z Právního kompasu výše.');
+  }
+
   if (imageFile) {
     const imagePart = await fileToGenerativePart(imageFile);
     contents.push(imagePart);
   }
 
-  let promptText = `Pečlivě analyzuj CELÉ toto zadání testu od kapitána pro studenty Akademie VS ČR (ZOP A). Extrahuj VŠECHNY otázky a body bez jakéhokoliv vynechání a vypracuj k nim profesionální odpovědi s citacemi zákonů a vyváženými možnostmi A, B, C, D.`;
+  let promptText = `Pečlivě analyzuj CELÉ toto zadání testu od kapitána pro studenty Akademie VS ČR (ZOP A). Extrahuj VŠECHNY otázky a body bez jakéhokoliv vynechání a vypracuj k nim odpovědi VÝHRADNĚ podle zdrojů aplikace výše, s citacemi z nich a vyváženými možnostmi A, B, C, D.`;
   if (textPrompt && textPrompt.trim() !== '') {
     promptText += `\n\nZadání od uživatele / kapitána:\n"""\n${textPrompt.trim()}\n"""`;
   }
@@ -244,6 +262,14 @@ export async function analyzeExamContent(
         rationale: q.rationale || '',
         source: q.source || ''
       }));
+
+      const mimoZdroje = parsed.questions.filter((q) => q.source.trim().toUpperCase().startsWith(NOT_IN_APP_SOURCES)).length;
+      if (mimoZdroje > 0) {
+        parsed.summary = `${parsed.summary || ''}\n\nPozor: u ${mimoZdroje} otázek zdroje aplikace odpověď neobsahují (označeny „${NOT_IN_APP_SOURCES}“). Ověřte je prosím u lektora.`.trim();
+      }
+      if (sources.skippedMaterials.length > 0) {
+        parsed.summary = `${parsed.summary || ''}\n\nNepoužité materiály: ${sources.skippedMaterials.join('; ')}.`.trim();
+      }
 
       if (zahozeno > 0) {
         parsed.summary = `${parsed.summary || ''}\n\nPozn.: ${zahozeno} otázek se nepodařilo zpracovat do testové podoby (chyběly možnosti nebo platné označení správné odpovědi) a nejsou v seznamu.`.trim();

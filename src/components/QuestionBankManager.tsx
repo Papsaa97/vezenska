@@ -910,7 +910,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
             </h4>
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-300">
-            Hromadně porovná otázky v projektu se Supabase a pomocí <code className="font-mono text-[11px] px-1 bg-white/70 dark:bg-slate-800/80 rounded">upsert</code> (podle unikátního textu otázky) je zapíše do tabulky <code className="font-mono text-[11px] px-1 bg-white/70 dark:bg-slate-800/80 rounded">quiz_questions</code> – chybějící otázky vloží a již existující přepíše aktuální revizí (např. nově promíchané pořadí odpovědí A/B/C/D).
+            Hromadně porovná otázky v projektu se Supabase a pomocí <code className="font-mono text-[0.6875rem] px-1 bg-white/70 dark:bg-slate-800/80 rounded">upsert</code> (podle unikátního textu otázky) je zapíše do tabulky <code className="font-mono text-[0.6875rem] px-1 bg-white/70 dark:bg-slate-800/80 rounded">quiz_questions</code> – chybějící otázky vloží a již existující přepíše aktuální revizí (např. nově promíchané pořadí odpovědí A/B/C/D).
           </p>
           {importProgress && (
             <div className="pt-2 text-xs font-semibold text-blue-700 dark:text-blue-300 flex items-center gap-2">
@@ -1127,12 +1127,12 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
                           </span>
                         )}
                         {q.is_hidden && (
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 no-print">
+                          <span className="px-2 py-0.5 rounded-md text-[0.625rem] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 no-print">
                             Skryto studentům
                           </span>
                         )}
                         {isEditing && (
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 no-print">
+                          <span className="px-2 py-0.5 rounded-md text-[0.625rem] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 no-print">
                             Právě editujete
                           </span>
                         )}
@@ -1242,7 +1242,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
                         </div>
                       )}
                       {q.answer && (
-                        <div className="mt-1 text-[11px] text-slate-600 dark:text-slate-400 font-medium">
+                        <div className="mt-1 text-[0.6875rem] text-slate-600 dark:text-slate-400 font-medium">
                           <strong>Správná odpověď dle předpisu:</strong> {q.answer}
                         </div>
                       )}

@@ -290,7 +290,7 @@ export default function BulkQuestionImportModal({
             <div>
               <h3 id="bulk-import-title" className="font-bold text-base sm:text-lg text-slate-900 dark:text-white flex items-center gap-2">
                 Hromadný import otázek
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300">
+                <span className="text-[0.625rem] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300">
                   Lektor / Admin
                 </span>
               </h3>
@@ -429,7 +429,7 @@ export default function BulkQuestionImportModal({
                   <FileText className="w-4 h-4" />
                   <span>{fileName}</span>
                   {fileSize && (
-                    <span className="text-blue-500 text-[11px]">
+                    <span className="text-blue-500 text-[0.6875rem]">
                       ({(fileSize / 1024).toFixed(1)} KB)
                     </span>
                   )}
@@ -464,13 +464,13 @@ export default function BulkQuestionImportModal({
             <div className="space-y-4">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                  <div className="text-[11px] font-semibold text-slate-500">Rozpoznáno bloků</div>
+                  <div className="text-[0.6875rem] font-semibold text-slate-500">Rozpoznáno bloků</div>
                   <div className="text-xl font-black text-slate-900 dark:text-white mt-0.5">
                     {parseResult.totalBlocks}
                   </div>
                 </div>
                 <div className="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
-                  <div className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+                  <div className="text-[0.6875rem] font-semibold text-emerald-700 dark:text-emerald-400">
                     Validních otázek
                   </div>
                   <div className="text-xl font-black text-emerald-700 dark:text-emerald-300 mt-0.5">
@@ -478,7 +478,7 @@ export default function BulkQuestionImportModal({
                   </div>
                 </div>
                 <div className="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
-                  <div className="text-[11px] font-semibold text-amber-700 dark:text-amber-400">
+                  <div className="text-[0.6875rem] font-semibold text-amber-700 dark:text-amber-400">
                     Duplicit v bance
                   </div>
                   <div className="text-xl font-black text-amber-700 dark:text-amber-300 mt-0.5">
@@ -493,7 +493,7 @@ export default function BulkQuestionImportModal({
                   }`}
                 >
                   <div
-                    className={`text-[11px] font-semibold ${
+                    className={`text-[0.6875rem] font-semibold ${
                       totalErrors > 0 ? 'text-red-700 dark:text-red-400' : 'text-slate-500'
                     }`}
                   >
@@ -522,7 +522,7 @@ export default function BulkQuestionImportModal({
                         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
                       >
                         {subj}
-                        <span className="px-1.5 py-0.2 rounded-md bg-blue-200/70 dark:bg-blue-800 text-[10px] font-bold">
+                        <span className="px-1.5 py-0.2 rounded-md bg-blue-200/70 dark:bg-blue-800 text-[0.625rem] font-bold">
                           {count}
                         </span>
                       </span>
@@ -559,7 +559,7 @@ export default function BulkQuestionImportModal({
                           key={idx}
                           className="flex items-start gap-2 p-2 rounded-lg bg-white/70 dark:bg-slate-900/60 border border-red-200/60 dark:border-red-800/40"
                         >
-                          <span className="font-bold shrink-0 font-mono text-[11px] px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200">
+                          <span className="font-bold shrink-0 font-mono text-[0.6875rem] px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200">
                             #{err.blockNumber}
                           </span>
                           <span className="flex-1 break-words">{err.message}</span>
@@ -647,14 +647,14 @@ export default function BulkQuestionImportModal({
                       >
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                            <span className="px-2 py-0.5 rounded-md text-[0.6875rem] font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                               {q.subject}
                             </span>
                             <span className="text-xs text-slate-400 font-mono">
                               #{q.rawIndex}
                             </span>
                             {q.isDuplicateInBank && (
-                              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">
+                              <span className="px-2 py-0.5 rounded-md text-[0.625rem] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">
                                 {updateExisting ? 'Bude aktualizováno' : 'Bude přeskočeno'}
                               </span>
                             )}
@@ -669,7 +669,7 @@ export default function BulkQuestionImportModal({
                         </div>
 
                         {/* 4 Options Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px]">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[0.6875rem]">
                           {q.options.map((opt, oIdx) => {
                             const isCorrect = q.correct_index === oIdx;
                             const label = ['A', 'B', 'C', 'D'][oIdx];
@@ -683,7 +683,7 @@ export default function BulkQuestionImportModal({
                                 }`}
                               >
                                 <span
-                                  className={`w-4 h-4 rounded text-[10px] font-bold flex items-center justify-center shrink-0 ${
+                                  className={`w-4 h-4 rounded text-[0.625rem] font-bold flex items-center justify-center shrink-0 ${
                                     isCorrect
                                       ? 'bg-emerald-600 text-white'
                                       : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
@@ -698,7 +698,7 @@ export default function BulkQuestionImportModal({
                         </div>
 
                         {/* Source and Rationale preview */}
-                        <div className="text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-200/50 dark:border-slate-700/50 pt-1.5 space-y-0.5">
+                        <div className="text-[0.6875rem] text-slate-500 dark:text-slate-400 border-t border-slate-200/50 dark:border-slate-700/50 pt-1.5 space-y-0.5">
                           <div>
                             <strong className="text-slate-700 dark:text-slate-300">Zdroj: </strong>
                             {q.source}

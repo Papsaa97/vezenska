@@ -117,20 +117,20 @@ export default function ClassMembersPanel({ className }: ClassMembersPanelProps)
                     {m.avatarUrl ? (
                       <img src={m.avatarUrl} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
                     ) : (
-                      <span className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
+                      <span className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-800 text-[0.625rem] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
                         {m.fullName.slice(0, 2).toUpperCase()}
                       </span>
                     )}
                     <span className="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">{m.fullName}</span>
                   </span>
                   {isCmd && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 flex items-center gap-1 shrink-0">
+                    <span className="text-[0.625rem] font-bold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 flex items-center gap-1 shrink-0">
                       <Crown className="w-3 h-3" />
                       Velitel
                     </span>
                   )}
                   {m.isDeputy && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 flex items-center gap-1 shrink-0">
+                    <span className="text-[0.625rem] font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 flex items-center gap-1 shrink-0">
                       <Shield className="w-3 h-3" />
                       Zástupce
                     </span>
@@ -147,7 +147,7 @@ export default function ClassMembersPanel({ className }: ClassMembersPanelProps)
                           setBusy(true);
                           void cancelDeputy(className).then((r) => finish(r));
                         }}
-                        className="px-2 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200 disabled:opacity-50 cursor-pointer"
+                        className="px-2 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 text-[0.6875rem] font-bold text-slate-700 dark:text-slate-200 disabled:opacity-50 cursor-pointer"
                       >
                         Ukončit zástupcování
                       </button>
@@ -157,7 +157,7 @@ export default function ClassMembersPanel({ className }: ClassMembersPanelProps)
                           type="button"
                           aria-expanded={formOpen === 'deputy'}
                           onClick={() => toggleForm(m.id, 'deputy')}
-                          className="px-2 py-1 rounded-lg bg-indigo-600/10 text-indigo-700 dark:text-indigo-300 text-[11px] font-bold cursor-pointer"
+                          className="px-2 py-1 rounded-lg bg-indigo-600/10 text-indigo-700 dark:text-indigo-300 text-[0.6875rem] font-bold cursor-pointer"
                         >
                           Určit zástupcem
                         </button>
@@ -168,7 +168,7 @@ export default function ClassMembersPanel({ className }: ClassMembersPanelProps)
                         type="button"
                         aria-expanded={formOpen === 'handover'}
                         onClick={() => toggleForm(m.id, 'handover')}
-                        className="px-2 py-1 rounded-lg bg-purple-600/10 text-purple-700 dark:text-purple-300 text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                        className="px-2 py-1 rounded-lg bg-purple-600/10 text-purple-700 dark:text-purple-300 text-[0.6875rem] font-bold flex items-center gap-1 cursor-pointer"
                       >
                         <UserCog className="w-3 h-3" />
                         Předat funkci
@@ -186,7 +186,7 @@ export default function ClassMembersPanel({ className }: ClassMembersPanelProps)
                       void appointDeputy(m.id, until ? new Date(until).toISOString() : null).then((r) => finish(r));
                     }}
                   >
-                    <label htmlFor={`${ids}-until-${m.id}`} className="block text-[11px] text-slate-600 dark:text-slate-300">
+                    <label htmlFor={`${ids}-until-${m.id}`} className="block text-[0.6875rem] text-slate-600 dark:text-slate-300">
                       Zastupuje do (prázdné = do odvolání)
                     </label>
                     <input
@@ -199,7 +199,7 @@ export default function ClassMembersPanel({ className }: ClassMembersPanelProps)
                     <button
                       type="submit"
                       disabled={busy}
-                      className="w-full py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-[11px] font-bold cursor-pointer"
+                      className="w-full py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-[0.6875rem] font-bold cursor-pointer"
                     >
                       Potvrdit zástupce
                     </button>
@@ -215,7 +215,7 @@ export default function ClassMembersPanel({ className }: ClassMembersPanelProps)
                       void handOverCommand(m.id, reason.trim()).then((r) => finish(r, true));
                     }}
                   >
-                    <label htmlFor={`${ids}-reason-${m.id}`} className="block text-[11px] text-slate-600 dark:text-slate-300">
+                    <label htmlFor={`${ids}-reason-${m.id}`} className="block text-[0.6875rem] text-slate-600 dark:text-slate-300">
                       Odůvodnění předání (povinné, uvidí ho lektoři)
                     </label>
                     <textarea
@@ -228,13 +228,13 @@ export default function ClassMembersPanel({ className }: ClassMembersPanelProps)
                       minLength={10}
                       className="w-full px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
                     />
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                    <p className="text-[0.625rem] text-slate-500 dark:text-slate-400">
                       Po předání budete ve třídě jako student a {m.fullName} převezme velení.
                     </p>
                     <button
                       type="submit"
                       disabled={busy || reason.trim().length < 10}
-                      className="w-full py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white text-[11px] font-bold cursor-pointer"
+                      className="w-full py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white text-[0.6875rem] font-bold cursor-pointer"
                     >
                       Předat funkci velitele
                     </button>

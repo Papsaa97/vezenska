@@ -23,7 +23,7 @@ function BulletCard({ section, icon, color }: { section: StudySection; icon: Rea
         </p>
       )}
       {section.items.length > 0 && (
-        <div className="p-2.5 bg-slate-800/80 print:bg-slate-50 rounded-xl border border-slate-700/60 print:border-slate-200 text-[11px] text-slate-300 print:text-[#111827] space-y-1">
+        <div className="p-2.5 bg-slate-800/80 print:bg-slate-50 rounded-xl border border-slate-700/60 print:border-slate-200 text-[0.6875rem] text-slate-300 print:text-[#111827] space-y-1">
           {section.items.map((item, idx) => (
             <div key={idx}>• <strong>{item.title}</strong> <RichText text={item.text} /></div>
           ))}

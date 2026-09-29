@@ -88,7 +88,7 @@ export default function JidelnicekCard({ canEdit }: { canEdit: boolean }) {
                           : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/30'
                       }`}
                     >
-                      <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                      <div className="text-[0.6875rem] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
                         {d.day}
                         {isToday && <span className="ml-1.5 text-orange-600 dark:text-orange-400">· dnes</span>}
                       </div>

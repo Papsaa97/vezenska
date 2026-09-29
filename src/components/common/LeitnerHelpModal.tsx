@@ -93,7 +93,7 @@ export default function LeitnerHelpModal({ isOpen, onClose }: LeitnerHelpModalPr
                       <div className="font-bold text-rose-950 dark:text-rose-200 flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5" /> Denní opakování
                       </div>
-                      <div className="text-rose-800/80 dark:text-rose-300/80 text-[11px]">
+                      <div className="text-rose-800/80 dark:text-rose-300/80 text-[0.6875rem]">
                         Výchozí krabička. Nové pojmy a kartičky, ve kterých jste chybovali.
                       </div>
                     </div>
@@ -105,7 +105,7 @@ export default function LeitnerHelpModal({ isOpen, onClose }: LeitnerHelpModalPr
                       <div className="font-bold text-orange-950 dark:text-orange-200 flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5" /> Po 3 dnech
                       </div>
-                      <div className="text-orange-800/80 dark:text-orange-300/80 text-[11px]">
+                      <div className="text-orange-800/80 dark:text-orange-300/80 text-[0.6875rem]">
                         První úspěšné zopakování. Začátek upevňování znalosti.
                       </div>
                     </div>
@@ -117,7 +117,7 @@ export default function LeitnerHelpModal({ isOpen, onClose }: LeitnerHelpModalPr
                       <div className="font-bold text-amber-950 dark:text-amber-200 flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5" /> 1× týdně
                       </div>
-                      <div className="text-amber-800/80 dark:text-amber-300/80 text-[11px]">
+                      <div className="text-amber-800/80 dark:text-amber-300/80 text-[0.6875rem]">
                         Střednědobá retence. Otázky, které jste zvládli dvakrát za sebou.
                       </div>
                     </div>
@@ -129,7 +129,7 @@ export default function LeitnerHelpModal({ isOpen, onClose }: LeitnerHelpModalPr
                       <div className="font-bold text-blue-950 dark:text-blue-200 flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5" /> 1× za 14 dní
                       </div>
-                      <div className="text-blue-800/80 dark:text-blue-300/80 text-[11px]">
+                      <div className="text-blue-800/80 dark:text-blue-300/80 text-[0.6875rem]">
                         Pokročilá paměťová stopa. Důkladně zažité znalosti.
                       </div>
                     </div>
@@ -141,7 +141,7 @@ export default function LeitnerHelpModal({ isOpen, onClose }: LeitnerHelpModalPr
                       <div className="font-bold text-emerald-950 dark:text-emerald-200 flex items-center gap-1.5">
                         <Trophy className="w-3.5 h-3.5 text-amber-500" /> 1× měsíčně / Trvalá paměť
                       </div>
-                      <div className="text-emerald-800/80 dark:text-emerald-300/80 text-[11px]">
+                      <div className="text-emerald-800/80 dark:text-emerald-300/80 text-[0.6875rem]">
                         Cíl výcviku! Kartičky jsou bezpečně zvládnuté a trvale uložené v paměti.
                       </div>
                     </div>

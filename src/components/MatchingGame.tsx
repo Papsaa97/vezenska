@@ -329,7 +329,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
             </div>
 
             {deletedEntries.length > 0 && (
-              <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-500 dark:text-slate-400">
+              <div className="flex items-center gap-2 flex-wrap text-[0.6875rem] text-slate-500 dark:text-slate-400">
                 <span className="font-semibold">Odebrané (vrátit / smazat natrvalo):</span>
                 {deletedEntries.map(entry => (
                   <button
@@ -372,7 +372,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
             />
 
             {categoryError && (
-              <div className="text-[11px] text-red-600 dark:text-red-400">{categoryError}</div>
+              <div className="text-[0.6875rem] text-red-600 dark:text-red-400">{categoryError}</div>
             )}
           </div>
         )}
@@ -431,7 +431,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
 
                     <div className="grid grid-cols-2 gap-2 text-left">
                       <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/60">
-                        <div className="text-[11px] text-slate-400 font-medium">Čas splnění</div>
+                        <div className="text-[0.6875rem] text-slate-400 font-medium">Čas splnění</div>
                         <div className="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1">
                           <Timer className="w-3.5 h-3.5 text-blue-500" />
                           {completedRecord.timeSeconds} sekund
@@ -439,7 +439,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
                       </div>
 
                       <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/60">
-                        <div className="text-[11px] text-slate-400 font-medium">Přesnost</div>
+                        <div className="text-[0.6875rem] text-slate-400 font-medium">Přesnost</div>
                         <div className="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1">
                           {completedRecord.flawless ? (
                             <span className="text-emerald-500 flex items-center gap-1 font-extrabold">
@@ -455,7 +455,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
                     </div>
 
                     {/* Gamification bonuses note */}
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400 pt-1 text-center">
+                    <div className="text-[0.6875rem] text-slate-500 dark:text-slate-400 pt-1 text-center">
                       💡 Základ +80 XP {completedRecord.flawless && '• Bezchybnost +40 XP'} {completedRecord.timeSeconds <= 30 && '• Rychlostní bonus +50 XP'}
                     </div>
                   </div>
@@ -504,9 +504,9 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                       {/* Left Column */}
                       <div className="space-y-2.5">
-                        <h4 className="font-bold text-slate-400 dark:text-slate-500 text-[11px] tracking-wider uppercase mb-2 border-b border-slate-100 dark:border-slate-800 pb-1.5 flex items-center justify-between">
+                        <h4 className="font-bold text-slate-400 dark:text-slate-500 text-[0.6875rem] tracking-wider uppercase mb-2 border-b border-slate-100 dark:border-slate-800 pb-1.5 flex items-center justify-between">
                           <span>Pojem / Zkratka / Téma</span>
-                          <span className="text-[10px] font-normal text-slate-400">1. Vyberte</span>
+                          <span className="text-[0.625rem] font-normal text-slate-400">1. Vyberte</span>
                         </h4>
                         {leftItems.map(item => {
                           const isMatched = matchedPairs.includes(item.id);
@@ -533,9 +533,9 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
                       
                       {/* Right Column */}
                       <div className="space-y-2.5">
-                        <h4 className="font-bold text-slate-400 dark:text-slate-500 text-[11px] tracking-wider uppercase mb-2 border-b border-slate-100 dark:border-slate-800 pb-1.5 flex items-center justify-between">
+                        <h4 className="font-bold text-slate-400 dark:text-slate-500 text-[0.6875rem] tracking-wider uppercase mb-2 border-b border-slate-100 dark:border-slate-800 pb-1.5 flex items-center justify-between">
                           <span>Definice / Význam</span>
-                          <span className="text-[10px] font-normal text-slate-400">2. Přiřaďte</span>
+                          <span className="text-[0.625rem] font-normal text-slate-400">2. Přiřaďte</span>
                         </h4>
                         {rightItems.map(item => {
                           const isMatched = matchedPairs.includes(item.id);
@@ -615,7 +615,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
                         <span className="font-bold text-xs uppercase tracking-wider text-slate-900">
                           Klíč správných odpovědí (pro lektora / instruktora)
                         </span>
-                        <span className="text-[10px] text-slate-600 italic">
+                        <span className="text-[0.625rem] text-slate-600 italic">
                           Zde odstřihněte nebo přeložte před zahájením zkoušení
                         </span>
                       </div>

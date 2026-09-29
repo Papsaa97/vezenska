@@ -110,7 +110,7 @@ export default function LegalAuditModal({
                 <ul className="space-y-1 max-h-40 overflow-y-auto pr-1">
                   {auditReport.issues.map((iss, i) => (
                     <li key={`${iss.id}-${iss.field}-${i}`} className="flex gap-1.5">
-                      <span className="font-mono text-[10px] shrink-0 opacity-70">{iss.type}</span>
+                      <span className="font-mono text-[0.625rem] shrink-0 opacity-70">{iss.type}</span>
                       <span>
                         <strong>{iss.id}</strong> ({iss.field}): {iss.message}
                       </span>
@@ -150,14 +150,14 @@ export default function LegalAuditModal({
                   href="https://e-sbirka.gov.cz/restful-api"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 normal-case"
+                  className="inline-flex items-center gap-0.5 text-[0.625rem] font-semibold text-indigo-600 dark:text-indigo-400 normal-case"
                 >
                   zdroj: e-Sbírka <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
 
               {porovnane.length === 0 ? (
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[0.6875rem] text-slate-500">
                   Žádné úřední znění není stažené. Doplní ho příkaz <code>npm run sync:laws</code>.
                 </p>
               ) : (
@@ -169,14 +169,14 @@ export default function LegalAuditModal({
                     return (
                       <div
                         key={c.code}
-                        className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-[11px] space-y-1"
+                        className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-[0.6875rem] space-y-1"
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-bold text-slate-800 dark:text-slate-100 truncate">
                             {c.code}
                           </span>
                           <span
-                            className={`shrink-0 font-bold px-1.5 py-0.5 rounded text-[10px] ${
+                            className={`shrink-0 font-bold px-1.5 py-0.5 rounded text-[0.625rem] ${
                               podil >= 90
                                 ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300'
                                 : 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300'
@@ -204,7 +204,7 @@ export default function LegalAuditModal({
             </div>
 
             {/* Co kontrola neověřuje — dřív tu stálo, že je vše "100% kompletní" */}
-            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-600 dark:text-slate-300 space-y-1.5">
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-[0.6875rem] text-slate-600 dark:text-slate-300 space-y-1.5">
               <div className="font-bold flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
                 <Info className="w-3.5 h-3.5" />
                 <span>Jak číst výsledek</span>
@@ -232,7 +232,7 @@ export default function LegalAuditModal({
                 <div className="text-xl font-extrabold text-blue-600 dark:text-blue-400">
                   {auditReport.totalArticles}
                 </div>
-                <div className="text-[11px] font-semibold text-slate-500 mt-0.5">
+                <div className="text-[0.6875rem] font-semibold text-slate-500 mt-0.5">
                   Norem v databázi
                 </div>
               </div>
@@ -240,7 +240,7 @@ export default function LegalAuditModal({
                 <div className="text-xl font-extrabold text-blue-600 dark:text-blue-400">
                   {auditReport.totalWords.toLocaleString('cs-CZ')}
                 </div>
-                <div className="text-[11px] font-semibold text-slate-500 mt-0.5">
+                <div className="text-[0.6875rem] font-semibold text-slate-500 mt-0.5">
                   Celkem slov
                 </div>
               </div>
@@ -248,7 +248,7 @@ export default function LegalAuditModal({
                 <div className="text-xl font-extrabold text-blue-600 dark:text-blue-400">
                   {auditReport.totalCharacters.toLocaleString('cs-CZ')}
                 </div>
-                <div className="text-[11px] font-semibold text-slate-500 mt-0.5">
+                <div className="text-[0.6875rem] font-semibold text-slate-500 mt-0.5">
                   Znaků textu
                 </div>
               </div>
@@ -256,7 +256,7 @@ export default function LegalAuditModal({
                 <div className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400">
                   {auditReport.snapshotsAvailable}
                 </div>
-                <div className="text-[11px] font-semibold text-slate-500 mt-0.5">
+                <div className="text-[0.6875rem] font-semibold text-slate-500 mt-0.5">
                   Úplných znění z e-Sbírky
                 </div>
               </div>
@@ -270,10 +270,10 @@ export default function LegalAuditModal({
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {Object.entries(auditReport.categories).map(([cat, count]) => (
                   <div key={cat} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
-                    <span className="text-slate-600 dark:text-slate-300 font-mono text-[11px] truncate">
+                    <span className="text-slate-600 dark:text-slate-300 font-mono text-[0.6875rem] truncate">
                       {cat}
                     </span>
-                    <span className="font-bold text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-[10px]">
+                    <span className="font-bold text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-[0.625rem]">
                       {count} norem
                     </span>
                   </div>

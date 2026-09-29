@@ -707,7 +707,7 @@ export default function ClassBulletinBoard() {
 
                   {isClassDropdownOpen && (
                     <div className="absolute left-0 mt-2 w-56 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-2 z-50 space-y-1">
-                      <div className="px-2.5 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      <div className="px-2.5 py-1.5 text-[0.625rem] font-bold text-slate-400 uppercase tracking-wider">
                         Zobrazit nástěnku třídy
                       </div>
                       {classes.map((cls) => (
@@ -742,7 +742,7 @@ export default function ClassBulletinBoard() {
                       : 'nezařazen(a)'}
                   </span>
                   {profile?.role === 'velitel_tridy' && (
-                    <span className="ml-1 px-1.5 py-0.2 rounded bg-purple-600/60 text-purple-200 text-[10px]">
+                    <span className="ml-1 px-1.5 py-0.2 rounded bg-purple-600/60 text-purple-200 text-[0.625rem]">
                       Velitel
                     </span>
                   )}
@@ -899,11 +899,11 @@ export default function ClassBulletinBoard() {
             <div>
               <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                 <span>Informace pro všechny – Akademie VS ČR</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 font-bold border border-amber-300/40">
+                <span className="text-[0.625rem] px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 font-bold border border-amber-300/40">
                   Celoškolní hlášení
                 </span>
               </h2>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              <p className="text-[0.6875rem] text-slate-500 dark:text-slate-400">
                 Společné rozkazy, provoz areálu a pokyny vedení pro všechny posluchače a ročníky
               </p>
             </div>
@@ -938,7 +938,7 @@ export default function ClassBulletinBoard() {
                   <div className="flex items-center gap-2 flex-wrap">
                     {ann.badge && (
                       <span
-                        className={`text-[10px] font-black px-2 py-0.5 rounded-md border uppercase tracking-wider ${
+                        className={`text-[0.625rem] font-black px-2 py-0.5 rounded-md border uppercase tracking-wider ${
                           ann.priority === 'urgent'
                             ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border-red-400/40'
                             : 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-400/40'
@@ -947,7 +947,7 @@ export default function ClassBulletinBoard() {
                         {ann.badge}
                       </span>
                     )}
-                    <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                    <span className="text-[0.6875rem] text-slate-500 dark:text-slate-400 flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       {ann.date}
                     </span>
@@ -982,7 +982,7 @@ export default function ClassBulletinBoard() {
                 <div className="text-xs text-slate-600 dark:text-slate-300 whitespace-pre-line leading-relaxed mb-2.5">
                   {ann.content}
                 </div>
-                <div className="text-[10px] text-slate-400 italic">Autor: {ann.author}</div>
+                <div className="text-[0.625rem] text-slate-400 italic">Autor: {ann.author}</div>
               </div>
             ))}
           </div>

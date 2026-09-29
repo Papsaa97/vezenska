@@ -90,7 +90,7 @@ export default function AttachedFilesPanel({
       )}
 
       {downloadError && (
-        <div className="text-[11px] text-red-600 dark:text-red-400">{downloadError}</div>
+        <div className="text-[0.6875rem] text-red-600 dark:text-red-400">{downloadError}</div>
       )}
 
       {materials.map((material) => {
@@ -106,7 +106,7 @@ export default function AttachedFilesPanel({
                 <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
                   {material.displayName}
                 </div>
-                <div className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                <div className="text-[0.625rem] text-slate-500 dark:text-slate-400 flex items-center gap-2">
                   <span className="font-bold">
                     {getFileTypeLabel(material.mimeType, material.name)}
                   </span>
@@ -119,7 +119,7 @@ export default function AttachedFilesPanel({
               <button
                 type="button"
                 onClick={() => setViewed(material)}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold transition-colors cursor-pointer"
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[0.6875rem] font-bold transition-colors cursor-pointer"
               >
                 <Eye className="w-3 h-3" />
                 <span>Otevřít</span>

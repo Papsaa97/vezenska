@@ -81,7 +81,7 @@ export default function OfficialSectionPanel({ article }: { article: LegalArticl
           href={summary.portalUrl}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+          className="inline-flex items-center gap-1 text-[0.6875rem] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
         >
           {summary.citace} na e-Sbírce <ExternalLink className="w-3 h-3" />
         </a>
@@ -118,7 +118,7 @@ export default function OfficialSectionPanel({ article }: { article: LegalArticl
 
       {state === 'ready' && (
         <div className="p-4 sm:p-5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/50 space-y-4">
-          <p className="text-[11px] text-emerald-900/80 dark:text-emerald-300/80 font-semibold">
+          <p className="text-[0.6875rem] text-emerald-900/80 dark:text-emerald-300/80 font-semibold">
             Informativní znění č. {summary.cisloZneni} účinné od {summary.ucinnostOd}. Právně závazné je
             znění vyhlášené ve Sbírce zákonů.
           </p>

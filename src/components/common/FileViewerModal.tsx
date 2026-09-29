@@ -193,7 +193,7 @@ export default function FileViewerModal({ material, isOpen, onClose }: FileViewe
                   >
                     {material.displayName}
                   </h2>
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                  <div className="text-[0.6875rem] text-slate-500 dark:text-slate-400 flex items-center gap-2">
                     <span className="font-bold">{getFileTypeLabel(mimeType, material.name)}</span>
                     <span>{formatFileSize(material.size)}</span>
                     {kind === 'presentation' && slides.length > 0 && (
@@ -284,7 +284,7 @@ export default function FileViewerModal({ material, isOpen, onClose }: FileViewe
                 <div className="p-4 sm:p-8">
                   <div className="max-w-3xl mx-auto bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-10 shadow-sm">
                     {docWarnings.length > 0 && (
-                      <div className="mb-5 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-800 dark:text-amber-300">
+                      <div className="mb-5 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-[0.6875rem] text-amber-800 dark:text-amber-300">
                         Náhled zjednodušuje formátování. Původní podobu má stažený soubor.
                       </div>
                     )}
@@ -307,7 +307,7 @@ export default function FileViewerModal({ material, isOpen, onClose }: FileViewe
                   ) : (
                     <div className="max-w-3xl mx-auto space-y-4">
                       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm min-h-[320px] space-y-4">
-                        <div className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                        <div className="text-[0.6875rem] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                           Snímek {activeSlide.index} z {slides.length}
                         </div>
                         <h3 className="text-xl font-bold text-slate-900 dark:text-white leading-snug">

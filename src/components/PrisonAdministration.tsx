@@ -564,7 +564,7 @@ export default function PrisonAdministration() {
                       }`}
                     >
                       <div className="truncate">{tpl.title}</div>
-                      <div className={`text-[10px] truncate ${isSelected ? 'text-slate-900' : 'text-slate-400'}`}>
+                      <div className={`text-[0.625rem] truncate ${isSelected ? 'text-slate-900' : 'text-slate-400'}`}>
                         {tpl.badge}
                       </div>
                     </button>
@@ -671,7 +671,7 @@ export default function PrisonAdministration() {
                           <button
                             type="button"
                             onClick={generateCJ}
-                            className="px-2 py-0.5 rounded bg-amber-500 hover:bg-amber-600 text-slate-950 text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                            className="px-2 py-0.5 rounded bg-amber-500 hover:bg-amber-600 text-slate-950 text-[0.625rem] font-bold flex items-center gap-1 transition-colors cursor-pointer"
                             title="Vygenerovat cvičné Č.j. ve formátu VS ČR (náhodné číslo, není přidělené)"
                           >
                             <Zap className="w-3 h-3" />
@@ -680,7 +680,7 @@ export default function PrisonAdministration() {
                           <button
                             type="button"
                             onClick={copyCJ}
-                            className="p-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] transition-colors cursor-pointer"
+                            className="p-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[0.625rem] transition-colors cursor-pointer"
                             title={cjCopyFailed ? 'Zkopírování do schránky se nezdařilo — označte Č.j. a zkopírujte ručně' : 'Zkopírovat Č.j. do schránky'}
                           >
                             {cjCopyFailed ? (
@@ -692,7 +692,7 @@ export default function PrisonAdministration() {
                             )}
                           </button>
                           {cjCopyFailed && (
-                            <span role="alert" className="text-[10px] font-semibold text-red-600 dark:text-red-400">
+                            <span role="alert" className="text-[0.625rem] font-semibold text-red-600 dark:text-red-400">
                               Kopírování selhalo — zkopírujte Č.j. ručně.
                             </span>
                           )}
@@ -774,7 +774,7 @@ export default function PrisonAdministration() {
                         <ShieldAlert className="w-4 h-4 text-red-500" />
                         <span>Grafické znázornění zasažených míst těla:</span>
                       </span>
-                      <span className="text-[11px] text-slate-500">
+                      <span className="text-[0.6875rem] text-slate-500">
                         {selectedBodyParts.length} označených zón
                       </span>
                     </div>
@@ -945,7 +945,7 @@ export default function PrisonAdministration() {
 
                   {/* ČÁST DRUHÁ — schvalovací řetězec dle Přílohy k PGŘ č. 3/2024 (stanovisko, prošetření 1. ZŘV, rozhodnutí ředitele) */}
                   <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
-                    <div className="flex items-start gap-2 p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 text-[11px] text-blue-900 dark:text-blue-200">
+                    <div className="flex items-start gap-2 p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 text-[0.6875rem] text-blue-900 dark:text-blue-200">
                       <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-600 dark:text-blue-400" />
                       <span>
                         <strong>Část druhá záznamu</strong> — o oprávněnosti a přiměřenosti zákroku nerozhoduje zakročující příslušník sám. Tato část se vyplňuje až následně: stanovisko zpracovává vedoucí oddělení, zprávu o prošetření 1. zástupce ředitele věznice (1. ZŘV) a závazné rozhodnutí vydává ředitel věznice.
@@ -1045,7 +1045,7 @@ export default function PrisonAdministration() {
                       rows={6}
                       value={formData.actDescription || ''}
                       onChange={(e) => handleFieldChange('actDescription', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[11px]"
+                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[0.6875rem]"
                     />
                   </div>
 
@@ -1071,7 +1071,7 @@ export default function PrisonAdministration() {
                       rows={3}
                       value={formData.evidenceList || ''}
                       onChange={(e) => handleFieldChange('evidenceList', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[11px]"
+                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[0.6875rem]"
                     />
                   </div>
                 </div>
@@ -1173,7 +1173,7 @@ export default function PrisonAdministration() {
                       rows={5}
                       value={formData.itemsList || ''}
                       onChange={(e) => handleFieldChange('itemsList', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[11px]"
+                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[0.6875rem]"
                     />
                   </div>
 
@@ -1285,7 +1285,7 @@ export default function PrisonAdministration() {
                     type="text"
                     value={formData.officerSignature || ''}
                     onChange={(e) => handleFieldChange('officerSignature', e.target.value)}
-                    className="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[11px]"
+                    className="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[0.6875rem]"
                   />
                 </div>
               </div>
@@ -1340,7 +1340,7 @@ export default function PrisonAdministration() {
                   <span>Vytisknout úřední záznam / PDF</span>
                 </button>
               </div>
-              <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400">
+              <span className="text-[0.6875rem] font-bold text-amber-600 dark:text-amber-400">
                 Oficiální standard VS ČR
               </span>
             </div>
@@ -1354,7 +1354,7 @@ export default function PrisonAdministration() {
             <div className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm no-print print:hidden">
               <div className="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-2">
                 <Printer className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                <span className="text-[11px] sm:text-xs font-medium">Oficiální A4 tiskopis s právním záhlavím, náležitostmi a podpisovými doložkami</span>
+                <span className="text-[0.6875rem] sm:text-xs font-medium">Oficiální A4 tiskopis s právním záhlavím, náležitostmi a podpisovými doložkami</span>
               </div>
               <button
                 type="button"
@@ -1372,7 +1372,7 @@ export default function PrisonAdministration() {
                 <Info className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 <span>Metodické upozornění pro závěrečnou zkoušku ZOP:</span>
               </div>
-              <p className="text-[11px] leading-normal">
+              <p className="text-[0.6875rem] leading-normal">
                 U ústní i písemné zkoušky komisaři striktně vyžadují dodržení struktury 7 povinných bodů záznamu, přesnou citaci zákonné výzvy dle § 6 odst. 3 písm. b) zákona č. 555/1992 Sb. a správné uvedení porušeného ustanovení § 28 zákona č. 169/1999 Sb. u kázeňského přestupku.
               </p>
             </div>
@@ -1386,7 +1386,7 @@ export default function PrisonAdministration() {
               <div className="border-b-2 border-black pb-2 mb-3">
                 <div className="flex justify-between items-start">
                   <div>
-                    <div className="text-[10px] font-bold tracking-widest text-slate-700 uppercase">
+                    <div className="text-[0.625rem] font-bold tracking-widest text-slate-700 uppercase">
                       Česká republika
                     </div>
                     <h1 className="text-sm font-bold uppercase tracking-wider text-black m-0 p-0 leading-tight">
@@ -1400,7 +1400,7 @@ export default function PrisonAdministration() {
                     <div className="font-mono font-bold text-black text-xs">
                       {formData.refNumber ? `Č. j.: ${formData.refNumber}` : 'Č. j.: VS-......................../ČJ-2024-........'}
                     </div>
-                    <div className="text-slate-700 text-[11px]">
+                    <div className="text-slate-700 text-[0.6875rem]">
                       Datum vyhotovení: {formData.signatureDate || new Date().toLocaleDateString('cs-CZ')}
                     </div>
                   </div>
@@ -1414,10 +1414,10 @@ export default function PrisonAdministration() {
                     <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">
                       ÚŘEDNÍ ZÁZNAM o použití donucovacích prostředků
                     </h2>
-                    <p className="text-[11px] font-bold text-slate-800 italic mt-0.5">
+                    <p className="text-[0.6875rem] font-bold text-slate-800 italic mt-0.5">
                       (podle § 17 zákona č. 555/1992 Sb., o Vězeňské službě a justiční stráži ČR)
                     </p>
-                    <div className="mt-1.5 inline-block px-3 py-0.5 bg-slate-100 border border-slate-400 font-bold text-[11px] uppercase tracking-wider text-black">
+                    <div className="mt-1.5 inline-block px-3 py-0.5 bg-slate-100 border border-slate-400 font-bold text-[0.6875rem] uppercase tracking-wider text-black">
                       Část první – Vyhotovení zakročujícím příslušníkem (Příloha k PGŘ č. 3/2024)
                     </div>
                   </div>
@@ -1505,26 +1505,26 @@ export default function PrisonAdministration() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="border border-slate-400 p-2.5 rounded bg-white">
-                        <div className="space-y-1 text-[11px]">
+                        <div className="space-y-1 text-[0.6875rem]">
                           <div><strong>Místo a datum vyhotovení:</strong> {formData.signatureDate || '........................................'}</div>
                           <div><strong>Čas sepsání záznamu:</strong> ........................................</div>
                         </div>
                         <div className="mt-8 pt-2 border-t border-dotted border-black text-center">
-                          <div className="text-[11px] font-bold text-black">Vlastnoruční podpis zasahujícího příslušníka</div>
-                          <div className="text-[10px] text-slate-700 font-mono mt-0.5">
+                          <div className="text-[0.6875rem] font-bold text-black">Vlastnoruční podpis zasahujícího příslušníka</div>
+                          <div className="text-[0.625rem] text-slate-700 font-mono mt-0.5">
                             {formData.officerSignature || formData.officer || 'hodnost, jméno, služební číslo'}
                           </div>
                         </div>
                       </div>
 
                       <div className="border border-slate-400 p-2.5 rounded bg-white">
-                        <div className="space-y-1 text-[11px]">
+                        <div className="space-y-1 text-[0.6875rem]">
                           <div><strong>Záznam převzal:</strong> velitel směny / oddělení</div>
                           <div><strong>Datum a čas převzetí:</strong> ........................................</div>
                         </div>
                         <div className="mt-8 pt-2 border-t border-dotted border-black text-center">
-                          <div className="text-[11px] font-bold text-black">Podpis velitele směny / oddělení</div>
-                          <div className="text-[10px] text-slate-700 mt-0.5">
+                          <div className="text-[0.6875rem] font-bold text-black">Podpis velitele směny / oddělení</div>
+                          <div className="text-[0.625rem] text-slate-700 mt-0.5">
                             (potvrzení převzetí k dalšímu služebnímu postupu)
                           </div>
                         </div>
@@ -1547,7 +1547,7 @@ export default function PrisonAdministration() {
                       <div className="print-card p-2.5 border border-slate-300">
                         <div className="font-bold text-black mb-1">Stanovisko vedoucího oddělení / oddílu:</div>
                         <p className="min-h-[28px] whitespace-pre-wrap">{formData.departmentHeadOpinion || 'Použití DP shledávám oprávněným a v souladu se zákonem č. 555/1992 Sb.'}</p>
-                        <div className="mt-4 flex justify-between text-[10px] text-slate-700">
+                        <div className="mt-4 flex justify-between text-[0.625rem] text-slate-700">
                           <span>Datum: ........................................</span>
                           <span>Podpis vedoucího oddělení: ....................................................</span>
                         </div>
@@ -1556,7 +1556,7 @@ export default function PrisonAdministration() {
                       <div className="print-card p-2.5 border border-slate-300">
                         <div className="font-bold text-black mb-1">Zpráva o prošetření okolností a důvodů použití DP (1. ZŘV):</div>
                         <p className="min-h-[28px] whitespace-pre-wrap">{formData.zrvReport || 'Okolnosti použití DP byly prošetřeny, postup příslušníka byl v mezích zákona.'}</p>
-                        <div className="mt-4 flex justify-between text-[10px] text-slate-700">
+                        <div className="mt-4 flex justify-between text-[0.625rem] text-slate-700">
                           <span>Datum: ........................................</span>
                           <span>Podpis 1. zástupce ředitele: ....................................................</span>
                         </div>
@@ -1565,7 +1565,7 @@ export default function PrisonAdministration() {
                       <div className="print-card p-2.5 border border-slate-300">
                         <div className="font-bold text-black mb-1">Rozhodnutí ředitele věznice o oprávněnosti a přiměřenosti (§ 20 odst. 4):</div>
                         <p className="min-h-[28px] whitespace-pre-wrap">{formData.directorDecision || 'Použití donucovacího prostředku bylo OPRÁVNĚNÉ a PŘIMĚŘENÉ.'}</p>
-                        <div className="mt-6 flex justify-between text-[10px] text-slate-700">
+                        <div className="mt-6 flex justify-between text-[0.625rem] text-slate-700">
                           <span>Datum: ........................................</span>
                           <span>Otisk úředního razítka a podpis ředitele věznice: ....................................................</span>
                         </div>
@@ -1582,7 +1582,7 @@ export default function PrisonAdministration() {
                     <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">
                       ÚŘEDNÍ ZÁZNAM O KÁZEŇSKÉM PŘESTUPKU
                     </h2>
-                    <p className="text-[11px] font-bold text-slate-800 italic mt-0.5">
+                    <p className="text-[0.6875rem] font-bold text-slate-800 italic mt-0.5">
                       podle § 46 zákona č. 169/1999 Sb., o výkonu trestu odnětí svobody a NGŘ č. 41/2024
                     </p>
                   </div>
@@ -1622,10 +1622,10 @@ export default function PrisonAdministration() {
                       </div>
                       <p className="whitespace-pre-wrap">{formData.targetStatement}</p>
                       <div className="mt-8 flex justify-between items-end pt-2">
-                        <span className="text-[10px] text-slate-600">Vyjádření převzato dne: {formData.signatureDate}</span>
+                        <span className="text-[0.625rem] text-slate-600">Vyjádření převzato dne: {formData.signatureDate}</span>
                         <div className="text-center">
                           <div className="w-56 border-b border-dotted border-black mb-1"></div>
-                          <span className="text-[10px] font-bold text-black">Vlastnoruční podpis odsouzeného</span>
+                          <span className="text-[0.625rem] font-bold text-black">Vlastnoruční podpis odsouzeného</span>
                         </div>
                       </div>
                     </div>
@@ -1648,26 +1648,26 @@ export default function PrisonAdministration() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="border border-slate-400 p-2.5 rounded bg-white">
-                        <div className="space-y-1 text-[11px]">
+                        <div className="space-y-1 text-[0.6875rem]">
                           <div><strong>Místo a datum:</strong> {formData.signatureDate}</div>
                           <div><strong>Čas sepsání:</strong> ........................................</div>
                         </div>
                         <div className="mt-8 pt-2 border-t border-dotted border-black text-center">
-                          <div className="text-[11px] font-bold text-black">Vlastnoruční podpis oznamujícího příslušníka</div>
-                          <div className="text-[10px] text-slate-700 font-mono mt-0.5">
+                          <div className="text-[0.6875rem] font-bold text-black">Vlastnoruční podpis oznamujícího příslušníka</div>
+                          <div className="text-[0.625rem] text-slate-700 font-mono mt-0.5">
                             {formData.officerSignature || 'hodnost, jméno, služební číslo'}
                           </div>
                         </div>
                       </div>
 
                       <div className="border border-slate-400 p-2.5 rounded bg-white">
-                        <div className="space-y-1 text-[11px]">
+                        <div className="space-y-1 text-[0.6875rem]">
                           <div><strong>Záznam převzal:</strong> vedoucí oddělení / velitel oddílu</div>
                           <div><strong>Datum a čas převzetí:</strong> ........................................</div>
                         </div>
                         <div className="mt-8 pt-2 border-t border-dotted border-black text-center">
-                          <div className="text-[11px] font-bold text-black">Podpis vedoucího oddělení / velitele oddílu</div>
-                          <div className="text-[10px] text-slate-700 mt-0.5">
+                          <div className="text-[0.6875rem] font-bold text-black">Podpis vedoucího oddělení / velitele oddílu</div>
+                          <div className="text-[0.625rem] text-slate-700 mt-0.5">
                             (převzetí k zahájení kázeňského řízení)
                           </div>
                         </div>
@@ -1684,7 +1684,7 @@ export default function PrisonAdministration() {
                     <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">
                       ÚŘEDNÍ ZÁZNAM O ODNĚTÍ VĚCI
                     </h2>
-                    <p className="text-[11px] font-bold text-slate-800 italic mt-0.5">
+                    <p className="text-[0.6875rem] font-bold text-slate-800 italic mt-0.5">
                       podle § 12 zákona č. 555/1992 Sb., o Vězeňské službě a justiční stráži České republiky
                     </p>
                   </div>
@@ -1705,7 +1705,7 @@ export default function PrisonAdministration() {
                       <div className="font-bold text-black mb-1">
                         I. Seznam a přesný popis odňatých věcí (včetně množství a stavu):
                       </div>
-                      <p className="whitespace-pre-wrap font-mono text-[11px]">{formData.itemsList}</p>
+                      <p className="whitespace-pre-wrap font-mono text-[0.6875rem]">{formData.itemsList}</p>
                     </div>
 
                     <div className="print-card p-3 border border-slate-300">
@@ -1731,17 +1731,17 @@ export default function PrisonAdministration() {
                     <div className="border border-slate-400 p-2 rounded bg-white">
                       <div className="w-full border-b border-dotted border-black h-8 mb-1"></div>
                       <div className="font-bold text-black">Podpis vězněné osoby</div>
-                      <div className="text-[10px] text-slate-700">(potvrzení o odnětí věci)</div>
+                      <div className="text-[0.625rem] text-slate-700">(potvrzení o odnětí věci)</div>
                     </div>
                     <div className="border border-slate-400 p-2 rounded bg-white">
                       <div className="w-full border-b border-dotted border-black h-8 mb-1"></div>
                       <div className="font-bold text-black">Odnětí provedl</div>
-                      <div className="text-[10px] text-slate-700 font-mono">{formData.officerSignature || 'příslušník VS ČR'}</div>
+                      <div className="text-[0.625rem] text-slate-700 font-mono">{formData.officerSignature || 'příslušník VS ČR'}</div>
                     </div>
                     <div className="border border-slate-400 p-2 rounded bg-white">
                       <div className="w-full border-b border-dotted border-black h-8 mb-1"></div>
                       <div className="font-bold text-black">Věc převzal do úschovy</div>
-                      <div className="text-[10px] text-slate-700">(sklad / pověřená osoba)</div>
+                      <div className="text-[0.625rem] text-slate-700">(sklad / pověřená osoba)</div>
                     </div>
                   </div>
                 </div>
@@ -1754,7 +1754,7 @@ export default function PrisonAdministration() {
                     <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">
                       {formData.docTitle || 'SLUŽEBNÍ ZÁZNAM'}
                     </h2>
-                    <p className="text-[11px] font-bold text-slate-800 italic mt-0.5">
+                    <p className="text-[0.6875rem] font-bold text-slate-800 italic mt-0.5">
                       podle Pokynu generálního ředitele VS ČR č. 4/2016 o spisové službě
                     </p>
                   </div>
@@ -1797,26 +1797,26 @@ export default function PrisonAdministration() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="border border-slate-400 p-2.5 rounded bg-white">
-                        <div className="space-y-1 text-[11px]">
+                        <div className="space-y-1 text-[0.6875rem]">
                           <div><strong>Místo a datum:</strong> {formData.signatureDate}</div>
                           <div><strong>Čas vyhotovení:</strong> ........................................</div>
                         </div>
                         <div className="mt-8 pt-2 border-t border-dotted border-black text-center">
-                          <div className="text-[11px] font-bold text-black">Vyhotovil příslušník / zaměstnanec</div>
-                          <div className="text-[10px] text-slate-700 font-mono mt-0.5">
+                          <div className="text-[0.6875rem] font-bold text-black">Vyhotovil příslušník / zaměstnanec</div>
+                          <div className="text-[0.625rem] text-slate-700 font-mono mt-0.5">
                             {formData.officerSignature || 'hodnost, jméno, služební číslo'}
                           </div>
                         </div>
                       </div>
 
                       <div className="border border-slate-400 p-2.5 rounded bg-white">
-                        <div className="space-y-1 text-[11px]">
+                        <div className="space-y-1 text-[0.6875rem]">
                           <div><strong>Vzal na vědomí:</strong> velitel směny / nadřízený</div>
                           <div><strong>Datum a čas:</strong> ........................................</div>
                         </div>
                         <div className="mt-8 pt-2 border-t border-dotted border-black text-center">
-                          <div className="text-[11px] font-bold text-black">Podpis nadřízeného</div>
-                          <div className="text-[10px] text-slate-700 mt-0.5">
+                          <div className="text-[0.6875rem] font-bold text-black">Podpis nadřízeného</div>
+                          <div className="text-[0.625rem] text-slate-700 mt-0.5">
                             (kontrola formálních a věcných náležitostí)
                           </div>
                         </div>

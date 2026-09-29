@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AlertTriangle, Home, MessageSquareWarning, RefreshCw } from 'lucide-react';
 import FeedbackModal from './FeedbackModal';
 import { useAuth } from '../context/AuthContext';
+import { isChunkLoadError } from '../utils/lazyWithReload';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -116,6 +117,39 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
     const isView = scope === 'view';
     const detail = this.state.error?.message?.trim();
     const reportContext = `${screenLabel ?? 'Aplikace'} — chyba: ${detail || 'neznámá'}`;
+    // Chybějící část aplikace po nasazení nové verze. „Zkusit znovu“ tu nepomůže
+    // (React si nepovedené načtení pamatuje), pomůže jen obnovení stránky.
+    const staleVersion = isChunkLoadError(this.state.error);
+
+    if (staleVersion) {
+      return (
+        <div
+          role="alert"
+          className={`w-full flex flex-col items-center justify-center gap-4 px-4 text-center text-slate-900 dark:text-slate-100 ${
+            isView ? 'flex-1 py-16' : 'min-h-[100dvh] bg-white dark:bg-slate-950'
+          }`}
+        >
+          <div className="w-14 h-14 rounded-2xl bg-blue-100 border border-blue-200 flex items-center justify-center dark:bg-blue-500/10 dark:border-blue-500/30">
+            <RefreshCw className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+          </div>
+          <div className="space-y-1.5 max-w-md">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Aplikace se mezitím aktualizovala</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Tahle záložka patří k nové verzi. Obnovte prosím stránku, uložený postup se tím neztratí.
+              Pokud se hláška po obnovení vrátí, zkontrolujte připojení k internetu.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all cursor-pointer shadow-lg shadow-blue-600/20"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Obnovit stránku
+          </button>
+        </div>
+      );
+    }
 
     return (
       <div
@@ -137,7 +171,7 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
             Pokud se chyba vrací, nahlaste ji prosím — text chyby se k hlášení přiloží sám.
           </p>
           {detail && (
-            <p className="pt-1 font-mono text-[11px] break-words text-slate-400 dark:text-slate-500">
+            <p className="pt-1 font-mono text-[0.6875rem] break-words text-slate-400 dark:text-slate-500">
               {detail}
             </p>
           )}

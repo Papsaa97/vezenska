@@ -123,7 +123,7 @@ function ShoulderInsignia({ rank }: { rank: UserRank }) {
             ))}
           </div>
         ) : (
-          <span className="text-[9px] font-bold tracking-widest text-slate-400 uppercase">ZOP A</span>
+          <span className="text-[0.5625rem] font-bold tracking-widest text-slate-400 uppercase">ZOP A</span>
         )}
 
         {/* Rank Bar (Kolejnička / Lemovka) */}
@@ -138,7 +138,7 @@ function ShoulderInsignia({ rank }: { rank: UserRank }) {
 
       {/* Bottom bar designation */}
       <div className="w-full text-center">
-        <span className="text-[9px] font-extrabold text-slate-300 tracking-wider">VS ČR</span>
+        <span className="text-[0.5625rem] font-extrabold text-slate-300 tracking-wider">VS ČR</span>
       </div>
     </div>
   );
@@ -267,7 +267,7 @@ export default function BadgesView({
               ></div>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-slate-400 mt-2">
+            <div className="flex items-center justify-between text-[0.6875rem] text-slate-400 mt-2">
               <span>{nextRank ? `Postup na ${nextRank.name}` : 'Maximální hodnost'}</span>
               <span className="font-medium text-slate-300">{nextRank ? `zbývá ${xpForNext.toLocaleString('cs-CZ')} XP` : 'Dosaženo'}</span>
             </div>
@@ -293,7 +293,7 @@ export default function BadgesView({
               <div className="text-lg font-bold text-white leading-tight">
                 {unlockedCount} <span className="text-xs font-normal text-slate-400">/ {badges.length}</span>
               </div>
-              <div className="text-[11px] text-slate-400 font-medium">Odemčených odznaků</div>
+              <div className="text-[0.6875rem] text-slate-400 font-medium">Odemčených odznaků</div>
             </div>
           </div>
 
@@ -303,7 +303,7 @@ export default function BadgesView({
             </div>
             <div>
               <div className="text-lg font-bold text-white leading-tight">{quizHistory.length}</div>
-              <div className="text-[11px] text-slate-400 font-medium">Dokončených testů</div>
+              <div className="text-[0.6875rem] text-slate-400 font-medium">Dokončených testů</div>
             </div>
           </div>
 
@@ -313,7 +313,7 @@ export default function BadgesView({
             </div>
             <div>
               <div className="text-lg font-bold text-white leading-tight">{overallAccuracy} %</div>
-              <div className="text-[11px] text-slate-400 font-medium">Úspěšnost v testech</div>
+              <div className="text-[0.6875rem] text-slate-400 font-medium">Úspěšnost v testech</div>
             </div>
           </div>
 
@@ -323,7 +323,7 @@ export default function BadgesView({
             </div>
             <div>
               <div className="text-lg font-bold text-white leading-tight">{matchingHistory.length}</div>
-              <div className="text-[11px] text-slate-400 font-medium">Odehraných pexes</div>
+              <div className="text-[0.6875rem] text-slate-400 font-medium">Odehraných pexes</div>
             </div>
           </div>
         </div>
@@ -417,10 +417,10 @@ export default function BadgesView({
                     </div>
 
                     <div className="flex flex-col items-end gap-1">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider ${tierStyle.text} ${tierStyle.bg} ${tierStyle.border}`}>
+                      <span className={`text-[0.625rem] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider ${tierStyle.text} ${tierStyle.bg} ${tierStyle.border}`}>
                         {tierStyle.label}
                       </span>
-                      <span className="text-[10px] font-bold text-amber-500 dark:text-amber-400 flex items-center gap-1">
+                      <span className="text-[0.625rem] font-bold text-amber-500 dark:text-amber-400 flex items-center gap-1">
                         <Sparkles className="w-2.5 h-2.5" />
                         +{badge.xpReward} XP
                       </span>
@@ -443,7 +443,7 @@ export default function BadgesView({
 
                 {/* Progress Bar & Status */}
                 <div className="pt-3 border-t border-slate-200/60 dark:border-slate-800">
-                  <div className="flex items-center justify-between text-[11px] mb-1.5 font-medium">
+                  <div className="flex items-center justify-between text-[0.6875rem] mb-1.5 font-medium">
                     <span className="text-slate-500 dark:text-slate-400">
                       {badge.isUnlocked ? 'Splněno' : 'Postup'}
                     </span>
@@ -562,7 +562,7 @@ export default function BadgesView({
                         </h4>
                         <span className="text-xs text-slate-500 font-medium">({r.shortTitle})</span>
                         {isCurrent && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600 text-white">
+                          <span className="px-2 py-0.5 rounded-full text-[0.625rem] font-bold bg-blue-600 text-white">
                             Vaše hodnost
                           </span>
                         )}
@@ -579,7 +579,7 @@ export default function BadgesView({
                       <div className="text-xs font-bold text-slate-800 dark:text-slate-200">
                         {r.minXp.toLocaleString('cs-CZ')} XP
                       </div>
-                      <div className="text-[10px] text-slate-400">
+                      <div className="text-[0.625rem] text-slate-400">
                         {r.stars > 0 ? `${r.stars} ${r.stars === 1 ? 'hvězda' : 'hvězdy'}` : 'bez hvězd'}
                       </div>
                     </div>

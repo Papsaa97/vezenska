@@ -307,7 +307,7 @@ export default function MatchingCategoryEditModal({
                     </button>
                   </div>
 
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[0.6875rem] text-slate-400">
                     Souřadnice jsou v procentech obrázku. „Bod" je místo na obrázku, „popisek"
                     je místo, kam se odkládá název — obvykle mimo střed, po kraji.
                   </p>
@@ -354,7 +354,7 @@ export default function MatchingCategoryEditModal({
                         ] as const).map(([field, label]) => (
                           <div key={field}>
                             <label
-                              className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"
+                              className="block text-[0.625rem] font-semibold text-slate-500 dark:text-slate-400 mb-1"
                               htmlFor={`${fieldIds}-${field}-${index}`}
                             >
                               {label}

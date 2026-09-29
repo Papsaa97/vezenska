@@ -49,7 +49,7 @@ export default function MaterialTagPicker({
   const IDLE_CLASS_HOVER = 'hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-300';
 
   const chipClass = (active: boolean, accent: 'indigo' | 'blue') => {
-    const size = compact ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-[11px]';
+    const size = compact ? 'px-2 py-0.5 text-[0.625rem]' : 'px-2.5 py-1 text-[0.6875rem]';
     if (active) {
       return `${size} ${BASE} ${accent === 'indigo' ? ACTIVE_SUBJECT : ACTIVE_CLASS}`;
     }
@@ -59,13 +59,13 @@ export default function MaterialTagPicker({
   return (
     <div className={compact ? 'space-y-2' : 'space-y-3'}>
       <div className="space-y-1.5">
-        <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="flex items-center gap-1.5 text-[0.6875rem] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           <BookOpen className="w-3.5 h-3.5 text-indigo-500" />
           <span>Předměty ({selectedSubjects.length})</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {subjectOptions.length === 0 && (
-            <span className="text-[11px] text-slate-400 italic">Žádné předměty k dispozici.</span>
+            <span className="text-[0.6875rem] text-slate-400 italic">Žádné předměty k dispozici.</span>
           )}
           {subjectOptions.map((option) => {
             const active = selectedSubjects.includes(option.value);
@@ -91,13 +91,13 @@ export default function MaterialTagPicker({
       </div>
 
       <div className="space-y-1.5">
-        <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="flex items-center gap-1.5 text-[0.6875rem] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           <Users className="w-3.5 h-3.5 text-blue-500" />
           <span>Třídy ({selectedClassIds.length})</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {classOptions.length === 0 && (
-            <span className="text-[11px] text-slate-400 italic">
+            <span className="text-[0.6875rem] text-slate-400 italic">
               Zatím není založená žádná třída.
             </span>
           )}

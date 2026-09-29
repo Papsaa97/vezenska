@@ -400,7 +400,7 @@ function UserManagerInner() {
           {/* Desktop: tabulka */}
           <div className="hidden sm:block overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-800/80 text-left text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <thead className="bg-slate-50 dark:bg-slate-800/80 text-left text-[0.6875rem] uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 <tr>
                   <th className="px-4 py-3 font-bold">Jméno</th>
                   <th className="px-4 py-3 font-bold">E-mail</th>
@@ -579,7 +579,7 @@ function UserTableRow({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, 
     <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
       <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white whitespace-nowrap">
         {item.full_name || <span className="text-slate-400 italic font-normal">Bez jména</span>}
-        {isSelf && <span className="ml-1.5 text-[10px] font-bold text-amber-500">(vy)</span>}
+        {isSelf && <span className="ml-1.5 text-[0.625rem] font-bold text-amber-500">(vy)</span>}
       </td>
       <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{item.email}</td>
       <td className="px-4 py-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">{formatDate(item.created_at)}</td>
@@ -590,7 +590,7 @@ function UserTableRow({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, 
         {currentRank.shortTitle} <span className="text-slate-400">· {item.totalXp.toLocaleString('cs-CZ')} XP</span>
         {item.neoverenychTestu > 0 && (
           <span
-            className="ml-1.5 text-[10px] font-bold text-amber-600 dark:text-amber-400"
+            className="ml-1.5 text-[0.625rem] font-bold text-amber-600 dark:text-amber-400"
             title={`${item.neoverenychTestu} test(ů) se do XP nepočítá — skóre u nich nevyhodnotil server.`}
           >
             +{item.neoverenychTestu} neověř.
@@ -599,7 +599,7 @@ function UserTableRow({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, 
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border whitespace-nowrap ${ROLE_BADGE_CLASSES[item.role]}`}>
+          <span className={`text-[0.625rem] font-extrabold px-2 py-0.5 rounded-full border whitespace-nowrap ${ROLE_BADGE_CLASSES[item.role]}`}>
             {ROLE_LABELS[item.role]}
           </span>
           <RoleSelect value={item.role} disabled={busyRole} onChange={onRoleChange} userLabel={item.full_name || item.email} />
@@ -622,13 +622,13 @@ function UserCard({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, onMe
         <div className="min-w-0">
           <div className="font-bold text-sm text-slate-900 dark:text-white truncate">
             {item.full_name || <span className="text-slate-400 italic font-normal">Bez jména</span>}
-            {isSelf && <span className="ml-1.5 text-[10px] font-bold text-amber-500">(vy)</span>}
+            {isSelf && <span className="ml-1.5 text-[0.625rem] font-bold text-amber-500">(vy)</span>}
           </div>
           <div className="text-xs text-slate-500 dark:text-slate-400 truncate flex items-center gap-1 mt-0.5">
             <Mail className="w-3 h-3 shrink-0" /> {item.email}
           </div>
         </div>
-        <span className={`shrink-0 text-[10px] font-extrabold px-2 py-0.5 rounded-full border whitespace-nowrap ${ROLE_BADGE_CLASSES[item.role]}`}>
+        <span className={`shrink-0 text-[0.625rem] font-extrabold px-2 py-0.5 rounded-full border whitespace-nowrap ${ROLE_BADGE_CLASSES[item.role]}`}>
           {ROLE_LABELS[item.role]}
         </span>
       </div>
@@ -641,7 +641,7 @@ function UserCard({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, onMe
           <Award className="w-3.5 h-3.5" /> {currentRank.shortTitle} · {item.totalXp.toLocaleString('cs-CZ')} XP
           {item.neoverenychTestu > 0 && (
             <span
-              className="text-[10px] font-bold text-amber-600 dark:text-amber-400"
+              className="text-[0.625rem] font-bold text-amber-600 dark:text-amber-400"
               title={`${item.neoverenychTestu} test(ů) se do XP nepočítá — skóre u nich nevyhodnotil server.`}
             >
               +{item.neoverenychTestu} neověř.

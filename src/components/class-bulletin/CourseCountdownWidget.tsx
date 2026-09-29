@@ -24,7 +24,7 @@ export default function CourseCountdownWidget({
     return (
       <div
         className={`rounded-xl border border-dashed border-slate-300 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/40 text-slate-500 dark:text-slate-400 flex items-center justify-between ${
-          compact ? 'mx-4 my-2 px-3 py-1.5 text-[11px]' : 'px-4 py-2.5 text-xs'
+          compact ? 'mx-4 my-2 px-3 py-1.5 text-[0.6875rem]' : 'px-4 py-2.5 text-xs'
         }`}
       >
         <div className="flex items-center gap-1.5">
@@ -34,7 +34,7 @@ export default function CourseCountdownWidget({
         {onEditDates && (
           <button
             onClick={onEditDates}
-            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-[11px] cursor-pointer"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-[0.6875rem] cursor-pointer"
           >
             Nastavit termín
           </button>
@@ -50,15 +50,15 @@ export default function CourseCountdownWidget({
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0">
             <Calendar className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 shrink-0">
+            <span className="text-[0.6875rem] font-medium text-slate-500 dark:text-slate-400 shrink-0">
               {countdown.headline}:
             </span>
-            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate">
+            <span className="text-[0.6875rem] font-bold text-slate-800 dark:text-slate-200 truncate">
               {countdown.remainingText}
             </span>
           </div>
           {countdown.progressPercent !== undefined && (
-            <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 shrink-0 bg-blue-100/60 dark:bg-blue-950/60 px-1.5 py-0.5 rounded-md border border-blue-200/60 dark:border-blue-800/40">
+            <span className="text-[0.625rem] font-bold text-blue-600 dark:text-blue-400 shrink-0 bg-blue-100/60 dark:bg-blue-950/60 px-1.5 py-0.5 rounded-md border border-blue-200/60 dark:border-blue-800/40">
               {countdown.progressPercent} %
             </span>
           )}
@@ -94,7 +94,7 @@ export default function CourseCountdownWidget({
                 {countdown.headline}
               </span>
               {countdown.elapsedText && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-300/40 dark:border-blue-800/40">
+                <span className="text-[0.625rem] font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-300/40 dark:border-blue-800/40">
                   {countdown.elapsedText}
                 </span>
               )}
@@ -107,7 +107,7 @@ export default function CourseCountdownWidget({
 
         <div className="flex items-center gap-3 self-start sm:self-auto text-left sm:text-right">
           <div>
-            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+            <div className="text-[0.6875rem] text-slate-500 dark:text-slate-400 font-medium">
               Období kurzu
             </div>
             <div className="text-xs font-bold text-slate-700 dark:text-slate-300">

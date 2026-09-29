@@ -104,7 +104,7 @@ export default function GlobalAnnouncementModal({
                 value={badge}
                 onChange={(e) => setBadge(e.target.value)}
                 placeholder="CELOŠKOLNÍ ROZKAZ"
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white uppercase font-semibold text-[11px]"
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white uppercase font-semibold text-[0.6875rem]"
               />
             </div>
             <div>

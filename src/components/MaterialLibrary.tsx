@@ -236,7 +236,7 @@ export default function MaterialLibrary() {
       {/* Filtr podle třídy — jen když jsou soubory nějaké třídě přiřazené */}
       {presentClasses.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 no-print">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+          <span className="text-[0.6875rem] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
             <Users className="w-3.5 h-3.5 text-blue-500" />
             Třída
           </span>
@@ -332,10 +332,10 @@ export default function MaterialLibrary() {
                             {material.displayName}
                           </div>
                           <div className="flex items-center gap-2 mt-1 flex-wrap">
-                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadgeColor(material)}`}>
+                            <span className={`text-[0.625rem] font-bold px-1.5 py-0.5 rounded ${typeBadgeColor(material)}`}>
                               {getFileTypeLabel(material.mimeType, material.name)}
                             </span>
-                            <span className="text-[11px] text-slate-400 font-mono">
+                            <span className="text-[0.6875rem] text-slate-400 font-mono">
                               {formatFileSize(material.size)}
                             </span>
                             {material.classIds.map((classId) => {
@@ -344,7 +344,7 @@ export default function MaterialLibrary() {
                               return (
                                 <span
                                   key={classId}
-                                  className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+                                  className="text-[0.625rem] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
                                 >
                                   {label}
                                 </span>

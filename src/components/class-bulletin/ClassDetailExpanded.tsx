@@ -88,7 +88,7 @@ export default function ClassDetailExpanded({
                 Třída {item.className}
               </h2>
               {isMyClass && (
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-400/30">
+                <span className="text-[0.625rem] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-400/30">
                   Moje třída
                 </span>
               )}
@@ -320,14 +320,14 @@ export default function ClassDetailExpanded({
                                 {dayName || `Položka ${dIdx + 1}`}
                               </span>
                               {isToday && (
-                                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-purple-600 text-white tracking-wider">
+                                <span className="text-[0.5625rem] font-black uppercase px-2 py-0.5 rounded-full bg-purple-600 text-white tracking-wider">
                                   Dnes
                                 </span>
                               )}
                             </div>
 
                             {d.hasWorkout && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25 text-[10px] font-semibold">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25 text-[0.625rem] font-semibold">
                                 <span>👟</span>
                                 <span>Věci na cvičení</span>
                               </span>
@@ -339,7 +339,7 @@ export default function ClassDetailExpanded({
                           </div>
 
                           {d.hasWorkout && d.workoutNote && (
-                            <div className="mt-1 text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-normal">
+                            <div className="mt-1 text-[0.6875rem] text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-normal">
                               <span>•</span>
                               <span>{d.workoutNote}</span>
                             </div>
@@ -351,13 +351,13 @@ export default function ClassDetailExpanded({
                 </div>
 
                 {item.uniformGuidance.notes && (
-                  <div className="p-2.5 rounded-xl bg-slate-100/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-300">
+                  <div className="p-2.5 rounded-xl bg-slate-100/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-[0.6875rem] text-slate-600 dark:text-slate-300">
                     <span className="font-semibold text-slate-800 dark:text-slate-200">Poznámka: </span>
                     {item.uniformGuidance.notes}
                   </div>
                 )}
 
-                <div className="text-[10px] text-slate-400 pt-2 border-t border-purple-200/40 dark:border-purple-900/40 flex items-center justify-between">
+                <div className="text-[0.625rem] text-slate-400 pt-2 border-t border-purple-200/40 dark:border-purple-900/40 flex items-center justify-between">
                   <span>Naposledy upraveno</span>
                   {item.uniformGuidance.updatedAt && (
                     <span>{formatUpdateTime(item.uniformGuidance.updatedAt)}</span>
@@ -368,7 +368,7 @@ export default function ClassDetailExpanded({
               <div className="h-full flex flex-col items-center justify-center text-center py-8 text-slate-400">
                 <Shirt className="w-10 h-10 mb-2 opacity-40 text-purple-400" />
                 <span className="text-xs font-semibold">Ústrojová kázeň zatím nebyla zadána.</span>
-                <span className="text-[11px] mt-0.5 text-slate-500">
+                <span className="text-[0.6875rem] mt-0.5 text-slate-500">
                   Velitel třídy nebo lektor může stanovit ústroj na jednotlivé dny.
                 </span>
                 {isManager && (
@@ -414,7 +414,7 @@ export default function ClassDetailExpanded({
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span
-                        className={`text-[10px] font-black px-2.5 py-0.5 rounded-md border uppercase tracking-wider ${
+                        className={`text-[0.625rem] font-black px-2.5 py-0.5 rounded-md border uppercase tracking-wider ${
                           duty.type === 'pankrac'
                             ? 'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300 border-red-400/40'
                             : duty.type === 'recepce'
@@ -432,7 +432,7 @@ export default function ClassDetailExpanded({
                         {duty.date}
                       </span>
                       {duty.time && (
-                        <span className="text-[11px] text-slate-500 flex items-center gap-1">
+                        <span className="text-[0.6875rem] text-slate-500 flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {duty.time}
                         </span>
@@ -455,7 +455,7 @@ export default function ClassDetailExpanded({
                   </h4>
 
                   {duty.location && (
-                    <div className="text-[11px] text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                    <div className="text-[0.6875rem] text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       <span>{duty.location}</span>
                     </div>
@@ -463,7 +463,7 @@ export default function ClassDetailExpanded({
 
                   {duty.attendees && (
                     <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 text-xs">
-                      <div className="font-bold text-slate-500 dark:text-slate-400 text-[10px] uppercase mb-0.5">
+                      <div className="font-bold text-slate-500 dark:text-slate-400 text-[0.625rem] uppercase mb-0.5">
                         Určení posluchači:
                       </div>
                       <div className="text-slate-800 dark:text-slate-200 font-medium">
@@ -473,13 +473,13 @@ export default function ClassDetailExpanded({
                   )}
 
                   {duty.uniform && (
-                    <div className="text-[11px] text-slate-600 dark:text-slate-400">
+                    <div className="text-[0.6875rem] text-slate-600 dark:text-slate-400">
                       <span className="font-bold">Požadovaná výstroj:</span> {duty.uniform}
                     </div>
                   )}
 
                   {duty.notes && (
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400 italic">
+                    <div className="text-[0.6875rem] text-slate-500 dark:text-slate-400 italic">
                       Poznámka: {duty.notes}
                     </div>
                   )}
@@ -532,7 +532,7 @@ export default function ClassDetailExpanded({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         {sec.badge && (
-                          <span className="text-[9px] font-black px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                          <span className="text-[0.5625rem] font-black px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
                             {sec.badge}
                           </span>
                         )}

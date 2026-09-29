@@ -365,7 +365,7 @@ export default function ScenarioEditModal({
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        <span className="text-[0.6875rem] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                           Volby ({step.choices.length})
                         </span>
                         <button
@@ -378,7 +378,7 @@ export default function ScenarioEditModal({
                               ],
                             })
                           }
-                          className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-slate-600 dark:text-slate-300 cursor-pointer"
+                          className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[0.6875rem] font-bold text-slate-600 dark:text-slate-300 cursor-pointer"
                         >
                           <Plus className="w-3 h-3" />
                           Přidat volbu
@@ -432,7 +432,7 @@ export default function ScenarioEditModal({
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <div>
                               <label
-                                className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"
+                                className="block text-[0.625rem] font-semibold text-slate-500 dark:text-slate-400 mb-1"
                                 htmlFor={`${fieldIds}-vazba-${stepIndex}-${choiceIndex}`}
                               >
                                 Vysvětlení po volbě
@@ -449,7 +449,7 @@ export default function ScenarioEditModal({
                             </div>
                             <div>
                               <label
-                                className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"
+                                className="block text-[0.625rem] font-semibold text-slate-500 dark:text-slate-400 mb-1"
                                 htmlFor={`${fieldIds}-podklad-${stepIndex}-${choiceIndex}`}
                               >
                                 Zákonný podklad
@@ -482,7 +482,7 @@ export default function ScenarioEditModal({
 
                             <div className="flex items-center gap-1.5">
                               <label
-                                className="text-[10px] font-semibold text-slate-500 dark:text-slate-400"
+                                className="text-[0.625rem] font-semibold text-slate-500 dark:text-slate-400"
                                 htmlFor={`${fieldIds}-dalsi-${stepIndex}-${choiceIndex}`}
                               >
                                 Pokračovat krokem
@@ -495,7 +495,7 @@ export default function ScenarioEditModal({
                                     nextStepId: e.target.value || undefined,
                                   })
                                 }
-                                className="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-[11px] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                                className="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-[0.6875rem] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                               >
                                 <option value="">Konec situace</option>
                                 {steps

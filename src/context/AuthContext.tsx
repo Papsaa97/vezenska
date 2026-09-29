@@ -16,6 +16,7 @@ export type { UserRole, UserProfile, UpdateProfileInput, ProfileUpdateResult } f
 import type { UserRole, UserProfile, UpdateProfileInput, ProfileUpdateResult } from '../types/auth';
 import { setStorageOwner } from '../utils/userScopedStorage';
 import { syncCompletedProgress } from '../utils/gamification';
+import { applyDisplayScale, displayScaleFromMetadata } from '../utils/displayScale';
 
 /**
  * Seznam e-mailových adres garantovaných správců systému — bootstrap pro případ,
@@ -180,6 +181,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // (nebo v PWA na ploše) záložka ukazovala 0 splněných.
     if (user?.id) void syncCompletedProgress(user.id);
   }, [user?.id]);
+
+  // Velikost zobrazení je volba účtu (utils/displayScale) — na novém zařízení
+  // se po přihlášení použije ta, kterou si uživatel nastavil jinde.
+  const userMetadata = user?.user_metadata;
+  useEffect(() => {
+    if (userMetadata) applyDisplayScale(displayScaleFromMetadata(userMetadata));
+  }, [userMetadata]);
 
   // Náhled cizí role. Schválně jen ve stavu komponenty, ne v localStorage:
   // načtení stránky ho tím pádem vždycky vypne, takže se v něm nejde zaseknout.

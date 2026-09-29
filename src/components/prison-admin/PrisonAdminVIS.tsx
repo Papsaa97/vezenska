@@ -106,7 +106,7 @@ export default function PrisonAdminVIS() {
                     {RULE_ICONS[idx % RULE_ICONS.length]}
                     <span>{item.title}</span>
                   </h4>
-                  <ul className="space-y-1.5 text-slate-600 dark:text-slate-300 text-[11px] list-disc list-inside">
+                  <ul className="space-y-1.5 text-slate-600 dark:text-slate-300 text-[0.6875rem] list-disc list-inside">
                     {textLines(item.text).map((line, lineIdx) => (
                       <li key={lineIdx}><RichText text={line} /></li>
                     ))}

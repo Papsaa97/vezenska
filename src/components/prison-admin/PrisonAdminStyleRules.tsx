@@ -86,7 +86,7 @@ export default function PrisonAdminStyleRules() {
                     <div className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                       <span>{item.label ? `${item.label}. ` : ''}{item.title}</span>
                     </div>
-                    <p className="text-slate-600 dark:text-slate-300 text-[11px]"><RichText text={item.text} /></p>
+                    <p className="text-slate-600 dark:text-slate-300 text-[0.6875rem]"><RichText text={item.text} /></p>
                   </div>
                 ))}
               </div>
@@ -99,10 +99,10 @@ export default function PrisonAdminStyleRules() {
                 {signature.title}
               </div>
               {signature.items.map((item, idx) => (
-                <p key={idx} className="text-slate-700 dark:text-slate-200 font-mono text-[11px]">
+                <p key={idx} className="text-slate-700 dark:text-slate-200 font-mono text-[0.6875rem]">
                   {item.text && <>{item.text}<br /></>}
                   <strong>{item.title}</strong>
-                  {item.note && <><br /><span className="text-[10px] text-slate-500">{item.note}</span></>}
+                  {item.note && <><br /><span className="text-[0.625rem] text-slate-500">{item.note}</span></>}
                 </p>
               ))}
             </div>

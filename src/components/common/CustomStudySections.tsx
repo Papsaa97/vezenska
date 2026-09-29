@@ -71,7 +71,7 @@ export default function CustomStudySections({ sections, tone }: CustomStudySecti
                   {(item.label || item.title) && (
                     <div className="flex items-center gap-2 flex-wrap">
                       {item.label && (
-                        <span className={`px-2 py-0.5 rounded-lg font-mono text-[11px] font-bold ${t.label}`}>{item.label}</span>
+                        <span className={`px-2 py-0.5 rounded-lg font-mono text-[0.6875rem] font-bold ${t.label}`}>{item.label}</span>
                       )}
                       {item.title && <h4 className={`font-bold text-sm ${t.itemTitle}`}>{item.title}</h4>}
                     </div>
@@ -82,7 +82,7 @@ export default function CustomStudySections({ sections, tone }: CustomStudySecti
                     </p>
                   ))}
                   {item.note && (
-                    <p className={`text-[11px] leading-relaxed ${t.note}`}>
+                    <p className={`text-[0.6875rem] leading-relaxed ${t.note}`}>
                       <RichText text={item.note} />
                     </p>
                   )}
