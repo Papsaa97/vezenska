@@ -991,7 +991,7 @@ CREATE POLICY "Povolit zápis pro lektory a administrátory"
         <PrintHeader 
           subject="Banka zkušebních otázek Akademie VS ČR" 
           docTitle={`Výběr: ${filterSubject === 'all' ? 'Všechny předměty' : filterSubject} (${filteredQuestions.length} ${filteredQuestions.length === 1 ? 'otázka' : filteredQuestions.length < 5 ? 'otázky' : 'otázek'})`} 
-          subtext="Oficiální studijní a zkušební přehled otázek pro přípravu na zkoušky ZOP A" 
+          subtext="Studijní přehled otázek pro přípravu na zkoušky ZOP A" 
         />
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
