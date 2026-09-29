@@ -29,6 +29,8 @@ export default function GlobalAnnouncementModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // `required` propustí text složený jen z mezer — uložilo by se prázdné hlášení.
+    if (!title.trim() || !content.trim()) return;
     setSaving(true);
     try {
       await onSave({
@@ -36,8 +38,9 @@ export default function GlobalAnnouncementModal({
         title: title.trim(),
         content: content.trim(),
         badge: badge.trim(),
-        date: new Date().toLocaleDateString('cs-CZ'),
-        author: author.trim(),
+        // Oprava překlepu nesmí posunout datum vydání rozkazu.
+        date: item?.date ?? new Date().toLocaleDateString('cs-CZ'),
+        author: author.trim() || authorDefault,
         priority,
       });
     } finally {

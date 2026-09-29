@@ -135,7 +135,7 @@ export default function ClassDetailExpanded({
                 title="Přidat termín služby (Pankrác, Recepce...)"
               >
                 <Building2 className="w-3.5 h-3.5" />
-                <span>+ Služba / Pankrác</span>
+                <span>Přidat službu</span>
               </button>
               <button
                 onClick={onAddSection}
@@ -143,7 +143,7 @@ export default function ClassDetailExpanded({
                 title="Přidat novou modulární sekci"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>+ Sekce</span>
+                <span>Přidat sekci</span>
               </button>
             </>
           )}
@@ -440,9 +440,11 @@ export default function ClassDetailExpanded({
 
                     {isManager && (
                       <button
+                        type="button"
                         onClick={() => onDeleteDuty(duty.id)}
-                        className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-opacity p-1"
+                        className="opacity-100 md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 hover:text-red-500 transition-opacity p-1"
                         title="Odstranit záznam"
+                        aria-label="Odstranit záznam"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -539,9 +541,11 @@ export default function ClassDetailExpanded({
                       </div>
                       {isManager && (
                         <button
+                          type="button"
                           onClick={() => onDeleteSection(sec.id)}
-                          className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-opacity p-1"
+                          className="opacity-100 md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 hover:text-red-500 transition-opacity p-1"
                           title="Smazat sekci"
+                          aria-label="Smazat sekci"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>

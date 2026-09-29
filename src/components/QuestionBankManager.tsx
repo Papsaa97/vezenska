@@ -183,7 +183,14 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
     const names = subjectEntries
       .filter((entry) => !entry.isDeleted)
       .map((entry) => entry.item.name);
-    return Array.from(new Set<string>([...QUIZ_SUBJECTS, ...names]));
+    // Předměty zrušené migracemi 025/026 a ty, které lektor v Předmětech
+    // odebral, se už nabízet nesmí — nová otázka by je znovu oživila.
+    const removed = new Set<string>([
+      'ZOP',
+      'Bezpečnostní služba',
+      ...subjectEntries.filter((entry) => entry.isDeleted).map((entry) => entry.item.name),
+    ]);
+    return Array.from(new Set<string>([...QUIZ_SUBJECTS, ...names])).filter((name) => !removed.has(name));
   }, [subjectEntries]);
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -355,7 +362,7 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
           type: 'success',
           text: editingId
             ? 'Otázka byla úspěšně aktualizována.'
-            : 'Otázka byla úspěšně vytvořena a uložena do Supabase.',
+            : 'Otázka byla vytvořena a uložena do banky.',
         });
         setFormData(INITIAL_FORM);
         setEditingId(null);
@@ -461,7 +468,7 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
           tone: 'error',
           title: 'Otázka se nesmazala — chybí oprávnění',
           description:
-            'Server mazání přijal, ale neodstranil žádný řádek. Bývá to politikou RLS pro DELETE nad tabulkou quiz_questions: mazat smí jen lektor nebo správce. Zkontrolujte svou roli, případně se obraťte na správce systému.',
+            'Server mazání přijal, ale neodstranil žádný řádek. Mazat otázky smí jen lektor nebo správce. Zkontrolujte svou roli, případně se obraťte na správce systému.',
         });
       } else {
         setQuestions((prev) => prev.filter((q) => q.id !== id));
@@ -525,7 +532,7 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
         } else {
           setImportMsg({
             type: 'info',
-            text: `Všechny výchozí otázky (${result.totalLocalCount}) jsou v Supabase již aktuální. Nebylo třeba nic měnit.`,
+            text: `Všechny výchozí otázky (${result.totalLocalCount}) jsou v bance už aktuální. Nebylo třeba nic měnit.`,
           });
         }
       } else {
@@ -590,8 +597,11 @@ ALTER TABLE public.quiz_questions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Povolit čtení otázek pro všechny"
   ON public.quiz_questions FOR SELECT USING (true);
 
-CREATE POLICY "Povolit zápis pro přihlášené uživatele"
-  ON public.quiz_questions FOR ALL TO authenticated USING (true) WITH CHECK (true);`;
+-- Zapisovat smí jen lektor a správce. Politika „FOR ALL … USING (true)“
+-- by dovolila každému studentovi přepsat banku otázek.
+CREATE POLICY "Povolit zápis pro lektory a administrátory"
+  ON public.quiz_questions FOR ALL TO authenticated
+  USING (public.is_staff()) WITH CHECK (public.is_staff());`;
 
   const copySql = () => {
     navigator.clipboard.writeText(sqlSnippet);
@@ -657,7 +667,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 {editingId
                   ? 'Provádíte úpravu existující otázky v bance'
-                  : 'Vytvořte novou testovou otázku a uložte ji do Supabase'}
+                  : 'Vytvořte novou testovou otázku a uložte ji do banky'}
               </p>
             </div>
           </div>
@@ -910,7 +920,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
             </h4>
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-300">
-            Hromadně porovná otázky v projektu se Supabase a pomocí <code className="font-mono text-[0.6875rem] px-1 bg-white/70 dark:bg-slate-800/80 rounded">upsert</code> (podle unikátního textu otázky) je zapíše do tabulky <code className="font-mono text-[0.6875rem] px-1 bg-white/70 dark:bg-slate-800/80 rounded">quiz_questions</code> – chybějící otázky vloží a již existující přepíše aktuální revizí (např. nově promíchané pořadí odpovědí A/B/C/D).
+            Porovná výchozí otázky z aplikace s bankou podle znění otázky. Chybějící vloží a otázky se stejným zněním přepíše verzí z aplikace — ruční úpravy jejich možností a vysvětlení se tím ztratí.
           </p>
           {importProgress && (
             <div className="pt-2 text-xs font-semibold text-blue-700 dark:text-blue-300 flex items-center gap-2">
@@ -957,7 +967,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
           {isImporting ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> Probíhá import…</>
           ) : (
-            <><UploadCloud className="w-4 h-4" /> Doplnit chybějící do Supabase</>
+            <><UploadCloud className="w-4 h-4" /> Doplnit a aktualizovat z aplikace</>
           )}
         </button>
         <button
@@ -1002,7 +1012,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
               }}
               disabled={loading}
               className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all cursor-pointer disabled:opacity-50"
-              title="Obnovit / znovu načíst otázky ze Supabase"
+              title="Znovu načíst otázky"
             >
               <RotateCcw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -1056,7 +1066,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
         {loading && (
           <div className="flex items-center justify-center gap-2 text-slate-400 text-sm py-12 no-print">
             <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
-            Načítám otázky ze Supabase…
+            Načítám otázky…
           </div>
         )}
 
@@ -1082,7 +1092,7 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
               V bance zatím nejsou žádné otázky
             </div>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
-              Pomocí formuláře výše vytvořte svou první testovou otázku a uložte ji do Supabase.
+              Pomocí formuláře výše vytvořte svou první testovou otázku.
             </p>
           </div>
         )}
@@ -1278,22 +1288,21 @@ CREATE POLICY "Povolit zápis pro přihlášené uživatele"
         tone={pendingImport === 'overwrite' ? 'danger' : 'neutral'}
         title={
           pendingImport === 'overwrite'
-            ? 'Přepsat celou banku otázek v Supabase?'
-            : 'Synchronizovat výchozí otázky do Supabase?'
+            ? 'Přepsat celou banku otázek?'
+            : 'Doplnit a aktualizovat otázky z aplikace?'
         }
         description={
           pendingImport === 'overwrite' ? (
             <>
-              Všechny otázky v tabulce <span className="font-mono">quiz_questions</span> se{' '}
+              Všechny otázky v bance se{' '}
               <strong>smažou</strong> a nahradí aktuální revizí z aplikace. Ruční úpravy otázek
               provedené ve správě banky se tím nevratně ztratí.
             </>
           ) : (
             <>
-              Chybějící otázky se do tabulky <span className="font-mono">quiz_questions</span>{' '}
-              vloží a otázky se stejným textem, které se v aplikaci od poslední synchronizace
-              změnily (např. přeuspořádané možnosti), se přepíšou aktuální revizí (upsert).
-              Otázky, které jsou jen v Supabase, zůstanou.
+              Chybějící otázky se do banky vloží. Otázky se stejným zněním se přepíšou verzí
+              z aplikace, takže <strong>ruční úpravy jejich možností a vysvětlení se ztratí</strong>.
+              Otázky, které lektoři přidali sami, zůstanou.
             </>
           )
         }
