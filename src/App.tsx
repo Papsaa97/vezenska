@@ -59,7 +59,7 @@ import {
   FAVORITES_SYNCED_EVENT,
   loadMatchingHistory,
   saveFavoriteIds,
-  saveMatchingHistory,
+  clearMatchingHistory,
   subjectsWithQuestions,
   updateDailyStreak,
 } from './utils/gamification';
@@ -674,7 +674,9 @@ export default function App() {
   const handleClearHistory = () => {
     setQuizHistory([]);
     setMatchingHistory([]);
-    saveMatchingHistory([]);
+    void clearMatchingHistory().then((error) => {
+      if (error) console.error('[App] Nepodařilo se smazat historii poznávaček na serveru:', error);
+    });
     if (user) {
       // Frontu je nutné vyprázdnit také, jinak by se čekající výsledky po
       // odeslání vrátily do právě smazané historie.

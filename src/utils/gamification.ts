@@ -2,6 +2,7 @@ import { QuizSessionRecord, MatchingRecord, UserRank, Badge } from '../types';
 import { VSCR_RANKS, RAW_BADGES } from '../data/gamificationData';
 import { getStorageOwner, readScoped, writeScoped } from './userScopedStorage';
 import { ProgressKind, pullCompleted, pushCompleted, replaceRemoteSet } from './progressSync';
+import { clearRemoteMatching, mergeStreaks, pullRecords, pushMatchingRecords, pushStreak } from './recordsSync';
 
 const MATCHING_HISTORY_KEY = 'vscr_matching_history';
 const STREAK_KEY = 'vscr_streak_info';
@@ -92,6 +93,41 @@ export async function syncCompletedProgress(userId: string): Promise<void> {
   if (favoritesChanged && typeof window !== 'undefined') {
     window.dispatchEvent(new Event(FAVORITES_SYNCED_EVENT));
   }
+
+  await syncMatchingAndStreak(userId);
+}
+
+/**
+ * Historie poznávaček a denní série: sjednocení podle id záznamu, série podle
+ * mergeStreaks. Co server nemá, se mu pošle. App si změnu přečte sama —
+ * writeScoped zvedne revizi postupu.
+ */
+async function syncMatchingAndStreak(userId: string): Promise<void> {
+  const remote = await pullRecords(userId);
+  if (!remote || getStorageOwner() !== userId) return;
+
+  const local = loadMatchingHistory();
+  const remoteIds = new Set(remote.matching.map((r) => r.id));
+  const localIds = new Set(local.map((r) => r.id));
+  const merged = [...local, ...remote.matching.filter((r) => !localIds.has(r.id))].sort(
+    (a, b) => b.timestamp - a.timestamp
+  );
+  if (merged.length !== local.length) writeScoped(MATCHING_HISTORY_KEY, merged);
+  const missingOnServer = local.filter((r) => !remoteIds.has(r.id));
+  if (missingOnServer.length > 0) await pushMatchingRecords(missingOnServer);
+
+  const stored = readScoped<StreakInfo | null>(STREAK_KEY, null);
+  const localStreak = stored && typeof stored.currentStreak === 'number' ? stored : null;
+  const mergedStreak = mergeStreaks(localStreak, remote.streak);
+  if (!mergedStreak) return;
+  if (JSON.stringify(mergedStreak) !== JSON.stringify(localStreak)) writeScoped(STREAK_KEY, mergedStreak);
+  if (JSON.stringify(mergedStreak) !== JSON.stringify(remote.streak)) await pushStreak(mergedStreak);
+}
+
+/** Vymaže historii poznávaček v zařízení i na serveru; vrátí chybu serveru, nebo null. */
+export async function clearMatchingHistory(): Promise<string | null> {
+  saveMatchingHistory([]);
+  return clearRemoteMatching();
 }
 
 /** Uloží oblíbené do zařízení i k účtu (odebrané zmizí i ze serveru). */
@@ -118,6 +154,7 @@ export function recordMatchingCompletion(record: Omit<MatchingRecord, 'id' | 'ti
 
   const newHistory = [newRecord, ...current];
   saveMatchingHistory(newHistory);
+  void pushMatchingRecords([newRecord]);
   updateDailyStreak();
   return { record: newRecord, newHistory };
 }
@@ -167,6 +204,7 @@ export function loadStreakInfo(): StreakInfo {
 
 export function saveStreakInfo(streak: StreakInfo): void {
   writeScoped(STREAK_KEY, streak);
+  void pushStreak(streak);
 }
 
 /**
