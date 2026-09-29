@@ -40,6 +40,7 @@ import NotificationBell from './NotificationBell';
 import { useAuth } from '../context/AuthContext';
 import { getInitials, resolveAvatarDisplay } from '../utils/avatar';
 import { useLocalProgress } from '../hooks/useLocalProgress';
+import { useSeenBadges } from '../hooks/useSeenBadges';
 
 import { NavTab, NAV_TAB_LABELS, NAV_TAB_SHORT_LABELS } from '../data/navTabs';
 
@@ -141,9 +142,12 @@ export default function Header({
     [quizHistory, matchingHistory, extraXp]
   );
 
-  const { totalXpWithBadges, unlockedCount } = useMemo(() => {
-    return evaluateBadges(quizHistory, matchingHistory, streakInfo, baseXp, availableSubjects);
+  const { totalXpWithBadges, unlockedIds } = useMemo(() => {
+    const { badges, totalXpWithBadges } = evaluateBadges(quizHistory, matchingHistory, streakInfo, baseXp, availableSubjects);
+    return { totalXpWithBadges, unlockedIds: badges.filter((b) => b.isUnlocked).map((b) => b.id) };
   }, [quizHistory, matchingHistory, streakInfo, baseXp, availableSubjects]);
+  // Upozornění jen na odznaky, které student ještě neviděl — otevřením Odznaků zmizí.
+  const newBadgeCount = useSeenBadges(unlockedIds, activeTab === 'badges');
 
   const { currentRank, progressPercent: xpProgress } = useMemo(() => {
     return getUserRank(totalXpWithBadges);
@@ -455,7 +459,7 @@ export default function Header({
             >
               <MoreHorizontal className="w-4 h-4" />
               <span>Další</span>
-              {unlockedCount > 0 && !isMoreActive && (
+              {newBadgeCount > 0 && !isMoreActive && (
                 <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
               )}
               <ChevronDown className={`w-3.5 h-3.5 transition-transform ${openDropdown === 'more' ? 'rotate-180' : ''}`} />
@@ -515,9 +519,9 @@ export default function Header({
             >
               <Award className="w-4 h-4" />
               <span>{NAV_TAB_SHORT_LABELS['badges']}</span>
-              {unlockedCount > 0 && (
+              {newBadgeCount > 0 && (
                 <span className="px-1.5 py-0.5 rounded-full text-[0.625rem] bg-amber-400 text-slate-950 font-black">
-                  {unlockedCount}
+                  {newBadgeCount}
                 </span>
               )}
             </button>
@@ -982,11 +986,11 @@ export default function Header({
                     <div className="text-[0.625rem] opacity-75">Služební postup a trofeje</div>
                   </div>
                 </div>
-                {unlockedCount > 0 && (
+                {newBadgeCount > 0 && (
                   <span className={`px-1.5 py-0.5 rounded-full text-[0.625rem] font-black ${
                     activeTab === 'badges' ? 'bg-slate-950 text-amber-400' : 'bg-amber-400 text-slate-950'
                   }`}>
-                    {unlockedCount}
+                    {newBadgeCount}
                   </span>
                 )}
               </button>

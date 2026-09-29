@@ -527,6 +527,26 @@ export function evaluateBadges(
   };
 }
 
+/**
+ * Text postupu na kartě odznaku.
+ *
+ * Skutečná hodnota může cíl přerůst (po pěti testech je „První krok“ na 5 / 1),
+ * což na splněném odznaku působilo jako chyba. Zobrazení se proto u cíle
+ * zastaví; `currentValue` zůstává nezkrácený pro případné jiné použití.
+ */
+export function formatBadgeProgress(
+  badge: Pick<Badge, 'requirement' | 'currentValue' | 'targetValue' | 'isUnlocked'>
+): string {
+  const { requirement, currentValue, targetValue, isUnlocked } = badge;
+  if (requirement.type === 'matching_speed') {
+    if (isUnlocked) return `${currentValue} s (cíl ≤ ${targetValue} s)`;
+    return `${currentValue > 0 ? `${currentValue} s` : 'Zatím nehráno'} / cíl ≤ ${targetValue} s`;
+  }
+  const shown = Math.min(currentValue, targetValue);
+  if (requirement.type === 'subject_mastery') return `${shown} % / ${targetValue} %`;
+  return `${shown.toLocaleString('cs-CZ')} / ${targetValue.toLocaleString('cs-CZ')}`;
+}
+
 export function getTierColor(tier: string): { bg: string; text: string; border: string; glow: string; label: string } {
   switch (tier) {
     case 'bronze':

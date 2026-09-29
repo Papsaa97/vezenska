@@ -35,7 +35,8 @@ import {
   getUserRank, 
   calculateBaseXp, 
   countsTowardProgress,
-  getTierColor 
+  getTierColor,
+  formatBadgeProgress
 } from '../utils/gamification';
 import { MIN_XP_PERCENT } from '../constants/grading';
 import { useDialog } from '../hooks/useDialog';
@@ -462,9 +463,7 @@ export default function BadgesView({
                       {badge.isUnlocked ? 'Splněno' : 'Postup'}
                     </span>
                     <span className={`font-bold ${badge.isUnlocked ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300'}`}>
-                      {badge.requirement.type === 'matching_speed' 
-                        ? (badge.isUnlocked ? `${badge.currentValue}s (Cíl ≤${badge.targetValue}s)` : `${badge.currentValue > 0 ? `${badge.currentValue}s` : 'Zatím nehráno'} / Cíl ≤${badge.targetValue}s`)
-                        : `${badge.currentValue} / ${badge.targetValue}`}
+                      {formatBadgeProgress(badge)}
                     </span>
                   </div>
 
