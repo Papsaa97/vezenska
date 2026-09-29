@@ -970,6 +970,9 @@ CREATE POLICY "Povolit zápis pro lektory a administrátory"
             <><UploadCloud className="w-4 h-4" /> Doplnit a aktualizovat z aplikace</>
           )}
         </button>
+        {/* Smazat a znovu nahrát celou banku smí jen správce — lektorovi by
+            jedno kliknutí zahodilo ruční úpravy všech kolegů. */}
+        {profile?.role === 'admin' && (
         <button
           type="button"
           onClick={() => setPendingImport('overwrite')}
@@ -978,6 +981,7 @@ CREATE POLICY "Povolit zápis pro lektory a administrátory"
         >
           <UploadCloud className="w-4 h-4" /> Přepsat banku novou revizí
         </button>
+        )}
         </div>
       </div>
 

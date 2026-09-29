@@ -818,65 +818,72 @@ export async function saveContentItem<T extends { id: string }>(
 }
 
 /**
- * Odstraní položku ze seznamu.
+ * Odstraní položku ze seznamu — vznikne náhrobek (`is_deleted`), takže ji
+ * lektor může z přehledu odebraných kdykoli vrátit.
  *
- * U výchozí položky z repozitáře vznikne náhrobek (`is_deleted`), protože
- * smazat se dá jen to, co v databázi je — a výchozí data v ní nejsou. Lektor
- * ji tak může kdykoli vrátit. U vlastní položky zmizí celý řádek.
+ * Platí to i pro vlastní položky přidané v aplikaci. Dřív u nich zmizel celý
+ * řádek, přestože potvrzovací dialog sliboval, že „vrátit to půjde z přehledu
+ * odebraných“. Natrvalo maže až purgeContentItem.
  */
 export async function deleteContentItem<T extends { id: string }>(
   kind: ContentKind,
   item: T,
-  isBuiltIn: boolean,
+  _isBuiltIn: boolean,
   userEmail?: string | null
 ): Promise<PersistResult> {
   const now = new Date().toISOString();
+  const normalized = NORMALIZERS[kind](item);
   let persistError: string | null = null;
 
   try {
-    if (isBuiltIn) {
-      const normalized = NORMALIZERS[kind](item);
-      const { error } = await supabase.from('content_blocks').upsert(
-        {
-          id: rowId(kind, item.id),
-          kind,
-          // Obsah se schovává, ne zahazuje — jinak by nebylo co obnovovat.
-          payload: normalized ?? {},
-          is_deleted: true,
-          // Výslovně: náhrobek se skrytím znamená „smazáno natrvalo“.
-          is_hidden: false,
-          updated_at: now,
-          updated_by: userEmail ?? null,
-        },
-        { onConflict: 'id' }
-      );
-      if (error) persistError = `Položku se nepodařilo skrýt (${error.message}).`;
-    } else {
-      const { error } = await supabase
-        .from('content_blocks')
-        .delete()
-        .eq('id', rowId(kind, item.id));
-      if (error) persistError = `Položku se nepodařilo smazat (${error.message}).`;
-    }
+    const { error } = await supabase.from('content_blocks').upsert(
+      {
+        id: rowId(kind, item.id),
+        kind,
+        // Obsah se schovává, ne zahazuje — jinak by nebylo co obnovovat.
+        payload: normalized ?? {},
+        is_deleted: true,
+        // Výslovně: náhrobek se skrytím znamená „smazáno natrvalo“.
+        is_hidden: false,
+        updated_at: now,
+        updated_by: userEmail ?? null,
+      },
+      { onConflict: 'id' }
+    );
+    if (error) persistError = `Položku se nepodařilo odebrat (${error.message}).`;
   } catch (err) {
     persistError = `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`;
   }
 
-  if (isBuiltIn) {
-    cacheBlock(kind, {
-      itemId: item.id,
-      kind,
-      payload: (NORMALIZERS[kind](item) as T) ?? null,
-      sortOrder: 0,
-      isHidden: false,
-      isDeleted: true,
-      updatedAt: now,
-      updatedBy: userEmail ?? null,
-    });
-  } else {
-    dropFromCache(kind, item.id);
-  }
+  cacheBlock(kind, {
+    itemId: item.id,
+    kind,
+    payload: (normalized as T) ?? null,
+    sortOrder: 0,
+    isHidden: false,
+    isDeleted: true,
+    updatedAt: now,
+    updatedBy: userEmail ?? null,
+  });
 
+  return { persisted: persistError === null, error: persistError };
+}
+
+/** Odstraní řádek vlastní položky z databáze úplně. */
+async function hardDeleteContentItem(kind: ContentKind, itemId: string): Promise<PersistResult> {
+  let persistError: string | null = null;
+  try {
+    const { data, error } = await supabase
+      .from('content_blocks')
+      .delete()
+      .eq('id', rowId(kind, itemId))
+      .select('id');
+    if (error) persistError = `Položku se nepodařilo smazat (${error.message}).`;
+    else if (!data || data.length === 0) persistError = 'Server položku nesmazal — zkontrolujte, že na to máte oprávnění.';
+  } catch (err) {
+    persistError = `Spojení se serverem selhalo (${err instanceof Error ? err.message : String(err)}).`;
+  }
+  dropFromCache(kind, itemId);
   return { persisted: persistError === null, error: persistError };
 }
 
@@ -891,7 +898,7 @@ export async function purgeContentItem<T extends { id: string }>(
   item: T,
   isBuiltIn: boolean
 ): Promise<PersistResult> {
-  if (!isBuiltIn) return deleteContentItem(kind, item, false);
+  if (!isBuiltIn) return hardDeleteContentItem(kind, item.id);
 
   const now = new Date().toISOString();
   const normalized = NORMALIZERS[kind](item);

@@ -104,8 +104,10 @@ export default function Scenarios() {
       total: prev.total + 1
     }));
 
-    // Pokud je to poslední krok scénáře a volba je správná, scénář je úspěšně dokončen
-    if (selectedScenario && choice.isCorrect && !choice.nextStepId) {
+    // Scénář se započítá (XP, odznaky) jen tehdy, když ho student prošel
+    // napoprvé bez chybné volby. Dřív stačilo zkoušet možnosti, dokud nějaká
+    // nevyšla. `score` je tu ještě stav PŘED touto volbou.
+    if (selectedScenario && choice.isCorrect && !choice.nextStepId && score.correct === score.total) {
       markScenarioCompleted(selectedScenario.id);
     }
   };
@@ -123,7 +125,7 @@ export default function Scenarios() {
     }
 
     // Finished scenario
-    if (selectedChoice.isCorrect) {
+    if (selectedChoice.isCorrect && score.correct === score.total) {
       markScenarioCompleted(selectedScenario.id);
     }
   };
@@ -135,7 +137,7 @@ export default function Scenarios() {
   };
 
   const handleBackToList = () => {
-    if (selectedScenario && selectedChoice?.isCorrect && !selectedChoice.nextStepId) {
+    if (selectedScenario && selectedChoice?.isCorrect && !selectedChoice.nextStepId && score.correct === score.total) {
       markScenarioCompleted(selectedScenario.id);
     }
     setSelectedScenario(null);
@@ -566,7 +568,11 @@ export default function Scenarios() {
                   <div className="flex items-center gap-3">
                     <div className="text-xs text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1">
                       <Award className="w-4 h-4" />
-                      <span>Scénář úspěšně vyřešen!</span>
+                      <span>
+                        {score.correct === score.total
+                          ? 'Scénář úspěšně vyřešen!'
+                          : 'Scénář dokončen. Do plnění se započítá, až ho projdete bez chyby.'}
+                      </span>
                     </div>
                     <button
                       onClick={handleBackToList}
