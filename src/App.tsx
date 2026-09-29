@@ -523,17 +523,36 @@ export default function App() {
     }
   }, [activeTab]);
 
+  // Běží právě test? Ref kvůli odběru `popstate`, který se zakládá jen jednou.
+  const quizGuardActiveRef = useRef(false);
+  useEffect(() => {
+    quizGuardActiveRef.current = activeTab === 'quiz' && isQuizPlaying;
+  }, [activeTab, isQuizPlaying]);
+
+  // Zavření karty nebo obnovení stránky test také zahodí — prohlížeč se zeptá sám.
+  useEffect(() => {
+    if (!(activeTab === 'quiz' && isQuizPlaying)) return;
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      // Starší prohlížeče dialog ukážou jen s nastaveným returnValue.
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [activeTab, isQuizPlaying]);
+
   // Reakce na historii a změny hashe v prohlížeči.
   //
   // Kromě přepnutí záložky se dorovná i vlastní `historyIndex`. Bez toho se
   // tlačítko Zpět v prohlížeči a šipky v hlavičce rozešly: prohlížeč se vrátil
   // o krok, vnitřní ukazatel zůstal na místě a další stisk šipky skočil jinam.
+  //
+  // Tlačítko Zpět v prohlížeči změní adresu dřív, než se aplikace dozví, že
+  // něco nastalo — zrušit se nedá. Během testu se proto adresa hned vrátí na
+  // #quiz a zeptáme se stejným dialogem jako u šipek; přechod proběhne až po
+  // potvrzení. Dřív tohle tlačítko rozepsaný test bez ptaní zahodilo.
   useEffect(() => {
-    const handleHashChange = () => {
-      const rawHash = window.location.hash.replace(/^#/, '');
-      const tabFromHash = rawHash.split('/')[0] as NavTab;
-      if (!VALID_TABS.includes(tabFromHash)) return;
-
+    const applyTab = (tabFromHash: NavTab) => {
       setActiveTab((prev) => (prev !== tabFromHash ? tabFromHash : prev));
 
       setHistoryIndex((idx) => {
@@ -542,6 +561,24 @@ export default function App() {
         if (navHistoryRef.current[idx + 1] === tabFromHash) return idx + 1;
         return idx;
       });
+    };
+
+    const handleHashChange = () => {
+      const rawHash = window.location.hash.replace(/^#/, '');
+      const tabFromHash = rawHash.split('/')[0] as NavTab;
+      if (!VALID_TABS.includes(tabFromHash)) return;
+
+      if (quizGuardActiveRef.current && tabFromHash !== 'quiz') {
+        window.history.pushState({ tab: 'quiz' }, '', '#quiz');
+        pendingNavigationRef.current = () => {
+          window.history.replaceState({ tab: tabFromHash }, '', `#${tabFromHash}`);
+          applyTab(tabFromHash);
+        };
+        setIsLeaveQuizDialogOpen(true);
+        return;
+      }
+
+      applyTab(tabFromHash);
     };
 
     window.addEventListener('hashchange', handleHashChange);
