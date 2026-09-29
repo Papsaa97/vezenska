@@ -162,6 +162,9 @@ export default function MaterialManager() {
 
     const failures: string[] = [];
     let uploaded = 0;
+    // Soubory, které už v úložišti jsou (i když selhaly štítky). Po částečném
+    // selhání se z fronty odeberou, jinak by je další pokus nahrál podruhé.
+    const uploadedKeys = new Set<string>();
 
     for (const entry of queue) {
       const name = entry.displayName.trim() || entry.file.name;
@@ -175,8 +178,9 @@ export default function MaterialManager() {
         { subjects: batchSubjects, classIds: batchClassIds, displayName: name },
         profile?.email
       );
-      if (tagResult.error) failures.push(`${name}: ${tagResult.error}`);
+      if (tagResult.error) failures.push(`${name}: ${tagResult.error} (soubor je nahraný, štítky upravte v seznamu)`);
       uploaded += 1;
+      uploadedKeys.add(entry.key);
     }
 
     // Zahození paměti rozešle událost, na kterou se seznam načte sám.
@@ -196,6 +200,8 @@ export default function MaterialManager() {
       setBatchSubjects([]);
       setBatchClassIds([]);
       if (fileInputRef.current) fileInputRef.current.value = '';
+    } else {
+      setQueue((prev) => prev.filter((q) => !uploadedKeys.has(q.key)));
     }
     setUploading(false);
   };

@@ -176,7 +176,9 @@ export default function BulkQuestionImportModal({
           correct_index: q.correct_index,
           source: q.source.trim(),
           explanation: q.explanation.trim(),
-          is_hidden: false,
+          // is_hidden se neposílá: nová otázka dostane výchozí „viditelná“
+          // z databáze a aktualizace nesmí znovu zveřejnit otázku, kterou
+          // lektor skryl.
         }));
 
         const { error: upsertError } = await supabase
