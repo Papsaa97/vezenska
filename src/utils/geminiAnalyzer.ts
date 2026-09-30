@@ -132,6 +132,27 @@ VÝSTUP MUSÍ BÝT VÝHRADNĚ VALIDNÍ JSON v tomto formátu (žádný markdown 
   ]
 }`;
 
+/**
+ * Modely Gemini, které asistent zkouší, od nejschopnějšího. Jediné místo, kde
+ * se model volí.
+ *
+ * Google v září 2026 zavřel řadu 2.5 novým klíčům („no longer available to new
+ * users“) a pro nové projekty doporučuje 3.8 Flash a 3.5 Flash-Lite
+ * (https://ai.google.dev/gemini-api/docs/models). Až Google model zase stáhne,
+ * stačí ve Vercelu nastavit VITE_GEMINI_MODELS (názvy oddělené čárkou)
+ * a znovu nasadit — kód se měnit nemusí.
+ */
+export const DEFAULT_GEMINI_MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash-lite'];
+
+export function getGeminiModels(): string[] {
+  const fromEnv: string = import.meta.env?.VITE_GEMINI_MODELS || '';
+  const models = fromEnv
+    .split(',')
+    .map((m) => m.trim().replace(/^models\//, ''))
+    .filter((m) => m !== '');
+  return models.length > 0 ? models : DEFAULT_GEMINI_MODELS;
+}
+
 /** Značka, kterou model vrací u otázky mimo zdroje aplikace. */
 export const NOT_IN_APP_SOURCES = 'NENALEZENO VE ZDROJÍCH APLIKACE';
 
@@ -180,10 +201,7 @@ export async function analyzeExamContent(
   }
   contents.push(promptText);
 
-  // Existující modely, od nejschopnějšího. Dřív byl v seznamu i
-  // 'gemini-3.5-flash', který neexistuje — každé volání na něj skončilo 404 a
-  // jen prodloužilo čekání o jeden zbytečný okružní požadavek.
-  const modelsToTry = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
+  const modelsToTry = getGeminiModels();
   let lastError: unknown = null;
 
   for (const modelName of modelsToTry) {
@@ -309,6 +327,9 @@ export async function analyzeExamContent(
     }
     if (rawMessage.includes('RESOURCE_EXHAUSTED') || rawMessage.includes('429') || rawMessage.includes('Quota exceeded')) {
       throw new Error('Byl překročen limit volání (kvóta) vašeho Google Gemini API klíče. Počkejte chvíli a zkuste to znovu.');
+    }
+    if (rawMessage.includes('no longer available')) {
+      throw new Error(`Google tento AI model už nepovoluje (${rawMessage}). Správce aplikace musí nastavit novější model v proměnné VITE_GEMINI_MODELS.`);
     }
     if (rawMessage.includes('not found') || rawMessage.includes('404')) {
       throw new Error(`AI model není dostupný: ${rawMessage}`);
