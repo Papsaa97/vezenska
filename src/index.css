@@ -62,6 +62,21 @@ body {
   background-color: inherit;
 }
 
+/* Přihlášená aplikace má vlastní posuvníky (každá záložka scrolluje uvnitř
+   <main>). Samotný dokument se proto hýbat nesmí: jakmile záložka dojede na
+   konec a uživatel točí kolečkem dál (nebo rychle švihne), prohlížeč předá
+   pohyb dokumentu, ten ujede nahoru, lišta zmizí a pod aplikací zbyde prázdná
+   plocha. Platí jen, když je aplikace na stránce (#hlavni-obsah); přihlašovací
+   stránka scrolluje dokumentem normálně. Tisk má vlastní pravidla níže. */
+@media screen {
+  html:has(#hlavni-obsah),
+  html:has(#hlavni-obsah) body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+}
+
 /* ==========================================================================
    NÁHLED DOKUMENTU V APLIKACI (prohlížeč .docx)
    --------------------------------------------------------------------------
