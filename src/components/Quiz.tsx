@@ -9,6 +9,7 @@ import PrintHeader from './common/PrintHeader';
 import ConfirmDialog from './common/ConfirmDialog';
 import { DISTINCTION_PERCENT, MIN_XP_PERCENT, PASS_PERCENT } from '../constants/grading';
 import { quizSessionXp } from '../utils/gamification';
+import { buildMasteryMap, masteryOf, orderForPractice, subjectReadiness } from '../utils/questionMastery';
 
 interface QuizProps {
   questions: Question[];
@@ -25,6 +26,11 @@ interface QuizProps {
    */
   onPlayingChange?: (isPlaying: boolean) => void;
   questionsSource?: 'supabase' | 'local';
+  /**
+   * Uložená historie testů přihlášeného uživatele. Podle ní chytré procvičování
+   * pozná, které otázky student umí, a vrací mu ty, které ještě ne.
+   */
+  quizHistory?: QuizSessionRecord[];
 }
 
 type GameState = 'setup' | 'playing' | 'results';
@@ -69,7 +75,8 @@ export default function Quiz({
   presetSubject,
   presetTopic,
   onPlayingChange,
-  questionsSource = 'local'
+  questionsSource = 'local',
+  quizHistory = []
 }: QuizProps) {
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
   const fieldIds = useId();
@@ -82,7 +89,17 @@ export default function Quiz({
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [questionCount, setQuestionCount] = useState<number>(10);
   const [isMistakesMode, setIsMistakesMode] = useState<boolean>(false);
-  const [mistakeHistory, setMistakeHistory] = useState<Set<string>>(new Set());
+  /**
+   * Chytrý výběr otázek: přednost mají chyby a nové otázky, zvládnuté až nakonec.
+   * Vypnutý = otázky se losují naslepo jako dřív.
+   */
+  const [isSmartOrder, setIsSmartOrder] = useState<boolean>(true);
+  /**
+   * Test spuštěný z konkrétního seznamu otázek (chyby z testu, předmět
+   * z přehledu připravenosti), ne z filtrů. Zapisuje se pak podle skutečných
+   * předmětů otázek, stejně jako procvičování chyb.
+   */
+  const [isCustomPractice, setIsCustomPractice] = useState<boolean>(false);
 
   /**
    * Proč se test nespustil. Zobrazuje se v nastavení testu.
@@ -126,6 +143,25 @@ export default function Quiz({
   // z App jako nememoizovaná funkce, takže by se identita měnila každý render.
   const finishExamRef = useRef<() => void>(() => {});
   
+  // Co student umí, odvozené z uložených testů. Dřív si test pamatoval chyby
+  // jen do zavření stránky (stav `mistakeHistory`), takže „Procvičování chyb“
+  // po novém přihlášení vždy zmizelo.
+  const masteryMap = useMemo(() => buildMasteryMap(quizHistory), [quizHistory]);
+  const usableQuestions = useMemo(
+    () => (questions || []).filter(q => q?.options && q.options.length > 0 && (q.correctOption !== undefined || q.correct_index !== undefined)),
+    [questions]
+  );
+  const weakQuestions = useMemo(
+    () => usableQuestions.filter(q => masteryOf(masteryMap, q.id).state === 'weak'),
+    [usableQuestions, masteryMap]
+  );
+  const readiness = useMemo(() => subjectReadiness(usableQuestions, masteryMap), [usableQuestions, masteryMap]);
+  const readinessTotals = useMemo(() => {
+    const total = readiness.reduce((sum, r) => sum + r.total, 0);
+    const mastered = readiness.reduce((sum, r) => sum + r.mastered, 0);
+    return { total, mastered, percent: total > 0 ? Math.round((mastered / total) * 100) : 0 };
+  }, [readiness]);
+
   const subjects = useMemo(
     () => Array.from(new Set((questions || []).map(q => q?.subject).filter((s): s is string => Boolean(s)))),
     [questions]
@@ -233,51 +269,11 @@ export default function Quiz({
     setExamGlobalTimeLeft(EXAM_TIME_LIMIT_MINUTES * 60);
   };
 
-  const startQuiz = () => {
-    setSetupError(null);
+  /** Spustí procvičování s hotovým výběrem otázek (pořadí už je dané). */
+  const beginPractice = (selected: Question[], isCustom: boolean) => {
     setIsExamMode(false);
-    let pool = questions || [];
-    
-    if (isMistakesMode) {
-      pool = (questions || []).filter(q => q?.id && mistakeHistory.has(q.id));
-      if (pool.length === 0) {
-        setSetupError('V téhle session nemáte zaznamenanou žádnou chybu k procvičení. Odpovězte nejdřív na několik otázek ve cvičném testu.');
-        return;
-      }
-    } else {
-      if (!selectedSubjects.includes('all')) {
-        const normSelected = selectedSubjects.map(s => normalizeSubject(s));
-        pool = pool.filter(q => q?.subject && (selectedSubjects.includes(q.subject) || normSelected.includes(normalizeSubject(q.subject))));
-      }
-      // Okruh zužuje předmět jen tehdy, když v něm nějaké otázky jsou. Statistiky
-      // nabízejí okruhy z historie, a ten mohl mezitím z banky zmizet nebo být
-      // přejmenován — pak je lepší procvičit celý předmět než skončit chybou.
-      if (selectedTopic) {
-        const topicPool = pool.filter(q => (q?.topic || 'Základní okruh') === selectedTopic);
-        if (topicPool.some(q => q?.options && q.options.length > 0)) pool = topicPool;
-      }
-    }
-    
-    pool = pool.filter(q => q?.options && q.options.length > 0 && (q.correctOption !== undefined || q.correct_index !== undefined));
-    
-    // Pořadí se míchá Fisher–Yatesem, ne `sort` s náhodným komparátorem.
-    //
-    // Dřív o zamíchání rozhodoval stav `isRandomOrder`, ke kterému ale nikdy
-    // nevznikl žádný přepínač — byl natrvalo `true`. Míchá se tedy vždy, což je
-    // i jediné správné chování pro zkoušku: banka je uložená po předmětech,
-    // takže bez zamíchání by test šel tematicky po sobě.
-    const finalQuestions = shuffleArray(pool);
-    
-    const selected = finalQuestions
-      .slice(0, questionCount === 0 || isMistakesMode ? pool.length : Math.min(questionCount, pool.length))
-      .map(q => shuffleQuestionOptions(q));
-    
-    if (selected.length === 0) {
-      setSetupError('Pro zvolený výběr předmětů nejsou k dispozici žádné testové otázky. Vyberte prosím jiný předmět nebo zvolte „Všechny předměty“.');
-      return;
-    }
-    
-    setQuizQuestions(selected);
+    setIsCustomPractice(isCustom);
+    setQuizQuestions(selected.map(q => shuffleQuestionOptions(q)));
     setCurrentIndex(0);
     setAnswers({});
     setConfidences({});
@@ -285,6 +281,75 @@ export default function Quiz({
     setIsAnswered(false);
     setGameState('playing');
     setQuizStartTime(Date.now());
+  };
+
+  /**
+   * Vybere `count` otázek z poolu. Chytrý výběr vezme ty, které student
+   * potřebuje nejvíc (chyby, nové, dlouho neviděné), a teprve je zamíchá, aby
+   * nešly všechny chyby hned za sebou.
+   */
+  const pickForPractice = (pool: Question[], count: number): Question[] => {
+    const ordered = isSmartOrder ? orderForPractice(pool, masteryMap) : shuffleArray(pool);
+    return shuffleArray(ordered.slice(0, Math.min(count, ordered.length)));
+  };
+
+  const startQuiz = () => {
+    setSetupError(null);
+    let pool: Question[] = usableQuestions;
+    
+    if (isMistakesMode) {
+      pool = weakQuestions;
+      if (pool.length === 0) {
+        setSetupError('Nemáte žádnou otázku k opravě. Chyby a tipnuté odpovědi z vašich testů se sem dostanou samy.');
+        return;
+      }
+      // Nejdéle neopravené chyby dřív; strop je zvolený počet otázek, jinak by
+      // se po pár testech z opravy chyb stal test o stovce otázek.
+      beginPractice(shuffleArray(orderForPractice(pool, masteryMap).slice(0, questionCount)), true);
+      return;
+    }
+
+    if (!selectedSubjects.includes('all')) {
+      const normSelected = selectedSubjects.map(s => normalizeSubject(s));
+      pool = pool.filter(q => q?.subject && (selectedSubjects.includes(q.subject) || normSelected.includes(normalizeSubject(q.subject))));
+    }
+    // Okruh zužuje předmět jen tehdy, když v něm nějaké otázky jsou. Statistiky
+    // nabízejí okruhy z historie, a ten mohl mezitím z banky zmizet nebo být
+    // přejmenován — pak je lepší procvičit celý předmět než skončit chybou.
+    if (selectedTopic) {
+      const topicPool = pool.filter(q => (q?.topic || 'Základní okruh') === selectedTopic);
+      if (topicPool.length > 0) pool = topicPool;
+    }
+
+    // Míchá se vždy (Fisher–Yates, ne `sort` s náhodným komparátorem): banka je
+    // uložená po předmětech, takže bez zamíchání by test šel tematicky po sobě.
+    const selected = pickForPractice(pool, questionCount);
+    
+    if (selected.length === 0) {
+      setSetupError('Pro zvolený výběr předmětů nejsou k dispozici žádné testové otázky. Vyberte prosím jiný předmět nebo zvolte „Všechny předměty“.');
+      return;
+    }
+    
+    beginPractice(selected, false);
+  };
+
+  /** Procvičí jeden předmět z přehledu připravenosti. */
+  const startSubjectPractice = (subject: string) => {
+    setSetupError(null);
+    setIsMistakesMode(false);
+    setSelectedSubjects([subject]);
+    setSelectedTopic(null);
+    const selected = pickForPractice(usableQuestions.filter(q => q.subject === subject), questionCount);
+    if (selected.length === 0) return;
+    beginPractice(selected, false);
+  };
+
+  /** Procvičí chybně zodpovězené otázky právě dokončeného testu. */
+  const startRetryMistakes = (wrong: Question[]) => {
+    setSetupError(null);
+    setIsMistakesMode(false);
+    if (wrong.length === 0) return;
+    beginPractice(shuffleArray(wrong), true);
   };
 
   // Odpočet 45 minut u závěrečné zkoušky — jen tiká.
@@ -349,22 +414,6 @@ export default function Quiz({
     setAnswers(prev => ({ ...prev, [currentQId]: optionIndex }));
     setConfidences(prev => ({ ...prev, [currentQId]: currentConfidence }));
     
-    const isCorrect = optionIndex === currentQ.correctOption;
-    
-    if (!isCorrect) {
-      setMistakeHistory(prev => {
-        const next = new Set(prev);
-        next.add(currentQId);
-        return next;
-      });
-    } else {
-      setMistakeHistory(prev => {
-        const next = new Set(prev);
-        next.delete(currentQId);
-        return next;
-      });
-    }
-
     // POZN.: tady se dřív vedl běžící součet správných a chybných odpovědí
     // (`sessionStats`) včetně historie úspěšnosti po otázkách. Nikdy se nikde
     // nečetl — úspěšnost počítá výsledková obrazovka z `attempts` a graf
@@ -421,7 +470,7 @@ export default function Quiz({
     const attemptSubjects = [...new Set(quizQuestions.map(q => q.subject).filter(Boolean))];
     const recordedSubject = isExamMode 
       ? 'Závěrečná zkouška ZOP A' 
-      : isMistakesMode
+      : isMistakesMode || isCustomPractice
         ? (attemptSubjects.length === 1 ? attemptSubjects[0] : 'Kombinace předmětů')
         : (selectedSubjects.length === 1 ? selectedSubjects[0] : (selectedSubjects.length > 1 ? 'Kombinace předmětů' : 'all'));
 
@@ -577,11 +626,11 @@ export default function Quiz({
                 <span>Načteno zadání od kapitána ({questions.length} otázek)</span>
               </div>
             )}
-            {(mistakeHistory.size > 0 || isMistakesMode) && (
+            {(weakQuestions.length > 0 || isMistakesMode) && (
               <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${isMistakesMode ? 'bg-orange-50 border-orange-200 dark:bg-orange-900/20 dark:border-orange-800' : 'bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700'}`}>
                 <div>
                   <span className={`block text-xs font-bold ${isMistakesMode ? 'text-orange-700 dark:text-orange-400' : 'text-slate-700 dark:text-slate-300'}`}>Procvičování chyb</span>
-                  <span className="block text-[0.625rem] text-slate-500">Otázek k opravě: {mistakeHistory.size}</span>
+                  <span className="block text-[0.625rem] text-slate-500">Chyby a tipy z vašich testů: {weakQuestions.length}</span>
                 </div>
                 <div className={`w-8 h-5 rounded-full p-0.5 transition-colors ${isMistakesMode ? 'bg-orange-500' : 'bg-slate-300 dark:bg-slate-600'}`}>
                   <div className={`w-4 h-4 rounded-full bg-white shadow-xs transition-transform ${isMistakesMode ? 'translate-x-3' : 'translate-x-0'}`}></div>
@@ -625,7 +674,8 @@ export default function Quiz({
               )}
             </div>
 
-            <div className={isMistakesMode ? 'opacity-50 pointer-events-none' : ''}>
+            {/* Počet platí i pro opravu chyb, proto není zašedlý. */}
+            <div>
               <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5" htmlFor={`${fieldIds}-1`}>
                 Počet otázek: {questionCount}
               </label>
@@ -642,12 +692,30 @@ export default function Quiz({
               />
             </div>
 
+            <label
+              className={`flex items-start gap-2.5 text-xs cursor-pointer ${isMistakesMode ? 'opacity-50 pointer-events-none' : ''}`}
+            >
+              <input
+                type="checkbox"
+                className="mt-0.5 w-4 h-4 accent-blue-600 shrink-0"
+                checked={isSmartOrder}
+                onChange={(e) => setIsSmartOrder(e.target.checked)}
+                disabled={gameState === 'playing'}
+              />
+              <span>
+                <span className="block font-semibold text-slate-700 dark:text-slate-300">Chytrý výběr otázek</span>
+                <span className="block text-[0.625rem] text-slate-500 leading-snug">
+                  Přednost mají vaše chyby a otázky, které jste ještě neviděl. Zvládnuté se vrátí až po týdnu.
+                </span>
+              </span>
+            </label>
+
             <button
               onClick={startQuiz}
               className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs sm:text-sm font-bold transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer mt-2"
             >
               <Play className="w-4 h-4 fill-current" />
-              <span>{isMistakesMode ? `Procvičit chyby (${mistakeHistory.size} ot.)` : `Spustit cvičný test (${questionCount} ot.)`}</span>
+              <span>{isMistakesMode ? `Procvičit chyby (${Math.min(weakQuestions.length, questionCount)} ot.)` : `Spustit procvičování (${questionCount} ot.)`}</span>
             </button>
             {/* Pravý panel s hláškou je na telefonu skrytý, proto se chyba ukáže i tady. */}
             {setupError && (
@@ -658,6 +726,54 @@ export default function Quiz({
             )}
           </div>
         </div>
+
+        {/* Připravenost po předmětech: kolik otázek banky student zvládá. */}
+        {readiness.length > 0 && (
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-5">
+            <div className="flex items-baseline justify-between mb-1">
+              <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                Připravenost
+              </h3>
+              <span className="text-sm font-black text-slate-800 dark:text-slate-100">{readinessTotals.percent} %</span>
+            </div>
+            <p className="text-[0.625rem] text-slate-500 leading-snug mb-3">
+              Zvládnuto {readinessTotals.mastered} z {readinessTotals.total} otázek. Zvládnutá je otázka, na kterou jste
+              dvakrát po sobě odpověděl správně a netipoval.
+            </p>
+            <ul className="space-y-2.5">
+              {readiness.map(r => (
+                <li key={r.subject}>
+                  <div className="flex items-center justify-between gap-2 text-[0.6875rem]">
+                    <span className="min-w-0 truncate font-semibold text-slate-700 dark:text-slate-300" title={getSubjectInfo(r.subject).name}>
+                      {getSubjectInfo(r.subject).name}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => startSubjectPractice(r.subject)}
+                      aria-label={`Procvičit předmět ${getSubjectInfo(r.subject).name}`}
+                      className="shrink-0 font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                    >
+                      Procvičit
+                    </button>
+                  </div>
+                  <div className="mt-1 h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex" aria-hidden="true">
+                    <div className="h-full bg-emerald-500" style={{ width: `${(r.mastered / r.total) * 100}%` }} />
+                    <div className="h-full bg-blue-400" style={{ width: `${(r.learning / r.total) * 100}%` }} />
+                    <div className="h-full bg-rose-400" style={{ width: `${(r.weak / r.total) * 100}%` }} />
+                  </div>
+                  <div className="mt-0.5 text-[0.625rem] text-slate-500">
+                    {r.percent} % · {r.mastered}/{r.total} zvládnuto{r.weak > 0 ? ` · ${r.weak} k opravě` : ''}{r.unseen > 0 ? ` · ${r.unseen} neviděno` : ''}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[0.625rem] text-slate-500">
+              <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500" />zvládnuto</span>
+              <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400" />jednou správně</span>
+              <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-400" />k opravě</span>
+            </div>
+          </div>
+        )}
       </aside>
     );
   };
@@ -692,7 +808,7 @@ export default function Quiz({
             </div>
             <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg leading-relaxed mb-6">
               <strong>Zkouška nanečisto</strong> je {EXAM_QUESTION_COUNT} otázek ze všech předmětů s jedním celkovým limitem {EXAM_TIME_LIMIT_MINUTES} minut a vyhodnocením až na konci.
-              {' '}<strong>Procvičování</strong> je bez časového limitu a po každé odpovědi hned ukáže, proč je správná.
+              {' '}<strong>Procvičování</strong> je bez časového limitu, po každé odpovědi hned ukáže, proč je správná, a přednostně vám dává otázky, které ještě neumíte.
               {' '}Počet otázek a limit jsou nastavení této aplikace, ne pravidla skutečné zkoušky. Ta si ověřte u svého lektora.
             </p>
 
@@ -743,6 +859,8 @@ export default function Quiz({
         gradeLabel = 'Prospěl';
         gradeColor = 'text-blue-600 dark:text-blue-400';
       }
+
+      const wrongInThisTest = quizQuestions.filter(q => answers[q.id] !== q.correctOption);
 
       // Per-subject breakdown
       const subjectBreakdown: Record<string, { total: number; correct: number }> = {};
@@ -957,6 +1075,17 @@ export default function Quiz({
                 )}
               </div>
 
+              <div className="flex items-center gap-2 flex-wrap">
+                {wrongInThisTest.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => startRetryMistakes(wrongInThisTest)}
+                    className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-colors shadow-sm flex items-center gap-2 cursor-pointer"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    <span>Procvičit chyby z tohoto testu ({wrongInThisTest.length})</span>
+                  </button>
+                )}
               <button
                 onClick={() => setGameState('setup')}
                 className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-colors shadow-sm flex items-center gap-2 cursor-pointer"
@@ -964,6 +1093,7 @@ export default function Quiz({
                 <RotateCcw className="w-4 h-4" />
                 <span>Nový test / Zkouška</span>
               </button>
+              </div>
             </div>
 
             {/* Questions Review & Analysis Section */}

@@ -835,6 +835,7 @@ export default function App() {
                 presetTopic={quizPreset.topic}
                 onPlayingChange={setIsQuizPlaying}
                 questionsSource={questionsSource}
+                quizHistory={effectiveQuizHistory}
               />
             </div>
           )
