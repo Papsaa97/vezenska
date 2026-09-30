@@ -53,22 +53,22 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
       explanation: `Dle instrukce Ministerstva spravedlnosti o Justiční stráži se při vstupu ozbrojené osoby (pokud nemá výjimku ze zákona) vystaví dvoudílný protokol, zbraň se bezpečně uzamkne v trezoru a při opuštění budovy se po ověření totožnosti vrátí a protokoly zničí. (Právní úprava: Instrukce Ministerstva spravedlnosti č. 8/2022 o Justiční stráži)`
 },
   {
-    id: 'bs-04',
-    subject: 'Vězeňská administrativa',
-    topic: 'Justiční stráž – doručování',
-    question: 'Jaký je rozdíl mezi doručováním písemností soudu typu I (zelený pruh) a typu II (červený pruh)?',
-    answer: 'Typ I (zelený pruh) umožňuje náhradní doručení (po 10 dnech vyvěšení/výzvy se vhodí do schránky s fikcí doručení). Typ II (červený pruh) je striktně do vlastních rukou bez vhození do schránky (pokud nevyzvedne, vrací se odesílateli bez fikce vhozením).',
-    options: [
-              `Typ I (zelený pruh) je určen výhradně pro orgány činné v trestním řízení s fikcí po 15 dnech; Typ II (červený pruh) se doručuje civilním osobám a vhazuje se do schránky ihned při nezastižení adresáta.`,
-              `Typ I (zelený pruh) se doručuje výhradně do vlastních rukou bez možnosti náhradního doručení; Typ II (červený pruh) umožňuje po 3 dnech uložení vhození do domovní schránky s okamžitým účinkem doručení. Fikce doručení nastává u obou typů vždy až po uplynutí třiceti dnů od uložení na poště.`,
-              `Typ I i Typ II umožňují vhození do schránky po 10 dnech, ale u Typu II musí doručující příslušník JS osobně ověřit přítomnost adresáta u sousedů a vyhotovit úřední záznam pro Policii ČR.`,
-              `Typ I (zelený pruh) umožňuje náhradní doručení (po 10 dnech vyvěšení/výzvy se vhodí do schránky s fikcí doručení). Typ II (červený pruh) je striktně do vlastních rukou bez vhození do schránky (pokud nevyzvedne, vrací se odesílateli bez fikce vhozením).`
-            ],
-    correctOption: 3,
-    rationale: 'Dle občanského soudního řádu (§ 49 a násl. OSŘ): Zásilka typu I připouští náhradní doručení vhozením do schránky po uplynutí 10denní úložní lhůty (fikce doručení). U zásilky typu II je vhození vyloučeno předsedou senátu a při nevyzvednutí se vrací soudu.',
-    source: 'Zákon č. 99/1963 Sb., občanský soudní řád (OSŘ) a kancelářský řád',
-      explanation: `Dle občanského soudního řádu (§ 49 a násl. OSŘ): Zásilka typu I připouští náhradní doručení vhozením do schránky po uplynutí 10denní úložní lhůty (fikce doručení). U zásilky typu II je vhození vyloučeno předsedou senátu a při nevyzvednutí se vrací soudu. (Právní úprava: Zákon č. 99/1963 Sb., občanský soudní řád (OSŘ) a kancelářský řád)`
-},
+    "id": "bs-04",
+    "subject": "Vězeňská administrativa",
+    "topic": "Justiční stráž – doručování",
+    "question": "Jaký je rozdíl mezi doručováním písemností soudu v obálce typu I a v obálce typu II?",
+    "answer": "Typ I umožňuje náhradní doručení (po 10 dnech vyvěšení/výzvy se vhodí do schránky s fikcí doručení). Typ II je striktně do vlastních rukou bez vhození do schránky (pokud nevyzvedne, vrací se odesílateli bez fikce vhozením).",
+    "options": [
+      "Typ I je určen výhradně pro orgány činné v trestním řízení s fikcí po 15 dnech; Typ II se doručuje civilním osobám a vhazuje se do schránky ihned při nezastižení adresáta.",
+      "Typ I se doručuje výhradně do vlastních rukou bez možnosti náhradního doručení; Typ II umožňuje po 3 dnech uložení vhození do domovní schránky s okamžitým účinkem doručení. Fikce doručení nastává u obou typů vždy až po uplynutí třiceti dnů od uložení na poště.",
+      "Typ I i Typ II umožňují vhození do schránky po 10 dnech, ale u Typu II musí doručující příslušník JS osobně ověřit přítomnost adresáta u sousedů a vyhotovit úřední záznam pro Policii ČR.",
+      "Typ I umožňuje náhradní doručení (po 10 dnech vyvěšení/výzvy se vhodí do schránky s fikcí doručení). Typ II je striktně do vlastních rukou bez vhození do schránky (pokud nevyzvedne, vrací se odesílateli bez fikce vhozením)."
+    ],
+    "correctOption": 3,
+    "rationale": "Dle občanského soudního řádu (§ 49 a násl. OSŘ): Zásilka typu I připouští náhradní doručení vhozením do schránky po uplynutí 10denní úložní lhůty (fikce doručení). U zásilky typu II je vhození vyloučeno předsedou senátu a při nevyzvednutí se vrací soudu.",
+    "source": "Zákon č. 99/1963 Sb., občanský soudní řád (OSŘ) a kancelářský řád",
+    "explanation": "Dle občanského soudního řádu (§ 49 a násl. OSŘ): Zásilka typu I připouští náhradní doručení vhozením do schránky po uplynutí 10denní úložní lhůty (fikce doručení). U zásilky typu II je vhození vyloučeno předsedou senátu a při nevyzvednutí se vrací soudu. (Právní úprava: Zákon č. 99/1963 Sb., občanský soudní řád (OSŘ) a kancelářský řád)"
+  },
     {
     id: 'bs-06',
     subject: 'Služební příprava',

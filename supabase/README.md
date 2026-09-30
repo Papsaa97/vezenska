@@ -60,6 +60,7 @@ projektu spusťte v tomto pořadí:
 | 45 | `044_upozorneni_do_zarizeni.sql` | **Nová funkce.** Upozornění do zařízení (Web Push): pg_net, tajemství `push_webhook_secret` ve Vaultu, sloupec `user_notifications.druh`, tabulky `push_odbery` a `push_predvolby`, trigger `push_odeslat` volající `/api/push`. Nová anketa a každé nové hlášení na nástěnce třídy jdou do zvonku. Po spuštění zkopírovat tajemství do Vercelu jako `PUSH_WEBHOOK_SECRET` (dotaz na konci skriptu). Idempotentní |
 | 46 | `045_opravy_otazek_a_prameny.sql` | **Oprava obsahu.** Přepíše dvě věcně chybné otázky (zastavovací pás není donucovací prostředek podle § 17 odst. 2; výzva „jménem zákona“ bez vymyšleného doslovného znění), opraví § 22 → § 20 u záznamu o použití DP a doplní pramen a okruh z repozitáře u otázek, kde chybí. Lektorem vyplněné hodnoty nemění. Idempotentní |
 | 47 | `046_otazky_ze_zaverecek_zop.sql` | **Nový obsah.** 187 otázek ze závěrečných zkoušek ZOP A/2 2026 (modelové situace a tahák), porovnaných s bankou, s vyplněným okruhem a pramenem. Stejné otázky jsou v `src/data/questions`. Banka roste z 364 na 551. Idempotentní |
+| 48 | `047_opravy_ctyr_otazek.sql` | **Oprava obsahu.** Lhůta ke kázeňskému trestu odsouzeného (jen 1 rok, § 47 odst. 3), povinnost před použitím zbraně (§ 18 odst. 3, ne § 20 a varovný výstřel) a odstranění rozporných barev obálek typu I a II. Upravené otázky nepřepíše. Idempotentní |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
