@@ -699,7 +699,7 @@ CREATE POLICY "Povolit zápis pro lektory a administrátory"
                   <button
                     type="button"
                     onClick={() => setShowBulkImportModal(true)}
-                    className="flex items-center gap-1.5 text-xs font-bold text-white px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-xs shadow-blue-500/20 transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 text-xs font-bold text-white px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 transition-colors cursor-pointer"
                     title="Otevřít průvodce hromadným importem otázek ze šablony (.txt / .csv)"
                   >
                     <UploadCloud className="w-3.5 h-3.5" />
@@ -911,7 +911,7 @@ CREATE POLICY "Povolit zápis pro lektory a administrátory"
       </div>
 
       {/* ── Synchronization Box ── */}
-      <div className="bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-emerald-50/80 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-emerald-950/20 border border-blue-200/80 dark:border-blue-800/60 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs no-print">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
         <div className="space-y-1.5 flex-1">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
@@ -953,7 +953,7 @@ CREATE POLICY "Povolit zápis pro lektory a administrátory"
           <button
             type="button"
             onClick={() => setShowBulkImportModal(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-bold shadow-sm shadow-indigo-500/25 transition-all cursor-pointer whitespace-nowrap"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-colors cursor-pointer whitespace-nowrap"
           >
             <UploadCloud className="w-4 h-4" /> Hromadný import ze šablony
           </button>
@@ -989,7 +989,7 @@ CREATE POLICY "Povolit zápis pro lektory a administrátory"
       <div className="space-y-4">
         {/* Tisková hlavička – viditelná výhradně při tisku */}
         <PrintHeader 
-          subject="Banka zkušebních otázek Akademie VS ČR" 
+          subject="Banka otázek" 
           docTitle={`Výběr: ${filterSubject === 'all' ? 'Všechny předměty' : filterSubject} (${filteredQuestions.length} ${filteredQuestions.length === 1 ? 'otázka' : filteredQuestions.length < 5 ? 'otázky' : 'otázek'})`} 
           subtext="Studijní přehled otázek pro přípravu na zkoušky ZOP A" 
         />

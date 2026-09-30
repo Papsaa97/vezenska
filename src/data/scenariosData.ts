@@ -42,14 +42,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Nechat paní vstoupit, protože má platný občanský průkaz a nechcete dělat rozruch před dítětem.',
             isCorrect: false,
-            feedback: 'CHYBA: Dle § 80 odst. 3 písm. e) NGŘ č. 33/2019 je strážnému výslovně ZAKÁZÁNO vpustit do věznice zjevně podnapilé osoby a osoby mladší 15 let bez řádného povolení.',
+            feedback: 'Dle § 80 odst. 3 písm. e) NGŘ č. 33/2019 je strážnému výslovně ZAKÁZÁNO vpustit do věznice zjevně podnapilé osoby a osoby mladší 15 let bez řádného povolení.',
             legalBasis: '§ 80 odst. 3 písm. e) NGŘ č. 33/2019'
           },
           {
             id: 'c1-2',
             text: 'Jednat slušně, taktně, ale rozhodně. Vstup podnapilé osobě neumožnit, vysvětlit důvody nevpuštění, odmítnout převzetí balíku o váze 5,5 kg (limit je max. 5 kg) a o situaci neprodleně vyrozumět VISS.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Podnapilá osoba nesmí do střeženého objektu. Osoby neuvedené v žádance nelze vpustit. Hmotnost balíčku nesmí přesáhnout 5 kg.',
+            feedback: 'Podnapilá osoba nesmí do střeženého objektu. Osoby neuvedené v žádance nelze vpustit. Hmotnost balíčku nesmí přesáhnout 5 kg.',
             legalBasis: '§ 80 NGŘ č. 33/2019 a Řád výkonu vazby',
             nextStepId: 'step-2'
           },
@@ -57,7 +57,7 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-3',
             text: 'Odebrat ženě občanský průkaz a balík vyhodit do popelnice.',
             isCorrect: false,
-            feedback: 'CHYBA: Strážný nesmí svévolně odebírat doklady ani ničit cizí majetek.',
+            feedback: 'Strážný nesmí svévolně odebírat doklady ani ničit cizí majetek.',
             legalBasis: '§ 6 zákona č. 555/1992 Sb.'
           }
         ]
@@ -71,14 +71,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c2-1',
             text: 'Zůstat v bezpečí strážního stanoviště za neprůstřelným sklem, zachovat klid, vyzvat osobu jménem zákona k opuštění vstupního koše a prostřednictvím VISS přivolat hlídku PČR k vyvedení z veřejné části.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Strážní stanoviště zůstává bezpečně uzamčeno. Při neuposlechnutí výzvy k opuštění objektu civilní osobou se vyžaduje součinnost Policie ČR.',
+            feedback: 'Strážní stanoviště zůstává bezpečně uzamčeno. Při neuposlechnutí výzvy k opuštění objektu civilní osobou se vyžaduje součinnost Policie ČR.',
             legalBasis: '§ 13 odst. 1 zákona č. 555/1992 Sb. a § 80 NGŘ č. 33/2019'
           },
           {
             id: 'c2-2',
             text: 'Otevřít dveře stanoviště, vyběhnout ven a použít proti ženě obušek a slzotvorný prostředek.',
             isCorrect: false,
-            feedback: 'CHYBA: Nepřiměřený zásah. Navíc je zakázáno otevírat stanoviště bez zajištění dalším příslušníkem.',
+            feedback: 'Nepřiměřený zásah. Navíc je zakázáno otevírat stanoviště bez zajištění dalším příslušníkem.',
             legalBasis: '§ 17 a § 19 zákona č. 555/1992 Sb.'
           }
         ]
@@ -102,14 +102,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Okamžitě vytáhnout pistoli a vystřelit na prchajícího odsouzeného.',
             isCorrect: false,
-            feedback: 'HRUBÁ CHYBA: Použití střelné zbraně v prostoru plném nezúčastněných civilních osob je v rozporu s § 18 odst. 4 (povinnost dbát nutné opatrnosti a neohrozit život jiných osob).',
+            feedback: 'Hrubá chyba: Použití střelné zbraně v prostoru plném nezúčastněných civilních osob je v rozporu s § 18 odst. 4 (povinnost dbát nutné opatrnosti a neohrozit život jiných osob).',
             legalBasis: '§ 18 odst. 4 zákona č. 555/1992 Sb.'
           },
           {
             id: 'c1-2',
             text: 'Okamžitě zahájit bezprostřední pronásledování, použít zákonnou výzvu „Jménem zákona stůj!“, použít hmaty a chvaty k povalení na zem, přiložit pouta DP1/DP2 a strážný řidič zablokuje východ.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Bezprostřední pronásledování a fyzické zpacifikování pomocí hmatů a chvatů bez ohrožení okolních pacientů.',
+            feedback: 'Bezprostřední pronásledování a fyzické zpacifikování pomocí hmatů a chvatů bez ohrožení okolních pacientů.',
             legalBasis: '§ 15 a § 17 zákona č. 555/1992 Sb. a NGŘ č. 33/2019',
             nextStepId: 'step-2'
           }
@@ -124,14 +124,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c2-1',
             text: 'Okamžitě telefonicky vyrozumět operační středisko (OS) kmenové věznice, informovat VISS, dokončit lékařské ošetření za zpřísněných bezpečnostních opatření (DP2/DP3) a po návratu sepsat záznam o použití DP a hlášení k mimořádné události.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Pokus o útěk je závažnou mimořádnou událostí dle § 5 písm. a) NGŘ č. 16/2022. Vyžaduje okamžité hlášení na OS a zpracování záznamu.',
+            feedback: 'Pokus o útěk je závažnou mimořádnou událostí dle § 5 písm. a) NGŘ č. 16/2022. Vyžaduje okamžité hlášení na OS a zpracování záznamu.',
             legalBasis: 'NGŘ č. 16/2022 § 5 a Metodický list č. 5/2014'
           },
           {
             id: 'c2-2',
             text: 'Nikomu nic nehlásit, protože se vězně podařilo chytit, a vrátit se do věznice.',
             isCorrect: false,
-            feedback: 'CHYBA: Zatajení pokusu o útěk je závažným porušením služebních povinností zakládajícím kárnou i trestní odpovědnost.',
+            feedback: 'Zatajení pokusu o útěk je závažným porušením služebních povinností zakládajícím kárnou i trestní odpovědnost.',
             legalBasis: 'Zákon č. 361/2003 Sb. a NGŘ č. 16/2022'
           }
         ]
@@ -155,14 +155,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Zůstat v klidu na cele, mříž zalepit páskou a počkat do konce směny.',
             isCorrect: false,
-            feedback: 'CHYBA: Příprava k útěku je závažnou bezpečnostní událostí.',
+            feedback: 'Příprava k útěku je závažnou bezpečnostní událostí.',
             legalBasis: 'NGŘ č. 33/2019'
           },
           {
             id: 'c1-2',
             text: 'Ihned rádiem/spojením informovat VISS a operační středisko, nevpustit obviněné zpět na tuto celu, provést důkladnou osobní prohlídku obou obviněných a zkontrolovat přítomnost řezných nástrojů (pilek na kov).',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Zabránění návratu na kompromitovanou celu, okamžité hlášení VISS a důkladná prohlídka vězňů k odhalení nástrojů.',
+            feedback: 'Zabránění návratu na kompromitovanou celu, okamžité hlášení VISS a důkladná prohlídka vězňů k odhalení nástrojů.',
             legalBasis: '§ 92 a § 94 NGŘ č. 33/2019',
             nextStepId: 'step-2'
           }
@@ -177,14 +177,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c2-1',
             text: 'Předat věc Pověřenému orgánu VS ČR k prošetření podezření z trestného činu maření výkonu úředního rozhodnutí, celu zapečetit a obviněné přemístit do cely se zesílenými stavebně technickými prostředky.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Příprava k útěku vyžaduje umístění na celu se zesílenými STP (dvojitý okenní katr, armatura) a předání Pověřenému orgánu.',
+            feedback: 'Příprava k útěku vyžaduje umístění na celu se zesílenými STP (dvojitý okenní katr, armatura) a předání Pověřenému orgánu.',
             legalBasis: '§ 3 odst. 8 zákona č. 555/1992 Sb. a NGŘ č. 24/2022'
           },
           {
             id: 'c2-2',
             text: 'Pouze uložit obviněným kázeňský trest napomenutí a nechat je na cele.',
             isCorrect: false,
-            feedback: 'CHYBA: Cela je stavebně narušená a hrozí dokonání útěku.',
+            feedback: 'Cela je stavebně narušená a hrozí dokonání útěku.',
             legalBasis: 'Bezpečnostní předpisy VS ČR'
           }
         ]
@@ -208,14 +208,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Sám ihned odemknout celu, vběhnout dovnitř a začít odřezávat tělo.',
             isCorrect: false,
-            feedback: 'CHYBA: V noci dozorce NIKDY neotevírá celu sám bez asistence dalšího příslušníka (riziko fingované sebevraždy a napadení).',
+            feedback: 'V noci dozorce NIKDY neotevírá celu sám bez asistence dalšího příslušníka (riziko fingované sebevraždy a napadení).',
             legalBasis: 'Zásady bezpečnosti dozorčí služby'
           },
           {
             id: 'c1-2',
             text: 'Stisknout tísňové tlačítko / přivolat rádiem další hlídku a VISS, po příchodu posily vstoupit, nadzvednout tělo k uvolnění tlaku na krk, záchranářským nožem odříznout škrtidlo, položit na pevnou podložku a zahájit kardiopulmonální resuscitaci (30:2).',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Záchrana života s dodržením taktické bezpečnosti (vstup ve dvou) a okamžité zahájení KPR.',
+            feedback: 'Záchrana života s dodržením taktické bezpečnosti (vstup ve dvou) a okamžité zahájení KPR.',
             legalBasis: 'Traumatologický plán VS ČR & NGŘ č. 16/2022',
             nextStepId: 'step-2'
           }
@@ -230,14 +230,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c2-1',
             text: 'Jde o ostatní mimořádnou událost – dokonaná sebevražda dle § 6 písm. a) NGŘ č. 16/2022. Věznice neprodleně telefonicky informuje stálou službu GŘ VS ČR a dozorového státního zástupce, místo zajistí pro PČR a do 3 pracovních dnů zašle písemnou zprávu v ETŘ.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Dokonaná sebevražda spadá pod § 6 písm. a). Vyrozumívá se stálá služba GŘ, dozorový státní zástupce a PČR.',
+            feedback: 'Dokonaná sebevražda spadá pod § 6 písm. a). Vyrozumívá se stálá služba GŘ, dozorový státní zástupce a PČR.',
             legalBasis: 'NGŘ č. 16/2022 § 6, § 7 a § 9'
           },
           {
             id: 'c2-2',
             text: 'Událost se nahlásí až v měsíčním souhrnu.',
             isCorrect: false,
-            feedback: 'CHYBA: Smrt vězněné osoby musí být hlášena neprodleně.',
+            feedback: 'Smrt vězněné osoby musí být hlášena neprodleně.',
             legalBasis: 'NGŘ č. 16/2022'
           }
         ]
@@ -261,14 +261,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Ihned otevřít stanoviště, podat mu svou nabitou zbraň a nechat ho nahlédnout do počítače VIS.',
             isCorrect: false,
-            feedback: 'HRUBÁ CHYBA: Dle § 32 odst. 3 NGŘ č. 33/2019 strážný NESMÍ NIKOMU VÝDAT SVOJI ZBRAŇ, a to ani nadřízenému! Na stanoviště nesmí vstupovat nepovolané osoby bez VISS.',
+            feedback: 'Hrubá chyba: Dle § 32 odst. 3 NGŘ č. 33/2019 strážný NESMÍ NIKOMU VÝDAT SVOJI ZBRAŇ, a to ani nadřízenému! Na stanoviště nesmí vstupovat nepovolané osoby bez VISS.',
             legalBasis: '§ 32 odst. 3 a § 80 odst. 3 písm. f) NGŘ č. 33/2019'
           },
           {
             id: 'c1-2',
             text: 'Ověřit platnost průkazu (žlutý pruh = ředitel odboru GŘ VS ČR). Podle § 80 odst. 2 písm. c) neprovádět prohlídku jeho zavazadla. Vstup do střeženého objektu povolit, avšak vstup na samotné strážní stanoviště a kontrolu výkonu služby umožnit POUZE v přítomnosti službukonajícího VISS, kterého ihned vyrozumíte.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Ředitel odboru GŘ má právo vstupu bez prohlídky zavazadel, ale kontrolu strážního stanoviště a zbraní provádí v součinnosti s VISS. Zbraň se nikdy nepředává z ruky do ruky!',
+            feedback: 'Ředitel odboru GŘ má právo vstupu bez prohlídky zavazadel, ale kontrolu strážního stanoviště a zbraní provádí v součinnosti s VISS. Zbraň se nikdy nepředává z ruky do ruky!',
             legalBasis: '§ 54, § 80 a § 32 NGŘ č. 33/2019'
           }
         ]
@@ -292,14 +292,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Příslušník JS vezme tašku s penězi do ruky, aby ulehčil pokladní.',
             isCorrect: false,
-            feedback: 'HRUBÁ CHYBA: Podle § 144 odst. 6 NGŘ č. 33/2019 a Instrukce MS č. 8/2022 platí striktní zásada: Zavazadlo s finanční hotovostí nese VÝHRADNĚ pracovník soudu, NIKDY příslušník justiční stráže!',
+            feedback: 'Hrubá chyba: Podle § 144 odst. 6 NGŘ č. 33/2019 a Instrukce MS č. 8/2022 platí striktní zásada: Zavazadlo s finanční hotovostí nese VÝHRADNĚ pracovník soudu, NIKDY příslušník justiční stráže!',
             legalBasis: '§ 144 odst. 6 NGŘ č. 33/2019'
           },
           {
             id: 'c1-2',
             text: 'Zavazadlo nese výhradně pracovnice soudu. Druhý příslušník JS jde vedle zajišťované osoby tak, aby taška byla mezi ním a pracovnicí. Velitel přepravy provádí zajišťování a krytí zezadu s přehledem o okolí a stálým spojením na služebnu JS.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Přesné dodržení taktické formace: peníze nese civilní pracovník, 1. příslušník po boku, velitel přepravy jistí situaci zezadu.',
+            feedback: 'Přesné dodržení taktické formace: peníze nese civilní pracovník, 1. příslušník po boku, velitel přepravy jistí situaci zezadu.',
             legalBasis: '§ 144 odst. 5 a 6 NGŘ č. 33/2019'
           }
         ]
@@ -323,14 +323,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Okamžitě zahájit palbu ze služebního samopalu na dron ve vzduchu.',
             isCorrect: false,
-            feedback: 'HRUBÁ CHYBA: Střelba do vzduchu na pohyblivý cíl nad střeženým areálem je přísně zakázána! Hrozí dopad střel mimo areál věznice, usmrcení civilních osob nebo zásah vězňů na dvoře.',
+            feedback: 'Hrubá chyba: Střelba do vzduchu na pohyblivý cíl nad střeženým areálem je přísně zakázána! Hrozí dopad střel mimo areál věznice, usmrcení civilních osob nebo zásah vězňů na dvoře.',
             legalBasis: '§ 18 a § 20 zákona č. 555/1992 Sb.'
           },
           {
             id: 'c1-2',
             text: 'Okamžitě vyhlásit poplach rádiem pro VISS, popsat směr příletu a výšku dronu, nařídit dozorcům okamžité vyklizení vycházkového dvora a uzamčení vězňů do ubytovny a sledovat místo dopadu zásilky.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Prioritou je izolace prostoru, zabránění převzetí balíčku odsouzenými a ochrana personálu bez nebezpečné střelby.',
+            feedback: 'Prioritou je izolace prostoru, zabránění převzetí balíčku odsouzenými a ochrana personálu bez nebezpečné střelby.',
             legalBasis: 'Metodický pokyn VS ČR pro zásah proti bezpilotním prostředkům (UAV)',
             nextStepId: 'step-2'
           }
@@ -345,14 +345,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-3',
             text: 'Vezmete balíček, nožem jej okamžitě rozříznete a obsah vysypete na stůl.',
             isCorrect: false,
-            feedback: 'CHYBA: Riziko výbušného systému, biologického materiálu nebo nebezpečných chemikálií (fentanyl).',
+            feedback: 'Riziko výbušného systému, biologického materiálu nebo nebezpečných chemikálií (fentanyl).',
             legalBasis: 'Zásady pyrotechnické a chemické bezpečnosti'
           },
           {
             id: 'c1-4',
             text: 'Uzavřít prostor, za pomoci technických prostředků (detektor kovů / RTG / psovod) vyloučit přítomnost nástražného výbušného systému, v ochranných rukavicích balíček zadokumentovat, zajistit a vyrozumět Policii ČR.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Bezpečné zajištění podezřelého předmětu s ochranou kriminalistických stop (DNA, otisky prstů) pro další vyšetřování.',
+            feedback: 'Bezpečné zajištění podezřelého předmětu s ochranou kriminalistických stop (DNA, otisky prstů) pro další vyšetřování.',
             legalBasis: 'Trestní řád a směrnice pro nález nepovolených předmětů VS ČR'
           }
         ]
@@ -376,7 +376,7 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Nabídku jednoznačně a důrazně odmítnout, zachovat chladný profesionální odstup, nevstupovat do další diskuze a nepřijímat žádné kompromisy.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Striktní odmítnutí korupčního jednání v souladu s Kodexem etiky a okamžité ukončení neformální komunikace.',
+            feedback: 'Striktní odmítnutí korupčního jednání v souladu s Kodexem etiky a okamžité ukončení neformální komunikace.',
             legalBasis: 'Kodex profesní etiky VS ČR a NGŘ č. 28/2018',
             nextStepId: 'step-2'
           },
@@ -384,7 +384,7 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-2',
             text: 'Říct odsouzenému, že za 30 000 Kč je to málo a ať nabídne víc.',
             isCorrect: false,
-            feedback: 'HRUBÉ PORUŠENÍ ZÁKONA: Jednání naplňuje znaky trestného činu přijetí úplatku (§ 331 trestního zákoníku) s trestem odnětí svobody a propuštěním ze služebního poměru.',
+            feedback: 'Hrubé porušení zákona: Jednání naplňuje znaky trestného činu přijetí úplatku (§ 331 trestního zákoníku) s trestem odnětí svobody a propuštěním ze služebního poměru.',
             legalBasis: '§ 331 zákona č. 40/2009 Sb., trestní zákoník'
           }
         ]
@@ -398,14 +398,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c2-1',
             text: 'Neprodleně sepsat podrobný úřední záznam, o události informovat velitele směny (VISS) a podnět postoupit Oddělení prevence a stížností (OPaS) / GIBS pro podezření z trestného činu podplácení dle § 332 TZ.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Přesný služební postup. Oznamovací povinnost příslušníka je klíčovou součástí protikorupčního programu VS ČR.',
+            feedback: 'Přesný služební postup. Oznamovací povinnost příslušníka je klíčovou součástí protikorupčního programu VS ČR.',
             legalBasis: '§ 332 TZ a interní protikorupční program VS ČR'
           },
           {
             id: 'c2-2',
             text: 'Nikomu nic neříkat, abyste neměl zbytečné papírování.',
             isCorrect: false,
-            feedback: 'CHYBA: Neoznámení korupčního jednání je kázeňským proviněním a ohrožuje bezpečnost celého sboru.',
+            feedback: 'Neoznámení korupčního jednání je kázeňským proviněním a ohrožuje bezpečnost celého sboru.',
             legalBasis: 'Zákon č. 361/2003 Sb., o služebním poměru'
           }
         ]
@@ -429,7 +429,7 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Každé odmítnutí stravy přesně zaznamenat do stravovací knihy a ETŘ, odebrat nevydanou stravu a neprodleně písemně uvědomit vězeňského lékaře, psychologa a velitele oddílu.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Zákon č. 169/1999 Sb. stanoví povinnost lékařského dohledu a monitorace zdravotního stavu hladovkáře.',
+            feedback: 'Zákon č. 169/1999 Sb. stanoví povinnost lékařského dohledu a monitorace zdravotního stavu hladovkáře.',
             legalBasis: '§ 16 odst. 3 zákona č. 169/1999 Sb. a Řád výkonu trestu',
             nextStepId: 'step-2'
           },
@@ -437,7 +437,7 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-2',
             text: 'Odsouzeného přivázat k lůžku a jídlo mu násilím vnutit do úst.',
             isCorrect: false,
-            feedback: 'HRUBÉ PORUŠENÍ ZÁKONA: Násilné krmení je zakázáno Evropskými vězeňskými pravidly i českou legislativou, pokud není nařízeno soudem při bezprostředním ohrožení života.',
+            feedback: 'Hrubé porušení zákona: Násilné krmení je zakázáno Evropskými vězeňskými pravidly i českou legislativou, pokud není nařízeno soudem při bezprostředním ohrožení života.',
             legalBasis: 'Čl. 3 Úmluvy o ochraně lidských práv a základních svobod'
           }
         ]
@@ -451,14 +451,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c2-1',
             text: 'Pravidelná kontrola vitálních funkcí (tlak, glykémie, hmotnost), poučení odsouzeného o nevratném poškození zdraví s podpisem do zdravotní dokumentace a nabídka psychologické intervence.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Standardní penitenciární a zdravotnický postup péče o hladovkáře.',
+            feedback: 'Standardní penitenciární a zdravotnický postup péče o hladovkáře.',
             legalBasis: 'Metodika zdravotnické služby VS ČR'
           },
           {
             id: 'c2-2',
             text: 'Umístit odsouzeného do temnice bez přístupu k pitné vodě.',
             isCorrect: false,
-            feedback: 'ZÁKAZ: Odsouzený musí mít nepřetržitý přístup k pitné vodě!',
+            feedback: 'Zákaz: Odsouzený musí mít nepřetržitý přístup k pitné vodě!',
             legalBasis: 'Zákon č. 169/1999 Sb.'
           }
         ]
@@ -482,7 +482,7 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Ihned vyhlásit požární poplach (tlačítko EPS + radiostanice), přivolat HZS a velitele směny, nasadit autonomní dýchací přístroj (izolační dýchací masku) a vyčkat na příchod druhého vystrojeného příslušníka.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Bez dýchacího přístroje hrozí dozorci otrava oxidem uhelnatým (CO) během 30 sekund! Vstup do požáru se provádí vždy ve dvojici.',
+            feedback: 'Bez dýchacího přístroje hrozí dozorci otrava oxidem uhelnatým (CO) během 30 sekund! Vstup do požáru se provádí vždy ve dvojici.',
             legalBasis: 'Požární poplachová směrnice VS ČR & BOZP',
             nextStepId: 'step-2'
           },
@@ -490,7 +490,7 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-2',
             text: 'Sám bez masky okamžitě otevřít dveře a skočit do kouře.',
             isCorrect: false,
-            feedback: 'FATÁLNÍ CHYBA: Náhlý přísun kyslíku otevřením dveří způsobí backdraft (výbuch plynů) a nechráněný záchranář upadne do bezvědomí.',
+            feedback: 'Závažná chyba: Náhlý přísun kyslíku otevřením dveří způsobí backdraft (výbuch plynů) a nechráněný záchranář upadne do bezvědomí.',
             legalBasis: 'Taktika hašení požárů HZS ČR'
           }
         ]
@@ -504,14 +504,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c2-1',
             text: 'Za pomoci práškového/sněhového hasicího přístroje srazit plameny, vyvést ležící odsouzené do nezakouřeného úseku ubytovny, zajistit bezpečnost (pouta dle situace), poskytnout první pomoc při nadýchání kouřem (poloha v polosedě, kyslík) a předat ZZS.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Rychlá lokalizace ohně, vyvedení postižených a okamžitá první pomoc s dodržením bezpečnostních opatření.',
+            feedback: 'Rychlá lokalizace ohně, vyvedení postižených a okamžitá první pomoc s dodržením bezpečnostních opatření.',
             legalBasis: 'Traumatologický plán VS ČR & § 16 NGŘ č. 16/2022'
           },
           {
             id: 'c2-2',
             text: 'Nejprve dohasit celou celu a vězně nechat ležet uvnitř.',
             isCorrect: false,
-            feedback: 'CHYBA: Záchrana lidských životů má vždy absolutní prioritu před hašením majetku!',
+            feedback: 'Záchrana lidských životů má vždy absolutní prioritu před hašením majetku!',
             legalBasis: 'Zákon o požární ochraně a instrukce VS ČR'
           }
         ]
@@ -535,14 +535,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Osobu ihned propustíte s tím, že se návštěva ruší, a sáček vyhodíte do koše.',
             isCorrect: false,
-            feedback: 'CHYBA: Nález OPL je podezřením ze spáchání trestného činu (nedovolená výroba a jiné nakládání s OPL dle § 283 TZ nebo maření výkonu úředního rozhodnutí). Zničení důkazu a propuštění pachatele je nepřípustné.',
+            feedback: 'Nález OPL je podezřením ze spáchání trestného činu (nedovolená výroba a jiné nakládání s OPL dle § 283 TZ nebo maření výkonu úředního rozhodnutí). Zničení důkazu a propuštění pachatele je nepřípustné.',
             legalBasis: '§ 283 TZ'
           },
           {
             id: 'c1-2',
             text: 'Zabráníte osobě v odchodu z věznice (omezení osobní svobody osoby přistižené při trestném činu dle § 76 odst. 2 TrŘ), sáčku se nebudete dotýkat holýma rukama, informujete velitele směny a ihned přivoláte Policii ČR k převzetí osoby a důkazu.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Omezení osobní svobody podle § 76 odst. 2 TrŘ (občanské zadržení) je zde na místě, jelikož osoba byla přistižena při činu. Zajištění stop (sáčků) se provádí v rukavicích a věc se předává PČR.',
+            feedback: 'Omezení osobní svobody podle § 76 odst. 2 TrŘ (občanské zadržení) je zde na místě, jelikož osoba byla přistižena při činu. Zajištění stop (sáčků) se provádí v rukavicích a věc se předává PČR.',
             legalBasis: '§ 76 odst. 2 trestního řádu',
             nextStepId: 'step-2'
           }
@@ -557,14 +557,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c2-1',
             text: 'Zpracujete úřední záznam o incidentu, zaevidujete událost v ETŘ, navrhnete zrušení návštěvy a zavedete odsouzeného, k němuž návštěva směřovala, na mimořádnou prohlídku a případně test na OPL.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Událost se musí interně řešit (záznam, ETŘ) a cílový odsouzený je ihned považován za rizikového pro možnou držbu či distribuci OPL.',
+            feedback: 'Událost se musí interně řešit (záznam, ETŘ) a cílový odsouzený je ihned považován za rizikového pro možnou držbu či distribuci OPL.',
             legalBasis: 'NGŘ č. 33/2019 a Řád výkonu trestu'
           },
           {
             id: 'c2-2',
             text: 'Událost se nemusí hlásit, protože policie si případ odvezla a odsouzený drogu nedostal.',
             isCorrect: false,
-            feedback: 'CHYBA: Jakýkoli nález a zásah PČR je mimořádnou událostí, která musí být zaznamenána a hlášena vedení věznice (příp. GŘ).',
+            feedback: 'Jakýkoli nález a zásah PČR je mimořádnou událostí, která musí být zaznamenána a hlášena vedení věznice (příp. GŘ).',
             legalBasis: 'NGŘ č. 16/2022'
           }
         ]
@@ -588,14 +588,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c1-1',
             text: 'Ihned vytáhnete obušek, rozběhnete se na vězně a pokusíte se mu bodec vytrhnout.',
             isCorrect: false,
-            feedback: 'FATÁLNÍ CHYBA: Přímý útok na ozbrojeného pachatele, který drží rukojmí, s největší pravděpodobností povede ke smrtelnému zranění rukojmího (vychovatele).',
+            feedback: 'Závažná chyba: Přímý útok na ozbrojeného pachatele, který drží rukojmí, s největší pravděpodobností povede ke smrtelnému zranění rukojmího (vychovatele).',
             legalBasis: 'Zásady taktického zásahu a krizové vyjednávání'
           },
           {
             id: 'c1-2',
             text: 'Ustoupíte do bezpečné vzdálenosti, zablokujete/uzamknete únikovou cestu z daného sektoru, okamžitě stisknete tísňový hlásič (nebo nahlásíte do vysílačky kód pro vzetí rukojmí), navážete s pachatelem vizuální a uklidňující verbální kontakt (deeskalace) a vyčkáte na příjezd zásahové jednotky.',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Prioritou je zabránit šíření incidentu (izolace perimetru), vyrozumět velení (přivolání specialistů - vyjednavačů, ZJ) a pokusit se situaci verbálně zmrazit (nekřičet, nevyhrožovat).',
+            feedback: 'Prioritou je zabránit šíření incidentu (izolace perimetru), vyrozumět velení (přivolání specialistů - vyjednavačů, ZJ) a pokusit se situaci verbálně zmrazit (nekřičet, nevyhrožovat).',
             legalBasis: 'Metodika krizového vyjednávání a NGŘ č. 16/2022',
             nextStepId: 'step-2'
           }
@@ -610,14 +610,14 @@ export const tacticalScenarios: Scenario[] = [
             id: 'c2-1',
             text: 'Pokud pachatel křičí, že vychovatele zabije, ihned mu své klíče hodíte a otevřete hlavní katr k východu.',
             isCorrect: false,
-            feedback: 'HRUBÁ CHYBA: Zásadní pravidlo vězeňské bezpečnosti zní, že klíče od střeženého prostoru se NIKDY nesmí vydat vězňům, a to ani pod hrozbou násilí či smrti. Vydání klíčů by ohrozilo celou věznici a neochránilo rukojmí.',
+            feedback: 'Hrubá chyba: Zásadní pravidlo vězeňské bezpečnosti zní, že klíče od střeženého prostoru se NIKDY nesmí vydat vězňům, a to ani pod hrozbou násilí či smrti. Vydání klíčů by ohrozilo celou věznici a neochránilo rukojmí.',
             legalBasis: 'Zásady bezpečnosti VS ČR'
           },
           {
             id: 'c2-2',
             text: 'Klíče nevydáte. Předáte řízení situace vyjednavači a VISS a nadále pouze plníte jejich pokyny (např. zabezpečení vnějšího okruhu, odsunutí ostatních vězňů z dohledu).',
             isCorrect: true,
-            feedback: 'SPRÁVNĚ: Řízení přebírá krizový manažer/vyjednavač. Klíče se nesmí za žádných okolností vydat. Váš úkol se mění na podpůrný a zajišťovací.',
+            feedback: 'Řízení přebírá krizový manažer/vyjednavač. Klíče se nesmí za žádných okolností vydat. Váš úkol se mění na podpůrný a zajišťovací.',
             legalBasis: 'Směrnice pro řešení krizových situací (Rukojmí)'
           }
         ]

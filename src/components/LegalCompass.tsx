@@ -1,8 +1,15 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Scale, BookOpen, ShieldCheck, FileText, CheckCircle2 } from 'lucide-react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { Scale, BookOpen, ClipboardCheck, Printer, CheckCircle2, Info, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { legalDatabase } from '../data/legalCompasData';
 import { VscrRegulation, VSCR_REGULATIONS_REGISTRY } from '../data/vscrRegulationsRegistry';
+import { NAV_TAB_LABELS } from '../data/navTabs';
+import {
+  LEGAL_CATEGORY_LABELS,
+  LEGAL_CATEGORY_ORDER,
+  REGULATION_TYPE_LABELS,
+  REGULATION_TYPE_ORDER,
+} from './legal-compass/legalCompassLabels';
 import { auditLegalDatabase, measureRegulationCoverage, AuditReport } from '../utils/legalIntegrity';
 import { prefetchAllSnapshots, formatMegabytes, countCachedSnapshots } from '../utils/esbirka/offline';
 import { speakText, stopSpeaking } from '../utils/speech';
@@ -40,7 +47,11 @@ export default function LegalCompass() {
   const canEditRegulations = profile?.role === 'lektor' || profile?.role === 'admin';
 
   const [viewMode, setViewMode] = useState<'articles' | 'registry'>('articles');
-  const [searchQuery, setSearchQuery] = useState('');
+  // Každý režim má vlastní hledání. Dřív bylo společné: výraz zadaný v
+  // Paragrafovém výkladu filtroval po přepnutí i Katalog předpisů, a student
+  // viděl prázdný katalog, aniž by v jeho poli něco napsal.
+  const [articleSearchQuery, setArticleSearchQuery] = useState('');
+  const [registrySearchQuery, setRegistrySearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedRegistryType, setSelectedRegistryType] = useState<string>('all');
   const [selectedArticleId, setSelectedArticleId] = useState<string>(legalDatabase[0]?.id || '');
@@ -98,6 +109,8 @@ export default function LegalCompass() {
   
   // Editor Modal State
   const [showEditorModal, setShowEditorModal] = useState(false);
+  /** Zakládá se nový předpis (true), nebo se upravuje existující (false)? */
+  const [editorIsNew, setEditorIsNew] = useState(false);
   const [editingRegulation, setEditingRegulation] = useState<Partial<VscrRegulation> | null>(null);
 
   /** Předpis, u kterého čekáme na potvrzení odebrání / návratu k výchozímu. */
@@ -129,15 +142,45 @@ export default function LegalCompass() {
   const auditReport: AuditReport = useMemo(() => {
     // Pokrytí se měří proti osnově předpisu stažené z e-Sbírky, ne odhadem
     // z vlastního textu. Teprve tím se dá říct, kolik paragrafů výběr vynechává.
-    const coverage = VSCR_REGULATIONS_REGISTRY
+    // Měří se `regulationsList`, tedy včetně úprav lektorů ze společné
+    // databáze — dřív se počítal jen výchozí registr a kontrola tak
+    // nepoznala, že lektor některý výběr zkrátil nebo doplnil.
+    const coverage = regulationsList
       .filter((reg) => typeof reg.fullLegalText === 'string' && reg.fullLegalText.length > 0)
       .map((reg) => measureRegulationCoverage(reg));
     return auditLegalDatabase(legalDatabase, coverage);
+  }, [regulationsList]);
+
+  // Časovač oznámení: nové oznámení zruší předchozí, jinak by starší časovač
+  // schoval to novější dřív, než si ho student stihl přečíst.
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    },
+    []
+  );
+  const showToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setNotification({ message, type });
+    toastTimerRef.current = setTimeout(() => {
+      setNotification(null);
+      toastTimerRef.current = null;
+    }, 3500);
+  };
+
+  /** Umlčí předčítání; volá se při každé změně zobrazeného textu. */
+  const stopReading = useCallback(() => {
+    stopSpeaking();
+    setIsSpeaking(false);
   }, []);
 
-  const showToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3500);
+  /** Přepnutí režimu vrátí mobil na seznam a umlčí předčítání. */
+  const switchViewMode = (mode: 'articles' | 'registry') => {
+    if (mode === viewMode) return;
+    stopReading();
+    setMobileDetailOpen(false);
+    setViewMode(mode);
   };
 
   const toggleFavorite = (id: string) => {
@@ -186,7 +229,7 @@ export default function LegalCompass() {
     if (offlineBusy) return;
     setOfflineBusy(true);
     setOfflineProgress({ hotovo: 0, celkem: 0 });
-    showToast('Stahuji úplná znění předpisů do zařízení…', 'info');
+    showToast('Stahuji znění předpisů z e-Sbírky do zařízení…', 'info');
 
     const metaSaved = recordOfflineDownload(regulationsList.length);
     // Stahování trvá u 1,5 MB zákonů na mobilních datech desítky sekund.
@@ -209,7 +252,7 @@ export default function LegalCompass() {
     const potize = result.selhalo > 0 ? ` ${result.selhalo} se nepodařilo stáhnout.` : '';
     const metaPotize = metaSaved.success ? '' : ' Datum stažení se uložit nepodařilo.';
     showToast(
-      `Uloženo ${result.ulozeno} úplných znění (${formatMegabytes(result.bajtu)}).${potize}${metaPotize} ` +
+      `Uloženo ${result.ulozeno} znění z e-Sbírky (${formatMegabytes(result.bajtu)}).${potize}${metaPotize} ` +
         'Znění zůstávají v zařízení i po aktualizaci aplikace.',
       result.selhalo > 0 ? 'info' : 'success'
     );
@@ -273,11 +316,13 @@ export default function LegalCompass() {
       officialUrl: '',
       fullLegalText: ''
     });
+    setEditorIsNew(true);
     setShowEditorModal(true);
   };
 
   const handleOpenEditModal = (reg: VscrRegulation) => {
     setEditingRegulation({ ...reg });
+    setEditorIsNew(false);
     setShowEditorModal(true);
   };
 
@@ -360,7 +405,7 @@ export default function LegalCompass() {
         art.category === selectedCategory || 
         (selectedCategory === 'favs' && savedFavorites.includes(art.id));
       
-      const q = foldSearchText(searchQuery).trim();
+      const q = foldSearchText(articleSearchQuery).trim();
       if (!q) return matchCat;
 
       const matchQuery = 
@@ -374,7 +419,7 @@ export default function LegalCompass() {
 
       return matchCat && matchQuery;
     });
-  }, [searchQuery, selectedCategory, savedFavorites]);
+  }, [articleSearchQuery, selectedCategory, savedFavorites]);
 
   /**
    * Zobrazený článek.
@@ -394,9 +439,12 @@ export default function LegalCompass() {
     return filteredArticles.findIndex(a => a.id === currentArticle?.id);
   }, [filteredArticles, currentArticle]);
 
+  // Přechod na jiný článek umlčí předčítání — jinak hlas četl dál předchozí
+  // ustanovení nad textem toho nového.
   const goToPrev = () => {
     if (currentIndex > 0) {
       const prevArt = filteredArticles[currentIndex - 1];
+      stopReading();
       setSelectedArticleId(prevArt.id);
       scrollDetailToTop();
     }
@@ -405,6 +453,7 @@ export default function LegalCompass() {
   const goToNext = () => {
     if (currentIndex < filteredArticles.length - 1) {
       const nextArt = filteredArticles[currentIndex + 1];
+      stopReading();
       setSelectedArticleId(nextArt.id);
       scrollDetailToTop();
     }
@@ -420,6 +469,7 @@ export default function LegalCompass() {
   };
 
   const handleSelectArticle = (artId: string) => {
+    stopReading();
     setSelectedArticleId(artId);
     setMobileDetailOpen(true);
     setTimeout(() => {
@@ -448,10 +498,7 @@ export default function LegalCompass() {
 
   const handleSpeak = (text: string) => {
     if (isSpeaking) {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-      setIsSpeaking(false);
+      stopReading();
       return;
     }
     setIsSpeaking(true);
@@ -470,34 +517,16 @@ export default function LegalCompass() {
     };
   }, []);
 
-  // Close modals on Escape key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (showEditorModal) {
-          setShowEditorModal(false);
-        } else if (activeModalRegulation) {
-          setActiveModalRegulation(null);
-          if (isSpeaking && typeof window !== 'undefined' && 'speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            setIsSpeaking(false);
-          }
-        } else if (showIntegrityModal) {
-          setShowIntegrityModal(false);
-        }
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeModalRegulation, showIntegrityModal, showEditorModal, isSpeaking]);
+  // Escape zavírají samy dialogy (hooks/useDialog) — globální posluchač tu
+  // dřív zavíral okno podruhé a přebíjel pořadí, které si dialogy hlídají.
 
   const filteredRegulations = useMemo(() => {
     return regulationsList.filter(reg => {
-      const matchType = 
-        selectedRegistryType === 'all' || 
+      const matchType =
+        selectedRegistryType === 'all' ||
         reg.type === selectedRegistryType;
-      
-      const q = foldSearchText(searchQuery).trim();
+
+      const q = foldSearchText(registrySearchQuery).trim();
       if (!q) return matchType;
 
       const matchQuery = 
@@ -516,54 +545,68 @@ export default function LegalCompass() {
 
       return matchType && matchQuery;
     });
-  }, [searchQuery, selectedRegistryType, regulationsList]);
+  }, [registrySearchQuery, selectedRegistryType, regulationsList]);
 
-  const categoriesList = [
-    { key: 'all', label: 'Vše', count: legalDatabase.length },
-    { key: '555_1992', label: '555/1992 (VS a JS)', count: legalDatabase.filter(a => a.category === '555_1992').length },
-    { key: '169_1999', label: '169/1999 (Výkon trestu)', count: legalDatabase.filter(a => a.category === '169_1999').length },
-    { key: '293_1993', label: '293/1993 (Výkon vazby)', count: legalDatabase.filter(a => a.category === '293_1993').length },
-    { key: '361_2003', label: '361/2003 (Služební poměr)', count: legalDatabase.filter(a => a.category === '361_2003').length },
-    { key: 'ustava_lzps', label: 'Ústava & Listina', count: legalDatabase.filter(a => a.category === 'ustava_lzps').length },
-    { key: 'trestni_pravo', label: 'Trestní právo (TZ/TrŘ)', count: legalDatabase.filter(a => a.category === 'trestni_pravo').length },
-    { key: 'zsm_mladez', label: 'Mládež (ZSM)', count: legalDatabase.filter(a => a.category === 'zsm_mladez').length },
-    { key: 'mezinarodni_cpt', label: 'CPT & OSN Mandela', count: legalDatabase.filter(a => a.category === 'mezinarodni_cpt').length },
-    { key: 'ngr_33_2019', label: 'NGŘ 33/2019 (Strážní)', count: legalDatabase.filter(a => a.category === 'ngr_33_2019').length },
-    { key: 'justicni_straz', label: 'Justiční stráž (MS 8/2022)', count: legalDatabase.filter(a => a.category === 'justicni_straz').length },
-    { key: 'ngr_16_2022', label: 'NGŘ 16/2022 (MÚ)', count: legalDatabase.filter(a => a.category === 'ngr_16_2022').length },
-    { key: 'ngr_24_2022', label: 'NGŘ 24/2022 (Prevence)', count: legalDatabase.filter(a => a.category === 'ngr_24_2022').length },
-    { key: 'poutani', label: 'Poutání (DP1–DP3)', count: legalDatabase.filter(a => a.category === 'poutani').length },
-    { key: 'vstupy_vjezdy', label: 'Vstupy & Vjezdy', count: legalDatabase.filter(a => a.category === 'vstupy_vjezdy').length },
-    { key: 'poradova_sluzebni', label: 'Pořadová & Zdvořilost', count: legalDatabase.filter(a => a.category === 'poradova_sluzebni').length },
-    { key: 'favs', label: `⭐ Oblíbené`, count: savedFavorites.length },
-  ];
+  // Oblíbené se počítají jen z článků, které v databázi opravdu jsou. Klíč
+  // v úložišti může držet id článku, který už z aplikace zmizel, a pilulka by
+  // pak slibovala víc položek, než seznam po kliknutí ukáže.
+  const existingFavoritesCount = useMemo(() => {
+    const ids = new Set(legalDatabase.map((a) => a.id));
+    return savedFavorites.filter((id) => ids.has(id)).length;
+  }, [savedFavorites]);
 
-  const registryTypesList = [
-    { key: 'all', label: 'Všechny předpisy', count: regulationsList.length },
-    { key: 'zakon', label: '🏛️ Zákony (Sb.)', count: regulationsList.filter(r => r.type === 'zakon').length },
-    { key: 'vyhlaska', label: '📜 Vyhlášky MS ČR', count: regulationsList.filter(r => r.type === 'vyhlaska').length },
-    { key: 'ngr', label: '🛡️ Nařízení GŘ (NGŘ)', count: regulationsList.filter(r => r.type === 'ngr').length },
-    { key: 'instrukce', label: '⚖️ Instrukce & Justiční stráž', count: regulationsList.filter(r => r.type === 'instrukce').length },
-    { key: 'ustava_mezinarodni', label: '🌐 Mezinárodní & CPT', count: regulationsList.filter(r => r.type === 'ustava_mezinarodni').length },
-  ];
+  const categoriesList = useMemo(
+    () => [
+      { key: 'all', label: 'Vše', count: legalDatabase.length },
+      ...LEGAL_CATEGORY_ORDER.map((key) => ({
+        key,
+        label: LEGAL_CATEGORY_LABELS[key],
+        count: legalDatabase.filter((a) => a.category === key).length,
+      })),
+      { key: 'favs', label: 'Oblíbené', count: existingFavoritesCount },
+    ],
+    [existingFavoritesCount]
+  );
+
+  const registryTypesList = useMemo(
+    () => [
+      { key: 'all', label: 'Všechny předpisy', count: regulationsList.length },
+      ...REGULATION_TYPE_ORDER.map((key) => ({
+        key,
+        label: REGULATION_TYPE_LABELS[key],
+        count: regulationsList.filter((r) => r.type === key).length,
+      })),
+    ],
+    [regulationsList]
+  );
+
+  const searchQuery = viewMode === 'registry' ? registrySearchQuery : articleSearchQuery;
+  const setSearchQuery = viewMode === 'registry' ? setRegistrySearchQuery : setArticleSearchQuery;
+
+  const ToastIcon =
+    notification?.type === 'error' ? AlertCircle : notification?.type === 'info' ? Info : CheckCircle2;
 
   return (
     <div className="w-full h-full flex flex-col gap-3 sm:gap-4 overflow-hidden relative">
-      
-      {/* Toast Notification Banner */}
+
+      {/* Oznámení. Ikona i barva odpovídají typu: dřív měla chyba i informace
+          stejnou fajfku jako úspěch. role="status" ho přečte i odečítač. */}
       <AnimatePresence>
         {notification && (
           <motion.div
+            role="status"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className={`fixed top-4 left-1/2 -translate-x-1/2 z-[60] px-4 py-2.5 rounded-2xl shadow-xl border flex items-center gap-2 text-xs font-bold ${
+            className={`fixed top-4 left-1/2 -translate-x-1/2 z-[60] max-w-[calc(100vw-2rem)] px-4 py-2.5 rounded-xl border flex items-center gap-2 text-xs font-semibold ${
               notification.type === 'error'
                 ? 'bg-rose-600 text-white border-rose-700'
-                : 'bg-emerald-600 text-white border-emerald-700'
+                : notification.type === 'info'
+                  ? 'bg-slate-800 text-white border-slate-700'
+                  : 'bg-emerald-600 text-white border-emerald-700'
             }`}
           >
-            <CheckCircle2 className="w-4 h-4" />
+            <ToastIcon className="w-4 h-4 shrink-0" aria-hidden="true" />
             <span>{notification.message}</span>
           </motion.div>
         )}
@@ -578,54 +621,73 @@ export default function LegalCompass() {
         className="hidden" 
       />
 
-      {/* Top Mode Selector Bar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-2 sm:p-2.5 flex items-center justify-between gap-3 shrink-0 shadow-sm no-print">
-        <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar">
-          <button
-            onClick={() => setViewMode('articles')}
-            className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
-              viewMode === 'articles'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-            }`}
-          >
-            <Scale className="w-4 h-4" />
-            <span>§ Paragrafový výklad ({legalDatabase.length})</span>
-          </button>
+      {/* Záhlaví modulu — stejný tvar jako Administrativa a Profesní etika */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shrink-0 no-print print:hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="w-11 h-11 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+              <Scale className="w-6 h-6" aria-hidden="true" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+                {NAV_TAB_LABELS.compass}
+              </h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                Studijní výběr ustanovení s výkladem a katalog předpisů s informativním zněním z e-Sbírky.
+              </p>
+            </div>
+          </div>
 
-          <button
-            onClick={() => setViewMode('registry')}
-            className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
-              viewMode === 'registry'
-                ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-sm'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-            }`}
-          >
-            <BookOpen className="w-4 h-4 text-amber-300" />
-            <span>Kompletní registr předpisů VS ČR ({regulationsList.length})</span>
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm flex items-center gap-2 transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
+              title="Vytisknout otevřené ustanovení nebo katalog, případně uložit do PDF"
+            >
+              <Printer className="w-4 h-4" aria-hidden="true" />
+              <span>Tisk</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowIntegrityModal(true)}
+              className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm flex items-center gap-2 transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
+              title="Zkontrolovat tvar dat a porovnat studijní výběr s osnovou z e-Sbírky"
+            >
+              <ClipboardCheck className="w-4 h-4" aria-hidden="true" />
+              <span>Kontrola dat</span>
+            </button>
+          </div>
         </div>
+      </div>
 
-        {/* Global Action Tools */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            onClick={() => setShowIntegrityModal(true)}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-semibold rounded-xl border border-emerald-200 dark:border-emerald-800 transition-colors cursor-pointer"
-            title="Spustit audit integrity předpisů"
-          >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Audit</span>
-          </button>
-
-          <button
-            onClick={() => window.print()}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl transition-colors cursor-pointer border border-slate-200 dark:border-slate-700"
-            title="Vytisknout přehled předpisů nebo uložit do PDF"
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Tisk</span>
-          </button>
-        </div>
+      {/* Dva režimy modulu */}
+      <div role="tablist" aria-label="Části Kompasu zákonů" className="grid grid-cols-2 gap-2 shrink-0 no-print print:hidden">
+        {(
+          [
+            { id: 'articles', label: `Paragrafový výklad (${legalDatabase.length})`, Icon: Scale },
+            { id: 'registry', label: `Katalog předpisů (${regulationsList.length})`, Icon: BookOpen },
+          ] as const
+        ).map(({ id, label, Icon }) => {
+          const isActive = viewMode === id;
+          return (
+            <button
+              type="button"
+              key={id}
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => switchViewMode(id)}
+              className={`px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer ${
+                isActive
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800'
+              }`}
+            >
+              <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span className="truncate">{label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {viewMode === 'registry' && canEditRegulations && legacyLocalRegs.length > 0 && (
@@ -697,6 +759,7 @@ export default function LegalCompass() {
       <LegalEditorModal
         showEditorModal={showEditorModal}
         editingRegulation={editingRegulation}
+        isNew={editorIsNew}
         setShowEditorModal={setShowEditorModal}
         setEditingRegulation={setEditingRegulation}
         handleSaveRegulation={handleSaveRegulation}

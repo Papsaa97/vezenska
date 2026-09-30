@@ -6,10 +6,8 @@ import {
   RotateCcw,
   AlertTriangle,
   ArrowRight,
-  BookOpen,
   Layers,
   Zap,
-  Sparkles,
   Award,
   AlertOctagon,
   Wrench,
@@ -20,7 +18,8 @@ import {
   Edit3,
   Trash2,
   Eye,
-  EyeOff
+  EyeOff,
+  type LucideIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { DRILL_XP, loadCompletedDrills, saveCompletedDrills, updateDailyStreak } from '../utils/gamification';
@@ -28,6 +27,7 @@ import { useProgressRevision } from '../hooks/useProgressRevision';
 import { useAuth } from '../context/AuthContext';
 import { useEditableContent } from '../hooks/useEditableContent';
 import { defaultStoppageDrills, defaultWeapons, StoppageDrill, WeaponData } from '../data/weaponsData';
+import { NAV_TAB_LABELS } from '../data/navTabs';
 import WeaponEditModal from './common/WeaponEditModal';
 import StoppageDrillEditModal from './common/StoppageDrillEditModal';
 import ConfirmDialog from './common/ConfirmDialog';
@@ -36,6 +36,38 @@ interface WeaponSimulatorProps {
   onNavigateToBadges?: () => void;
 }
 
+type SimulatorMode = 'safety' | 'disassembly' | 'troubleshooting' | 'specs';
+
+interface ModeTab {
+  id: SimulatorMode;
+  label: string;
+  icon: LucideIcon;
+}
+
+const MODE_TABS: ModeTab[] = [
+  { id: 'safety', label: 'Bezpečnostní kontrola a vybíjení', icon: ShieldCheck },
+  { id: 'disassembly', label: 'Částečná rozborka', icon: Layers },
+  { id: 'troubleshooting', label: 'Odstraňování závad', icon: Wrench },
+  { id: 'specs', label: 'Takticko-technická data', icon: Zap },
+];
+
+/** Odstraní případné pořadové číslo ze začátku názvu („3. Natažení…“ → „Natažení…“).
+ *  Lektor může název zadat i bez číslování — pak se vrátí beze změny. */
+function stripLeadingNumber(name: string): string {
+  return name.replace(/^\s*\d+\s*[.)]\s*/, '').trim() || name;
+}
+
+/** Český tvar podle počtu: 1 krok / 2 kroky / 5 kroků. */
+function pluralCz(count: number, one: string, few: string, many: string): string {
+  if (count === 1) return one;
+  if (count >= 2 && count <= 4) return few;
+  return many;
+}
+
+const SECONDARY_BUTTON =
+  'px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm flex items-center gap-2 transition-colors cursor-pointer';
+const PRIMARY_BUTTON =
+  'px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm flex items-center gap-2 transition-colors cursor-pointer';
 
 export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorProps = {}) {
   const { profile } = useAuth();
@@ -58,7 +90,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
   const [contentError, setContentError] = useState<string | null>(null);
 
   const [selectedWeaponId, setSelectedWeaponId] = useState<string>(defaultWeapons[0]?.id ?? '');
-  const [activeMode, setActiveMode] = useState<'safety' | 'disassembly' | 'troubleshooting' | 'specs'>('safety');
+  const [activeMode, setActiveMode] = useState<SimulatorMode>('safety');
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [isFinished, setIsFinished] = useState<boolean>(false);
@@ -88,14 +120,25 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
   const currentWeapon = (weaponList.find(w => w.id === selectedWeaponId) ?? weaponList[0]) as
     | WeaponData
     | undefined;
+  const currentWeaponId = currentWeapon?.id;
   const stepsToUse = currentWeapon
     ? (activeMode === 'safety' ? currentWeapon.safetySteps : currentWeapon.disassemblySteps)
     : [];
-  // Lektor mohl závadu odebrat — index nesmí ukazovat za konec seznamu.
+  // Lektor mohl krok nebo závadu odebrat (nebo zbraň zmizela a přepnulo se na
+  // první v seznamu) — index nesmí ukazovat za konec seznamu.
+  const stepIndex = Math.min(currentStepIndex, Math.max(stepsToUse.length - 1, 0));
   const drillIndex = Math.min(currentDrillIndex, Math.max(drills.length - 1, 0));
   const otherWeapon = weaponList.length > 1
     ? weaponList[(weaponList.findIndex(w => w.id === currentWeapon?.id) + 1) % weaponList.length]
     : null;
+
+  // Když se změní zobrazená zbraň jinak než tlačítkem (odebrání lektorem,
+  // načtení úprav), rozpracovaný postup by ukazoval na kroky jiné zbraně.
+  useEffect(() => {
+    setCurrentStepIndex(0);
+    setCompletedSteps([]);
+    setIsFinished(false);
+  }, [currentWeaponId]);
 
   const weaponEntry = weaponContent.entries.find(e => e.id === currentWeapon?.id);
   const deletedWeapons = weaponContent.entries.filter(e => e.isDeleted);
@@ -111,11 +154,11 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
   };
 
   const handleNextStep = () => {
-    if (!completedSteps.includes(currentStepIndex)) {
-      setCompletedSteps(prev => [...prev, currentStepIndex]);
+    if (!completedSteps.includes(stepIndex)) {
+      setCompletedSteps(prev => [...prev, stepIndex]);
     }
-    if (currentStepIndex < stepsToUse.length - 1) {
-      setCurrentStepIndex(prev => prev + 1);
+    if (stepIndex < stepsToUse.length - 1) {
+      setCurrentStepIndex(stepIndex + 1);
     } else {
       setIsFinished(true);
       updateDailyStreak();
@@ -139,7 +182,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
     setIsDrillAnswered(false);
   };
 
-  const handleSwitchMode = (mode: 'safety' | 'disassembly' | 'troubleshooting' | 'specs') => {
+  const handleSwitchMode = (mode: SimulatorMode) => {
     setActiveMode(mode);
     setCurrentStepIndex(0);
     setCompletedSteps([]);
@@ -183,42 +226,55 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
     }
   };
 
-  const currentStep = stepsToUse[currentStepIndex];
+  // Nový průchod závadami: i chyby z minulého kola se zapomenou, jinak by
+  // student za správnou odpověď v dalším kole nikdy nedostal XP.
+  const handleRestartDrills = () => {
+    setCurrentDrillIndex(0);
+    setSelectedDrillOption(null);
+    setIsDrillAnswered(false);
+    setMissedDrills([]);
+  };
+
+  const currentStep = stepsToUse[stepIndex] as (typeof stepsToUse)[number] | undefined;
+  const drillsDone = drills.filter(d => completedDrills.includes(d.id)).length;
 
   return (
-    <div className="w-full flex flex-col pb-8">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-amber-950/70 to-slate-900 text-white rounded-2xl p-5 sm:p-6 mb-6 shadow-md border border-amber-500/20">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/20 text-amber-300 rounded-full text-xs font-semibold uppercase tracking-wider mb-2 border border-amber-400/20">
-              <Crosshair className="w-3.5 h-3.5" />
-              <span>Střelecká a zbraňová příprava VS ČR</span>
+    <div className="w-full flex flex-col gap-5 pb-8">
+      {/* Záhlaví — stejně klidné jako u Administrativy a Profesní etiky */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="w-11 h-11 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+              <Crosshair className="w-6 h-6" aria-hidden="true" />
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Trenažér manipulace a rozborky zbraní</h2>
-            <p className="text-sm text-slate-300 mt-1 max-w-2xl">
-              Interaktivní nácvik bezpečnostní prověrky, vybíjení do lapače střel a postupu částečné rozborky služebních zbraní.
-            </p>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">{NAV_TAB_LABELS.weapons}</h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                Nácvik bezpečnostní kontroly, vybíjení, částečné rozborky a odstraňování závad služebních zbraní.
+              </p>
+            </div>
           </div>
 
-          {/* Weapon Selector Tabs */}
           {weaponList.length > 0 && (
-            <div className="flex flex-wrap bg-slate-800/80 p-1 rounded-xl border border-slate-700">
-              {weaponList.map(w => (
-                <button
-                  key={w.id}
-                  type="button"
-                  onClick={() => handleSwitchWeapon(w.id)}
-                  aria-pressed={currentWeapon?.id === w.id}
-                  className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
-                    currentWeapon?.id === w.id
-                      ? 'bg-amber-500 text-slate-950 shadow-sm'
-                      : 'text-slate-300 hover:text-white'
-                  }`}
-                >
-                  {w.name}
-                </button>
-              ))}
+            <div role="group" aria-label="Výběr zbraně" className="flex flex-wrap items-center gap-2 shrink-0">
+              {weaponList.map(w => {
+                const isActive = currentWeapon?.id === w.id;
+                return (
+                  <button
+                    key={w.id}
+                    type="button"
+                    onClick={() => handleSwitchWeapon(w.id)}
+                    aria-pressed={isActive}
+                    className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer ${
+                      isActive
+                        ? 'bg-amber-500 text-slate-950'
+                        : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
+                    }`}
+                  >
+                    {w.name}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -226,7 +282,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
 
       {/* Správa obsahu záložky — jen lektor a správce */}
       {canEdit && (
-        <div className="mb-5 space-y-2">
+        <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             {currentWeapon && (
               <>
@@ -238,7 +294,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
                   }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 text-xs font-bold cursor-pointer"
                 >
-                  <Edit3 className="w-3.5 h-3.5" />
+                  <Edit3 className="w-3.5 h-3.5" aria-hidden="true" />
                   Upravit zbraň {currentWeapon.name}
                 </button>
                 <button
@@ -246,7 +302,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
                   onClick={() => weaponContent.toggleHidden(currentWeapon.id).then(r => setContentError(r.error))}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold cursor-pointer"
                 >
-                  {weaponEntry?.isHidden ? <EyeOff className="w-3.5 h-3.5 text-amber-500" /> : <Eye className="w-3.5 h-3.5" />}
+                  {weaponEntry?.isHidden ? <EyeOff className="w-3.5 h-3.5 text-amber-500" aria-hidden="true" /> : <Eye className="w-3.5 h-3.5" aria-hidden="true" />}
                   {weaponEntry?.isHidden ? 'Zveřejnit studentům' : 'Skrýt studentům'}
                 </button>
                 <button
@@ -254,7 +310,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
                   onClick={() => setConfirmAction({ kind: 'weapon', action: 'remove', id: currentWeapon.id, name: currentWeapon.name })}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs font-bold cursor-pointer"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                   Odebrat zbraň
                 </button>
               </>
@@ -267,7 +323,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
               }}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-3.5 h-3.5" aria-hidden="true" />
               Přidat zbraň
             </button>
             {activeMode === 'troubleshooting' && (
@@ -282,7 +338,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
                       }}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 text-xs font-bold cursor-pointer"
                     >
-                      <Edit3 className="w-3.5 h-3.5" />
+                      <Edit3 className="w-3.5 h-3.5" aria-hidden="true" />
                       Upravit závadu
                     </button>
                     <button
@@ -290,7 +346,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
                       onClick={() => setConfirmAction({ kind: 'drill', action: 'remove', id: drills[drillIndex].id, name: drills[drillIndex].name })}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs font-bold cursor-pointer"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                       Odebrat závadu
                     </button>
                   </>
@@ -303,7 +359,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
                   }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                   Přidat závadu
                 </button>
               </>
@@ -327,7 +383,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
                     }
                     className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold transition-colors cursor-pointer"
                   >
-                    <RotateCcw className="w-3 h-3" />
+                    <RotateCcw className="w-3 h-3" aria-hidden="true" />
                     {item.name}
                   </button>
                   <button
@@ -336,7 +392,7 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
                     aria-label={`Smazat ${item.name} natrvalo`}
                     className="p-1 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer"
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <Trash2 className="w-3 h-3" aria-hidden="true" />
                   </button>
                 </span>
               ))}
@@ -392,73 +448,38 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
         </div>
       )}
 
-      {/* Mode Sub-nav */}
-      <div className="flex items-center justify-between gap-2 mb-5 pb-3 border-b border-slate-200 dark:border-slate-800">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-          <button
-            onClick={() => handleSwitchMode('safety')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1.5 whitespace-nowrap transition-colors ${
-              activeMode === 'safety'
-                ? 'bg-blue-600 text-white font-bold'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
-            }`}
-          >
-            <ShieldCheck className="w-4 h-4" />
-            <span>1. Bezpečnostní kontrola & Vybíjení</span>
-          </button>
-
-          <button
-            onClick={() => handleSwitchMode('disassembly')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1.5 whitespace-nowrap transition-colors ${
-              activeMode === 'disassembly'
-                ? 'bg-blue-600 text-white font-bold'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            <span>2. Částečná rozborka</span>
-          </button>
-
-          <button
-            onClick={() => handleSwitchMode('troubleshooting')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1.5 whitespace-nowrap transition-colors cursor-pointer ${
-              activeMode === 'troubleshooting'
-                ? 'bg-amber-500 text-slate-950 font-bold shadow-xs'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
-            }`}
-          >
-            <Wrench className="w-4 h-4" />
-            <span>3. Odstraňování závad</span>
-            {completedDrills.length > 0 && (
-              <span className="px-1.5 py-0.2 bg-amber-400 text-slate-950 rounded-full text-[0.625rem] font-black">
-                {drills.filter(d => completedDrills.includes(d.id)).length}/{drills.length}
-              </span>
-            )}
-          </button>
-
-          <button
-            onClick={() => handleSwitchMode('specs')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1.5 whitespace-nowrap transition-colors cursor-pointer ${
-              activeMode === 'specs'
-                ? 'bg-blue-600 text-white font-bold'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
-            }`}
-          >
-            <Zap className="w-4 h-4" />
-            <span>4. Takticko-technická data</span>
-          </button>
-        </div>
-
-        {activeMode !== 'specs' && activeMode !== 'troubleshooting' && (
-          <button
-            onClick={handleReset}
-            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1 text-xs shrink-0 cursor-pointer"
-            title="Resetovat průchod"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Restart</span>
-          </button>
-        )}
+      {/* Režimy trenažéru */}
+      <div role="tablist" aria-label="Části trenažéru zbraní" className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {MODE_TABS.map(({ id, label, icon: Icon }) => {
+          const isActive = activeMode === id;
+          return (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              title={label}
+              onClick={() => handleSwitchMode(id)}
+              className={`px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer ${
+                isActive
+                  ? 'bg-amber-500 text-slate-950'
+                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800'
+              }`}
+            >
+              <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span className="truncate">{label}</span>
+              {id === 'troubleshooting' && drillsDone > 0 && (
+                <span
+                  className={`px-1.5 py-0.5 rounded-full text-[0.625rem] font-bold shrink-0 ${
+                    isActive ? 'bg-slate-950/15 text-slate-950' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  {drillsDone}/{drills.length}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {activeMode === 'troubleshooting' ? (
@@ -472,42 +493,50 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
             role="note"
             className="flex items-start gap-2.5 rounded-xl border border-slate-200 dark:border-slate-700/70 bg-slate-50 dark:bg-slate-800/50 px-3.5 py-2.5 text-xs text-slate-600 dark:text-slate-300"
           >
-            <Info className="w-4 h-4 mt-px shrink-0 text-blue-500" />
+            <Info className="w-4 h-4 mt-px shrink-0 text-slate-400" aria-hidden="true" />
             <span>
               Tyto závady a postupy jejich odstranění jsou <strong>společné pro všechny zbraně
               v této záložce</strong> — nejde o sadu vázanou na zbraň zvolenou výše. Konkrétní hmaty si vždy ověřte podle návodu k dané zbrani a pokynů instruktora.
             </span>
           </div>
 
-          {/* Drills Selector Bar */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-            {drills.map((drill, idx) => {
-              const isCurrent = idx === drillIndex;
-              const isDone = completedDrills.includes(drill.id);
-              return (
-                <button
-                  key={drill.id}
-                  onClick={() => {
-                    setCurrentDrillIndex(idx);
-                    setSelectedDrillOption(null);
-                    setIsDrillAnswered(false);
-                  }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer ${
-                    isCurrent
-                      ? 'bg-amber-500 text-slate-950 shadow-md ring-2 ring-amber-400/50'
-                      : isDone
-                      ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
-                      : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
-                  }`}
-                >
-                  {isDone ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />}
-                  <span>{drill.name.split('. ')[1] || drill.name}</span>
-                </button>
-              );
-            })}
-          </div>
+          {/* Výběr závady */}
+          {drills.length > 0 && (
+            <div role="group" aria-label="Výběr závady" className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+              {drills.map((drill, idx) => {
+                const isCurrent = idx === drillIndex;
+                const isDone = completedDrills.includes(drill.id);
+                return (
+                  <button
+                    key={drill.id}
+                    type="button"
+                    aria-pressed={isCurrent}
+                    onClick={() => {
+                      setCurrentDrillIndex(idx);
+                      setSelectedDrillOption(null);
+                      setIsDrillAnswered(false);
+                    }}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer ${
+                      isCurrent
+                        ? 'bg-amber-500 text-slate-950'
+                        : isDone
+                        ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+                        : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    {isDone ? (
+                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                    ) : (
+                      <span className="w-4 text-center shrink-0" aria-hidden="true">{idx + 1}</span>
+                    )}
+                    <span>{stripLeadingNumber(drill.name)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-          {/* Active Drill Card */}
+          {/* Aktivní závada */}
           {(() => {
             const drill = drills[drillIndex];
             if (!drill) {
@@ -518,85 +547,86 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
               );
             }
             return (
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
                 <div className="flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4 mb-5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
-                      <AlertOctagon className="w-6 h-6" />
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                      <AlertOctagon className="w-5 h-5" aria-hidden="true" />
                     </div>
-                    <div>
-                      <span className="text-[0.6875rem] font-bold text-slate-400 uppercase tracking-wider">Modelová střelecká závada</span>
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white">{drill.name}</h3>
+                    <div className="min-w-0">
+                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Modelová střelecká závada</span>
+                      <h2 className="text-lg font-bold text-slate-900 dark:text-white">{drill.name}</h2>
                     </div>
                   </div>
-                  <span className="text-xs font-mono font-bold text-slate-400">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400 shrink-0">
                     Závada {drillIndex + 1} z {drills.length}
                   </span>
                 </div>
 
-                {/* Symptom & Cause Boxes */}
+                {/* Příznak a příčina */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="p-4 rounded-xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider mb-1">
-                      <AlertTriangle className="w-4 h-4" />
-                      <span>Příznak závady (Symptom):</span>
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300 mb-1">
+                      <AlertTriangle className="w-4 h-4" aria-hidden="true" />
+                      <span>Příznak závady</span>
                     </div>
-                    <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
+                    <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
                       {drill.symptom}
                     </p>
                   </div>
 
                   <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">
-                      <HelpCircle className="w-4 h-4" />
-                      <span>Možná příčina:</span>
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                      <HelpCircle className="w-4 h-4" aria-hidden="true" />
+                      <span>Možná příčina</span>
                     </div>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                       {drill.cause}
                     </p>
                   </div>
                 </div>
 
-                {/* Prompt & Options */}
+                {/* Otázka a možnosti */}
                 <div className="space-y-3 mb-6">
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <Wrench className="w-4 h-4 text-blue-600" />
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <Wrench className="w-4 h-4 text-amber-600 dark:text-amber-400" aria-hidden="true" />
                     <span>Jaký je správný a bezpečný metodický postup odstranění závady?</span>
-                  </h4>
+                  </h3>
 
                   <div className="grid grid-cols-1 gap-2.5">
                     {drill.options.map((opt, optIdx) => {
                       const isSelected = selectedDrillOption === optIdx;
-                      let optClass = "border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 text-slate-800 dark:text-slate-200 hover:border-amber-400";
-                      
+                      let optClass = 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 text-slate-800 dark:text-slate-200 hover:border-amber-400';
+
                       if (isDrillAnswered) {
                         if (opt.isCorrect) {
-                          optClass = "border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 font-bold shadow-xs";
+                          optClass = 'border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 font-semibold';
                         } else if (isSelected) {
-                          optClass = "border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 font-bold shadow-xs";
+                          optClass = 'border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 font-semibold';
                         } else {
-                          optClass = "opacity-40 border-slate-200 dark:border-slate-800 text-slate-400";
+                          optClass = 'opacity-40 border-slate-200 dark:border-slate-800 text-slate-400';
                         }
                       }
 
                       return (
                         <button
                           key={optIdx}
+                          type="button"
                           onClick={() => handleDrillChoice(optIdx)}
                           disabled={isDrillAnswered}
-                          className={`p-4 rounded-xl border text-left transition-all flex items-start justify-between gap-3 cursor-pointer ${optClass}`}
+                          className={`p-4 rounded-xl border text-left transition-colors flex items-start justify-between gap-3 cursor-pointer ${optClass}`}
                         >
                           <div className="flex items-start gap-3">
                             <div className="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                               {String.fromCharCode(65 + optIdx)}
                             </div>
-                            <span className="text-xs sm:text-sm leading-relaxed">{opt.text}</span>
+                            <span className="text-sm leading-relaxed">{opt.text}</span>
                           </div>
                           {isDrillAnswered && (
                             opt.isCorrect ? (
-                              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" aria-hidden="true" />
                             ) : isSelected ? (
-                              <XCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                              <XCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" aria-hidden="true" />
                             ) : null
                           )}
                         </button>
@@ -605,8 +635,8 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
                   </div>
                 </div>
 
-                {/* Feedback & Explanation Card */}
-                {isDrillAnswered && selectedDrillOption !== null && (
+                {/* Vyhodnocení */}
+                {isDrillAnswered && selectedDrillOption !== null && drill.options[selectedDrillOption] && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -614,20 +644,20 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
                   >
                     <div className="flex items-center gap-2">
                       {drill.options[selectedDrillOption].isCorrect ? (
-                        <span className="px-2.5 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
+                        <span className="px-2.5 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-semibold text-xs">
                           {drillAward === 'missed'
-                            ? 'SPRÁVNĚ — XP jen za odpověď napoprvé'
+                            ? 'Správně (XP jen za odpověď napoprvé)'
                             : drillAward === 'already'
-                              ? 'SPRÁVNÉ ROZHODNUTÍ (XP už máte připsané)'
-                              : `SPRÁVNÉ ROZHODNUTÍ (+${DRILL_XP} XP)`}
+                              ? 'Správně (XP už máte připsané)'
+                              : `Správně (+${DRILL_XP} XP)`}
                         </span>
                       ) : (
-                        <span className="px-2.5 py-1 rounded-md bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-bold text-xs">
-                          NESPRÁVNÝ POSTUP
+                        <span className="px-2.5 py-1 rounded-md bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-semibold text-xs">
+                          Nesprávný postup
                         </span>
                       )}
                     </div>
-                    <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-medium">
+                    <p className="text-sm text-slate-800 dark:text-slate-200">
                       {drill.options[selectedDrillOption].feedback}
                     </p>
 
@@ -639,24 +669,14 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
 
                     <div className="flex justify-end pt-2">
                       {drillIndex < drills.length - 1 ? (
-                        <button
-                          onClick={handleNextDrill}
-                          className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs sm:text-sm flex items-center gap-2 transition-colors cursor-pointer shadow-sm"
-                        >
+                        <button type="button" onClick={handleNextDrill} className={PRIMARY_BUTTON}>
                           <span>Další závada</span>
-                          <ArrowRight className="w-4 h-4" />
+                          <ArrowRight className="w-4 h-4" aria-hidden="true" />
                         </button>
                       ) : (
-                        <button
-                          onClick={() => {
-                            setCurrentDrillIndex(0);
-                            setSelectedDrillOption(null);
-                            setIsDrillAnswered(false);
-                          }}
-                          className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs sm:text-sm flex items-center gap-2 transition-colors cursor-pointer shadow-sm"
-                        >
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span>Všechny závady procvičeny! Restartovat</span>
+                        <button type="button" onClick={handleRestartDrills} className={SECONDARY_BUTTON}>
+                          <RotateCcw className="w-4 h-4" aria-hidden="true" />
+                          <span>Projít závady znovu od začátku</span>
                         </button>
                       )}
                     </div>
@@ -671,227 +691,227 @@ export default function WeaponSimulator({ onNavigateToBadges }: WeaponSimulatorP
           V záložce zatím není žádná zbraň{canEdit ? ' — přidejte ji tlačítkem Přidat zbraň.' : '.'}
         </p>
       ) : activeMode === 'specs' ? (
-        /* Technical Specifications Tab */
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+        /* Takticko-technická data */
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400 font-bold">
-              <Crosshair className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+              <Crosshair className="w-5 h-5" aria-hidden="true" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white">{currentWeapon.name}</h3>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">{currentWeapon.name}</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">{currentWeapon.serviceRole}</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
-            {currentWeapon.technicalSpecs.map((spec, i) => (
-              <div key={i} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex justify-between items-center">
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{spec.label}</span>
-                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white text-right">{spec.value}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl p-4 text-xs sm:text-sm text-blue-900 dark:text-blue-200 flex items-start gap-3">
-            <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-            <div>
-              <span className="font-bold block mb-1">Zkušební požadavek Akademie VS ČR ke zkoušce ZOP A:</span>
-              Frekventant musí samostatně předvést bezpečnou kontrolu zbraně a částečnou rozborku do 60 sekund bez míření zbraní mimo bezpečný prostor lapače střel.
-            </div>
-          </div>
+          {currentWeapon.technicalSpecs.length > 0 ? (
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {currentWeapon.technicalSpecs.map((spec, i) => (
+                <div key={i} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex justify-between items-center gap-3">
+                  <dt className="text-xs font-semibold text-slate-500 dark:text-slate-400">{spec.label}</dt>
+                  <dd className="text-sm font-bold text-slate-900 dark:text-white text-right">{spec.value}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : (
+            <p className="text-sm text-slate-500 dark:text-slate-400 italic">U této zbraně zatím nejsou vyplněna technická data.</p>
+          )}
         </div>
       ) : isFinished ? (
-        /* Completion Summary View */
+        /* Shrnutí po dokončení postupu */
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white dark:bg-slate-900 border border-emerald-500/30 dark:border-emerald-500/20 rounded-2xl p-6 sm:p-8 shadow-lg text-center space-y-6"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 text-center space-y-6"
         >
-          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950/60 border-2 border-emerald-500 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-md">
-            <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12" />
+          <div className="w-16 h-16 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+            <CheckCircle2 className="w-9 h-9" aria-hidden="true" />
           </div>
 
           <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-xs uppercase tracking-wider mb-2">
-              <Sparkles className="w-3.5 h-3.5" />
-              Nácvik úspěšně dokončen
-            </span>
-            <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
-              {activeMode === 'safety' ? 'Bezpečnostní protokol bezchybně zvládnut!' : 'Částečná rozborka bezchybně zvládnuta!'}
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-2 max-w-xl mx-auto">
-              Úspěšně jste prošli všemi {stepsToUse.length} fázemi metodického postupu pro <strong className="text-slate-900 dark:text-white">{currentWeapon.name}</strong>.
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Postup dokončen</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 max-w-xl mx-auto">
+              {activeMode === 'safety' ? 'Bezpečnostní kontrola a vybíjení' : 'Částečná rozborka'} pro{' '}
+              <strong className="text-slate-900 dark:text-white">{currentWeapon.name}</strong>: potvrzeno{' '}
+              {completedSteps.length} z {stepsToUse.length} {pluralCz(stepsToUse.length, 'kroku', 'kroků', 'kroků')}.
+              {completedSteps.length < stepsToUse.length && ' Přeskočené kroky si projděte znovu.'}
             </p>
           </div>
 
-          {/* Steps Summary Card */}
-          <div className="text-left bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-700 space-y-2.5 max-w-2xl mx-auto">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
-              Splněné kontrolní body Akademie VS ČR:
-            </div>
-            {stepsToUse.map((step, idx) => (
-              <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-200">
-                <div className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[0.625rem] font-bold shrink-0 mt-0.5">
-                  ✓
-                </div>
-                <div>
-                  <span className="font-bold text-slate-900 dark:text-white">{step.title}</span>
-                  <p className="text-[0.6875rem] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">{step.whyCrucial}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* Přehled kroků — fajfku dostane jen krok, který student skutečně potvrdil */}
+          <ul className="text-left bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-700 space-y-2.5 max-w-2xl mx-auto">
+            {stepsToUse.map((step, idx) => {
+              const done = completedSteps.includes(idx);
+              return (
+                <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-200">
+                  {done ? (
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" aria-label="Potvrzeno" />
+                  ) : (
+                    <span
+                      className="w-5 h-5 rounded-full border border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 flex items-center justify-center text-[0.625rem] font-bold shrink-0 mt-0.5"
+                      aria-label="Nepotvrzeno"
+                    >
+                      {idx + 1}
+                    </span>
+                  )}
+                  <div>
+                    <span className="font-semibold text-slate-900 dark:text-white">{step.title}</span>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{step.whyCrucial}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
 
-          {/* Navigation Action Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <button
-              onClick={handleReset}
-              className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm flex items-center gap-2 transition-colors cursor-pointer"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span>Zopakovat tento nácvik</span>
+            <button type="button" onClick={handleReset} className={SECONDARY_BUTTON}>
+              <RotateCcw className="w-4 h-4" aria-hidden="true" />
+              <span>Zopakovat postup</span>
             </button>
 
             {activeMode === 'safety' ? (
-              <button
-                onClick={() => handleSwitchMode('disassembly')}
-                className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-colors shadow-md cursor-pointer"
-              >
-                <Layers className="w-4 h-4" />
+              <button type="button" onClick={() => handleSwitchMode('disassembly')} className={PRIMARY_BUTTON}>
+                <Layers className="w-4 h-4" aria-hidden="true" />
                 <span>Přejít na částečnou rozborku</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </button>
             ) : (
-              <button
-                onClick={() => handleSwitchMode('specs')}
-                className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-colors shadow-md cursor-pointer"
-              >
-                <Zap className="w-4 h-4" />
+              <button type="button" onClick={() => handleSwitchMode('specs')} className={PRIMARY_BUTTON}>
+                <Zap className="w-4 h-4" aria-hidden="true" />
                 <span>Takticko-technická data</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </button>
             )}
 
             {otherWeapon && (
-              <button
-                type="button"
-                onClick={() => handleSwitchWeapon(otherWeapon.id)}
-                className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 transition-colors shadow-md cursor-pointer"
-              >
-                <Crosshair className="w-4 h-4" />
+              <button type="button" onClick={() => handleSwitchWeapon(otherWeapon.id)} className={SECONDARY_BUTTON}>
+                <Crosshair className="w-4 h-4" aria-hidden="true" />
                 <span>Přepnout na {otherWeapon.name}</span>
               </button>
             )}
 
             {onNavigateToBadges && (
-              <button
-                onClick={onNavigateToBadges}
-                className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs sm:text-sm flex items-center gap-2 transition-colors border border-amber-500/30 cursor-pointer"
-              >
-                <Award className="w-4 h-4" />
+              <button type="button" onClick={onNavigateToBadges} className={SECONDARY_BUTTON}>
+                <Award className="w-4 h-4" aria-hidden="true" />
                 <span>Zobrazit odznaky a hodnost</span>
               </button>
             )}
           </div>
         </motion.div>
+      ) : !currentStep ? (
+        <p className="text-center text-sm text-slate-500 dark:text-slate-400 italic py-8">
+          U této zbraně zatím není žádný krok {activeMode === 'safety' ? 'bezpečnostní kontroly' : 'rozborky'}
+          {canEdit ? ' — doplňte je v úpravě zbraně.' : '.'}
+        </p>
       ) : (
-        /* Interactive Step by Step Simulation */
+        /* Postup krok za krokem */
         <div className="flex flex-col gap-5">
-          {/* Progress Indicator */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2">
+          {/* Ukazatel postupu */}
+          <div role="group" aria-label="Kroky postupu" className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
             {stepsToUse.map((step, idx) => {
-              const isCurrent = idx === currentStepIndex;
+              const isCurrent = idx === stepIndex;
               const isDone = completedSteps.includes(idx);
               return (
                 <button
                   key={idx}
+                  type="button"
+                  aria-pressed={isCurrent}
                   onClick={() => setCurrentStepIndex(idx)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer ${
                     isCurrent
-                      ? 'bg-amber-500 text-slate-950 shadow-md ring-2 ring-amber-400/50'
+                      ? 'bg-amber-500 text-slate-950'
                       : isDone
-                      ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                      ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+                      : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
-                  {isDone ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span>{idx + 1}</span>}
-                  <span className="truncate max-w-[120px]">{step.title.split('. ')[1] || step.title}</span>
+                  {isDone ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                  ) : (
+                    <span className="w-4 text-center shrink-0" aria-hidden="true">{idx + 1}</span>
+                  )}
+                  <span className="truncate max-w-[140px]">{stripLeadingNumber(step.title)}</span>
                 </button>
               );
             })}
           </div>
 
-          {/* Active Step Card */}
+          {/* Karta aktivního kroku */}
           <AnimatePresence mode="wait">
             <motion.div
-              key={`${selectedWeaponId}-${activeMode}-${currentStepIndex}`}
+              key={`${currentWeapon.id}-${activeMode}-${stepIndex}`}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6"
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-bold px-3 py-1 bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-full border border-amber-500/20">
-                  {currentWeapon.name} • {activeMode === 'safety' ? 'Bezpečnostní postup' : 'Rozborka'}
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <span className="text-xs font-semibold px-3 py-1 bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-full border border-amber-500/20 truncate">
+                  {currentWeapon.name} · {activeMode === 'safety' ? 'Bezpečnostní postup' : 'Rozborka'}
                 </span>
-                <span className="text-xs font-medium text-slate-400">
-                  Krok {currentStepIndex + 1} z {stepsToUse.length}
-                </span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    Krok {stepIndex + 1} z {stepsToUse.length}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    title="Začít postup znovu"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1 text-xs cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+                    <span>Znovu</span>
+                  </button>
+                </div>
               </div>
 
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                 {currentStep.title}
-              </h3>
+              </h2>
 
-              {/* Action Box */}
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 mb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 block mb-1">
-                  Požadovaný úkon střelce:
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block mb-1">
+                  Požadovaný úkon střelce
                 </span>
                 <p className="text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100 leading-relaxed">
                   {currentStep.actionInstruction}
                 </p>
               </div>
 
-              {/* Crucial & Danger Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div className="p-4 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
-                  <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-800 dark:text-emerald-300 mb-1">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>Proč je tento krok klíčový:</span>
+                  <div className="flex items-center gap-1.5 font-semibold text-xs text-emerald-800 dark:text-emerald-300 mb-1">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" aria-hidden="true" />
+                    <span>Proč je tento krok klíčový</span>
                   </div>
-                  <p className="text-xs sm:text-sm text-emerald-900 dark:text-emerald-200/90 leading-relaxed">
+                  <p className="text-sm text-emerald-900 dark:text-emerald-200/90 leading-relaxed">
                     {currentStep.whyCrucial}
                   </p>
                 </div>
 
                 <div className="p-4 rounded-xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800/50">
-                  <div className="flex items-center gap-1.5 font-bold text-xs text-rose-800 dark:text-rose-300 mb-1">
-                    <AlertTriangle className="w-4 h-4 text-rose-600" />
-                    <span>Riziko při opomenutí:</span>
+                  <div className="flex items-center gap-1.5 font-semibold text-xs text-rose-800 dark:text-rose-300 mb-1">
+                    <AlertTriangle className="w-4 h-4 text-rose-600" aria-hidden="true" />
+                    <span>Riziko při opomenutí</span>
                   </div>
-                  <p className="text-xs sm:text-sm text-rose-900 dark:text-rose-200/90 leading-relaxed">
+                  <p className="text-sm text-rose-900 dark:text-rose-200/90 leading-relaxed">
                     {currentStep.dangerIfOmitted}
                   </p>
                 </div>
               </div>
 
-              {/* Control Buttons */}
               <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
                 <button
-                  disabled={currentStepIndex === 0}
-                  onClick={() => setCurrentStepIndex(prev => prev - 1)}
-                  className="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                  type="button"
+                  disabled={stepIndex === 0}
+                  onClick={() => setCurrentStepIndex(Math.max(stepIndex - 1, 0))}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
                 >
                   Předchozí krok
                 </button>
 
-                <button
-                  onClick={handleNextStep}
-                  className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer"
-                >
-                  <span>{currentStepIndex === stepsToUse.length - 1 ? 'Dokončit nácvik' : 'Potvrdit provedení & Další krok'}</span>
-                  <ArrowRight className="w-4 h-4" />
+                <button type="button" onClick={handleNextStep} className={PRIMARY_BUTTON}>
+                  <span>{stepIndex === stepsToUse.length - 1 ? 'Dokončit postup' : 'Potvrdit a pokračovat'}</span>
+                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
             </motion.div>

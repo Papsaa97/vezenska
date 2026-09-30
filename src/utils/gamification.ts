@@ -137,14 +137,21 @@ export function saveFavoriteIds(kind: 'fav_question' | 'fav_legal', ids: string[
   void replaceRemoteSet(kind, ids);
 }
 
+/** XP za poznávačku — jediné místo, ze kterého čte i rozpis na vítězné obrazovce. */
+export const MATCHING_XP = {
+  base: 80,
+  flawless: 40,
+  fast: { limitSeconds: 30, xp: 50 },
+  quick: { limitSeconds: 45, xp: 25 },
+} as const;
+
 export function recordMatchingCompletion(record: Omit<MatchingRecord, 'id' | 'timestamp' | 'xpEarned'>): { record: MatchingRecord; newHistory: MatchingRecord[] } {
   const current = loadMatchingHistory();
-  
-  // Calculate XP
-  let xp = 80; // base
-  if (record.flawless) xp += 40;
-  if (record.timeSeconds <= 30) xp += 50;
-  else if (record.timeSeconds <= 45) xp += 25;
+
+  let xp: number = MATCHING_XP.base;
+  if (record.flawless) xp += MATCHING_XP.flawless;
+  if (record.timeSeconds <= MATCHING_XP.fast.limitSeconds) xp += MATCHING_XP.fast.xp;
+  else if (record.timeSeconds <= MATCHING_XP.quick.limitSeconds) xp += MATCHING_XP.quick.xp;
 
   const newRecord: MatchingRecord = {
     ...record,

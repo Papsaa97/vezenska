@@ -1,8 +1,12 @@
 import React, { useId } from 'react';
-import { Check, AlertTriangle, Info, CheckCircle2, ShieldAlert, ExternalLink } from 'lucide-react';
+import { Check, AlertTriangle, Info, CheckCircle2, ShieldAlert, ExternalLink, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AuditReport } from '../../utils/legalIntegrity';
 import { useDialog } from '../../hooks/useDialog';
+import { formatIsoDate, legalCategoryLabel, pluralCz } from './legalCompassLabels';
+
+/** Nadpis oddílu okna — obyčejný, ne verzálkový štítek. */
+const SECTION_HEADING = 'text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5';
 
 interface LegalAuditModalProps {
   showIntegrityModal: boolean;
@@ -73,17 +77,18 @@ export default function LegalAuditModal({
                     Kontrola dat a porovnání s e-Sbírkou
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Tvar dat Právního kompasu a pokrytí předpisů podle úředních znění
+                    Tvar dat Kompasu zákonů a pokrytí předpisů podle znění z e-Sbírky
                   </p>
                 </div>
               </div>
               <button
                 type="button"
                 aria-label="Zavřít kontrolní okno"
+                title="Zavřít (Esc)"
                 onClick={() => setShowIntegrityModal(false)}
-                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-lg font-light"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
               >
-                ✕
+                <X className="w-5 h-5" aria-hidden="true" />
               </button>
             </div>
 
@@ -95,7 +100,7 @@ export default function LegalAuditModal({
                   <span>Kontrola tvaru dat prošla bez nálezu</span>
                 </div>
                 <p>
-                  U {auditReport.totalArticles} položek není prázdné ani podezřele krátké pole, text nekončí uprostřed věty a identifikátory jsou unikátní.
+                  U {pluralCz(auditReport.totalArticles, 'ustanovení není', 'ustanovení nejsou', 'ustanovení nejsou')} prázdná ani podezřele krátká pole, text nekončí uprostřed věty a identifikátory jsou unikátní.
                 </p>
               </div>
             ) : (
@@ -103,8 +108,8 @@ export default function LegalAuditModal({
                 <div className="font-bold flex items-center gap-1.5 text-amber-700 dark:text-amber-300">
                   <AlertTriangle className="w-4 h-4" />
                   <span>
-                    Nalezeno {auditReport.issues.length}{' '}
-                    {auditReport.issues.length === 1 ? 'vada' : auditReport.issues.length < 5 ? 'vady' : 'vad'} v tvaru dat
+                    {auditReport.issues.length === 1 ? 'Nalezena' : auditReport.issues.length < 5 ? 'Nalezeny' : 'Nalezeno'}{' '}
+                    {pluralCz(auditReport.issues.length, 'vada', 'vady', 'vad')} v tvaru dat
                   </span>
                 </div>
                 <ul className="space-y-1 max-h-40 overflow-y-auto pr-1">
@@ -126,9 +131,8 @@ export default function LegalAuditModal({
                 <div className="font-bold flex items-center gap-1.5 text-rose-700 dark:text-rose-300">
                   <AlertTriangle className="w-4 h-4" />
                   <span>
-                    {sectionIssues.length}{' '}
-                    {sectionIssues.length === 1 ? 'položka odkazuje' : 'položek odkazuje'} na paragraf, který
-                    v platném znění není
+                    {pluralCz(sectionIssues.length, 'ustanovení odkazuje', 'ustanovení odkazují', 'ustanovení odkazuje')}{' '}
+                    na paragraf, který v platném znění není
                   </span>
                 </div>
                 <ul className="space-y-1 max-h-40 overflow-y-auto pr-1">
@@ -142,23 +146,23 @@ export default function LegalAuditModal({
               </div>
             )}
 
-            {/* Porovnání s úředním zněním z e-Sbírky */}
+            {/* Porovnání se zněním z e-Sbírky */}
             <div className="space-y-2">
-              <div className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <h4 className={SECTION_HEADING}>
                 <span>Pokrytí předpisu studijním výběrem</span>
                 <a
                   href="https://e-sbirka.gov.cz/restful-api"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-0.5 text-[0.625rem] font-semibold text-indigo-600 dark:text-indigo-400 normal-case"
+                  className="inline-flex items-center gap-0.5 text-[0.625rem] font-semibold text-indigo-600 dark:text-indigo-400"
                 >
-                  zdroj: e-Sbírka <ExternalLink className="w-3 h-3" />
+                  zdroj: e-Sbírka <ExternalLink className="w-3 h-3" aria-hidden="true" />
                 </a>
-              </div>
+              </h4>
 
               {porovnane.length === 0 ? (
                 <p className="text-[0.6875rem] text-slate-500">
-                  Žádné úřední znění není stažené. Doplní ho příkaz <code>npm run sync:laws</code>.
+                  Žádné znění z e-Sbírky není stažené. Doplní ho příkaz <code>npm run sync:laws</code>.
                 </p>
               ) : (
                 <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
@@ -186,7 +190,7 @@ export default function LegalAuditModal({
                           </span>
                         </div>
                         <div className="text-slate-500 dark:text-slate-400">
-                          Úřední znění č. {c.cisloZneni} účinné od {c.ucinnostOd}
+                          Znění č. {c.cisloZneni} účinné od {c.ucinnostOd ? formatIsoDate(c.ucinnostOd) : 'neuvedeno'}
                           {c.chybejiciParagrafy.length > 0 && (
                             <>
                               {' '}• ve výběru chybí {c.chybejiciParagrafy.length} §
@@ -206,7 +210,7 @@ export default function LegalAuditModal({
             {/* Co kontrola neověřuje — dřív tu stálo, že je vše "100% kompletní" */}
             <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-[0.6875rem] text-slate-600 dark:text-slate-300 space-y-1.5">
               <div className="font-bold flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
-                <Info className="w-3.5 h-3.5" />
+                <Info className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Jak číst výsledek</span>
               </div>
               <p>
@@ -233,7 +237,7 @@ export default function LegalAuditModal({
                   {auditReport.totalArticles}
                 </div>
                 <div className="text-[0.6875rem] font-semibold text-slate-500 mt-0.5">
-                  Norem v databázi
+                  Ustanovení v databázi
                 </div>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
@@ -257,37 +261,40 @@ export default function LegalAuditModal({
                   {auditReport.snapshotsAvailable}
                 </div>
                 <div className="text-[0.6875rem] font-semibold text-slate-500 mt-0.5">
-                  Úplných znění z e-Sbírky
+                  Znění z e-Sbírky
                 </div>
               </div>
             </div>
 
-            {/* Category Breakdown */}
+            {/* Category Breakdown — popisky kategorií místo surových klíčů */}
             <div className="space-y-2">
-              <div className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                Kategorizace a pokrytí předpisů:
-              </div>
+              <h4 className={SECTION_HEADING}>Ustanovení podle kategorií</h4>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {Object.entries(auditReport.categories).map(([cat, count]) => (
-                  <div key={cat} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
-                    <span className="text-slate-600 dark:text-slate-300 font-mono text-[0.6875rem] truncate">
-                      {cat}
+                  <div key={cat} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+                    <span className="text-slate-600 dark:text-slate-300 text-[0.6875rem] truncate" title={cat}>
+                      {legalCategoryLabel(cat)}
                     </span>
-                    <span className="font-bold text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-[0.625rem]">
-                      {count} norem
+                    <span className="shrink-0 font-bold text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/40 text-[0.625rem]">
+                      {pluralCz(count, 'ustanovení', 'ustanovení', 'ustanovení')}
                     </span>
                   </div>
                 ))}
               </div>
             </div>
 
+            <p className="text-[0.6875rem] text-slate-500">
+              Kontrola proběhla {formatIsoDate(auditReport.timestamp)}.
+            </p>
+
             {/* Footer */}
             <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end">
               <button
+                type="button"
                 onClick={() => setShowIntegrityModal(false)}
-                className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs hover:opacity-90 transition-opacity"
+                className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-xs hover:opacity-90 transition-opacity cursor-pointer"
               >
-                Zavřít kontrolní okno
+                Zavřít
               </button>
             </div>
           </motion.div>

@@ -1,25 +1,27 @@
 import React, { useState, useEffect, useMemo, useCallback, useId, useRef } from 'react';
-import { 
-  Search, 
-  Star, 
-  Shuffle, 
-  ChevronLeft, 
-  ChevronRight, 
-  BookOpen, 
-  Volume2, 
-  CheckCircle2, 
-  RotateCcw, 
-  BrainCircuit, 
-  HelpCircle, 
-  Edit3, 
-  Eye, 
-  EyeOff 
+import {
+  Search,
+  Star,
+  Shuffle,
+  ChevronLeft,
+  ChevronRight,
+  Layers,
+  SlidersHorizontal,
+  Volume2,
+  CheckCircle2,
+  RotateCcw,
+  BrainCircuit,
+  HelpCircle,
+  Edit3,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { Question } from '../types';
 import { normalizeSubject } from './SubjectsHub';
 import { speakText, isSpeechSupported, stopSpeaking } from '../utils/speech';
 import { getSubjectInfo } from '../data/questions/subjectsInfo';
 import { useAuth } from '../context/AuthContext';
+import { NAV_TAB_LABELS } from '../data/navTabs';
 import LeitnerHelpModal from './common/LeitnerHelpModal';
 import QuestionEditModal from './common/QuestionEditModal';
 import ConfirmDialog from './common/ConfirmDialog';
@@ -49,10 +51,40 @@ const LEITNER_REVIEWS_KEY = 'vscr_leitner_reviews';
  * opakování, žádná fronta „dnes k opakování“. Krabičky byly jen ruční
  * roztřídění a rozvrh si měl student pamatovat sám. Tím se z rozloženého
  * opakování stal obyčejný zásobník kartiček.
+ *
+ * Je to jediný zdroj pravdy: z něj se odvozuje počet krabiček, popisky v
+ * rozhraní i plánovač. Kdyby se popisky psaly zvlášť, dřív nebo později by
+ * slibovaly něco jiného, než co kód dělá — přesně tak vznikla původní vada.
  */
 const LEITNER_INTERVAL_DAYS: Record<number, number> = { 1: 1, 2: 3, 3: 7, 4: 14, 5: 30 };
 
+/** Čísla krabiček vzestupně (1 … n), odvozená z LEITNER_INTERVAL_DAYS. */
+const LEITNER_BOX_NUMBERS: number[] = Object.keys(LEITNER_INTERVAL_DAYS)
+  .map(Number)
+  .sort((a, b) => a - b);
+
+const LEITNER_MAX_BOX = LEITNER_BOX_NUMBERS[LEITNER_BOX_NUMBERS.length - 1];
+
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+/** „po 1 dni“, „po 3 dnech“ — popis intervalu krabičky odvozený z tabulky. */
+function formatIntervalDays(days: number): string {
+  return days === 1 ? 'po 1 dni' : `po ${days} dnech`;
+}
+
+/** Popisek krabičky pro tooltip a přístupné jméno tlačítka. */
+function describeBox(box: number): string {
+  const days = LEITNER_INTERVAL_DAYS[box] ?? 1;
+  const suffix = box === LEITNER_MAX_BOX ? ' (dlouhodobá paměť)' : '';
+  return `Box ${box}: opakování ${formatIntervalDays(days)}${suffix}`;
+}
+
+/** Správný tvar „kartička“ podle počtu (1 kartička, 2 kartičky, 5 kartiček). */
+function pluralCards(count: number): string {
+  if (count === 1) return `${count} kartička`;
+  if (count >= 2 && count <= 4) return `${count} kartičky`;
+  return `${count} kartiček`;
+}
 
 /** Je kartička v daném boxu dnes ke zopakování? */
 function isDueForReview(box: number, lastReviewedISO: string | undefined): boolean {
@@ -114,12 +146,17 @@ interface FlashcardsProps {
   onUpdateQuestion?: (updatedQuestion: Question) => void;
 }
 
-export default function Flashcards({ 
-  questions = [], 
-  favorites = [], 
-  toggleFavorite, 
+/** Sdílené třídy tlačítek v postranním panelu (výběr krabičky). */
+const BOX_BUTTON_ACTIVE = 'bg-teal-600 text-white border-teal-700';
+const BOX_BUTTON_IDLE =
+  'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-teal-400 dark:hover:border-teal-500';
+
+export default function Flashcards({
+  questions = [],
+  favorites = [],
+  toggleFavorite,
   presetSubject,
-  onUpdateQuestion 
+  onUpdateQuestion,
 }: FlashcardsProps) {
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
   const fieldIds = useId();
@@ -287,23 +324,39 @@ export default function Flashcards({
     setIsFlipped(!isFlipped);
   };
 
-  const handleSpeak = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const currentQuestion: Question | undefined = shuffledQuestions[currentCardIndex];
+  const currentQuestionId = currentQuestion?.id;
+  const isCurrentHidden = currentQuestion ? isQuestionHidden(currentQuestion) : false;
+
+  // Přechod na jinou kartičku předčítání zastaví — jinak hlas dočítal
+  // předchozí otázku přes tu novou.
+  useEffect(() => {
+    stopSpeaking();
+    setIsSpeaking(false);
+  }, [currentCardIndex, currentQuestionId]);
+
+  const handleSpeak = () => {
     if (!currentQuestion) return;
-    const textToRead = isFlipped 
-      ? `Odpověď: ${currentQuestion.answer}. Odůvodnění: ${currentQuestion.rationale}` 
+    if (isSpeaking) {
+      stopSpeaking();
+      setIsSpeaking(false);
+      return;
+    }
+    const textToRead = isFlipped
+      ? `Odpověď: ${currentQuestion.answer}. Odůvodnění: ${currentQuestion.rationale}`
       : `Otázka: ${currentQuestion.question}`;
-    
+
     setIsSpeaking(true);
     speakText(textToRead, () => setIsSpeaking(false));
   };
 
-  // Leitner spaced repetition: 5 boxes progression
+  // Leitnerovo rozložené opakování: postup krabičkami 1 … LEITNER_MAX_BOX.
   const handleLeitnerProgress = (known: boolean) => {
     if (!currentQuestion) return;
     const currentBox = leitnerBoxes[currentQuestion.id] || 1;
-    // Správná odpověď: posun o 1 box výše (až do Boxu 5), chyba: reset zpět do Boxu 1
-    const nextBox = known ? Math.min(5, currentBox + 1) : 1;
+    // Správná odpověď: posun o 1 box výše (až do nejvyššího boxu), chyba: zpět do Boxu 1.
+    const nextBox = known ? Math.min(LEITNER_MAX_BOX, currentBox + 1) : 1;
 
     const nextBoxes = { ...leitnerBoxes, [currentQuestion.id]: nextBox };
     setLeitnerBoxes(nextBoxes);
@@ -393,10 +446,6 @@ export default function Flashcards({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentCardIndex, shuffledQuestions, toggleFavorite, editingQuestion, isHelpModalOpen, confirmResetLeitner]);
 
-  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-  const currentQuestion = shuffledQuestions[currentCardIndex];
-  const isCurrentHidden = currentQuestion ? isQuestionHidden(currentQuestion) : false;
-
   // Obsazenost krabiček a počet kartiček splatných k dnešnímu opakování.
   // Jedním průchodem, ne šesti — dřív se pole procházelo pro každou krabičku
   // zvlášť a bez memoizace při každém renderu.
@@ -411,13 +460,14 @@ export default function Flashcards({
       favorites,
       search: searchQuery,
     });
-    const counts = [0, 0, 0, 0, 0, 0];
+    const counts: Record<number, number> = {};
+    for (const box of LEITNER_BOX_NUMBERS) counts[box] = 0;
     let due = 0;
     let soonest = Number.POSITIVE_INFINITY;
     for (const q of base) {
       if (!q?.id) continue;
       const box = leitnerBoxes[q.id] || 1;
-      if (box >= 1 && box <= 5) counts[box] += 1;
+      if (box in counts) counts[box] += 1;
       if (isDueForReview(box, leitnerReviews[q.id])) due += 1;
       else soonest = Math.min(soonest, nextReviewAt(box, leitnerReviews[q.id]));
     }
@@ -433,10 +483,16 @@ export default function Flashcards({
   // ale splněný úkol: vše, co bylo na řadě, je zopakované.
   const isDueQueueDone = isLeitnerMode && selectedLeitnerBox === 'due' && baseCount > 0 && shuffledQuestions.length === 0;
 
-  const [, box1Count, box2Count, box3Count, box4Count, box5Count] = boxCounts;
+  // Prázdná konkrétní krabička při neprázdném výběru — také ne chyba filtru,
+  // jen v ní teď žádná kartička neleží.
+  const isSelectedBoxEmpty =
+    isLeitnerMode && typeof selectedLeitnerBox === 'number' && baseCount > 0 && shuffledQuestions.length === 0;
+
+  const currentBox = currentQuestion ? (leitnerBoxes[currentQuestion.id] || 1) : 1;
+  const isCurrentFavorite = currentQuestion ? favorites.includes(currentQuestion.id) : false;
 
   return (
-    <>
+    <div className="w-full flex flex-col gap-5 md:h-full md:min-h-0">
       {/* Leitner Explanation Modal */}
       <LeitnerHelpModal
         isOpen={isHelpModalOpen}
@@ -468,531 +524,503 @@ export default function Flashcards({
         />
       )}
 
-      {/* Mobile Filter Toggle */}
-      <div className="md:hidden w-full flex justify-end shrink-0 no-print">
-        <button 
-          onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
-          className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 shadow-sm"
-        >
-          <BookOpen className="w-4 h-4" />
-          {isMobileFiltersOpen ? 'Skrýt filtry' : 'Zobrazit filtry'}
-        </button>
-      </div>
-
-      {/* Sidebar Controls */}
-      <aside className={`w-full md:w-72 flex-col gap-6 shrink-0 md:h-full md:overflow-y-auto no-print ${isMobileFiltersOpen ? 'flex' : 'hidden md:flex'}`}>
-        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-5">
-          <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">
-            Nastavení Drilu
-          </h3>
-          
-          <div className="space-y-4">
-            {/* Spaced Repetition Toggle & 5-Box Leitner Controls */}
-            <div className="p-3 bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-900/50 rounded-xl">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5">
-                  <BrainCircuit className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                  <span className="text-xs font-bold text-indigo-950 dark:text-indigo-200">Leitnerův systém</span>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setIsHelpModalOpen(true);
-                    }}
-                    className="p-1 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-200 hover:bg-indigo-100/70 dark:hover:bg-indigo-900/60 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    aria-label="Nápověda k Leitnerovu systému"
-                    title="Jak funguje Leitnerův systém rozloženého opakování?"
-                  >
-                    <HelpCircle className="w-4 h-4" />
-                  </button>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={isLeitnerMode}
-                  onChange={(e) => setIsLeitnerMode(e.target.checked)}
-                  className="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                  aria-label="Aktivovat Leitnerův systém opakování"
-                />
-              </div>
-
-              {isLeitnerMode && (
-                <div className="mt-2 space-y-2 pt-2 border-t border-indigo-200/40 dark:border-indigo-900/40">
-                  <div className="flex items-center justify-between text-[0.6875rem] text-indigo-900 dark:text-indigo-300 font-semibold mb-1">
-                    <span>Přihrádky paměti:</span>
-                    <button
-                      type="button"
-                      onClick={() => setIsHelpModalOpen(true)}
-                      className="text-[0.625rem] text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-0.5"
-                    >
-                      <HelpCircle className="w-3 h-3" /> Nápověda
-                    </button>
-                  </div>
-
-                  {/* Fronta „ke zopakování dnes“ — jádro rozloženého opakování.
-                      Box 1 každý den, B2 po 3 dnech, B3 po týdnu, B4 po 14 dnech,
-                      B5 po měsíci (LEITNER_INTERVAL_DAYS). */}
-                  <button
-                    type="button"
-                    onClick={() => setSelectedLeitnerBox('due')}
-                    title="Kartičky, u kterých už uplynul odstup opakování pro jejich krabičku"
-                    className={`w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg border text-[0.6875rem] font-bold transition-all cursor-pointer ${
-                      selectedLeitnerBox === 'due'
-                        ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs'
-                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                    }`}
-                  >
-                    <span className="flex items-center gap-1.5">
-                      <BrainCircuit className="w-3.5 h-3.5" />
-                      Ke zopakování dnes
-                    </span>
-                    <span
-                      className={`px-1.5 rounded-full ${
-                        selectedLeitnerBox === 'due'
-                          ? 'bg-white/20'
-                          : dueCount > 0
-                          ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300'
-                          : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
-                      }`}
-                    >
-                      {dueCount}
-                    </span>
-                  </button>
-
-                  {/* 5-Box Grid (Box 1 až 5) */}
-                  <div className="grid grid-cols-5 gap-1 text-[0.625rem] font-bold">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedLeitnerBox(1)}
-                      title="Box 1: Denní opakování"
-                      className={`p-1 rounded-md border text-center transition-all cursor-pointer ${
-                        selectedLeitnerBox === 1
-                          ? 'bg-rose-500 text-white border-rose-600 shadow-xs'
-                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-rose-300'
-                      }`}
-                    >
-                      <span>B1</span>
-                      <span className="block text-[0.5625rem] opacity-80">{box1Count}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedLeitnerBox(2)}
-                      title="Box 2: Každé 2-3 dny"
-                      className={`p-1 rounded-md border text-center transition-all cursor-pointer ${
-                        selectedLeitnerBox === 2
-                          ? 'bg-orange-500 text-white border-orange-600 shadow-xs'
-                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-orange-300'
-                      }`}
-                    >
-                      <span>B2</span>
-                      <span className="block text-[0.5625rem] opacity-80">{box2Count}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedLeitnerBox(3)}
-                      title="Box 3: 1× týdně"
-                      className={`p-1 rounded-md border text-center transition-all cursor-pointer ${
-                        selectedLeitnerBox === 3
-                          ? 'bg-amber-500 text-white border-amber-600 shadow-xs'
-                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-amber-300'
-                      }`}
-                    >
-                      <span>B3</span>
-                      <span className="block text-[0.5625rem] opacity-80">{box3Count}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedLeitnerBox(4)}
-                      title="Box 4: 1× za 14 dní"
-                      className={`p-1 rounded-md border text-center transition-all cursor-pointer ${
-                        selectedLeitnerBox === 4
-                          ? 'bg-blue-500 text-white border-blue-600 shadow-xs'
-                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-300'
-                      }`}
-                    >
-                      <span>B4</span>
-                      <span className="block text-[0.5625rem] opacity-80">{box4Count}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedLeitnerBox(5)}
-                      title="Box 5: Trvalá paměť (1× za měsíc)"
-                      className={`p-1 rounded-md border text-center transition-all cursor-pointer ${
-                        selectedLeitnerBox === 5
-                          ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs'
-                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-emerald-300'
-                      }`}
-                    >
-                      <span>B5</span>
-                      <span className="block text-[0.5625rem] opacity-80">{box5Count}</span>
-                    </button>
-                  </div>
-
-                  <div className="flex justify-between items-center pt-1 text-[0.625rem] text-indigo-700 dark:text-indigo-400">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedLeitnerBox('all')}
-                      className={`underline cursor-pointer ${selectedLeitnerBox === 'all' ? 'font-bold text-indigo-900 dark:text-white' : ''}`}
-                    >
-                      Všechny boxy
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleResetLeitner}
-                      className="text-slate-400 hover:text-rose-500 cursor-pointer"
-                    >
-                      Reset
-                    </button>
-                  </div>
-                </div>
-              )}
+      {/* Záhlaví stránky — stejné jako u ostatních záložek */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 no-print print:hidden shrink-0">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="w-11 h-11 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0">
+              <Layers className="w-6 h-6" aria-hidden="true" />
             </div>
-
-            <div>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input 
-                  type="text" 
-                  placeholder="Hledat..." 
-                  className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">{NAV_TAB_LABELS.flashcards}</h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                Otázky z banky jako oboustranné kartičky, volitelně s Leitnerovým rozloženým opakováním.
+              </p>
             </div>
+          </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2" htmlFor={`${fieldIds}-0`}>Předmět</label>
-              <select
-                id={`${fieldIds}-0`} 
-                className="w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-sm bg-slate-50 dark:bg-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={selectedSubject}
-                onChange={(e) => setSelectedSubject(e.target.value)}
-              >
-                <option value="all">Všechny předměty</option>
-                {subjects.map(subject => (
-                  <option key={subject} value={subject}>{getSubjectInfo(subject).name}</option>
-                ))}
-              </select>
-            </div>
-
-            <label className="flex items-center gap-2 cursor-pointer p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors border border-transparent">
-              <input 
-                type="checkbox" 
-                className="rounded text-blue-600 focus:ring-blue-500 bg-slate-100 dark:bg-slate-700 border-slate-300 dark:border-slate-600"
-                checked={showOnlyFavorites}
-                onChange={(e) => setShowOnlyFavorites(e.target.checked)}
-              />
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Jen Oblíbené ⭐</span>
-            </label>
-
-            <button 
-              onClick={handleShuffle}
-              className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="hidden md:inline text-sm text-slate-500 dark:text-slate-400">
+              {pluralCards(baseCount)} ve výběru
+            </span>
+            {/* Přepínač filtrů jen na mobilu — na širší obrazovce je panel vidět vždy */}
+            <button
+              type="button"
+              onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
+              aria-expanded={isMobileFiltersOpen}
+              className="md:hidden flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer"
             >
-              <Shuffle className="w-4 h-4" />
-              Zamíchat kartičky
+              <SlidersHorizontal className="w-4 h-4" aria-hidden="true" />
+              {isMobileFiltersOpen ? 'Skrýt filtry' : 'Zobrazit filtry'}
             </button>
           </div>
         </div>
-      </aside>
+      </div>
 
-      {/* Main Flashcard Area */}
-      <section className="flex-1 flex flex-col min-h-[100dvh] md:min-h-0 h-auto md:h-full overflow-y-auto md:overflow-hidden shrink-0">
-        {isDueQueueDone ? (
-          <div role="status" className="w-full h-full bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-12 text-center">
-            <CheckCircle2 className="w-12 h-12 text-emerald-500 mb-3" aria-hidden="true" />
-            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Hotovo pro dnešek</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 max-w-sm">
-              Všechny kartičky, které byly dnes na řadě, máte zopakované.
-              {nextDueAt !== null && (
-                <> Další budou na řadě {new Date(nextDueAt).toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'numeric' })}.</>
-              )}
-            </p>
-            <button
-              type="button"
-              onClick={() => setSelectedLeitnerBox('all')}
-              className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
-            >
-              Procvičit i ostatní kartičky
-            </button>
-          </div>
-        ) : shuffledQuestions.length === 0 ? (
-          <div className="w-full h-full bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-12 text-center">
-            <p className="text-slate-500 dark:text-slate-400 mb-2">Nenalezeny žádné otázky odpovídající filtrům.</p>
-            <button 
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedSubject('all');
-                setShowOnlyFavorites(false);
-                setSelectedLeitnerBox('all');
-              }}
-              className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
-            >
-              Zrušit filtry
-            </button>
-          </div>
-        ) : (
-          <div className="w-full h-full flex flex-col justify-center items-center max-w-2xl mx-auto">
-            <div className="flex justify-between items-center mb-4 px-2 w-full no-print">
-              <div className="flex items-center gap-3">
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                    Karta {currentCardIndex + 1} z {shuffledQuestions.length}
-                  </span>
-                  <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-300 rounded-full"
-                      style={{ width: `${shuffledQuestions.length > 0 ? ((currentCardIndex + 1) / shuffledQuestions.length) * 100 : 0}%` }}
+      <div className="flex flex-col md:flex-row gap-5 md:flex-1 md:min-h-0">
+        {/* Sidebar Controls */}
+        <aside className={`w-full md:w-72 flex-col gap-5 shrink-0 md:h-full md:overflow-y-auto no-print ${isMobileFiltersOpen ? 'flex' : 'hidden md:flex'}`}>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white mb-4">
+              Nastavení drilu
+            </h2>
+
+            <div className="space-y-4">
+              {/* Leitnerovo rozložené opakování */}
+              <div className="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                <div className="flex items-center justify-between gap-2">
+                  <label htmlFor={`${fieldIds}-leitner`} className="flex items-center gap-2 cursor-pointer min-w-0">
+                    <input
+                      id={`${fieldIds}-leitner`}
+                      type="checkbox"
+                      checked={isLeitnerMode}
+                      onChange={(e) => setIsLeitnerMode(e.target.checked)}
+                      className="rounded text-teal-600 focus:ring-teal-500 cursor-pointer"
                     />
-                  </div>
+                    <BrainCircuit className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" aria-hidden="true" />
+                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">Leitnerův systém</span>
+                  </label>
+                  {/* Jediné tlačítko nápovědy na stránce */}
+                  <button
+                    type="button"
+                    onClick={() => setIsHelpModalOpen(true)}
+                    className="p-1 text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 shrink-0 cursor-pointer"
+                    aria-label="Nápověda k Leitnerovu systému"
+                    title="Jak funguje Leitnerův systém rozloženého opakování?"
+                  >
+                    <HelpCircle className="w-4 h-4" aria-hidden="true" />
+                  </button>
                 </div>
 
                 {isLeitnerMode && (
-                  <div className="flex items-center gap-1">
-                    <span className={`text-[0.6875rem] font-bold px-2 py-0.5 rounded-full ${
-                      (leitnerBoxes[currentQuestion.id] || 1) === 5
-                        ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
-                        : (leitnerBoxes[currentQuestion.id] || 1) === 4
-                        ? 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-800'
-                        : (leitnerBoxes[currentQuestion.id] || 1) === 3
-                        ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800'
-                        : (leitnerBoxes[currentQuestion.id] || 1) === 2
-                        ? 'bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border border-orange-300 dark:border-orange-800'
-                        : 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800'
-                    }`}>
-                      Box {leitnerBoxes[currentQuestion.id] || 1}
-                    </span>
+                  <div className="mt-3 space-y-2 pt-3 border-t border-slate-200 dark:border-slate-700">
+                    {/* Fronta „ke zopakování dnes“ — jádro rozloženého opakování.
+                        Odstupy krabiček určuje LEITNER_INTERVAL_DAYS. */}
                     <button
                       type="button"
-                      onClick={() => setIsHelpModalOpen(true)}
-                      className="text-slate-400 hover:text-indigo-600 p-0.5"
-                      title="Nápověda k Leitnerovu systému"
+                      onClick={() => setSelectedLeitnerBox('due')}
+                      aria-pressed={selectedLeitnerBox === 'due'}
+                      title="Kartičky, u kterých už uplynul odstup opakování pro jejich krabičku"
+                      className={`w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
+                        selectedLeitnerBox === 'due' ? BOX_BUTTON_ACTIVE : BOX_BUTTON_IDLE
+                      }`}
                     >
-                      <HelpCircle className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                )}
-              </div>
-              
-              <div className="flex items-center gap-2">
-                {isSpeechSupported() && (
-                  <button
-                    onClick={handleSpeak}
-                    className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                    title="Přečíst nahlas (Hlasový dril)"
-                  >
-                    <Volume2 className={`w-4 h-4 ${isSpeaking ? 'text-blue-600 animate-pulse' : ''}`} />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Skryto pro studenty Banner (pouze pro lektory/adminy) */}
-            {canEdit && isCurrentHidden && (
-              <div className="w-full mb-3 px-4 py-2 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 rounded-xl text-amber-900 dark:text-amber-200 text-xs font-semibold flex items-center justify-between gap-3 shadow-xs no-print">
-                <span className="flex items-center gap-2">
-                  <EyeOff className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                  <span>Tato kartička je skryta pro běžné studenty</span>
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleToggleVisibility(currentQuestion)}
-                  className="px-2.5 py-1 bg-amber-200 dark:bg-amber-900/60 hover:bg-amber-300 dark:hover:bg-amber-800 rounded-lg text-amber-950 dark:text-amber-100 text-[0.6875rem] font-bold transition-colors cursor-pointer"
-                >
-                  Znovu publikovat
-                </button>
-              </div>
-            )}
-
-            {/* The 3D Card */}
-            <div className="relative min-h-[360px] md:min-h-[420px] h-auto w-full perspective-1000">
-              <div 
-                role="button"
-                tabIndex={0}
-                aria-label={isFlipped ? 'Otočit kartičku na otázku' : 'Otočit kartičku na odpověď'}
-                className={`w-full min-h-[360px] md:min-h-[420px] h-full transition-all duration-500 preserve-3d cursor-pointer ${isFlipped ? 'rotate-y-180' : ''}`}
-                onClick={handleFlip}
-                onKeyDown={activateOnKey(handleFlip)}
-              >
-                {/* Front Side */}
-                <div className={`absolute inset-0 w-full h-full min-h-[360px] md:min-h-[420px] backface-hidden bg-white dark:bg-slate-900 border rounded-2xl shadow-sm p-6 sm:p-8 flex flex-col hover:shadow-md transition-all ${
-                  canEdit && isCurrentHidden
-                    ? 'border-dashed border-amber-300 dark:border-amber-700/70 bg-amber-50/10'
-                    : 'border-slate-200 dark:border-slate-800'
-                }`}>
-                  <div className="flex justify-between items-start mb-6">
-                    <div className="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-900/30 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-400">
-                      {getSubjectInfo(currentQuestion.subject).name}
-                      {currentQuestion.topic && currentQuestion.topic !== currentQuestion.subject && currentQuestion.topic !== getSubjectInfo(currentQuestion.subject).name ? ` • ${currentQuestion.topic}` : ''}
-                    </div>
-                    
-                    <div className="flex items-center gap-1.5 no-print">
-                      {/* Lektor / Admin akce (Pencil & Eye) */}
-                      {canEdit && (
-                        <>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleVisibility(currentQuestion);
-                            }}
-                            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                              isCurrentHidden 
-                                ? 'text-amber-600 bg-amber-100 dark:bg-amber-950 hover:bg-amber-200' 
-                                : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-                            }`}
-                            title={isCurrentHidden ? "Publikovat pro studenty" : "Skrýt pro studenty"}
-                          >
-                            {isCurrentHidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditingQuestion(currentQuestion);
-                            }}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg transition-colors cursor-pointer"
-                            title="Upravit kartičku (in-place)"
-                          >
-                            <Edit3 className="w-3.5 h-3.5" />
-                            <span className="hidden sm:inline">Upravit</span>
-                          </button>
-                        </>
-                      )}
-
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleFavorite(currentQuestion.id);
-                        }}
-                        className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-                        title="Přidat do oblíbených"
+                      <span>Ke zopakování dnes</span>
+                      <span
+                        className={`px-1.5 rounded-full tabular-nums ${
+                          selectedLeitnerBox === 'due'
+                            ? 'bg-white/20'
+                            : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
+                        }`}
                       >
-                        <Star className={`w-5 h-5 ${favorites.includes(currentQuestion.id) ? 'fill-yellow-400 text-yellow-400' : 'text-slate-400 dark:text-slate-600'}`} />
+                        {dueCount}
+                      </span>
+                    </button>
+
+                    {/* Krabičky odvozené z LEITNER_INTERVAL_DAYS */}
+                    <div className="grid grid-cols-5 gap-1 text-[0.6875rem] font-semibold">
+                      {LEITNER_BOX_NUMBERS.map(box => {
+                        const isActive = selectedLeitnerBox === box;
+                        return (
+                          <button
+                            key={box}
+                            type="button"
+                            onClick={() => setSelectedLeitnerBox(box)}
+                            aria-pressed={isActive}
+                            aria-label={`${describeBox(box)}, ${pluralCards(boxCounts[box] ?? 0)}`}
+                            title={describeBox(box)}
+                            className={`p-1 rounded-md border text-center transition-colors cursor-pointer ${
+                              isActive ? BOX_BUTTON_ACTIVE : BOX_BUTTON_IDLE
+                            }`}
+                          >
+                            <span>B{box}</span>
+                            <span className="block text-[0.625rem] opacity-80 tabular-nums">{boxCounts[box] ?? 0}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <p className="text-[0.6875rem] text-slate-500 dark:text-slate-400 leading-snug">
+                      Opakování:{' '}
+                      {LEITNER_BOX_NUMBERS.map((box, i) => (
+                        <span key={box}>
+                          B{box} {formatIntervalDays(LEITNER_INTERVAL_DAYS[box])}
+                          {i < LEITNER_BOX_NUMBERS.length - 1 ? ', ' : '.'}
+                        </span>
+                      ))}
+                    </p>
+
+                    <div className="flex justify-between items-center pt-1 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedLeitnerBox('all')}
+                        aria-pressed={selectedLeitnerBox === 'all'}
+                        className={`underline cursor-pointer ${
+                          selectedLeitnerBox === 'all'
+                            ? 'font-semibold text-slate-900 dark:text-white'
+                            : 'text-teal-700 dark:text-teal-400'
+                        }`}
+                      >
+                        Všechny boxy
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleResetLeitner}
+                        className="text-slate-400 hover:text-red-600 dark:hover:text-red-400 cursor-pointer"
+                      >
+                        Vrátit vše do Boxu 1
                       </button>
                     </div>
                   </div>
+                )}
+              </div>
 
-                  <div className="flex-1 flex items-center justify-center text-center">
-                    <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 leading-tight">
-                      {currentQuestion.question}
-                    </h3>
+              <div>
+                <label htmlFor={`${fieldIds}-search`} className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">
+                  Hledat
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" aria-hidden="true" />
+                  <input
+                    id={`${fieldIds}-search`}
+                    type="search"
+                    placeholder="Otázka, odpověď nebo téma"
+                    className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2" htmlFor={`${fieldIds}-0`}>Předmět</label>
+                <select
+                  id={`${fieldIds}-0`}
+                  className="w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-sm bg-slate-50 dark:bg-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                >
+                  <option value="all">Všechny předměty</option>
+                  {subjects.map(subject => (
+                    <option key={subject} value={subject}>{getSubjectInfo(subject).name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <label className="flex items-center gap-2 cursor-pointer p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors border border-transparent">
+                <input
+                  type="checkbox"
+                  className="rounded text-teal-600 focus:ring-teal-500 bg-slate-100 dark:bg-slate-700 border-slate-300 dark:border-slate-600"
+                  checked={showOnlyFavorites}
+                  onChange={(e) => setShowOnlyFavorites(e.target.checked)}
+                />
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Jen oblíbené</span>
+              </label>
+
+              <button
+                type="button"
+                onClick={handleShuffle}
+                className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+              >
+                <Shuffle className="w-4 h-4" aria-hidden="true" />
+                Zamíchat kartičky
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Flashcard Area */}
+        <section className="flex-1 flex flex-col min-h-[100dvh] md:min-h-0 h-auto md:h-full overflow-y-auto md:overflow-hidden shrink-0">
+          {isDueQueueDone ? (
+            <div role="status" className="w-full h-full bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-12 text-center">
+              <CheckCircle2 className="w-12 h-12 text-emerald-500 mb-3" aria-hidden="true" />
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Hotovo pro dnešek</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 max-w-sm">
+                Všechny kartičky, které byly dnes na řadě, máte zopakované.
+                {nextDueAt !== null && (
+                  <> Další budou na řadě {new Date(nextDueAt).toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'numeric' })}.</>
+                )}
+              </p>
+              <button
+                type="button"
+                onClick={() => setSelectedLeitnerBox('all')}
+                className="text-teal-700 dark:text-teal-400 hover:underline text-sm font-medium cursor-pointer"
+              >
+                Procvičit i ostatní kartičky
+              </button>
+            </div>
+          ) : isSelectedBoxEmpty ? (
+            <div role="status" className="w-full h-full bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-12 text-center">
+              <Layers className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-3" aria-hidden="true" />
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">V tomto boxu teď nic není</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 max-w-sm">
+                Kartičky se do Boxu {selectedLeitnerBox} dostanou postupem z nižších boxů, případně návratem po chybě do Boxu 1.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-4 text-sm font-medium">
+                <button
+                  type="button"
+                  onClick={() => setSelectedLeitnerBox('due')}
+                  className="text-teal-700 dark:text-teal-400 hover:underline cursor-pointer"
+                >
+                  Ke zopakování dnes ({dueCount})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedLeitnerBox('all')}
+                  className="text-teal-700 dark:text-teal-400 hover:underline cursor-pointer"
+                >
+                  Všechny boxy
+                </button>
+              </div>
+            </div>
+          ) : !currentQuestion ? (
+            <div className="w-full h-full bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-12 text-center">
+              <p className="text-slate-500 dark:text-slate-400 mb-2">Nenalezeny žádné otázky odpovídající filtrům.</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedSubject('all');
+                  setShowOnlyFavorites(false);
+                  setSelectedLeitnerBox('all');
+                }}
+                className="text-teal-700 dark:text-teal-400 hover:underline text-sm font-medium cursor-pointer"
+              >
+                Zrušit filtry
+              </button>
+            </div>
+          ) : (
+            <div className="w-full h-full flex flex-col justify-center items-center max-w-2xl mx-auto">
+              {/* Lišta nad kartičkou: postup, box, akce. Leží mimo otáčející se
+                  plochu, takže je stejná z obou stran a nic se nezdvojuje. */}
+              <div className="flex justify-between items-center gap-3 mb-4 px-2 w-full no-print">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex flex-col gap-1.5 min-w-0">
+                    <span className="text-sm font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                      Karta {currentCardIndex + 1} z {shuffledQuestions.length}
+                    </span>
+                    <div
+                      className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"
+                      role="progressbar"
+                      aria-label="Postup balíčkem"
+                      aria-valuemin={1}
+                      aria-valuemax={shuffledQuestions.length}
+                      aria-valuenow={currentCardIndex + 1}
+                    >
+                      <div
+                        className="h-full bg-teal-500 transition-all duration-300 rounded-full"
+                        style={{ width: `${((currentCardIndex + 1) / shuffledQuestions.length) * 100}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="text-center text-sm text-slate-400 dark:text-slate-500 mt-4 font-medium">
-                    Kliknutím otočte pro odpověď
-                  </div>
+
+                  {isLeitnerMode && (
+                    <span
+                      className="text-[0.6875rem] font-semibold px-2 py-0.5 rounded-full bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-500/30 whitespace-nowrap"
+                      title={describeBox(currentBox)}
+                    >
+                      Box {currentBox}
+                    </span>
+                  )}
                 </div>
 
-                {/* Back Side */}
-                <div className={`absolute inset-0 w-full h-full min-h-[360px] md:min-h-[420px] backface-hidden rotate-y-180 bg-slate-50 dark:bg-slate-800/80 border rounded-2xl shadow-sm p-6 sm:p-8 flex flex-col hover:shadow-md transition-all ${
-                  canEdit && isCurrentHidden
-                    ? 'border-dashed border-amber-300 dark:border-amber-700/70'
-                    : 'border-blue-200 dark:border-blue-900/50'
-                }`}>
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
-                      Odpověď
+                <div className="flex items-center gap-1 shrink-0">
+                  {/* Lektor / Admin akce — jednou, mimo kartičku */}
+                  {canEdit && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleVisibility(currentQuestion)}
+                        aria-pressed={isCurrentHidden}
+                        className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                          isCurrentHidden
+                            ? 'text-amber-700 bg-amber-100 dark:bg-amber-950 dark:text-amber-300 hover:bg-amber-200'
+                            : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        }`}
+                        aria-label={isCurrentHidden ? 'Publikovat kartičku pro studenty' : 'Skrýt kartičku pro studenty'}
+                        title={isCurrentHidden ? 'Publikovat pro studenty' : 'Skrýt pro studenty'}
+                      >
+                        {isCurrentHidden ? <EyeOff className="w-4 h-4" aria-hidden="true" /> : <Eye className="w-4 h-4" aria-hidden="true" />}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingQuestion(currentQuestion)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-teal-700 dark:text-teal-300 bg-teal-500/10 hover:bg-teal-500/20 rounded-lg transition-colors cursor-pointer"
+                        aria-label="Upravit kartičku"
+                        title="Upravit kartičku"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" aria-hidden="true" />
+                        <span className="hidden sm:inline">Upravit</span>
+                      </button>
+                    </>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => toggleFavorite(currentQuestion.id)}
+                    aria-pressed={isCurrentFavorite}
+                    aria-label={isCurrentFavorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}
+                    title={isCurrentFavorite ? 'Odebrat z oblíbených (F)' : 'Přidat do oblíbených (F)'}
+                    className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors cursor-pointer"
+                  >
+                    <Star
+                      className={`w-5 h-5 ${isCurrentFavorite ? 'fill-amber-400 text-amber-400' : 'text-slate-400 dark:text-slate-600'}`}
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  {isSpeechSupported() && (
+                    <button
+                      type="button"
+                      onClick={handleSpeak}
+                      aria-pressed={isSpeaking}
+                      aria-label={isSpeaking ? 'Zastavit předčítání' : 'Přečíst kartičku nahlas'}
+                      className={`p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
+                        isSpeaking ? 'text-teal-600 dark:text-teal-400' : 'text-slate-400 hover:text-teal-600 dark:hover:text-teal-400'
+                      }`}
+                      title={isSpeaking ? 'Zastavit předčítání' : 'Přečíst nahlas'}
+                    >
+                      <Volume2 className="w-4 h-4" aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Skryto pro studenty (pouze pro lektory/adminy) */}
+              {canEdit && isCurrentHidden && (
+                <div className="w-full mb-3 px-4 py-2 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 rounded-xl text-amber-900 dark:text-amber-200 text-xs font-semibold flex items-center justify-between gap-3 no-print">
+                  <span className="flex items-center gap-2">
+                    <EyeOff className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
+                    <span>Tato kartička je skryta pro běžné studenty</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleVisibility(currentQuestion)}
+                    className="px-2.5 py-1 bg-amber-200 dark:bg-amber-900/60 hover:bg-amber-300 dark:hover:bg-amber-800 rounded-lg text-amber-950 dark:text-amber-100 text-[0.6875rem] font-bold transition-colors cursor-pointer"
+                  >
+                    Znovu publikovat
+                  </button>
+                </div>
+              )}
+
+              {/* The 3D Card */}
+              <div className="relative min-h-[360px] md:min-h-[420px] h-auto w-full perspective-1000">
+                <div
+                  role="button"
+                  tabIndex={0}
+                  aria-label={isFlipped ? 'Otočit kartičku na otázku' : 'Otočit kartičku na odpověď'}
+                  className={`w-full min-h-[360px] md:min-h-[420px] h-full transition-all duration-500 preserve-3d cursor-pointer ${isFlipped ? 'rotate-y-180' : ''}`}
+                  onClick={handleFlip}
+                  onKeyDown={activateOnKey(handleFlip)}
+                >
+                  {/* Front Side */}
+                  <div className={`absolute inset-0 w-full h-full min-h-[360px] md:min-h-[420px] backface-hidden bg-white dark:bg-slate-900 border rounded-2xl p-6 sm:p-8 flex flex-col transition-colors ${
+                    canEdit && isCurrentHidden
+                      ? 'border-dashed border-amber-300 dark:border-amber-700/70'
+                      : 'border-slate-200 dark:border-slate-800'
+                  }`}>
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="inline-flex items-center rounded-full bg-teal-500/10 px-2.5 py-0.5 text-xs font-semibold text-teal-700 dark:text-teal-300">
+                        {getSubjectInfo(currentQuestion.subject).name}
+                        {currentQuestion.topic && currentQuestion.topic !== currentQuestion.subject && currentQuestion.topic !== getSubjectInfo(currentQuestion.subject).name ? ` · ${currentQuestion.topic}` : ''}
+                      </div>
                     </div>
 
-                    {/* Lektor / Admin akce na zadní straně kartičky */}
-                    {canEdit && (
-                      <div className="flex items-center gap-1.5 no-print">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleVisibility(currentQuestion);
-                          }}
-                          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                            isCurrentHidden 
-                              ? 'text-amber-600 bg-amber-100 dark:bg-amber-950 hover:bg-amber-200' 
-                              : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-                          }`}
-                          title={isCurrentHidden ? "Publikovat pro studenty" : "Skrýt pro studenty"}
-                        >
-                          {isCurrentHidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingQuestion(currentQuestion);
-                          }}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg transition-colors cursor-pointer"
-                          title="Upravit kartičku (in-place)"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">Upravit</span>
-                        </button>
+                    <div className="flex-1 flex items-center justify-center text-center">
+                      <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-tight">
+                        {currentQuestion.question}
+                      </h3>
+                    </div>
+                    <div className="text-center text-sm text-slate-400 dark:text-slate-500 mt-4 font-medium">
+                      Kliknutím otočte pro odpověď
+                    </div>
+                  </div>
+
+                  {/* Back Side */}
+                  <div className={`absolute inset-0 w-full h-full min-h-[360px] md:min-h-[420px] backface-hidden rotate-y-180 bg-slate-50 dark:bg-slate-800/80 border rounded-2xl p-6 sm:p-8 flex flex-col transition-colors ${
+                    canEdit && isCurrentHidden
+                      ? 'border-dashed border-amber-300 dark:border-amber-700/70'
+                      : 'border-teal-500/30'
+                  }`}>
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="text-sm font-semibold text-teal-700 dark:text-teal-300">
+                        Odpověď
+                      </div>
+                    </div>
+
+                    <div className="flex-1 flex flex-col justify-center overflow-y-auto">
+                      <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4">
+                        {currentQuestion.answer}
+                      </h3>
+                      <div className="bg-white dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800 mb-4">
+                        <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                          {currentQuestion.rationale}
+                        </p>
+                      </div>
+                    </div>
+                    {currentQuestion.source?.trim() && (
+                      <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 font-medium font-mono">
+                        Pramen: {currentQuestion.source}
                       </div>
                     )}
                   </div>
-
-                  <div className="flex-1 flex flex-col justify-center overflow-y-auto">
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4">
-                      {currentQuestion.answer}
-                    </h3>
-                    <div className="bg-white dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800 mb-4">
-                      <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                        {currentQuestion.rationale}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 font-medium font-mono">
-                    Pramen: {currentQuestion.source}
-                  </div>
                 </div>
+              </div>
+
+              {/* Hodnocení v Leitnerově režimu (jen po otočení) */}
+              {isLeitnerMode && isFlipped && (
+                <div className="flex items-center justify-center gap-4 mt-6 w-full no-print">
+                  <button
+                    type="button"
+                    onClick={() => handleLeitnerProgress(false)}
+                    className="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 text-sm cursor-pointer"
+                  >
+                    <RotateCcw className="w-4 h-4" aria-hidden="true" />
+                    <span>Ještě neumím (zpět do Boxu 1)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleLeitnerProgress(true)}
+                    className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 text-sm cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4" aria-hidden="true" />
+                    <span>Umím (posunout dál)</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Předchozí / další — dostupné vždy, i při otočené kartě v Leitnerově režimu */}
+              <div className={`flex items-center justify-center gap-6 w-full no-print ${isLeitnerMode && isFlipped ? 'mt-4' : 'mt-8'}`}>
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  disabled={currentCardIndex === 0}
+                  aria-label="Předchozí karta"
+                  className={`rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-teal-600 dark:hover:text-teal-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer ${isLeitnerMode && isFlipped ? 'p-2' : 'p-3'}`}
+                  title="Předchozí karta (šipka vlevo)"
+                >
+                  <ChevronLeft className={isLeitnerMode && isFlipped ? 'w-5 h-5' : 'w-6 h-6'} aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={currentCardIndex === shuffledQuestions.length - 1}
+                  aria-label="Další karta"
+                  className={`rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-teal-600 dark:hover:text-teal-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer ${isLeitnerMode && isFlipped ? 'p-2' : 'p-3'}`}
+                  title="Další karta (šipka vpravo)"
+                >
+                  <ChevronRight className={isLeitnerMode && isFlipped ? 'w-5 h-5' : 'w-6 h-6'} aria-hidden="true" />
+                </button>
+              </div>
+              <div className="hidden sm:flex items-center justify-center gap-4 mt-3 text-[0.625rem] text-slate-400 dark:text-slate-600 font-mono no-print">
+                <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500">Space</kbd> otočit</span>
+                <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500">← →</kbd> navigace</span>
+                <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500">F</kbd> oblíbené</span>
               </div>
             </div>
-
-            {/* Leitner Evaluation Buttons or Standard Navigation Controls */}
-            {isLeitnerMode && isFlipped ? (
-              <div className="flex items-center justify-center gap-4 mt-6 w-full animate-fadeIn no-print">
-                <button
-                  onClick={() => handleLeitnerProgress(false)}
-                  className="flex-1 py-3 px-4 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 text-sm cursor-pointer"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  <span>Ještě neumím (Vrátit do Boxu 1)</span>
-                </button>
-                <button
-                  onClick={() => handleLeitnerProgress(true)}
-                  className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 text-sm cursor-pointer"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Umím (Posunout dál)</span>
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className="flex items-center justify-center gap-6 mt-8 w-full no-print">
-                  <button 
-                    onClick={handlePrev}
-                    disabled={currentCardIndex === 0}
-                    className="p-3 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all cursor-pointer"
-                    title="Předchozí karta (Šipka vlevo)"
-                  >
-                    <ChevronLeft className="w-6 h-6" />
-                  </button>
-                  <button 
-                    onClick={handleNext}
-                    disabled={currentCardIndex === shuffledQuestions.length - 1}
-                    className="p-3 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all cursor-pointer"
-                    title="Další karta (Šipka vpravo)"
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </button>
-                </div>
-                <div className="hidden sm:flex items-center justify-center gap-4 mt-3 text-[0.625rem] text-slate-400 dark:text-slate-600 font-mono no-print">
-                  <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500">Space</kbd> otočit</span>
-                  <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500">← →</kbd> navigace</span>
-                  <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500">F</kbd> oblíbené</span>
-                </div>
-              </>
-            )}
-          </div>
-        )}
-      </section>
-    </>
+          )}
+        </section>
+      </div>
+    </div>
   );
 }

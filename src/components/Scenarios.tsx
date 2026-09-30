@@ -1,13 +1,18 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { tacticalScenarios, Scenario, ScenarioStep, ScenarioChoice } from '../data/scenariosData';
-import { ShieldAlert, CheckCircle2, XCircle, ArrowRight, RotateCcw, Award, BookOpen, AlertTriangle, ChevronRight, Compass, Plus, Edit3, Trash2, Eye, EyeOff } from 'lucide-react';
+import { CheckCircle2, XCircle, ArrowRight, RotateCcw, BookOpen, AlertTriangle, ChevronRight, Compass, Plus, Edit3, Trash2, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
 import { useEditableContent } from '../hooks/useEditableContent';
 import { useProgressRevision } from '../hooks/useProgressRevision';
 import { loadCompletedScenarios, saveCompletedScenarios, updateDailyStreak } from '../utils/gamification';
+import { NAV_TAB_LABELS } from '../data/navTabs';
 import ScenarioEditModal from './common/ScenarioEditModal';
 import ConfirmDialog from './common/ConfirmDialog';
+
+const SECONDARY_BUTTON =
+  'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700';
+const PRIMARY_BUTTON = 'bg-blue-600 hover:bg-blue-700 text-white';
 
 export default function Scenarios() {
   const { profile } = useAuth();
@@ -45,12 +50,25 @@ export default function Scenarios() {
   }, [progressRevision]);
 
   const categories = useMemo(
-    () => Array.from(new Set(scenarios.map(s => s.category))),
+    () => Array.from(new Set<string>(scenarios.map(s => s.category))),
     [scenarios]
   );
+
+  // Když lektor odebere poslední situaci vybrané kategorie, filtr by ukazoval
+  // prázdný seznam bez možnosti zjistit proč. Vrátí se proto na „Vše“.
+  useEffect(() => {
+    if (activeCategory !== 'all' && !categories.includes(activeCategory)) {
+      setActiveCategoryFilter('all');
+    }
+  }, [activeCategory, categories]);
+
   const filteredScenarios = activeCategory === 'all'
     ? scenarios
     : scenarios.filter(s => s.category === activeCategory);
+
+  // Počítají se jen existující situace — po odebrání situace by jinak
+  // „vyřešeno“ mohlo převýšit celkový počet.
+  const completedCount = scenarios.filter(s => completedScenarios.includes(s.id)).length;
 
   // Stav položky (skrytá, smazaná, upravená) podle jejího id.
   const entryById = useMemo(
@@ -61,6 +79,9 @@ export default function Scenarios() {
     () => scenarioEntries.filter(entry => entry.isDeleted),
     [scenarioEntries]
   );
+  const scenarioToDelete = confirmDeleteScenarioId
+    ? scenarios.find(s => s.id === confirmDeleteScenarioId) ?? null
+    : null;
 
   const handleScenarioSave = async (scenario: Scenario) => {
     const result = await saveScenario(scenario);
@@ -96,6 +117,14 @@ export default function Scenarios() {
     setScore({ correct: 0, total: 0 });
   };
 
+  // Správná volba vede na další krok jen tehdy, když ten krok ve scénáři
+  // opravdu existuje. Odkaz na neexistující krok (překlep v editoru) by jinak
+  // nechal tlačítko „Pokračovat“ bez účinku a scénář by skončil slepě.
+  const findNextStepIndex = (choice: ScenarioChoice): number => {
+    if (!selectedScenario || !choice.nextStepId) return -1;
+    return selectedScenario.steps.findIndex(s => s.id === choice.nextStepId);
+  };
+
   const handleChoose = (choice: ScenarioChoice) => {
     if (selectedChoice) return;
     setSelectedChoice(choice);
@@ -107,27 +136,17 @@ export default function Scenarios() {
     // Scénář se započítá (XP, odznaky) jen tehdy, když ho student prošel
     // napoprvé bez chybné volby. Dřív stačilo zkoušet možnosti, dokud nějaká
     // nevyšla. `score` je tu ještě stav PŘED touto volbou.
-    if (selectedScenario && choice.isCorrect && !choice.nextStepId && score.correct === score.total) {
+    if (selectedScenario && choice.isCorrect && findNextStepIndex(choice) === -1 && score.correct === score.total) {
       markScenarioCompleted(selectedScenario.id);
     }
   };
 
   const handleNextStep = () => {
-    if (!selectedScenario || !selectedChoice) return;
-
-    if (selectedChoice.isCorrect && selectedChoice.nextStepId) {
-      const nextIdx = selectedScenario.steps.findIndex(s => s.id === selectedChoice.nextStepId);
-      if (nextIdx !== -1) {
-        setCurrentStepIndex(nextIdx);
-        setSelectedChoice(null);
-        return;
-      }
-    }
-
-    // Finished scenario
-    if (selectedChoice.isCorrect && score.correct === score.total) {
-      markScenarioCompleted(selectedScenario.id);
-    }
+    if (!selectedScenario || !selectedChoice || !selectedChoice.isCorrect) return;
+    const nextIdx = findNextStepIndex(selectedChoice);
+    if (nextIdx === -1) return;
+    setCurrentStepIndex(nextIdx);
+    setSelectedChoice(null);
   };
 
   const handleResetScenario = () => {
@@ -137,7 +156,7 @@ export default function Scenarios() {
   };
 
   const handleBackToList = () => {
-    if (selectedScenario && selectedChoice?.isCorrect && !selectedChoice.nextStepId && score.correct === score.total) {
+    if (selectedScenario && selectedChoice?.isCorrect && findNextStepIndex(selectedChoice) === -1 && score.correct === score.total) {
       markScenarioCompleted(selectedScenario.id);
     }
     setSelectedScenario(null);
@@ -148,76 +167,87 @@ export default function Scenarios() {
 
   if (!selectedScenario) {
     return (
-      <div className="w-full flex flex-col pb-8">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-2xl p-5 sm:p-6 mb-6 shadow-md border border-slate-700/50">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-semibold uppercase tracking-wider mb-2 border border-blue-400/20">
-                <Compass className="w-3.5 h-3.5" />
-                <span>Takticko-právní kazuistika ZOP A</span>
+      <div className="w-full flex flex-col gap-5 pb-8">
+        {/* Záhlaví — stejně klidné jako u Administrativy a Profesní etiky */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-11 h-11 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                <Compass className="w-6 h-6" aria-hidden="true" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Modelové situace a rozhodovací scénáře</h2>
-              <p className="text-sm text-slate-300 mt-1 max-w-2xl">
-                Otestujte si správné taktické postupy, zákonné výzvy, volbu donucovacích prostředků a záchranu života v reálných podmínkách služby.
-              </p>
+              <div className="min-w-0">
+                <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">{NAV_TAB_LABELS.scenarios}</h1>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                  Modelové situace ze služby s výběrem postupu krok za krokem.
+                </p>
+              </div>
             </div>
 
-            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-4 py-2.5 rounded-xl border border-white/10 self-start sm:self-auto">
-              <Award className="w-5 h-5 text-amber-400" />
-              <div>
-                <div className="text-[0.6875rem] uppercase tracking-wider text-slate-300">Úspěšnost zásahů</div>
-                <div className="text-lg font-bold text-white">
-                  {completedScenarios.length} / {scenarios.length} <span className="text-xs font-normal text-slate-300">vyřešeno</span>
-                </div>
-              </div>
+            <div className="flex items-center gap-3 shrink-0 self-start md:self-auto">
+              <span className="text-sm text-slate-500 dark:text-slate-400">
+                {completedCount} z {scenarios.length} vyřešeno
+              </span>
+              {canEdit && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingScenario(null);
+                    setScenarioModalOpen(true);
+                  }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-colors cursor-pointer ${PRIMARY_BUTTON}`}
+                >
+                  <Plus className="w-4 h-4" aria-hidden="true" />
+                  Přidat modelovou situaci
+                </button>
+              )}
             </div>
           </div>
         </div>
 
-        {canEdit && (
-          <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
-            <button
-              type="button"
-              onClick={() => {
-                setEditingScenario(null);
-                setScenarioModalOpen(true);
-              }}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-bold transition-colors cursor-pointer shadow-sm"
-            >
-              <Plus className="w-4 h-4" />
-              Přidat modelovou situaci
-            </button>
-            {scenarioError && (
-              <span className="text-xs text-red-600 dark:text-red-400">{scenarioError}</span>
-            )}
+        {scenarioError && (
+          <p role="alert" className="text-sm text-red-600 dark:text-red-400">{scenarioError}</p>
+        )}
+
+        {/* Filtr kategorií */}
+        {scenarios.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+            {[{ id: 'all', label: 'Vše', count: scenarios.length }, ...categories.map(cat => ({
+              id: cat,
+              label: cat,
+              count: scenarios.filter(s => s.category === cat).length,
+            }))].map(({ id, label, count }) => {
+              const isActive = activeCategory === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => setActiveCategoryFilter(id)}
+                  className={`px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                    isActive
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
+                  }`}
+                >
+                  <span className="truncate">{label}</span>
+                  <span className={`text-xs ${isActive ? 'text-blue-100' : 'text-slate-400'}`}>({count})</span>
+                </button>
+              );
+            })}
           </div>
         )}
 
-        {/* Category Filter Bar */}
-        <div className="flex items-center gap-2 flex-wrap mb-5">
-          <button
-            onClick={() => setActiveCategoryFilter('all')}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              activeCategory === 'all' ? 'bg-blue-600 text-white shadow-sm' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-400'
-            }`}
-          >
-            Vše ({scenarios.length})
-          </button>
-          {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategoryFilter(cat)}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activeCategory === cat ? 'bg-blue-600 text-white shadow-sm' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-400'
-              }`}
-            >
-              {cat} ({scenarios.filter(s => s.category === cat).length})
-            </button>
-          ))}
-        </div>
-
-        {/* Scenario Grid */}
+        {/* Seznam situací */}
+        {scenarios.length === 0 ? (
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center text-sm text-slate-500 dark:text-slate-400">
+            Zatím tu není žádná modelová situace.
+            {canEdit && ' Přidejte první tlačítkem nahoře.'}
+          </div>
+        ) : filteredScenarios.length === 0 ? (
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center text-sm text-slate-500 dark:text-slate-400">
+            V této kategorii není žádná situace.
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredScenarios.map((scenario) => {
             const isCompleted = completedScenarios.includes(scenario.id);
@@ -226,11 +256,11 @@ export default function Scenarios() {
               <div key={scenario.id} className="flex flex-col gap-2">
               <button type="button"
                 onClick={() => handleSelectScenario(scenario)}
-                className={`w-full text-left group relative bg-white dark:bg-slate-900 border rounded-xl p-5 hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col justify-between flex-1 ${
+                className={`w-full text-left group relative bg-white dark:bg-slate-900 border rounded-xl p-5 transition-colors cursor-pointer flex flex-col justify-between flex-1 ${
                   entry?.isHidden
-                    ? 'border-dashed border-amber-300 dark:border-amber-700'
+                    ? 'border-dashed border-slate-300 dark:border-slate-600'
                     : isCompleted
-                    ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-500/[0.02]' 
+                    ? 'border-emerald-300 dark:border-emerald-800'
                     : 'border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600'
                 }`}
               >
@@ -241,30 +271,24 @@ export default function Scenarios() {
                     </span>
                     <div className="flex items-center gap-1.5">
                       {entry?.isHidden && (
-                        <span className="inline-flex items-center gap-1 text-[0.6875rem] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
-                          <EyeOff className="w-3 h-3" />
+                        <span className="inline-flex items-center gap-1 text-[0.6875rem] font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                          <EyeOff className="w-3 h-3" aria-hidden="true" />
                           Skryto
                         </span>
                       )}
                       {isCompleted && (
-                        <span className="inline-flex items-center gap-1 text-[0.6875rem] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300/60 dark:border-emerald-800/60">
-                          <CheckCircle2 className="w-3 h-3" />
+                        <span className="inline-flex items-center gap-1 text-[0.6875rem] font-semibold px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                          <CheckCircle2 className="w-3 h-3" aria-hidden="true" />
                           Vyřešeno
                         </span>
                       )}
-                      <span className={`text-[0.6875rem] font-bold px-2 py-0.5 rounded-full ${
-                        scenario.difficulty === 'Expertní' 
-                          ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400' 
-                          : scenario.difficulty === 'Pokročilá'
-                          ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400'
-                          : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400'
-                      }`}>
+                      <span className="text-[0.6875rem] font-semibold px-2 py-0.5 rounded-md text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
                         {scenario.difficulty}
                       </span>
                     </div>
                   </div>
 
-                  <h3 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2">
+                  <h3 className="font-bold text-base text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2">
                     {scenario.title}
                   </h3>
 
@@ -275,13 +299,13 @@ export default function Scenarios() {
 
                 <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800/80 text-xs">
                   <span className="font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                    <BookOpen className="w-3.5 h-3.5 text-blue-500" />
+                    <BookOpen className="w-3.5 h-3.5 text-blue-500" aria-hidden="true" />
                     {scenario.badge}
                   </span>
 
                   <div className="flex items-center gap-1 font-semibold text-blue-600 dark:text-blue-400">
-                    <span>{isCompleted ? 'Znovu projít' : 'Zahájit řešení'}</span>
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <span>{isCompleted ? 'Projít znovu' : 'Začít'}</span>
+                    <ChevronRight className="w-4 h-4" aria-hidden="true" />
                   </div>
                 </div>
               </button>
@@ -296,80 +320,79 @@ export default function Scenarios() {
                       setEditingScenario(scenario);
                       setScenarioModalOpen(true);
                     }}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 text-[0.6875rem] font-bold cursor-pointer"
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[0.6875rem] font-bold cursor-pointer ${SECONDARY_BUTTON}`}
                   >
-                    <Edit3 className="w-3.5 h-3.5" />
+                    <Edit3 className="w-3.5 h-3.5" aria-hidden="true" />
                     Upravit
                   </button>
                   <button
                     type="button"
                     onClick={() => toggleScenarioHidden(scenario.id).then(r => setScenarioError(r.error))}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[0.6875rem] font-bold cursor-pointer"
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[0.6875rem] font-bold cursor-pointer ${SECONDARY_BUTTON}`}
                   >
-                    {entry?.isHidden ? <EyeOff className="w-3.5 h-3.5 text-amber-500" /> : <Eye className="w-3.5 h-3.5" />}
+                    {entry?.isHidden ? <EyeOff className="w-3.5 h-3.5" aria-hidden="true" /> : <Eye className="w-3.5 h-3.5" aria-hidden="true" />}
                     {entry?.isHidden ? 'Zveřejnit' : 'Skrýt'}
                   </button>
-                  {confirmDeleteScenarioId === scenario.id ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleScenarioDelete(scenario.id)}
-                        className="px-2.5 py-1 rounded-lg bg-red-600 text-white text-[0.6875rem] font-bold cursor-pointer"
-                      >
-                        Opravdu smazat
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setConfirmDeleteScenarioId(null)}
-                        className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[0.6875rem] font-bold cursor-pointer"
-                      >
-                        Ne
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setConfirmDeleteScenarioId(scenario.id)}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-[0.6875rem] font-bold cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      Odebrat
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDeleteScenarioId(scenario.id)}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-[0.6875rem] font-bold cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                    Odebrat
+                  </button>
                 </div>
               )}
               </div>
             );
           })}
         </div>
+        )}
 
         {canEdit && deletedEntries.length > 0 && (
-          <div className="mt-5 flex items-center gap-2 flex-wrap text-[0.6875rem] text-slate-500 dark:text-slate-400">
+          <div className="flex items-center gap-2 flex-wrap text-[0.6875rem] text-slate-500 dark:text-slate-400">
             <span className="font-semibold">Odebrané situace (vrátit / smazat natrvalo):</span>
             {deletedEntries.map(entry => (
-              <button
-                key={entry.id}
-                type="button"
-                onClick={() => restoreScenario(entry.id).then(r => setScenarioError(r.error))}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold transition-colors cursor-pointer"
-              >
-                <RotateCcw className="w-3 h-3" />
-                {entry.item.title}
-              </button>
-            ))}
-            {deletedEntries.map(entry => (
-              <button
-                key={`purge-${entry.id}`}
-                type="button"
-                onClick={() => setPurgeScenarioId(entry.id)}
-                aria-label={`Smazat situaci ${entry.item.title} natrvalo`}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-semibold transition-colors cursor-pointer"
-              >
-                <Trash2 className="w-3 h-3" />
-                {entry.item.title}
-              </button>
+              <span key={entry.id} className="inline-flex items-center gap-0.5">
+                <button
+                  type="button"
+                  onClick={() => restoreScenario(entry.id).then(r => setScenarioError(r.error))}
+                  aria-label={`Vrátit situaci ${entry.item.title}`}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold transition-colors cursor-pointer"
+                >
+                  <RotateCcw className="w-3 h-3" aria-hidden="true" />
+                  {entry.item.title}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPurgeScenarioId(entry.id)}
+                  aria-label={`Smazat situaci ${entry.item.title} natrvalo`}
+                  className="p-1 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer"
+                >
+                  <Trash2 className="w-3 h-3" aria-hidden="true" />
+                </button>
+              </span>
             ))}
           </div>
+        )}
+
+        {canEdit && (
+          <ConfirmDialog
+            isOpen={confirmDeleteScenarioId !== null}
+            title="Odebrat modelovou situaci?"
+            description={
+              <>
+                Situace <strong>{scenarioToDelete?.title ?? confirmDeleteScenarioId}</strong> zmizí z přehledu.
+                Půjde ji vrátit ze seznamu odebraných.
+              </>
+            }
+            confirmLabel="Odebrat"
+            tone="danger"
+            onCancel={() => setConfirmDeleteScenarioId(null)}
+            onConfirm={() => {
+              if (confirmDeleteScenarioId) void handleScenarioDelete(confirmDeleteScenarioId);
+            }}
+          />
         )}
 
         {canEdit && (
@@ -405,18 +428,21 @@ export default function Scenarios() {
   }
 
   const currentStep: ScenarioStep = selectedScenario.steps[currentStepIndex];
-  const isFinished = selectedChoice?.isCorrect && !selectedChoice.nextStepId;
+  // Poslední krok = správná volba bez (existujícího) dalšího kroku.
+  const isFinished = !!selectedChoice?.isCorrect && findNextStepIndex(selectedChoice) === -1;
+  const legalBasis = selectedChoice?.legalBasis.trim() ?? '';
 
   return (
     <div className="w-full flex flex-col pb-8">
-      {/* Top Bar */}
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-200 dark:border-slate-800">
+      {/* Horní lišta */}
+      <div className="flex items-center justify-between gap-3 flex-wrap mb-4 pb-3 border-b border-slate-200 dark:border-slate-800">
         <button
+          type="button"
           onClick={handleBackToList}
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
         >
-          <ArrowRight className="w-4 h-4 rotate-180" />
-          <span>Zpět na přehled scénářů</span>
+          <ArrowRight className="w-4 h-4 rotate-180" aria-hidden="true" />
+          <span>Zpět na přehled</span>
         </button>
 
         <div className="flex items-center gap-2">
@@ -437,36 +463,35 @@ export default function Scenarios() {
           <button
             type="button"
             onClick={handleResetScenario}
-            title="Resetovat scénář"
-            aria-label="Resetovat scénář a začít znovu"
+            title="Začít scénář znovu"
+            aria-label="Začít scénář znovu od prvního kroku"
             className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
       </div>
 
-      {/* Scenario Header & Briefing */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 mb-5 shadow-sm">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">
-          <ShieldAlert className="w-4 h-4" />
-          <span>{selectedScenario.category}</span>
+      {/* Zadání situace */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 mb-5">
+        <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+          {selectedScenario.category} · {selectedScenario.difficulty}
         </div>
-        <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-2">
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
           {selectedScenario.title}
         </h2>
         <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3.5 border border-slate-200/60 dark:border-slate-700/60 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-          <span className="font-bold text-slate-900 dark:text-white block mb-1">Zadání situace:</span>
+          <span className="font-bold text-slate-900 dark:text-white block mb-1">Zadání situace</span>
           {selectedScenario.briefing}
         </div>
       </div>
 
-      {/* Step Description */}
+      {/* Krok scénáře */}
       <motion.div
         key={currentStep.id}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 mb-5 shadow-sm"
+        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 mb-5"
       >
         <h3 className="font-bold text-base text-slate-900 dark:text-white mb-2">
           {currentStep.title}
@@ -475,11 +500,11 @@ export default function Scenarios() {
           {currentStep.description}
         </p>
 
-        {/* Choices */}
+        {/* Možnosti */}
         <div className="space-y-3">
           {currentStep.choices.map((choice) => {
             const isSelected = selectedChoice?.id === choice.id;
-            let choiceStyle = 'border-slate-200 dark:border-slate-700/80 hover:border-blue-400 dark:hover:border-blue-600 bg-slate-50/50 dark:bg-slate-800/40 text-slate-800 dark:text-slate-200';
+            let choiceStyle = 'border-slate-200 dark:border-slate-700/80 hover:border-blue-400 dark:hover:border-blue-600 bg-slate-50/50 dark:bg-slate-800/40 text-slate-800 dark:text-slate-200 cursor-pointer';
 
             if (selectedChoice) {
               if (isSelected) {
@@ -496,11 +521,12 @@ export default function Scenarios() {
             return (
               <button
                 key={choice.id}
+                type="button"
                 disabled={!!selectedChoice}
                 onClick={() => handleChoose(choice)}
-                className={`w-full text-left p-4 rounded-xl border transition-all text-xs sm:text-sm leading-relaxed flex items-start gap-3 ${choiceStyle}`}
+                className={`w-full text-left p-4 rounded-xl border transition-colors text-xs sm:text-sm leading-relaxed flex items-start gap-3 ${choiceStyle}`}
               >
-                <div className="mt-0.5 shrink-0">
+                <div className="mt-0.5 shrink-0" aria-hidden="true">
                   {selectedChoice && isSelected ? (
                     choice.isCorrect ? (
                       <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
@@ -508,9 +534,7 @@ export default function Scenarios() {
                       <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400" />
                     )
                   ) : (
-                    <div className="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center text-[0.625rem] font-bold">
-                      •
-                    </div>
+                    <div className="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-600" />
                   )}
                 </div>
                 <div className="flex-1 font-medium">{choice.text}</div>
@@ -519,7 +543,7 @@ export default function Scenarios() {
           })}
         </div>
 
-        {/* Feedback block after choice */}
+        {/* Vyhodnocení volby */}
         <AnimatePresence>
           {selectedChoice && (
             <motion.div
@@ -529,66 +553,68 @@ export default function Scenarios() {
               className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800 overflow-hidden"
             >
               <div className={`p-4 rounded-xl border ${
-                selectedChoice.isCorrect 
-                  ? 'bg-emerald-500/10 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200' 
+                selectedChoice.isCorrect
+                  ? 'bg-emerald-500/10 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200'
                   : 'bg-rose-500/10 border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-200'
               }`}>
                 <div className="flex items-center gap-2 font-bold text-sm mb-1.5">
                   {selectedChoice.isCorrect ? (
                     <>
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                      <span>Takticky i právně správný postup</span>
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+                      <span>Správný postup</span>
                     </>
                   ) : (
                     <>
-                      <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
-                      <span>Taktická nebo právní chyba v zákroku</span>
+                      <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" aria-hidden="true" />
+                      <span>Tento postup není správný</span>
                     </>
                   )}
                 </div>
-                <p className="text-xs sm:text-sm leading-relaxed mb-2.5">
+                <p className="text-xs sm:text-sm leading-relaxed">
                   {selectedChoice.feedback}
                 </p>
-                <div className="text-[0.6875rem] font-mono font-semibold bg-white/50 dark:bg-black/30 px-2.5 py-1.5 rounded-md inline-block">
-                  Zákonný rámec / norma: {selectedChoice.legalBasis}
-                </div>
+                {legalBasis && (
+                  <div className="mt-2.5 text-[0.6875rem] font-mono font-semibold bg-white/50 dark:bg-black/30 px-2.5 py-1.5 rounded-md inline-block">
+                    Opora / odkaz: {legalBasis}
+                  </div>
+                )}
               </div>
 
-              {/* Action Buttons */}
+              {/* Další krok */}
               <div className="mt-4 flex justify-end gap-3">
                 {!selectedChoice.isCorrect ? (
                   <button
+                    type="button"
                     onClick={() => setSelectedChoice(null)}
-                    className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-xs sm:text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-1.5"
+                    className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${SECONDARY_BUTTON}`}
                   >
-                    <RotateCcw className="w-4 h-4" />
+                    <RotateCcw className="w-4 h-4" aria-hidden="true" />
                     <span>Zkusit jinou možnost</span>
                   </button>
                 ) : isFinished ? (
-                  <div className="flex items-center gap-3">
-                    <div className="text-xs text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1">
-                      <Award className="w-4 h-4" />
-                      <span>
-                        {score.correct === score.total
-                          ? 'Scénář úspěšně vyřešen!'
-                          : 'Scénář dokončen. Do plnění se započítá, až ho projdete bez chyby.'}
-                      </span>
-                    </div>
+                  <div className="flex items-center gap-3 flex-wrap justify-end">
+                    <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">
+                      {score.correct === score.total
+                        ? 'Scénář dokončen bez chyby.'
+                        : 'Scénář dokončen. Do plnění se započítá, až ho projdete bez chyby.'}
+                    </span>
                     <button
+                      type="button"
                       onClick={handleBackToList}
-                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5"
+                      className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${PRIMARY_BUTTON}`}
                     >
-                      <span>Dokončit a zpět na přehled</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <span>Zpět na přehled</span>
+                      <ArrowRight className="w-4 h-4" aria-hidden="true" />
                     </button>
                   </div>
                 ) : (
                   <button
+                    type="button"
                     onClick={handleNextStep}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5"
+                    className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${PRIMARY_BUTTON}`}
                   >
                     <span>Pokračovat na další krok</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
                   </button>
                 )}
               </div>

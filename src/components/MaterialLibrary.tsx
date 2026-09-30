@@ -171,18 +171,18 @@ export default function MaterialLibrary() {
       <PrintHeader
         subject="Knihovna studijních materiálů"
         docTitle={`Katalog výukových podkladů a předpisů (Filtr: ${activeSubject})`}
-        subtext="Akademie Vězeňské služby ČR – Interní studijní materiály"
+        subtext="Studijní portál – neoficiální studijní materiály"
       />
 
       {/* Header na obrazovce */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-md shadow-indigo-500/25">
-            <BookOpen className="w-5 h-5 text-white" />
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
+        <div className="flex items-center gap-3.5 min-w-0">
+          <div className="w-11 h-11 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+            <BookOpen className="w-6 h-6" aria-hidden="true" />
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Knihovna materiálů</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Knihovna</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
               Studijní podklady k otevření v aplikaci i ke stažení
             </p>
           </div>

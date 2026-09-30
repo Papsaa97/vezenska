@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { VscrRegulation } from '../../data/vscrRegulationsRegistry';
-import { isSpeechSupported } from '../../utils/speech';
+import { isSpeechSupported, stopSpeaking } from '../../utils/speech';
 import { useEsbirkaRegulation } from '../../hooks/useEsbirkaRegulation';
 import {
   sectionAnchorId,
@@ -18,10 +18,11 @@ import { freshnessLabel, type FreshnessState } from '../../utils/esbirka/status'
 import { fetchOfficialFileUrl } from '../../utils/esbirka/officialFile';
 import PrintHeader from '../common/PrintHeader';
 import { useDialog } from '../../hooks/useDialog';
+import { formatIsoDate as formatDate } from './legalCompassLabels';
 
 /**
  * Který text je v okně vidět.
- *  - `oficialni` — úplné znění stažené z e-Sbírky (npm run sync:laws),
+ *  - `oficialni` — informativní znění stažené z e-Sbírky (npm run sync:laws),
  *  - `vyber`     — výběr ustanovení sestavený pro výuku, uložený v aplikaci.
  *
  * Rozlišení není kosmetické: výběr je zlomek předpisu a dřív se zobrazoval pod
@@ -81,13 +82,6 @@ const FONT_SIZE_LABEL: Record<'sm' | 'base' | 'lg', string> = {
   base: 'M',
   lg: 'L',
 };
-
-/** Datum `RRRR-MM-DD` v české podobě. */
-function formatDate(iso: string): string {
-  const [rok, mesic, den] = iso.split('-');
-  if (!rok || !mesic || !den) return iso;
-  return `${Number(den)}. ${Number(mesic)}. ${rok}`;
-}
 
 /** Text se zvýrazněnými shodami hledaného výrazu. */
 function HighlightedText({ text, query }: { text: string; query: string }) {
@@ -180,8 +174,8 @@ export default function LegalReaderModal({
 
   const closeReader = useCallback(() => {
     setActiveModalRegulation(null);
-    if (isSpeaking && typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+    if (isSpeaking) {
+      stopSpeaking();
       setIsSpeaking(false);
     }
   }, [setActiveModalRegulation, isSpeaking, setIsSpeaking]);
@@ -258,7 +252,7 @@ export default function LegalReaderModal({
   return (
     <AnimatePresence>
       {activeModalRegulation && (
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-3 lg:p-4 animate-in fade-in duration-200 print:relative print:inset-auto print:bg-white print:p-0 print:block">
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-3 lg:p-4 print:relative print:inset-auto print:bg-white print:p-0 print:block">
         {/* Ztmavené pozadí je dekorace: klik na něj dialog zavře, ale pro
             odečítač obrazovky neexistuje a klávesnice má Escape (useDialog).
             Proto je oddělené od samotného dialogu a označené aria-hidden. */}
@@ -277,7 +271,7 @@ export default function LegalReaderModal({
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.96, opacity: 0, y: 16 }}
           transition={{ duration: 0.2 }}
-          className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 sm:rounded-2xl shadow-2xl w-full max-w-5xl h-[100dvh] sm:h-[calc(100dvh-1.5rem)] lg:h-[calc(100dvh-2rem)] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100 print:w-full print:max-w-none print:h-auto print:max-h-none print:border-none print:shadow-none print:rounded-none"
+          className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 sm:rounded-2xl shadow-xl w-full max-w-5xl h-[100dvh] sm:h-[calc(100dvh-1.5rem)] lg:h-[calc(100dvh-2rem)] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100 print:w-full print:max-w-none print:h-auto print:max-h-none print:border-none print:shadow-none print:rounded-none"
         >
           {/* Hlavička — dva nízké řádky, ať většinu okna zabírá samotný text.
               Dřív měla čtyři až pět řádků (odznaky, dlouhý název, přepínač
@@ -286,14 +280,14 @@ export default function LegalReaderModal({
               v nabídce „Další“. */}
           <div className="border-b border-slate-200 dark:border-slate-800 shrink-0 bg-slate-50/80 dark:bg-slate-950/70 print:bg-white print:border-b-2 print:border-slate-900 print:p-0 print:mb-4">
             <PrintHeader
-              subject={`Předpis VS ČR: ${activeModalRegulation.shortTitle}`}
+              subject={`Kompas zákonů – ${activeModalRegulation.shortTitle}`}
               docTitle={`${activeModalRegulation.code} • ${activeModalRegulation.authority}`}
-              subtext={sourceCaption}
+              subtext={`Studijní portál – neoficiální studijní materiál. ${sourceCaption}`}
             />
 
             {/* Řádek 1: název a nástroje */}
             <div className="flex items-center gap-2 pl-3 sm:pl-4 pr-1.5 sm:pr-2 pt-1.5 sm:pt-2 no-print">
-              <span className="hidden sm:inline shrink-0 px-2 py-0.5 rounded-md text-[0.625rem] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 uppercase tracking-wider">
+              <span className="hidden sm:inline shrink-0 px-2 py-0.5 rounded-md text-[0.625rem] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                 {activeModalRegulation.code}
               </span>
               <h2
@@ -347,7 +341,7 @@ export default function LegalReaderModal({
                     aria-expanded={menuOpen}
                     aria-controls={menuId}
                     aria-label="Další akce"
-                    title="Další akce: předčítání, kopírování, e-Sbírka, úřední PDF"
+                    title="Další akce: předčítání, kopírování, e-Sbírka, PDF z e-Sbírky"
                     className={`${TOOL_BUTTON} ${menuOpen ? 'bg-slate-200 dark:bg-slate-800' : ''}`}
                   >
                     <MoreHorizontal className="w-4 h-4" />
@@ -386,7 +380,7 @@ export default function LegalReaderModal({
                           }}
                           className={MENU_ITEM}
                         >
-                          <Volume2 className={`w-4 h-4 ${isSpeaking ? 'text-blue-600 animate-pulse' : 'text-slate-500'}`} />
+                          <Volume2 className={`w-4 h-4 ${isSpeaking ? 'text-indigo-600' : 'text-slate-500'}`} aria-hidden="true" />
                           <span>{isSpeaking ? 'Zastavit předčítání' : 'Přečíst nahlas'}</span>
                         </button>
                       )}
@@ -444,14 +438,14 @@ export default function LegalReaderModal({
                           }}
                           disabled={fileState === 'loading'}
                           className={MENU_ITEM}
-                          title="Nechat e-Sbírku vygenerovat úřední PDF tohoto znění a otevřít ho"
+                          title="Nechat e-Sbírku vygenerovat PDF tohoto znění a otevřít ho"
                         >
                           {fileState === 'loading' ? (
-                            <Loader2 className="w-4 h-4 animate-spin text-red-500" />
+                            <Loader2 className="w-4 h-4 animate-spin text-slate-500" aria-hidden="true" />
                           ) : (
-                            <Download className="w-4 h-4 text-red-500" />
+                            <Download className="w-4 h-4 text-slate-500" aria-hidden="true" />
                           )}
-                          <span>{fileState === 'loading' ? 'Připravuji úřední PDF…' : 'Úřední PDF z e-Sbírky'}</span>
+                          <span>{fileState === 'loading' ? 'Připravuji PDF z e-Sbírky…' : 'PDF z e-Sbírky'}</span>
                         </button>
                       )}
 
@@ -496,7 +490,7 @@ export default function LegalReaderModal({
                   onClick={() => setSourceMode('oficialni')}
                   disabled={!maUplneZneni}
                   aria-pressed={sourceMode === 'oficialni'}
-                  aria-label="Úplné znění (e-Sbírka)"
+                  aria-label="Informativní znění (e-Sbírka)"
                   className={`${SOURCE_BUTTON} disabled:opacity-40 disabled:cursor-not-allowed ${
                     sourceMode === 'oficialni'
                       ? 'bg-white dark:bg-slate-950 text-slate-900 dark:text-white shadow-xs'
@@ -504,12 +498,12 @@ export default function LegalReaderModal({
                   }`}
                   title={
                     maUplneZneni
-                      ? 'Zobrazit úplné znění stažené z e-Sbírky'
-                      : 'Pro tento předpis není úplné znění k dispozici (nevyhlašuje se ve Sbírce zákonů)'
+                      ? 'Zobrazit informativní znění stažené z e-Sbírky'
+                      : 'Pro tento předpis není znění z e-Sbírky k dispozici (nevyhlašuje se ve Sbírce zákonů)'
                   }
                 >
-                  <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
-                  <span className="hidden sm:inline">Úplné znění</span>
+                  <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span className="hidden sm:inline">Znění (e-Sbírka)</span>
                 </button>
                 <button
                   type="button"
@@ -523,7 +517,7 @@ export default function LegalReaderModal({
                   }`}
                   title="Zobrazit studijní výběr ustanovení uložený v aplikaci"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
                   <span className="hidden sm:inline">Studijní výběr</span>
                 </button>
               </div>
@@ -585,7 +579,7 @@ export default function LegalReaderModal({
                   >
                     <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                     <span className="flex-1">
-                      <strong className="uppercase tracking-wide">Úřední PDF se nepodařilo získat:</strong>{' '}
+                      <strong>PDF z e-Sbírky se nepodařilo získat:</strong>{' '}
                       {fileError}
                     </span>
                     <button
@@ -614,9 +608,7 @@ export default function LegalReaderModal({
                       <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                     )}
                     <span>
-                      <strong className="uppercase tracking-wide">
-                        {freshnessLabel(esbirka.freshness.stav)}:
-                      </strong>{' '}
+                      <strong>{freshnessLabel(esbirka.freshness.stav)}:</strong>{' '}
                       {esbirka.freshness.zprava}
                     </span>
                   </div>
@@ -634,14 +626,16 @@ export default function LegalReaderModal({
             {/* Summary & Application Callout */}
             <div className="max-w-3xl mx-auto p-3 rounded-xl bg-white dark:bg-slate-800/60 border border-slate-300/80 dark:border-slate-700/60 text-xs space-y-1.5 shadow-xs print-avoid-break print:bg-white print:border-slate-300">
               <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                <span>Předmět a rozsah úpravy:</span>
+                <Sparkles className="w-3.5 h-3.5 text-indigo-500" aria-hidden="true" />
+                <span>Předmět a rozsah úpravy</span>
               </div>
               <p className="text-slate-700 dark:text-slate-300">{activeModalRegulation.scope}</p>
-              <p className="text-slate-600 dark:text-slate-400 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
-                <strong className="text-indigo-600 dark:text-indigo-400">Praktické uplatnění:</strong>{' '}
-                {activeModalRegulation.practicalApplication}
-              </p>
+              {activeModalRegulation.practicalApplication.trim() && (
+                <p className="text-slate-600 dark:text-slate-400 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
+                  <strong className="text-indigo-600 dark:text-indigo-400">Praktické uplatnění:</strong>{' '}
+                  {activeModalRegulation.practicalApplication}
+                </p>
+              )}
               {activeModalRegulation.tags.length > 0 && (
                 <div className="flex items-center gap-1.5 flex-wrap pt-1 no-print">
                   {activeModalRegulation.tags.map(t => (
@@ -673,7 +667,7 @@ export default function LegalReaderModal({
                     }}
                     className="underline font-bold cursor-pointer"
                   >
-                    Přepnout na úplné znění
+                    Přepnout na informativní znění z e-Sbírky
                   </button>
                 </>
               )}
@@ -682,13 +676,13 @@ export default function LegalReaderModal({
             {sourceMode === 'oficialni' && esbirka.snapshotState === 'loading' && (
               <div className="flex items-center justify-center gap-2 py-10 text-sm text-slate-500">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Načítám úplné znění z e-Sbírky…</span>
+                <span>Načítám znění z e-Sbírky…</span>
               </div>
             )}
 
             {sourceMode === 'oficialni' && esbirka.snapshotState === 'error' && (
               <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs text-rose-900 dark:text-rose-200 space-y-2">
-                <p className="font-bold">Úplné znění se nepodařilo načíst.</p>
+                <p className="font-bold">Znění z e-Sbírky se nepodařilo načíst.</p>
                 <p>{esbirka.snapshotError}</p>
                 <button
                   type="button"
@@ -702,16 +696,17 @@ export default function LegalReaderModal({
 
             {(showingOfficial || sourceMode === 'vyber') &&
               (pdfViewMode === 'paper' ? (
-                <div className="bg-white text-slate-900 border border-slate-300 rounded-sm shadow-xl p-5 sm:p-10 font-serif max-w-3xl mx-auto border-t-8 border-t-slate-800 print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:border-t-0">
-                  {/* Hlavička listu */}
+                <div className="bg-white text-slate-900 border border-slate-300 rounded-sm shadow-md p-5 sm:p-10 font-serif max-w-3xl mx-auto border-t-8 border-t-slate-800 print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:border-t-0">
+                  {/* Hlavička listu. Nesmí vypadat jako úřední tiskovina:
+                      dřív tu stálo „SBÍRKA ZÁKONŮ“ i nad studijním výběrem. */}
                   <div className="border-b-2 border-slate-900 pb-3 mb-4 text-center space-y-1 font-sans">
-                    <div className="text-[0.6875rem] uppercase tracking-widest font-black text-slate-600">
+                    <div className="text-xs font-semibold text-slate-600">
                       {showingOfficial
-                        ? 'Česká republika • Informativní znění předpisu (e-Sbírka)'
-                        : 'Akademie VS ČR • Studijní výběr ustanovení'}
+                        ? 'Znění předpisu stažené z e-Sbírky (e-sbirka.gov.cz)'
+                        : 'Studijní portál (neoficiální) – studijní výběr ustanovení'}
                     </div>
-                    <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase font-serif">
-                      {showingOfficial ? 'Sbírka zákonů' : 'Výběr pro přípravu na ZOP'}
+                    <h1 className="text-xl font-bold tracking-tight text-slate-950">
+                      {showingOfficial ? 'Informativní znění (e-Sbírka)' : 'Výběr pro přípravu na ZOP'}
                     </h1>
                     <div className="flex items-center justify-between text-[0.6875rem] font-bold text-slate-600 pt-1 border-t border-slate-200 gap-2 flex-wrap">
                       <span>{summary?.citace ?? activeModalRegulation.code}</span>
@@ -725,7 +720,7 @@ export default function LegalReaderModal({
                   </div>
 
                   <div className="text-center my-4 space-y-2">
-                    <div className="text-sm font-bold uppercase tracking-wider text-slate-700">
+                    <div className="text-sm font-bold text-slate-700">
                       {summary?.nazev ?? activeModalRegulation.title}
                     </div>
                     <div className="w-16 h-0.5 bg-slate-400 mx-auto my-2" />
@@ -765,7 +760,7 @@ export default function LegalReaderModal({
                     <span>
                       {showingOfficial
                         ? 'Zdroj: e-Sbírka (e-sbirka.gov.cz), REST API — informativní znění'
-                        : 'Zdroj: studijní databáze Akademie VS ČR — výběr ustanovení'}
+                        : 'Zdroj: studijní portál (neoficiální) — studijní výběr ustanovení'}
                     </span>
                     <span>
                       {showingOfficial && summary
@@ -775,7 +770,7 @@ export default function LegalReaderModal({
                   </div>
                 </div>
               ) : (
-                <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-slate-950 text-slate-100 rounded-2xl border border-slate-800 shadow-inner">
+                <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-slate-950 text-slate-100 rounded-2xl border border-slate-800">
                   {showingOfficial ? (
                     <div className={`font-mono select-text text-slate-200 ${fontSizeClass}`}>
                       {blocks.map((block) => (
