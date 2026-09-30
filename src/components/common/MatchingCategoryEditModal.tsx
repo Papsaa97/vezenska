@@ -308,7 +308,7 @@ export default function MatchingCategoryEditModal({
                   </div>
 
                   <p className="text-[0.6875rem] text-slate-400">
-                    Souřadnice jsou v procentech obrázku. „Bod" je místo na obrázku, „popisek"
+                    Souřadnice jsou v procentech obrázku. „Bod“ je místo na obrázku, „popisek“
                     je místo, kam se odkládá název — obvykle mimo střed, po kraji.
                   </p>
 

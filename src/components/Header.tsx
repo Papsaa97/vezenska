@@ -364,7 +364,10 @@ export default function Header({
           </div>
         </div>
         
-        {/* Navigation - Středový kontejner */}
+        {/* Navigation - Středový kontejner.
+            Mezi md a lg (tablet, úzké okno kolem 800 px) mají tlačítka jen
+            ikonu: s popisky se nevešla a „Asistent“ s „Další“ zůstaly skryté
+            za vodorovným posuvem. Popisek nese aria-label. */}
         <div className="relative flex-1 min-w-0 mx-2 lg:mx-4 hidden md:flex items-center overflow-hidden">
           {/* Left edge scroll gradient indicator */}
           {canScrollLeft && (
@@ -387,6 +390,7 @@ export default function Header({
               onClick={() => { setActiveTab('dashboard'); setOpenDropdown(null); setDropdownPos(null); }}
               type="button"
               aria-current={activeTab === 'dashboard' ? 'page' : undefined}
+              aria-label={NAV_TAB_SHORT_LABELS['dashboard']}
               className={`px-2.5 lg:px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'dashboard' 
                   ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
@@ -394,7 +398,7 @@ export default function Header({
               }`}
             >
               <LayoutDashboard className="w-4 h-4" />
-              <span>{NAV_TAB_SHORT_LABELS['dashboard']}</span>
+              <span className="hidden lg:inline">{NAV_TAB_SHORT_LABELS['dashboard']}</span>
             </button>
 
             {/* 1. Subjects - Primary Item */}
@@ -402,6 +406,7 @@ export default function Header({
               onClick={() => { setActiveTab('subjects'); setOpenDropdown(null); setDropdownPos(null); }}
               type="button"
               aria-current={activeTab === 'subjects' ? 'page' : undefined}
+              aria-label={NAV_TAB_SHORT_LABELS['subjects']}
               className={`px-2.5 lg:px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'subjects' 
                   ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
@@ -409,7 +414,7 @@ export default function Header({
               }`}
             >
               <FolderKanban className="w-4 h-4" />
-              <span>{NAV_TAB_SHORT_LABELS['subjects']}</span>
+              <span className="hidden lg:inline">{NAV_TAB_SHORT_LABELS['subjects']}</span>
             </button>
 
             {/* 2. Exam & Quiz - Primary Item */}
@@ -417,6 +422,7 @@ export default function Header({
               onClick={() => { setActiveTab('quiz'); setOpenDropdown(null); setDropdownPos(null); }}
               type="button"
               aria-current={activeTab === 'quiz' ? 'page' : undefined}
+              aria-label={NAV_TAB_SHORT_LABELS['quiz']}
               className={`px-2.5 lg:px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'quiz' 
                   ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20' 
@@ -424,7 +430,7 @@ export default function Header({
               }`}
             >
               <GraduationCap className="w-4 h-4" />
-              <span>{NAV_TAB_SHORT_LABELS['quiz']}</span>
+              <span className="hidden lg:inline">{NAV_TAB_SHORT_LABELS['quiz']}</span>
             </button>
 
             {/* 3. AI Captain Exam Assistant - Primary Item */}
@@ -432,6 +438,7 @@ export default function Header({
               onClick={() => { setActiveTab('assistant'); setOpenDropdown(null); setDropdownPos(null); }}
               type="button"
               aria-current={activeTab === 'assistant' ? 'page' : undefined}
+              aria-label={NAV_TAB_SHORT_LABELS['assistant']}
               className={`px-2.5 lg:px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 border ${
                 activeTab === 'assistant' 
                   ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-indigo-400/40 shadow-sm shadow-indigo-500/25' 
@@ -440,7 +447,7 @@ export default function Header({
               title="AI vyhodnocení zadání a písemek od kapitánů z fotky či textu"
             >
               <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
-              <span>{NAV_TAB_SHORT_LABELS['assistant']}</span>
+              <span className="hidden lg:inline">{NAV_TAB_SHORT_LABELS['assistant']}</span>
             </button>
 
             {/* Tablet-only "Další" Dropdown Button (md/lg view) */}
@@ -450,6 +457,7 @@ export default function Header({
               aria-haspopup="menu"
               aria-expanded={openDropdown === 'more'}
               aria-controls="hlavicka-menu-dalsi"
+              aria-label="Další moduly a nástroje"
               className={`flex min-[1800px]:hidden px-2.5 lg:px-3 py-2 rounded-xl text-xs font-bold transition-all items-center gap-1.5 cursor-pointer shrink-0 ${
                 isMoreActive
                   ? 'bg-amber-500 text-slate-950 shadow-sm shadow-amber-500/20'
@@ -458,7 +466,7 @@ export default function Header({
               title="Další moduly a nástroje"
             >
               <MoreHorizontal className="w-4 h-4" />
-              <span>Další</span>
+              <span className="hidden lg:inline">Další</span>
               {newBadgeCount > 0 && !isMoreActive && (
                 <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
               )}

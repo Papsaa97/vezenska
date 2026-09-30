@@ -138,12 +138,16 @@ export async function importDefaultQuestionsToSupabase(
         const correctIdx = extractCorrectIndex(q);
         const expl = q.explanation || q.rationale || '';
 
+        // Téma a pramen se posílají taky: bez nich se v kartičkách a v bance
+        // ukazoval jen obecný „Pramen: Banka otázek…“ místo čísla zákona.
         return {
           subject: q.subject,
+          topic: q.topic || null,
           question: q.question.trim(),
           options: q.options ?? [],
           correct_index: correctIdx,
           explanation: expl,
+          source: q.source || null,
         };
       });
 

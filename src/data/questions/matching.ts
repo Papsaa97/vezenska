@@ -4,6 +4,7 @@ export const matchingCategories: MatchingCategory[] = [
   {
     id: 'vedeni_vscr',
     title: 'Vedení VS ČR a resortu justice',
+    asOf: 'září 2026',
     pairs: [
       { id: 'v1', left: 'Ministr spravedlnosti ČR', right: 'JUDr. Jeroným Tejc (stojí v čele resortu justice)' },
       { id: 'v2', left: 'Generální ředitel VS ČR', right: 'genmjr. Mgr. Tomáš Hůlka, LL.M. (řídí Vězeňskou službu ČR)' },

@@ -225,19 +225,19 @@ export const sluzebniPripravaQuestions: Question[] = [
     {
     "id": "sp-20",
     "subject": "Služební příprava",
-    "topic": "Zastavovací pás",
-    "question": "Za jakých podmínek a jakým způsobem se smí použít donucovací prostředek zastavovací pás (§ 17)?",
-    "answer": "K násilnému zastavení motorového vozidla, jehož řidič odmítá zastavit na výzvu a bezprostředně ohrožuje bezpečnost; nesmí se použít proti jednostopým vozidlům (motocykly, jízdní kola).",
+    "topic": "Výčet donucovacích prostředků",
+    "question": "Který z uvedených prostředků NENÍ donucovacím prostředkem podle výčtu v § 17 odst. 2 zákona č. 555/1992 Sb.?",
+    "answer": "zastavovací pás k zastavení prchajícího auta",
     "options": [
-      "K násilnému zastavení motorového vozidla, jehož řidič odmítá zastavit na výzvu a bezprostředně ohrožuje bezpečnost; nesmí se použít proti jednostopým vozidlům (motocykly, jízdní kola).",
-      "K zastavení jakéhokoli podezřelého dopravního prostředku včetně motocyklů a jízdních kol, přičemž pás se hází přímo pod přední kola jedoucího vozidla ze vzdálenosti do 1 metru a bez předchozí výzvy řidiči k zastavení.",
-      "Výhradně při plánovaných dopravně-bezpečnostních kontrolách před vjezdem do věznice jako preventivní zpomalovací prvek pro všechna vozidla.",
-      "Pouze se souhlasem dozorujícího státního zástupce a za podmínky, že rychlost ujíždějícího vozidla nepřesahuje 30 km/h."
+      "prostředek k zamezení prostorové orientace",
+      "zastavovací pás k zastavení prchajícího auta",
+      "pouta s poutacím opaskem a předváděcí řetízky",
+      "vytlačování štítem a vytlačování vozidlem"
     ],
-    "correctOption": 0,
-    "rationale": "Použití zastavovacího pásu proti motocyklu je zakázáno pro extrémní riziko smrtelného úrazu řidiče. Používá se pro propíchnutí pneumatik osobních a nákladních automobilů.",
-    "source": "§ 17 zákona č. 555/1992 Sb. a služební předpis VS ČR",
-    "explanation": "Použití zastavovacího pásu proti motocyklu je zakázáno pro extrémní riziko smrtelného úrazu řidiče. Používá se pro propíchnutí pneumatik osobních a nákladních automobilů. (Právní úprava: § 17 zákona č. 555/1992 Sb. a služební předpis VS ČR)"
+    "correctOption": 1,
+    "rationale": "Výčet v § 17 odst. 2 písm. a) až p) je uzavřený a zastavovací pás v něm není. K zastavení vozidla lze z výčtu použít například vytlačování vozidlem (písm. o). Ostatní možnosti výčet obsahuje: pouta s poutacím opaskem (písm. e), předváděcí řetízky (písm. b), vytlačování štítem (písm. n) a prostředek k zamezení prostorové orientace (písm. p).",
+    "source": "§ 17 odst. 2 zákona č. 555/1992 Sb.",
+    "explanation": "Výčet v § 17 odst. 2 písm. a) až p) je uzavřený a zastavovací pás v něm není. K zastavení vozidla lze z výčtu použít například vytlačování vozidlem (písm. o). Ostatní možnosti výčet obsahuje: pouta s poutacím opaskem (písm. e), předváděcí řetízky (písm. b), vytlačování štítem (písm. n) a prostředek k zamezení prostorové orientace (písm. p). (Právní úprava: § 17 odst. 2 zákona č. 555/1992 Sb.)"
   },
   {
     "id": "sp-21",

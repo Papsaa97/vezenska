@@ -20,7 +20,7 @@ import {
 import { useAuth, useIsAdmin, UserRole, UserProfile } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { UserRank } from '../types';
-import { AVATAR_PRESETS, getInitials, resolveAvatarDisplay, toPresetAvatarUrl } from '../utils/avatar';
+import { AVATAR_PRESETS, shrinkAvatarImage, getInitials, resolveAvatarDisplay, toPresetAvatarUrl } from '../utils/avatar';
 import { useDialog } from '../hooks/useDialog';
 import DisplayScalePicker from './DisplayScalePicker';
 import PushNotificationSettings from './PushNotificationSettings';
@@ -156,6 +156,8 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
 
   if (!user) return null;
 
+  const canPreviewRoles = realRole === 'admin';
+
   // Odznak ukazuje roli z profilu, ne rozepsaný výběr v seznamu — ten platí teprve po uložení.
   const role: UserRole = effectiveProfile.role;
   const initials = getInitials(effectiveProfile.full_name || user.email);
@@ -178,28 +180,23 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
       return;
     }
 
-    // Výběr role je NÁHLED, ne změna účtu. Do databáze se nezapisuje nic:
-    // public.profiles.role zůstává, jak je, a RLS dál rozhoduje podle ní.
-    //
-    // Dřív tenhle výběr roli opravdu přepisoval, jenže to byla jednosměrná
-    // cesta: po degradaci si správce roli zpátky nastavit nemohl, protože
-    // měnit role smí jen správce. Jediný správce se tím odřízl úplně. Roli
-    // účtu se proto mění ve správě uživatelů, tady se jen prohlíží.
-    const canPreviewRoles = isSystemAdmin || realRole === 'admin';
-    const previewChanged = canPreviewRoles && selectedRole !== realRole;
-    if (canPreviewRoles) {
-      setPreviewRole(selectedRole === realRole ? null : selectedRole);
-    }
-
     setNameSaving(false);
-    setNameMessage({
-      type: 'success',
-      text: previewChanged
-        ? `Profil uložen. Rozhraní teď ukazuje náhled role ${ROLE_LABELS[selectedRole]} — účet i oprávnění zůstávají beze změny.`
-        : // Třída je v profilu jen ke čtení (viz userClass výše), uložilo se
-          // tedy jen jméno — hláška nesmí slibovat změnu zařazení.
-          'Jméno bylo úspěšně uloženo.',
-    });
+    // Třída je v profilu jen ke čtení (viz userClass výše) a náhled role se
+    // přepíná sám při výběru — uložilo se tedy jen jméno.
+    setNameMessage({ type: 'success', text: 'Jméno bylo úspěšně uloženo.' });
+  };
+
+  // Výběr role je NÁHLED, ne změna účtu. Do databáze se nezapisuje nic:
+  // public.profiles.role zůstává, jak je, a RLS dál rozhoduje podle ní.
+  //
+  // Dřív tenhle výběr roli opravdu přepisoval, jenže to byla jednosměrná
+  // cesta: po degradaci si správce roli zpátky nastavit nemohl, protože
+  // měnit role smí jen správce. Roli účtu se proto mění ve správě uživatelů,
+  // tady se jen prohlíží. Náhled platí hned po výběru; dřív se projevil až
+  // po kliknutí na „Uložit jméno“, což s rolí nijak nesouvisí.
+  const handlePreviewRoleChange = (next: UserRole) => {
+    setSelectedRole(next);
+    setPreviewRole(next === realRole ? null : next);
   };
 
   const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -211,22 +208,28 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
-    if (file.size > MAX_AVATAR_SIZE_BYTES) {
+    setAvatarUploading(true);
+    setAvatarMessage(null);
+
+    // Fotka se před nahráním zmenší na 256 × 256 px (viz shrinkAvatarImage).
+    // Neumí-li to prohlížeč, nahraje se původní soubor — a jen na ten se
+    // vztahuje limit velikosti, zmenšená fotka má pár desítek kB.
+    const shrunk = await shrinkAvatarImage(file);
+    if (!shrunk && file.size > MAX_AVATAR_SIZE_BYTES) {
+      setAvatarUploading(false);
       setAvatarMessage({ type: 'error', text: 'Soubor je příliš velký. Maximální velikost je 5 MB.' });
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
-
-    setAvatarUploading(true);
-    setAvatarMessage(null);
-
-    const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+    const body: Blob = shrunk ?? file;
+    const contentType = shrunk ? 'image/jpeg' : file.type;
+    const extension = shrunk ? 'jpg' : file.name.split('.').pop()?.toLowerCase() || 'jpg';
     const path = `${user.id}/avatar-${Date.now()}.${extension}`;
 
-    const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, {
+    const { error: uploadError } = await supabase.storage.from('avatars').upload(path, body, {
       cacheControl: '3600',
       upsert: true,
-      contentType: file.type,
+      contentType,
     });
 
     if (uploadError) {
@@ -432,7 +435,10 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
               </p>
             </div>
 
-            {(isSystemAdmin || effectiveProfile?.role === 'admin') ? (
+            {/* Podle SKUTEČNÉ role účtu: během náhledu nižší role je
+                `profile.role` ta náhledová, a výběr by jinak zmizel — nešlo by
+                se přepnout na další roli ani zpátky. */}
+            {canPreviewRoles ? (
                 <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2">
                 <label className="block text-xs font-bold text-amber-400 flex items-center justify-between" htmlFor={`${fieldIds}-2`}>
                   <span className="flex items-center gap-1.5">
@@ -446,7 +452,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                 <select
                   id={`${fieldIds}-2`}
                   value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value as UserRole)}
+                  onChange={(e) => handlePreviewRoleChange(e.target.value as UserRole)}
                   className="w-full bg-slate-800 border border-amber-500/50 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-amber-400 cursor-pointer"
                 >
                   <option value="admin">Správce (Plná administrace, CMS a správa uživatelů)</option>
@@ -460,7 +466,7 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
                     {realRole ? ROLE_LABELS[realRole] : '—'}
                   </strong>{' '}
                   a data se načítají podle ní, takže náhled ukáže rozhraní dané role, ne její
-                  výřez dat. Načtení stránky náhled vypne. Roli účtu měňte ve správě uživatelů.
+                  výřez dat. Náhled se přepne hned po výběru; načtení stránky ho vypne. Roli účtu měňte ve správě uživatelů.
                 </p>
               </div>
             ) : (

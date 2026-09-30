@@ -83,14 +83,14 @@ export function loadSnapshot(slug: string): Promise<EsbirkaSnapshot> {
       headers: { Accept: 'application/json' },
     });
     if (!response.ok) {
-      throw new Error(`Znění „${slug}" se nepodařilo načíst (HTTP ${response.status}).`);
+      throw new Error(`Znění „${slug}“ se nepodařilo načíst (HTTP ${response.status}).`);
     }
     const contentType = response.headers.get('content-type') || '';
     // Přepis neznámých cest na index.html (viz vercel.json) vrátí na chybějící
     // soubor HTML se stavem 200. Bez téhle kontroly by se to projevilo až pádem
     // JSON.parse s nicneříkající hláškou.
     if (!contentType.includes('json')) {
-      throw new Error(`Znění „${slug}" není na serveru k dispozici.`);
+      throw new Error(`Znění „${slug}“ není na serveru k dispozici.`);
     }
     return (await response.json()) as EsbirkaSnapshot;
   })();

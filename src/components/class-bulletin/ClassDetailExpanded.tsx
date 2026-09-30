@@ -19,6 +19,8 @@ import {
   normalizeUniformDays,
   getTodayCzechName,
   DUTY_TYPE_LABELS,
+  isDutyPast,
+  splitDutyRoster,
 } from '../../utils/classBoardService';
 import CourseCountdownWidget from './CourseCountdownWidget';
 import ClassMembersPanel from './ClassMembersPanel';
@@ -74,6 +76,10 @@ export default function ClassDetailExpanded({
   // dát štítek téhle třídy. Nově založená třída je tam k dispozici hned.
   const { materials, loading: materialsLoading } = useTaggedMaterials();
   const classFiles = materialsForClass(materials, item.id);
+  // Proběhlé termíny vidí jen ten, kdo je může smazat; ostatním zmizí samy
+  // den po termínu.
+  const duties = splitDutyRoster(item.dutyRoster);
+  const visibleDuties = isManager ? [...duties.upcoming, ...duties.past] : duties.upcoming;
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden space-y-6 p-6 sm:p-8">
@@ -408,11 +414,13 @@ export default function ClassDetailExpanded({
           </div>
 
           <div className="space-y-3">
-            {item.dutyRoster && item.dutyRoster.length > 0 ? (
-              item.dutyRoster.map((duty) => (
+            {visibleDuties.length > 0 ? (
+              visibleDuties.map((duty) => (
                 <div
                   key={duty.id}
-                  className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/90 dark:border-slate-800 space-y-2 relative group"
+                  className={`p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/90 dark:border-slate-800 space-y-2 relative group ${
+                    isDutyPast(duty) ? 'opacity-60' : ''
+                  }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -432,6 +440,11 @@ export default function ClassDetailExpanded({
                       <span className="text-xs font-bold text-slate-900 dark:text-white">
                         {duty.date}
                       </span>
+                      {isDutyPast(duty) && (
+                        <span className="text-[0.625rem] font-semibold text-slate-500 dark:text-slate-400">
+                          proběhlo
+                        </span>
+                      )}
                       {duty.time && (
                         <span className="text-[0.6875rem] text-slate-500 flex items-center gap-1">
                           <Clock className="w-3 h-3" />

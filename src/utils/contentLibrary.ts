@@ -31,7 +31,7 @@ import {
 //
 // Výchozí data tím zůstávají nedotčená: smazáním řádku překryvu se aplikace
 // vrátí přesně k tomu, co je v repozitáři. Proto se výchozí položka nemaže
-// natvrdo, ale „náhrobkem" (is_deleted) — jinak by ji zpátky nedostal nikdo.
+// natvrdo, ale „náhrobkem“ (is_deleted) — jinak by ji zpátky nedostal nikdo.
 
 /**
  * Druhy obsahu. Musí odpovídat CHECK `content_blocks_kind_check` v databázi —
@@ -84,6 +84,8 @@ export interface ContentEntry<T> {
   isHidden: boolean;
   /** Výchozí položka schovaná náhrobkem — viditelná jen lektorovi k obnovení. */
   isDeleted: boolean;
+  /** Kdy obsah naposledy uložil lektor (ISO); u neupravené položky chybí. */
+  editedAt?: string;
 }
 
 export interface PersistResult {
@@ -227,11 +229,18 @@ function normalizeMatchingCategory(value: unknown): MatchingCategory | null {
 }
 
 const SCENARIO_CATEGORIES: Scenario['category'][] = [
-  'Právo & Donucovací prostředky',
+  'Právo, etika & Donucovací prostředky',
   'Mimořádné události & Zásah',
   'Eskorty & Střelba',
-  'Vstupy & Justiční stráž',
+  'Ostraha, vstupy & Justiční stráž',
 ];
+
+// Dřívější názvy kategorií. Situace, které lektor uložil ještě pod nimi, se
+// tak nepřesunou do první kategorie v seznamu.
+const LEGACY_SCENARIO_CATEGORIES: Record<string, Scenario['category']> = {
+  'Vstupy & Justiční stráž': 'Ostraha, vstupy & Justiční stráž',
+  'Právo & Donucovací prostředky': 'Právo, etika & Donucovací prostředky',
+};
 
 const SCENARIO_DIFFICULTIES: Scenario['difficulty'][] = ['Základní', 'Pokročilá', 'Expertní'];
 
@@ -284,7 +293,10 @@ function normalizeScenario(value: unknown): Scenario | null {
 
   if (steps.length === 0) return null;
 
-  const category = SCENARIO_CATEGORIES.find((c) => c === raw.category) ?? SCENARIO_CATEGORIES[0];
+  const category =
+    SCENARIO_CATEGORIES.find((c) => c === raw.category) ??
+    LEGACY_SCENARIO_CATEGORIES[str(raw.category)] ??
+    SCENARIO_CATEGORIES[0];
   const difficulty = SCENARIO_DIFFICULTIES.find((d) => d === raw.difficulty) ?? 'Základní';
 
   return {
@@ -720,6 +732,7 @@ export function mergeContent<T extends { id: string }>(
       isEdited: block.payload !== null,
       isHidden: block.isHidden,
       isDeleted: block.isDeleted,
+      editedAt: block.payload !== null ? block.updatedAt : undefined,
     });
   }
 
@@ -739,6 +752,7 @@ export function mergeContent<T extends { id: string }>(
       isEdited: true,
       isHidden: block.isHidden,
       isDeleted: block.isDeleted,
+      editedAt: block.updatedAt,
     });
   }
 

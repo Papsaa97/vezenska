@@ -355,6 +355,17 @@ export const RAW_BADGES: Omit<Badge, 'isUnlocked' | 'progressPercent' | 'current
     xpReward: 200,
     requirement: { type: 'subject_mastery', target: 90, subject: 'Profesní etika' }
   },
+  // Zbraně jsou samostatný předmět (supabase/023), ale odznak za ně chyběl.
+  {
+    id: 'badge-master-zbrane',
+    title: 'Zbrojní specialista',
+    description: 'Dosáhni alespoň 90 % v testu z předmětu Zbraně.',
+    category: 'subjects',
+    tier: 'silver',
+    iconName: 'Target',
+    xpReward: 200,
+    requirement: { type: 'subject_mastery', target: 90, subject: 'Zbraně' }
+  },
 
   // --- POZNÁVAČKA & PEXESO ---
   {
@@ -422,7 +433,7 @@ export const RAW_BADGES: Omit<Badge, 'isUnlocked' | 'progressPercent' | 'current
   {
     id: 'badge-xp-1000',
     title: 'Zasvěcený kadet',
-    description: 'Nasbírej celkem 1 000 zkušenostních bodů (XP).',
+    description: 'Nasbírej 1 000 XP za testy, Poznávačku, scénáře a drily (XP za odznaky se nepočítají).',
     category: 'streaks',
     tier: 'bronze',
     iconName: 'Star',
@@ -432,7 +443,7 @@ export const RAW_BADGES: Omit<Badge, 'isUnlocked' | 'progressPercent' | 'current
   {
     id: 'badge-xp-5000',
     title: 'Elitní důstojník',
-    description: 'Dosáhni hranice 5 000 XP a postup mezi veterány sboru.',
+    description: 'Nasbírej 5 000 XP za testy, Poznávačku, scénáře a drily (XP za odznaky se nepočítají).',
     category: 'streaks',
     tier: 'platinum',
     iconName: 'Crown',

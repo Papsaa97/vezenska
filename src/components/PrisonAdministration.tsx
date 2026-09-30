@@ -175,7 +175,7 @@ export default function PrisonAdministration({ onStartSubjectQuiz, questionCount
   const [selectedBodyParts, setSelectedBodyParts] = useState<string[]>(() => defaultRecordTemplates[0].affectedBodyPartsDefault || []);
   const [copiedSuccess, setCopiedSuccess] = useState(false);
   const [copyError, setCopyError] = useState(false);
-  /** Selhalo kopírování Č.j. Vlastní stav, protože `copyError` patří k tlačítku „Kopírovat záznam". */
+  /** Selhalo kopírování Č.j. Vlastní stav, protože `copyError` patří k tlačítku „Kopírovat záznam“. */
   const [cjCopyFailed, setCjCopyFailed] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
   const [draftNotice, setDraftNotice] = useState(false);
@@ -1724,7 +1724,7 @@ export default function PrisonAdministration({ onStartSubjectQuiz, questionCount
                       </div>
 
                       <div className="print-card p-2.5 border border-slate-300">
-                        <div className="font-bold text-black mb-1">Rozhodnutí ředitele věznice o oprávněnosti a přiměřenosti (§ 20 odst. 4):</div>
+                        <div className="font-bold text-black mb-1">Rozhodnutí ředitele věznice o oprávněnosti a přiměřenosti:</div>
                         <p className="min-h-[28px] whitespace-pre-wrap">{formData.directorDecision || 'Použití donucovacího prostředku bylo OPRÁVNĚNÉ a PŘIMĚŘENÉ.'}</p>
                         <div className="mt-6 flex justify-between text-[0.625rem] text-slate-700">
                           <span>Datum: ........................................</span>

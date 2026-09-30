@@ -17,7 +17,7 @@ export interface ScenarioStep {
 export interface Scenario {
   id: string;
   title: string;
-  category: 'Právo & Donucovací prostředky' | 'Mimořádné události & Zásah' | 'Eskorty & Střelba' | 'Vstupy & Justiční stráž';
+  category: 'Právo, etika & Donucovací prostředky' | 'Mimořádné události & Zásah' | 'Eskorty & Střelba' | 'Ostraha, vstupy & Justiční stráž';
   badge: string;
   difficulty: 'Základní' | 'Pokročilá' | 'Expertní';
   briefing: string;
@@ -28,10 +28,10 @@ export const tacticalScenarios: Scenario[] = [
   {
     id: 'sc-01',
     title: 'Modelová situace 1: Podnapilá návštěva, děti a nepovolený balík na vchodu',
-    category: 'Vstupy & Justiční stráž',
+    category: 'Ostraha, vstupy & Justiční stráž',
     badge: 'NGŘ č. 33/2019 & § 80',
     difficulty: 'Pokročilá',
-    briefing: 'Jste velen jako strážný u hlavního vchodu do věznice. Ke vchodu se dostavila žena (manželka obviněného), která přivedla bratra a 5letého syna (neuvedeného na žádance) a s sebou má balík s potravinami o hmotnosti 5,5 kg. Ze ženy je navíc cítit alkohol.',
+    briefing: 'Konáte službu strážného u hlavního vchodu do věznice. Ke vchodu se dostavila žena (manželka obviněného), která přivedla bratra a 5letého syna (neuvedeného na žádance) a s sebou má balík s potravinami o hmotnosti 5,5 kg. Ze ženy je navíc cítit alkohol.',
     steps: [
       {
         id: 'step-1',
@@ -89,9 +89,9 @@ export const tacticalScenarios: Scenario[] = [
     id: 'sc-02',
     title: 'Modelová situace 2: Útěk vězně z ordinace civilního lékaře',
     category: 'Eskorty & Střelba',
-    badge: 'Kupec Eskorty & § 18 z. 555/1992 Sb.',
+    badge: 'Eskortní služba & § 18 z. 555/1992 Sb.',
     difficulty: 'Expertní',
-    briefing: 'Jste velitel mimořádné zdravotní eskorty do nemocnice. Odsouzenému byly na pokyn lékaře sňata pouta kvůli vyšetření ruky. Po rozpoutání odsouzený prudce odstrčí strážného a dá se na útěk chodbou polikliniky směrem k otevřenému východu.',
+    briefing: 'Jste velitel mimořádné zdravotní eskorty do nemocnice. Odsouzenému byly na pokyn lékaře sňata pouta kvůli vyšetření ruky. Po sejmutí pout odsouzený prudce odstrčí strážného a dá se na útěk chodbou polikliniky směrem k otevřenému východu.',
     steps: [
       {
         id: 'step-1',
@@ -194,7 +194,7 @@ export const tacticalScenarios: Scenario[] = [
   {
     id: 'sc-04',
     title: 'Modelová situace 4: Sebevražedný pokus oběšením na cele',
-    category: 'Právo & Donucovací prostředky',
+    category: 'Mimořádné události & Zásah',
     badge: 'První pomoc & NGŘ č. 16/2022',
     difficulty: 'Expertní',
     briefing: 'Během noční kontroly cel zjistíte kukátkem, že na okenní mříži visí obviněný na pruhu látky z prostěradla a nejeví známky života. Spoluvězeň leží na lůžku a nereaguje.',
@@ -247,10 +247,10 @@ export const tacticalScenarios: Scenario[] = [
   {
     id: 'sc-05',
     title: 'Modelová situace 5: Noční neohlášená kontrola z Generálního ředitelství',
-    category: 'Vstupy & Justiční stráž',
+    category: 'Ostraha, vstupy & Justiční stráž',
     badge: 'NGŘ č. 33/2019 & § 54, 80',
     difficulty: 'Pokročilá',
-    briefing: 'Jste velen jako strážný u hlavního vchodu. Ve 22:15 hod. se ke vchodu dostaví muž v civilním oděvu, prokáže se služebním průkazem se žlutým pruhem a uvede, že je ředitel odboru VaJS GŘ VS ČR. Požaduje okamžitý vstup na vaše stanoviště bez přítomnosti VISS a chce zkontrolovat nabití vaší zbraně.',
+    briefing: 'Konáte službu strážného u hlavního vchodu. Ve 22:15 hod. se ke vchodu dostaví muž v civilním oděvu, prokáže se služebním průkazem se žlutým pruhem a uvede, že je ředitel odboru VaJS GŘ VS ČR. Požaduje okamžitý vstup na vaše stanoviště bez přítomnosti VISS a chce zkontrolovat nabití vaší zbraně.',
     steps: [
       {
         id: 'step-1',
@@ -278,7 +278,7 @@ export const tacticalScenarios: Scenario[] = [
   {
     id: 'sc-06',
     title: 'Modelová situace 6: Přeprava peněžních zásilek Justiční stráží',
-    category: 'Vstupy & Justiční stráž',
+    category: 'Ostraha, vstupy & Justiční stráž',
     badge: 'Instrukce MS 8/2022 & § 144',
     difficulty: 'Základní',
     briefing: 'Jste určen jako velitel přepravy finanční hotovosti z ČNB do budovy okresního soudu. Doprava probíhá pěšky přes frekventovanou městskou zónu za účasti pokladní soudu a druhého příslušníka JS.',
@@ -362,7 +362,7 @@ export const tacticalScenarios: Scenario[] = [
   {
     id: 'sc-08',
     title: 'Modelová situace 8: Pokus o korupci a nabídka úplatku za pronesení mobilu',
-    category: 'Právo & Donucovací prostředky',
+    category: 'Právo, etika & Donucovací prostředky',
     badge: 'Protikorupční program VS ČR',
     difficulty: 'Expertní',
     briefing: 'Během obchůzky vnitřního pracoviště vás osloví odsouzený se slovy: „Pane strážmistr, potřebuji pomoc. Když mi zítra pronesete v kapse malý smartphone, brácha vám na účet pošle 30 000 Kč a nikdo se nic nedozví.“',
@@ -521,7 +521,7 @@ export const tacticalScenarios: Scenario[] = [
   {
     id: 'sc-11',
     title: 'Modelová situace 11: Zadržení osoby s návykovou látkou na návštěvě',
-    category: 'Vstupy & Justiční stráž',
+    category: 'Ostraha, vstupy & Justiční stráž',
     badge: 'NGŘ č. 33/2019 & TZ',
     difficulty: 'Pokročilá',
     briefing: 'Při kontrole civilní osoby (návštěvy odsouzeného) za použití RTG a osobní prohlídky naleznete v podšívce bundy zatavený igelitový sáček s bílou krystalickou látkou (podezření na pervitin). Návštěvník začne být nervózní a chce věznici ihned opustit.',

@@ -59,7 +59,7 @@ export default function NotificationBell() {
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [markingId, setMarkingId] = useState<string | null>(null);
-  /** Chyba načtení nebo zápisu. Bez ní se selhání projeví jen tím, že se „nic nestane". */
+  /** Chyba načtení nebo zápisu. Bez ní se selhání projeví jen tím, že se „nic nestane“. */
   const [notice, setNotice] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const push = usePushNotifications();
@@ -92,7 +92,7 @@ export default function NotificationBell() {
       .limit(100);
 
     if (error) {
-      // Bez tohohle hlášení vypadá nedostupný server stejně jako „žádné zprávy" —
+      // Bez tohohle hlášení vypadá nedostupný server stejně jako „žádné zprávy“ —
       // uživatel by o zprávě od správce nevěděl a neměl by jak zjistit proč.
       setNotice(`Zprávy se nepodařilo načíst (${error.message}).`);
     } else if (data) {

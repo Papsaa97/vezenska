@@ -541,7 +541,12 @@ export default function Flashcards({
 
           <div className="flex items-center gap-2 shrink-0">
             <span className="hidden md:inline text-sm text-slate-500 dark:text-slate-400">
-              {pluralCards(baseCount)} ve výběru
+              {/* V Leitnerově režimu balíček tvoří jen kartičky zvolené krabičky
+                  nebo dnešní fronty, takže se ukazují obě čísla — jinak
+                  „Karta 2 z 362“ vedle „364 kartiček“ vypadalo jako chyba. */}
+              {isLeitnerMode && selectedLeitnerBox !== 'all' && shuffledQuestions.length !== baseCount
+                ? `${shuffledQuestions.length} v balíčku z ${pluralCards(baseCount)} ve výběru`
+                : `${pluralCards(baseCount)} ve výběru`}
             </span>
             {/* Přepínač filtrů jen na mobilu — na širší obrazovce je panel vidět vždy */}
             <button

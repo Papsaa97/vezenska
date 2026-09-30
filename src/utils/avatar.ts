@@ -63,3 +63,54 @@ export function getInitials(name: string | null | undefined, fallback = 'VS'): s
   }
   return (words[0][0] + words[words.length - 1][0]).toUpperCase();
 }
+
+/** Strana čtverce, na který se nahraná fotka zmenší. Zobrazuje se nejvýš v ~96 px,
+ *  256 px stačí i pro displeje s dvojnásobnou hustotou. */
+export const AVATAR_TARGET_SIZE = 256;
+
+/**
+ * Zmenší fotku na čtverec AVATAR_TARGET_SIZE × AVATAR_TARGET_SIZE (ořez na střed)
+ * a vrátí ji jako JPEG.
+ *
+ * PROČ: fotka z telefonu (např. 4032 × 2268, několik MB) se dřív nahrávala
+ * v plném rozlišení, přestože se zobrazuje v kolečku o velikosti kolem 80 px.
+ * Každý, kdo otevřel seznam třídy, ji stahoval celou.
+ *
+ * Vrací `null`, když prohlížeč obrázek neumí dekódovat — volající pak nahraje
+ * původní soubor, aby se kvůli zmenšení nic nerozbilo.
+ */
+export async function shrinkAvatarImage(file: File): Promise<Blob | null> {
+  if (typeof createImageBitmap !== 'function' || typeof document === 'undefined') return null;
+  let bitmap: ImageBitmap;
+  try {
+    // imageOrientation: fotka z telefonu se otočí podle EXIF, jinak by
+    // portrét mohl skončit na boku.
+    bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  } catch {
+    return null;
+  }
+
+  const side = Math.min(bitmap.width, bitmap.height);
+  const sx = (bitmap.width - side) / 2;
+  const sy = (bitmap.height - side) / 2;
+  const target = Math.min(AVATAR_TARGET_SIZE, side);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = target;
+  canvas.height = target;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    bitmap.close();
+    return null;
+  }
+  // JPEG nemá průhlednost; průhledné okraje PNG by jinak zčernaly.
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, target, target);
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(bitmap, sx, sy, side, side, 0, 0, target, target);
+  bitmap.close();
+
+  return new Promise<Blob | null>((resolve) => {
+    canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.86);
+  });
+}

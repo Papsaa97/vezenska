@@ -353,7 +353,7 @@ export default function ClassBulletinBoard() {
    * Nástěnka zvolené třídy.
    *
    * Dřív se při nezvolené (nebo neexistující) třídě vzala `classes[0]` — uživatel
-   * tak koukal na nástěnku cizí třídy s odznakem „Moje třída". Když třída zvolená
+   * tak koukal na nástěnku cizí třídy s odznakem „Moje třída“. Když třída zvolená
    * není, není co ukazovat a obrazovka o to požádá.
    */
   const myClassItem = useMemo(() => {
@@ -367,7 +367,7 @@ export default function ClassBulletinBoard() {
     (item: ClassBoardItem) => {
       if (isPrivileged) return true;
       if (profile?.role === 'velitel_tridy') {
-        // Jen třída zapsaná v profilu. Dřív se sem přimíchala volba „Moje třída"
+        // Jen třída zapsaná v profilu. Dřív se sem přimíchala volba „Moje třída“
         // z prohlížeče, takže si velitel mohl přepnutím v rozbalovátku zobrazit
         // tlačítka správy u kterékoli třídy. Server by zápis stejně odmítl
         // (politika can_manage_class), ale rozhraní slibovalo něco jiného.
@@ -685,11 +685,11 @@ export default function ClassBulletinBoard() {
         </div>
       )}
 
-      {/* ─── Záhlaví nástěnky s volbou „Moje třída" ───────────────────────── */}
+      {/* ─── Záhlaví nástěnky s volbou „Moje třída“ ───────────────────────── */}
       <header className="no-print bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="space-y-2 min-w-0">
-            {/* Horní řádek: Pill ZOP + Volič „Moje třída" */}
+            {/* Horní řádek: Pill ZOP + Volič „Moje třída“ */}
             <div className="flex items-center gap-2.5 flex-wrap">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold">
                 <School className="w-3.5 h-3.5" />
@@ -1025,7 +1025,7 @@ export default function ClassBulletinBoard() {
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
                 {isPrivileged
-                  ? 'Třídu založíte tlačítkem „Přidat třídu" v záhlaví. Teprve potom do ní půjde zařazovat posluchače a lektoři k ní budou moct označit soubory.'
+                  ? 'Třídu založíte tlačítkem „Přidat třídu“ v záhlaví. Teprve potom do ní půjde zařazovat posluchače a lektoři k ní budou moct označit soubory.'
                   : 'Jakmile lektor založí vaši třídu, objeví se tady její rozvrh, ústrojová kázeň i služby.'}
               </p>
             </>
@@ -1033,7 +1033,7 @@ export default function ClassBulletinBoard() {
             <>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">Vyberte třídu</h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
-                V záhlaví u popisku „Zobrazená třída" zvolte, čí nástěnku chcete vidět.
+                V záhlaví u popisku „Zobrazená třída“ zvolte, čí nástěnku chcete vidět.
               </p>
             </>
           ) : isUnassigned ? (
@@ -1045,7 +1045,7 @@ export default function ClassBulletinBoard() {
                 {pendingRequest
                   ? 'Jakmile ji velitel třídy (nebo lektor) schválí, uvidíte tady rozvrh, ústroj i služby své třídy. Dostanete o tom oznámení.'
                   : membership?.note
-                  ? `Vaše poznámka: „${membership.note}". Až bude vaše třída založená, velitel vás označí nebo si o ni požádáte sami. Nástěnky tříd vidí jen jejich členové, ostatním se ukazuje přehled.`
+                  ? `Vaše poznámka: „${membership.note}“. Až bude vaše třída založená, velitel vás označí nebo si o ni požádáte sami. Nástěnky tříd vidí jen jejich členové, ostatním se ukazuje přehled.`
                   : 'Nástěnky tříd vidí jen jejich členové. Požádejte o zařazení do své třídy.'}
               </p>
               <div className="flex flex-wrap justify-center gap-2">

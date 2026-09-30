@@ -22,7 +22,7 @@ import { supabase } from '../lib/supabase';
 import { writeFailure } from '../utils/supabaseWrite';
 import { dismissCommander } from '../utils/classMembership';
 import { useAuth, useIsAdmin, UserRole } from '../context/AuthContext';
-import { getUserRank, quizSessionXp } from '../utils/gamification';
+import { quizSessionXp } from '../utils/gamification';
 import { useDialog } from '../hooks/useDialog';
 import NoticeDialog, { Notice } from './common/NoticeDialog';
 import ConfirmDialog from './common/ConfirmDialog';
@@ -410,7 +410,7 @@ function UserManagerInner() {
                   <th className="px-4 py-3 font-bold">Jméno</th>
                   <th className="px-4 py-3 font-bold">E-mail</th>
                   <th className="px-4 py-3 font-bold">Registrace</th>
-                  <th className="px-4 py-3 font-bold"><span title="Jen ověřené testy, bez XP za odznaky — proto může být nižší než v záhlaví uživatele.">Hodnost / XP z testů</span></th>
+                  <th className="px-4 py-3 font-bold"><span title="Jen testy vyhodnocené serverem. Hodnost v profilu uživatele počítá navíc Poznávačku, scénáře, drily a odznaky, proto je tam číslo vyšší.">XP z testů</span></th>
                   <th className="px-4 py-3 font-bold">Role</th>
                   <th className="px-4 py-3 font-bold text-right">Akce</th>
                 </tr>
@@ -602,8 +602,14 @@ interface UserRowProps {
   onDeleteRequest: () => void;
 }
 
+/** „1 neověřený test“, „2 neověřené testy“, „5 neověřených testů“. */
+function neoverenychLabel(count: number): string {
+  if (count === 1) return '+ 1 neověřený test';
+  if (count >= 2 && count <= 4) return `+ ${count} neověřené testy`;
+  return `+ ${count} neověřených testů`;
+}
+
 function UserTableRow({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, onMessage, onDeleteRequest }: UserRowProps) {
-  const { currentRank } = getUserRank(item.totalXp);
   return (
     <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
       <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white whitespace-nowrap">
@@ -614,15 +620,15 @@ function UserTableRow({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, 
       <td className="px-4 py-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">{formatDate(item.created_at)}</td>
       <td
         className="px-4 py-3 text-slate-600 dark:text-slate-300 whitespace-nowrap"
-        title="Odhad z testů vyhodnocených serverem"
+        title="Jen testy vyhodnocené serverem; hodnost v profilu počítá i další činnosti a odznaky"
       >
-        {currentRank.shortTitle} <span className="text-slate-400">· {item.totalXp.toLocaleString('cs-CZ')} XP</span>
+        {item.totalXp.toLocaleString('cs-CZ')} XP
         {item.neoverenychTestu > 0 && (
           <span
             className="ml-1.5 text-[0.625rem] font-bold text-amber-600 dark:text-amber-400"
-            title={`${item.neoverenychTestu} test(ů) se do XP nepočítá — skóre u nich nevyhodnotil server.`}
+            title="Tyto testy se do XP nepočítají — dokončily se ve starší verzi aplikace a skóre u nich nevyhodnotil server."
           >
-            +{item.neoverenychTestu} neověř.
+            {neoverenychLabel(item.neoverenychTestu)}
           </span>
         )}
       </td>
@@ -644,7 +650,6 @@ function UserTableRow({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, 
 }
 
 function UserCard({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, onMessage, onDeleteRequest }: UserRowProps) {
-  const { currentRank } = getUserRank(item.totalXp);
   return (
     <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 space-y-3">
       <div className="flex items-start justify-between gap-2">
@@ -666,14 +671,14 @@ function UserCard({ item, isSelf, busyRole, deleting, onRoleChange, onEdit, onMe
         <span className="flex items-center gap-1.5">
           <CalendarDays className="w-3.5 h-3.5" /> {formatDate(item.created_at)}
         </span>
-        <span className="flex items-center gap-1.5" title="Odhad z testů vyhodnocených serverem">
-          <Award className="w-3.5 h-3.5" /> {currentRank.shortTitle} · {item.totalXp.toLocaleString('cs-CZ')} XP
+        <span className="flex items-center gap-1.5" title="Jen testy vyhodnocené serverem; hodnost v profilu počítá i další činnosti a odznaky">
+          <Award className="w-3.5 h-3.5" /> {item.totalXp.toLocaleString('cs-CZ')} XP z testů
           {item.neoverenychTestu > 0 && (
             <span
               className="text-[0.625rem] font-bold text-amber-600 dark:text-amber-400"
-              title={`${item.neoverenychTestu} test(ů) se do XP nepočítá — skóre u nich nevyhodnotil server.`}
+              title="Tyto testy se do XP nepočítají — dokončily se ve starší verzi aplikace a skóre u nich nevyhodnotil server."
             >
-              +{item.neoverenychTestu} neověř.
+              {neoverenychLabel(item.neoverenychTestu)}
             </span>
           )}
         </span>

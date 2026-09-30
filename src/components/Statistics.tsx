@@ -75,6 +75,16 @@ type FilteredSession = QuizSessionRecord & { partial: boolean };
 
 const NO_DATA_TEXT = 'Zatím nemáme data pro tento výběr';
 
+/** Kolik odpovědí musí okruh mít, aby se ukázal mezi nejlépe zvládnutými. */
+const MIN_ATTEMPTS_FOR_STRENGTH = 3;
+
+/**
+ * Verdikt Prospěl/Neprospěl patří jen Zkoušce nanečisto — jen ta má pevný
+ * rozsah a hranici. U cvičného testu o pěti otázkách by zněl jako hodnocení
+ * zkoušky, a proto se tam ukazuje jen, jestli je výsledek nad hranicí.
+ */
+const EXAM_SESSION_SUBJECT = 'Závěrečná zkouška ZOP A';
+
 /** Tvar slova podle českého počítání (1 otázka / 2 otázky / 5 otázek). */
 function pluralWordCz(count: number, one: string, few: string, many: string): string {
   if (count === 1) return one;
@@ -327,7 +337,12 @@ export default function Statistics({
   }, [topicStats]);
 
   const strongestTopics = useMemo(() => {
-    return [...topicStats].filter(t => !t.isWeakTopic).reverse().slice(0, 3);
+    // Okruh s jedinou správnou odpovědí (1 z 1 = 100 %) není „zvládnutý“ —
+    // mezi nejlepší se dostane až s aspoň MIN_ATTEMPTS_FOR_STRENGTH odpověďmi.
+    return [...topicStats]
+      .filter(t => !t.isWeakTopic && t.totalAttempts >= MIN_ATTEMPTS_FOR_STRENGTH)
+      .reverse()
+      .slice(0, 3);
   }, [topicStats]);
 
   /**
@@ -454,7 +469,7 @@ export default function Statistics({
     if (acc >= PASS_PERCENT) {
       return {
         text: 'Nad hranicí úspěšnosti',
-        desc: `Úspěšnost odpovídá hranici ${PASS_PERCENT} %. Ještě zbývá dotáhnout slabé okruhy.`,
+        desc: `Úspěšnost je na hranici ${PASS_PERCENT} % nebo těsně nad ní. Ještě zbývá dotáhnout slabé okruhy.`,
         color: 'text-blue-800 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800'
       };
     }
@@ -1216,7 +1231,9 @@ export default function Statistics({
                               : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                           }`}>
                             {isPass ? <CheckCircle2 className="w-3 h-3" aria-hidden="true" /> : <XCircle className="w-3 h-3" aria-hidden="true" />}
-                            {isPass ? 'Prospěl' : 'Neprospěl'}
+                            {sess.subject === EXAM_SESSION_SUBJECT
+                              ? (isPass ? 'Prospěl' : 'Neprospěl')
+                              : (isPass ? 'Hranice splněna' : 'Pod hranicí')}
                           </span>
                         )}
                       </td>

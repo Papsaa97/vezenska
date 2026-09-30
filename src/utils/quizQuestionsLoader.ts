@@ -103,7 +103,10 @@ export function mapRowToQuestion(row: SupabaseQuizQuestionRow): Question {
     row.answer || (options.length > correctIdx ? options[correctIdx] : '')
   );
   const topic = row.topic ? String(row.topic) : subject;
-  const source = row.source ? String(row.source) : 'Banka otázek Akademie VS ČR';
+  // „Banka otázek Supabase“ zapisoval starý import místo skutečného pramene;
+  // studentovi nic neřekne, takže se bere jako chybějící pramen.
+  const rawSource = typeof row.source === 'string' ? row.source.trim() : '';
+  const source = rawSource && rawSource !== 'Banka otázek Supabase' ? rawSource : 'Banka otázek Akademie VS ČR';
   const explanation = row.explanation
     ? String(row.explanation)
     : row.rationale
