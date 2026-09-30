@@ -17,7 +17,10 @@ export const PESimulator: React.FC = () => {
   const [activeScenarioIdx, setActiveScenarioIdx] = useState<number>(0);
   const [selectedSimOption, setSelectedSimOption] = useState<number | null>(null);
   const [simSubmitted, setSimSubmitted] = useState<boolean>(false);
-  const [simScore, setSimScore] = useState<number>(0);
+  // Kolik situací student vyhodnotil a kolik z nich správně. Dřív tu bylo
+  // „Skóre: 15 bodů“ za správnou odpověď — body nic neznamenaly a nikam se nepočítaly.
+  const [answered, setAnswered] = useState<number>(0);
+  const [correctCount, setCorrectCount] = useState<number>(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<DilemmaScenario | null>(null);
 
@@ -87,7 +90,11 @@ export const PESimulator: React.FC = () => {
               <h3 className="font-bold text-white print:text-[#111827] text-lg mt-0.5">{scenario.title}</h3>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400 print:text-slate-700 font-mono">Skóre: {simScore} bodů</span>
+              {answered > 0 && (
+                <span className="text-xs text-slate-400 print:text-slate-700 no-print print:hidden">
+                  Správně {correctCount} z {answered}
+                </span>
+              )}
             </div>
           </div>
 
@@ -153,8 +160,9 @@ export const PESimulator: React.FC = () => {
                 disabled={selectedSimOption === null}
                 onClick={() => {
                   setSimSubmitted(true);
+                  setAnswered(prev => prev + 1);
                   if (selectedSimOption !== null && scenario.options[selectedSimOption].correct) {
-                    setSimScore(prev => prev + 15);
+                    setCorrectCount(prev => prev + 1);
                   }
                 }}
                 className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs md:text-sm disabled:opacity-40 cursor-pointer"

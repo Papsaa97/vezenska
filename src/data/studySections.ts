@@ -16,6 +16,7 @@
 
 /** Podzáložka, do které blok patří. */
 export type StudySectionArea =
+  | 'pojmy'
   | 'kodex'
   | 'protikorupce'
   | 'evp'
@@ -23,7 +24,7 @@ export type StudySectionArea =
   | 'vis'
   | 'styl';
 
-export const STUDY_SECTION_AREAS: StudySectionArea[] = ['kodex', 'protikorupce', 'evp', 'etr', 'vis', 'styl'];
+export const STUDY_SECTION_AREAS: StudySectionArea[] = ['pojmy', 'kodex', 'protikorupce', 'evp', 'etr', 'vis', 'styl'];
 
 export interface StudySectionItem {
   /** Krátké označení — číslo článku, římská číslice, štítek, oddělení. */

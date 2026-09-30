@@ -7,13 +7,21 @@ import StudySectionEditModal from './StudySectionEditModal';
 interface StudySectionsEditorProps {
   area: StudySectionArea;
   state: StudySectionsState;
+  /** Jak se bloku v této podzáložce říká v textech tlačítek (výchozí „blok“). */
+  noun?: string;
+  addLabel?: string;
 }
 
 /**
  * Správa textových bloků jedné podzáložky — jen pro lektora a správce.
  * Student ji nevidí vůbec, takže bez úprav vypadá záložka jako dřív.
  */
-export default function StudySectionsEditor({ area, state }: StudySectionsEditorProps) {
+export default function StudySectionsEditor({
+  area,
+  state,
+  noun = 'blok',
+  addLabel = 'Přidat textový blok',
+}: StudySectionsEditorProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<StudySection | null>(null);
 
@@ -26,8 +34,8 @@ export default function StudySectionsEditor({ area, state }: StudySectionsEditor
         targets={state.entries.filter((e) => !e.isDeleted)}
         deleted={state.entries.filter((e) => e.isDeleted)}
         getName={(s) => s.title}
-        noun="blok"
-        addLabel="Přidat textový blok"
+        noun={noun}
+        addLabel={addLabel}
         onEdit={(s) => {
           setEditing(s);
           setModalOpen(true);
@@ -40,7 +48,7 @@ export default function StudySectionsEditor({ area, state }: StudySectionsEditor
       <StudySectionEditModal
         section={editing}
         area={area}
-        fields={sectionFieldsFor(editing?.id)}
+        fields={sectionFieldsFor(editing?.id, area)}
         isOpen={modalOpen}
         usedIds={state.content.entries.map((e) => e.id)}
         onClose={() => {
