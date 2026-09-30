@@ -279,6 +279,63 @@ Dozorce na stanovišti v oddílu cel obviněných je povinen zejména převzít 
 § 70 – Komplexní výkon dozorčí služby v uzavřeném oddílu
 Dozorce je přímo podřízen inspektorovi dozorčí služby.`;
 
+export const NGR_02_2026_FULL = `NAŘÍZENÍ GENERÁLNÍHO ŘEDITELE VĚZEŇSKÉ SLUŽBY ČR č. 2/2026
+o zaměstnancích a příslušnících Vězeňské služby České republiky zabezpečujících výkon vazby, výkon trestu odnětí svobody a výkon zabezpečovací detence
+Studijní výběr ustanovení z textu nařízení (zkráceno, bez příloh) — úplné znění otevřete jako nahraný soubor v Katalogu předpisů.
+
+Účinnost od 1. března 2026 (vydáno v Praze 27. února 2026, č. j. VS-9172-36/ČJ-2026-8000PS-IAŘ).
+Zrušilo NGŘ č. 2/2022 a NGŘ č. 35/2023, kterým se NGŘ č. 2/2022 měnilo (§ 112).
+
+§ 3 – Společné úkoly zaměstnanců a příslušníků
+Každý zaměstnanec oddělení výkonu vazby, trestu a zabezpečovací detence mimo jiné:
+b) dbá, aby vůči vězněné osobě byla uplatňována pouze ta omezující opatření, která jsou nezbytně nutná z hlediska bezpečnosti, ochrany života a zdraví osob a majetku,
+f) hlásí svému nadřízenému každý případ atypického chování vězněné osoby, který může mít za následek její újmu na zdraví nebo vznik mimořádné události, a v rámci svých možností zabraňuje násilí mezi vězněnými osobami,
+l) neprodleně podává operačnímu středisku a svému nadřízenému informace při zjištění útěku, přípravy nebo pokusu o útěk, sebevraždy, pokusu o sebevraždu, sebepoškození, náhlého onemocnění, násilí mezi vězněnými osobami nebo jiné mimořádné události,
+n) v případě určení realizuje pochůzkovou kontrolní činnost podle přílohy č. 2.
+
+§ 4 – Společné úkoly příslušníků zařazených k výkonu dozorčí služby
+Příslušník je mimo jiné povinen:
+c) vykonávat službu na určeném stanovišti, neodvracet pozornost od výkonu služby a neopouštět stanoviště bez souhlasu nadřízeného nebo dokud nebude vystřídán nebo odvolán,
+e) nezneužívat služebního postavení vůči vězněným osobám k osobnímu prospěchu, při styku s nimi jim vykat,
+f) přezkoušet při příchodu na stanoviště spojovací a signálně zabezpečovací prostředky, převzít a zkontrolovat inventář, fyzicky převzít početní stavy vězněných osob a převzetí stanoviště hlásit svému přímému nadřízenému,
+g) vést stanovenou dokumentaci, zejména „Knihu předání a převzetí služby“,
+l) při osobních prohlídkách a prohlídkách věcí a zavazadel vždy používat ochranné rukavice.
+
+§ 29 – Dozorce oddělení výkonu vazby
+Je přímo podřízen vrchnímu inspektorovi dozorčí služby oddělení výkonu vazby. Na dvou- a vícečlenné stanoviště je jako první velen dozorce s vyšší služební hodností. Je vyzbrojen záchranářským nožem, slzotvorným prostředkem, služebním obuškem, služebními pouty a předváděcími řetízky a vystrojen přenosnou radiostanicí a kapesním obvazem, nerozhodne-li ředitel věznice jinak.
+
+§ 31 – Dozorce ve 2. tarifní třídě
+Vykonává dozorčí službu výlučně pod odborným vedením nebo usměrněním určeného příslušníka; pověření se uvádí v denním rozkazu vedoucího oddělení.
+
+§ 33 odst. 3 – Dozorce ve 4. tarifní třídě na stanovišti v oddílu cel obviněných
+a) převezme při nástupu klíče od cel, prověří, zda jsou všechny cely řádně uzamčeny, a prověří spojovací a signálně zabezpečovací prostředky,
+b) převezme fyzicky všechny obviněné, má přehled o nebezpečných obviněných,
+e) kontroluje cely nepravidelně tak, aby obvinění neměli možnost zjistit systém kontrol, v intervalech stanovených ředitelem věznice.
+
+§ 60 až § 62 – Nadřízenost v oddělení výkonu trestu
+Vrchní inspektor dozorčí služby je přímo podřízen určenému zástupci vedoucího oddělení a nadřízen inspektorovi dozorčí služby a všem dozorcům ve směně; v mimopracovní době věznice je podřízen vrchnímu inspektorovi strážní služby. Inspektor dozorčí služby je přímo podřízen vrchnímu inspektorovi dozorčí služby.
+
+§ 64 – Dozorce oddělení výkonu trestu
+Je přímo podřízen vrchnímu inspektorovi dozorčí služby oddělení výkonu trestu. Na určeném stanovišti respektuje pokyny vychovatele a dalších pracovníků odborného zacházení v oblasti realizace práv a oprávněných zájmů odsouzených.
+
+§ 71 – Dozorce v 5. tarifní třídě v krizovém oddílu
+Před umístěním odsouzeného provede osobní prohlídku, odebere věci, které by mohl zneužít (např. k sebepoškození), a jejich seznam dá odsouzenému podepsat; kontroly provádí nepravidelně v intervalu stanoveném ředitelem věznice.
+
+§ 72 – Dozorce v 5. tarifní třídě v uzavřeném oddílu
+Umísťuje odsouzené na základě vykonatelného rozhodnutí o kázeňském trestu, provede osobní prohlídku a zkontroluje potvrzení o zdravotní způsobilosti k výkonu kázeňského trestu; nepřipustí nedovolené styky mezi vězněnými osobami.
+
+§ 74 – Dozorce na dozorčím operačním středisku
+Po nástupu převezme dokumentaci a inventář, neprodleně reaguje na aktivaci tísňových hlásičů, užití tísňového volacího znaku a na všechny druhy poplachů.
+
+§ 106 – Dozorčí stanoviště
+Stanoviště se člení na vnější, vnitřní, pevná, pohyblivá, stálá a dočasná. Jejich druh, počet a rozmístění stanoví ředitel věznice rozpisem dozorčích stanovišť.
+
+§ 109 – Rozdílení a střídání směn
+Rozdílení dozorčí směny se provádí zpravidla odděleně od strážní směny; provádí je vrchní inspektor dozorčí služby, inspektor dozorčí služby nebo pověřený příslušník.
+
+Příloha č. 2 – Pochůzková kontrolní činnost
+Ředitel stanoví interval nepravidelných kontrol: každou půlhodinu, hodinu, hodinu a půl nebo dvě hodiny; rozpětí mezi začátky kontrol při dvouhodinovém intervalu nepřesáhne 180 minut. V nízkém stupni zabezpečení se kontroluje v denní době každé tři hodiny (nejvýše 240 minut mezi začátky kontrol) a v noci alespoň jednou od večerky do půlnoci a jednou od půlnoci do budíčku. O každé kontrole se zapisuje čas začátku a konce a výsledek.`;
+
 export const NGR_16_2022_FULL = `NAŘÍZENÍ GENERÁLNÍHO ŘEDITELE VĚZEŇSKÉ SLUŽBY ČR č. 16/2022
 o mimořádných událostech
 Studijní výběr podle podkladů k závěrečným zkouškám ZOP A 2026 — není to text nařízení.
