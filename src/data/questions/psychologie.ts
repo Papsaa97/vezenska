@@ -720,5 +720,175 @@ export const psychologieQuestions: Question[] = [
         rationale: 'Verbální deeskalace vyžaduje profesionální klid, neeskalující neverbální projev a aktivní naslouchání, což snižuje afekt agresora a předchází nutnosti fyzického zákroku.',
         source: 'Metodika penitenciární komunikace a deeskalace konfliktů',
         explanation: 'Klidný tón hlasu, aktivní naslouchání a bezpečný odstup pomáhají deeskalovat napětí bez nutnosti fyzického zákroku.'
-    }
+    },
+  {
+    "id": "psy-43",
+    "subject": "Psychologie",
+    "topic": "Agrese vězňů",
+    "question": "Která forma agrese je podle učebního textu psychologie v penitenciárním prostředí nejčastější?",
+    "answer": "Přímá aktivní verbální agrese vůči zaměstnanci",
+    "options": [
+      "Nepřímá fyzická agrese ničením zařízení cel",
+      "Přímá aktivní verbální agrese vůči zaměstnanci",
+      "Autoagrese – sebepoškozování protestního rázu a z jiných pohnutek",
+      "Plánovaný instrumentální fyzický útok"
+    ],
+    "correctOption": 1,
+    "rationale": "Nejčastější formou je přímá a aktivní verbální agrese – slovní výpady vůči zaměstnanci, vulgarismy, křik a vyhrožování stížnostmi nebo pomstou. Příslušník se nemá nechat strhnout k jejímu opětování.",
+    "source": "učební text Psychologie pro ZOP (Akademie VS ČR, 2023), kapitola Agresivní projevy vězňů vůči zaměstnancům",
+    "explanation": "Nejčastější formou je přímá a aktivní verbální agrese – slovní výpady vůči zaměstnanci, vulgarismy, křik a vyhrožování stížnostmi nebo pomstou. Příslušník se nemá nechat strhnout k jejímu opětování. (Právní úprava: učební text Psychologie pro ZOP (Akademie VS ČR, 2023), kapitola Agresivní projevy vězňů vůči zaměstnancům)"
+  },
+  {
+    "id": "psy-44",
+    "subject": "Psychologie",
+    "topic": "Suicidální chování vězňů",
+    "question": "Které z uvedených faktorů podle učebního textu psychologie nasvědčují vysoké pravděpodobnosti sebevražedného jednání?",
+    "answer": "Mužské pohlaví a věk nad 40 let",
+    "options": [
+      "Mužské pohlaví a věk nad 40 let",
+      "Stabilní rodina a pravidelné návštěvy",
+      "Ženské pohlaví a věk pod 25 let",
+      "Krátký trest a první uvěznění"
+    ],
+    "correctOption": 0,
+    "rationale": "Mezi faktory vysoké pravděpodobnosti sebeohrožení patří sebevražedné pokusy v anamnéze a v příbuzenstvu, beznaděj, chronická nemoc, abúzus alkoholu nebo drog, osamělost, věk nad 40 let a mužské pohlaví.",
+    "source": "učební text Psychologie pro ZOP (Akademie VS ČR, 2023), kapitola Sebevražedné (suicidiální) jednání, s. 73–75",
+    "explanation": "Mezi faktory vysoké pravděpodobnosti sebeohrožení patří sebevražedné pokusy v anamnéze a v příbuzenstvu, beznaděj, chronická nemoc, abúzus alkoholu nebo drog, osamělost, věk nad 40 let a mužské pohlaví. (Právní úprava: učební text Psychologie pro ZOP (Akademie VS ČR, 2023), kapitola Sebevražedné (suicidiální) jednání, s. 73–75)"
+  },
+  {
+    "id": "psy-45",
+    "subject": "Psychologie",
+    "topic": "Automutilace – motivace",
+    "question": "Který projev sebepoškození podle učebního textu psychologie svědčí pro motivaci odstraněním vnitřní psychické tenze?",
+    "answer": "Mnoho mělkých chaotických řezů na předloktích",
+    "options": [
+      "Mnoho mělkých chaotických řezů na předloktích",
+      "Spolykání většího množství léků",
+      "Sypání tuhy z propisovací tužky do očí",
+      "Plánovité polykání cizích předmětů před soudem"
+    ],
+    "correctOption": 0,
+    "rationale": "Pro motivaci odstraněním vnitřní psychické tenze svědčí automutilace pořezáním mnoha mělkými chaotickými řezy, jakoby posekáním, nejčastěji na předloktích; takové chování lze často předvídat.",
+    "source": "učební text Psychologie pro ZOP (2023), kapitola Sebevražedné jednání a sebepoškozování",
+    "explanation": "Pro motivaci odstraněním vnitřní psychické tenze svědčí automutilace pořezáním mnoha mělkými chaotickými řezy, jakoby posekáním, nejčastěji na předloktích; takové chování lze často předvídat. (Právní úprava: učební text Psychologie pro ZOP (2023), kapitola Sebevražedné jednání a sebepoškozování)"
+  },
+  {
+    "id": "psy-46",
+    "subject": "Psychologie",
+    "topic": "Náročné životní situace",
+    "question": "Jak se podle učebního textu Psychologie nazývá stupeň odolnosti člověka vůči frustraci?",
+    "answer": "Frustrační tolerance",
+    "options": [
+      "Stresová rezistence",
+      "Emoční labilita",
+      "Frustrační tolerance",
+      "Adaptační kapacita jedince"
+    ],
+    "correctOption": 2,
+    "rationale": "Stupeň odolnosti vůči frustraci se nazývá frustrační tolerance a je u každého člověka různý.",
+    "source": "Učební text Psychologie pro ZOP (2023), kapitola Náročné životní situace, s. 35–36",
+    "explanation": "Stupeň odolnosti vůči frustraci se nazývá frustrační tolerance a je u každého člověka různý. (Právní úprava: Učební text Psychologie pro ZOP (2023), kapitola Náročné životní situace, s. 35–36)"
+  },
+  {
+    "id": "psy-47",
+    "subject": "Psychologie",
+    "topic": "Mentální retardace",
+    "question": "Jakému pásmu IQ odpovídá lehká mentální retardace (F70) podle 10. revize Mezinárodní klasifikace nemocí?",
+    "answer": "IQ 50 až 69",
+    "options": [
+      "IQ 50 až 69",
+      "IQ pod 20",
+      "IQ 35 až 49",
+      "IQ 70 až 100"
+    ],
+    "correctOption": 0,
+    "rationale": "Lehká mentální retardace (F70) odpovídá IQ 50 až 69; s ní se ve věznicích setkáváme nejčastěji, osoby s těžšími stupni nebývají umisťovány do klasických věznic.",
+    "source": "Učební texty Pedagogika (2023), kapitola Mentální retardace",
+    "explanation": "Lehká mentální retardace (F70) odpovídá IQ 50 až 69; s ní se ve věznicích setkáváme nejčastěji, osoby s těžšími stupni nebývají umisťovány do klasických věznic. (Právní úprava: Učební texty Pedagogika (2023), kapitola Mentální retardace)"
+  },
+  {
+    "id": "psy-48",
+    "subject": "Psychologie",
+    "topic": "Komunikace – proxemika",
+    "question": "Jaké rozpětí vzdálenosti odpovídá podle učebního textu Psychologie osobní zóně?",
+    "answer": "50 až 150 cm",
+    "options": [
+      "více než 3,5 m",
+      "15 až 20 cm",
+      "50 až 150 cm",
+      "1,5 až 3,5 m"
+    ],
+    "correctOption": 2,
+    "rationale": "Interpersonální zóny: intimní 15–20 cm, osobní 50–150 cm, sociální 1,5–3,5 m, veřejná více než 3,5 m.",
+    "source": "Učební text Psychologie pro ZOP (2023), kapitola Komunikace, s. 24–28",
+    "explanation": "Interpersonální zóny: intimní 15–20 cm, osobní 50–150 cm, sociální 1,5–3,5 m, veřejná více než 3,5 m. (Právní úprava: Učební text Psychologie pro ZOP (2023), kapitola Komunikace, s. 24–28)"
+  },
+  {
+    "id": "psy-49",
+    "subject": "Psychologie",
+    "topic": "Sociální percepce",
+    "question": "Jak se nazývá efekt, který je opakem golemovského efektu?",
+    "answer": "Pygmalionský efekt",
+    "options": [
+      "Pygmalionský efekt",
+      "Efekt setrvačnosti",
+      "Efekt zakotvení",
+      "Haló efekt (svatozář)"
+    ],
+    "correctOption": 0,
+    "rationale": "Golemovský efekt znamená, že řídící pracovník podhodnocuje podřízené a nadhodnocuje sebe; jeho opakem je pygmalionský efekt.",
+    "source": "Učební text Psychologie pro ZOP (2023), kapitola Sociální percepce, s. 18–20",
+    "explanation": "Golemovský efekt znamená, že řídící pracovník podhodnocuje podřízené a nadhodnocuje sebe; jeho opakem je pygmalionský efekt. (Právní úprava: Učební text Psychologie pro ZOP (2023), kapitola Sociální percepce, s. 18–20)"
+  },
+  {
+    "id": "psy-50",
+    "subject": "Psychologie",
+    "topic": "Sociální percepce",
+    "question": "Co je v sociální percepci „efekt setrvačnosti“?",
+    "answer": "Chyba vyplývající z minulých zkušeností s daným člověkem",
+    "options": [
+      "Hodnocení podle jedné nápadné vlastnosti člověka",
+      "Chyba vyplývající z minulých zkušeností s daným člověkem",
+      "Připisování vlastního neúspěchu vnějším podmínkám a okolnostem",
+      "Přeceňování vzhledu hodnocené osoby"
+    ],
+    "correctOption": 1,
+    "rationale": "Efekt setrvačnosti je chyba v hodnocení vyplývající z minulých zkušeností s daným člověkem; ostatní možnosti popisují haló efekt, teorii atribuce a estetický stereotyp.",
+    "source": "Učební text Psychologie pro ZOP (2023), kapitola Sociální percepce, s. 18–20",
+    "explanation": "Efekt setrvačnosti je chyba v hodnocení vyplývající z minulých zkušeností s daným člověkem; ostatní možnosti popisují haló efekt, teorii atribuce a estetický stereotyp. (Právní úprava: Učební text Psychologie pro ZOP (2023), kapitola Sociální percepce, s. 18–20)"
+  },
+  {
+    "id": "psy-51",
+    "subject": "Psychologie",
+    "topic": "Asertivní techniky",
+    "question": "Jak se nazývá asertivní technika spočívající v klidném opakování toho, co chceme, bez reakce na manipulativní manévry partnera?",
+    "answer": "Pokažená gramofonová deska",
+    "options": [
+      "Selektivní ignorování",
+      "Negativní dotazování partnera",
+      "Technika otevřených dveří",
+      "Pokažená gramofonová deska"
+    ],
+    "correctOption": 3,
+    "rationale": "Pokažená gramofonová deska je klidné opakování požadavku bez rozvíjení vedlejších témat; otevřené dveře znamenají klidné připuštění kritiky, negativní aserce souhlas s kritikou vlastních chyb.",
+    "source": "Učební text Psychologie pro ZOP (2023), Asertivní techniky, s. 20–23",
+    "explanation": "Pokažená gramofonová deska je klidné opakování požadavku bez rozvíjení vedlejších témat; otevřené dveře znamenají klidné připuštění kritiky, negativní aserce souhlas s kritikou vlastních chyb. (Právní úprava: Učební text Psychologie pro ZOP (2023), Asertivní techniky, s. 20–23)"
+  },
+  {
+    "id": "psy-52",
+    "subject": "Psychologie",
+    "topic": "Asertivní techniky",
+    "question": "Co znamená asertivní technika „selektivní ignorování“?",
+    "answer": "Nereagovat na nevěcnou kritiku, jen dát najevo, že jsme slyšeli",
+    "options": [
+      "Nereagovat na nevěcnou kritiku, jen dát najevo, že jsme slyšeli",
+      "Nabízení nevyžádaných informací o sobě pro usnadnění dalšího rozhovoru",
+      "Aktivní podpora kritiky dotazem, co ještě partnerovi vadí",
+      "Souhlas s kritikou vlastních skutečných chyb bez omlouvání"
+    ],
+    "correctOption": 0,
+    "rationale": "Selektivní ignorování znamená na manipulativní, nevěcnou nebo obecnou kritiku nereagovat, jen dát najevo, že jsme slyšeli; ostatní možnosti popisují negativní aserci, volné informace a negativní dotazování.",
+    "source": "Učební text Psychologie pro ZOP (2023), Asertivní techniky, s. 20–23",
+    "explanation": "Selektivní ignorování znamená na manipulativní, nevěcnou nebo obecnou kritiku nereagovat, jen dát najevo, že jsme slyšeli; ostatní možnosti popisují negativní aserci, volné informace a negativní dotazování. (Právní úprava: Učební text Psychologie pro ZOP (2023), Asertivní techniky, s. 20–23)"
+  }
 ];

@@ -873,5 +873,600 @@ export const penologieQuestions: Question[] = [
         rationale: 'Dle prováděcí vyhlášky k zákonu o VTOS se plnění programu zacházení vyhodnocuje pravidelně ve čtvrtletních intervalech za účasti odborných zaměstnanců (vychovatel, psycholog, speciální pedagog).',
         source: '§ 40 vyhlášky MS ČR č. 345/1999 Sb., řád výkonu trestu odnětí svobody',
         explanation: 'Dle vyhlášky č. 345/1999 Sb. se plnění programu zacházení vyhodnocuje pravidelně ve čtvrtletních intervalech za účasti odborných zaměstnanců.'
-    }
+    },
+  {
+    "id": "pen-53",
+    "subject": "Penologie",
+    "topic": "Návštěvy odsouzených",
+    "question": "Kdo může z bezpečnostních důvodů rozhodnout, že návštěva odsouzeného proběhne v místnosti, kde je návštěvník oddělen přepážkou?",
+    "answer": "Ředitel věznice",
+    "options": [
+      "Vychovatel odsouzeného",
+      "Dozorový státní zástupce",
+      "Ředitel věznice",
+      "Vrchní dozorce"
+    ],
+    "correctOption": 2,
+    "rationale": "Podle § 19 odst. 6 zákona o výkonu trestu může o návštěvě v místnosti s přepážkou z bezpečnostních důvodů rozhodnout ředitel věznice; ředitel může podle § 19 odst. 5 povolit i návštěvu bez zrakové a sluchové kontroly.",
+    "source": "§ 19 odst. 6 zákona č. 169/1999 Sb.",
+    "explanation": "Podle § 19 odst. 6 zákona o výkonu trestu může o návštěvě v místnosti s přepážkou z bezpečnostních důvodů rozhodnout ředitel věznice; ředitel může podle § 19 odst. 5 povolit i návštěvu bez zrakové a sluchové kontroly. (Právní úprava: § 19 odst. 6 zákona č. 169/1999 Sb.)"
+  },
+  {
+    "id": "pen-54",
+    "subject": "Penologie",
+    "topic": "Kázeňské tresty",
+    "question": "Do jaké výše lze odsouzenému uložit kázeňský trest pokuty?",
+    "answer": "Až do výše 5 000 Kč",
+    "options": [
+      "Až do výše 500 Kč",
+      "Až do výše 10 000 Kč",
+      "Až do výše 5 000 Kč",
+      "Až do výše 2 000 Kč"
+    ],
+    "correctOption": 2,
+    "rationale": "Zákon o výkonu trestu připouští jako kázeňský trest pokutu až do 5 000 Kč; lze uložit jen trest v zákoně uvedený.",
+    "source": "§ 46 zákona č. 169/1999 Sb.",
+    "explanation": "Zákon o výkonu trestu připouští jako kázeňský trest pokutu až do 5 000 Kč; lze uložit jen trest v zákoně uvedený. (Právní úprava: § 46 zákona č. 169/1999 Sb.)"
+  },
+  {
+    "id": "pen-55",
+    "subject": "Penologie",
+    "topic": "Kázeňské tresty",
+    "question": "V jaké lhůtě může odsouzený podat stížnost proti rozhodnutí o kázeňském trestu?",
+    "answer": "Do 3 dnů od oznámení rozhodnutí",
+    "options": [
+      "Do 15 dnů od oznámení rozhodnutí",
+      "Do 8 dnů od oznámení rozhodnutí",
+      "Ihned při oznámení rozhodnutí",
+      "Do 3 dnů od oznámení rozhodnutí"
+    ],
+    "correctOption": 3,
+    "rationale": "Odsouzený má právo podat stížnost do 3 dnů od oznámení rozhodnutí; o stížnosti se rozhodne do 5 pracovních dnů.",
+    "source": "§ 52 zákona č. 169/1999 Sb.",
+    "explanation": "Odsouzený má právo podat stížnost do 3 dnů od oznámení rozhodnutí; o stížnosti se rozhodne do 5 pracovních dnů. (Právní úprava: § 52 zákona č. 169/1999 Sb.)"
+  },
+  {
+    "id": "pen-56",
+    "subject": "Penologie",
+    "topic": "Návštěvy obviněných",
+    "question": "Umožní se vstup do prostor pro návštěvy návštěvníkovi obviněného, který předloží jen potvrzení o ztrátě občanského průkazu?",
+    "answer": "Ne, vyžaduje se platný občanský průkaz nebo pas",
+    "options": [
+      "Ano, potvrzení má stejnou platnost",
+      "Ano, se souhlasem vrchního inspektora strážní služby",
+      "Ne, vyžaduje se platný občanský průkaz nebo pas",
+      "Ano, pokud jej doprovází jiná zletilá osoba"
+    ],
+    "correctOption": 2,
+    "rationale": "Návštěvníkům obviněných se umožní vstup do prostor pro návštěvy po předložení platného občanského průkazu nebo pasu; vstup na potvrzení o ztrátě občanského průkazu se neumožní.",
+    "source": "§ 44 odst. 2 vyhlášky č. 109/1994 Sb.",
+    "explanation": "Návštěvníkům obviněných se umožní vstup do prostor pro návštěvy po předložení platného občanského průkazu nebo pasu; vstup na potvrzení o ztrátě občanského průkazu se neumožní. (Právní úprava: § 44 odst. 2 vyhlášky č. 109/1994 Sb.)"
+  },
+  {
+    "id": "pen-57",
+    "subject": "Penologie",
+    "topic": "Úmrtí obviněného",
+    "question": "Koho věznice vždy bez odkladu vyrozumí o úmrtí obviněného?",
+    "answer": "Příslušný OČTŘ a osobu určenou obviněným či osobu blízkou",
+    "options": [
+      "Pouze dozorového státního zástupce a ombudsmana",
+      "Příslušný OČTŘ a osobu určenou obviněným či osobu blízkou",
+      "Pouze osobu blízkou, a to do 30 dnů od úmrtí",
+      "Pouze Policii ČR a ošetřujícího lékaře zdravotnického střediska"
+    ],
+    "correctOption": 1,
+    "rationale": "Podle § 18 odst. 7 zákona o výkonu vazby věznice o úmrtí obviněného vždy bez odkladu vyrozumí příslušný orgán činný v trestním řízení a osobu, kterou obviněný určil, nebo osobu blízkou.",
+    "source": "§ 18 odst. 7 zákona č. 293/1993 Sb.",
+    "explanation": "Podle § 18 odst. 7 zákona o výkonu vazby věznice o úmrtí obviněného vždy bez odkladu vyrozumí příslušný orgán činný v trestním řízení a osobu, kterou obviněný určil, nebo osobu blízkou. (Právní úprava: § 18 odst. 7 zákona č. 293/1993 Sb.)"
+  },
+  {
+    "id": "pen-58",
+    "subject": "Penologie",
+    "topic": "Kázeňské tresty – uzavřený oddíl",
+    "question": "Po jaké době od výkonu předchozího trestu lze nejdříve začít vykonávat znovu uložené celodenní umístění do uzavřeného oddílu nebo samovazbu (nebyl-li trest uložen ještě v průběhu výkonu)?",
+    "answer": "Nejdříve po uplynutí 10 dnů od výkonu předchozího trestu",
+    "options": [
+      "Nejdříve po uplynutí 5 dnů od výkonu předchozího trestu",
+      "Nejdříve po uplynutí 14 dnů od skončení předchozího trestu",
+      "Nejdříve po uplynutí 10 dnů od výkonu předchozího trestu",
+      "Ihned, výkon může navazovat bez jakékoli přestávky"
+    ],
+    "correctOption": 2,
+    "rationale": "S výkonem znovu uloženého celodenního umístění do uzavřeného oddílu nebo samovazby nelze začít dříve než po uplynutí 10 dnů od výkonu předchozího trestu, ledaže byl uložen ještě v průběhu jeho výkonu.",
+    "source": "§ 49 zákona č. 169/1999 Sb.",
+    "explanation": "S výkonem znovu uloženého celodenního umístění do uzavřeného oddílu nebo samovazby nelze začít dříve než po uplynutí 10 dnů od výkonu předchozího trestu, ledaže byl uložen ještě v průběhu jeho výkonu. (Právní úprava: § 49 zákona č. 169/1999 Sb.)"
+  },
+  {
+    "id": "pen-59",
+    "subject": "Penologie",
+    "topic": "Kázeňské tresty – podmíněné uložení",
+    "question": "Jakou nejdelší zkušební dobu lze stanovit při podmíněném uložení umístění do uzavřeného oddílu nebo celodenního umístění do uzavřeného oddílu?",
+    "answer": "Zkušební dobu až na 6 měsíců",
+    "options": [
+      "Zkušební dobu až na 6 měsíců",
+      "Zkušební dobu až na 12 měsíců",
+      "Zkušební dobu až na 3 měsíce",
+      "Zkušební dobu až na 1 měsíc"
+    ],
+    "correctOption": 0,
+    "rationale": "Výkon kázeňských trestů podle § 46 odst. 3 písm. f) a g) lze podle § 46 odst. 4 zákona č. 169/1999 Sb. uložit i podmíněně se zkušební dobou až na 6 měsíců.",
+    "source": "§ 46 odst. 4 zákona č. 169/1999 Sb.",
+    "explanation": "Výkon kázeňských trestů podle § 46 odst. 3 písm. f) a g) lze podle § 46 odst. 4 zákona č. 169/1999 Sb. uložit i podmíněně se zkušební dobou až na 6 měsíců. (Právní úprava: § 46 odst. 4 zákona č. 169/1999 Sb.)"
+  },
+  {
+    "id": "pen-60",
+    "subject": "Penologie",
+    "topic": "Kázeňské tresty – obvinění",
+    "question": "Na jak dlouho lze nejvýše uložit dospělému obviněnému ve výkonu vazby kázeňský trest umístění do samovazby?",
+    "answer": "Až na deset dnů",
+    "options": [
+      "Až na pět dnů",
+      "Až na sedm dnů",
+      "Až na dvacet dnů",
+      "Až na deset dnů"
+    ],
+    "correctOption": 3,
+    "rationale": "U obviněných se podle § 22 zákona č. 293/1993 Sb. vykonává umístění do samovazby až na 10 dnů (u mladistvých obviněných nejdéle 5 dní); 20 dnů je horní hranice u odsouzených.",
+    "source": "§ 22 odst. 2 písm. e) zákona č. 293/1993 Sb.",
+    "explanation": "U obviněných se podle § 22 zákona č. 293/1993 Sb. vykonává umístění do samovazby až na 10 dnů (u mladistvých obviněných nejdéle 5 dní); 20 dnů je horní hranice u odsouzených. (Právní úprava: § 22 odst. 2 písm. e) zákona č. 293/1993 Sb.)"
+  },
+  {
+    "id": "pen-61",
+    "subject": "Penologie",
+    "topic": "Kázeňské řízení – stížnost",
+    "question": "U kterého kázeňského trestu uloženého odsouzenému má stížnost odkladný účinek?",
+    "answer": "Jen u kázeňského trestu propadnutí věci",
+    "options": [
+      "Jen u samovazby a celodenního umístění do UO",
+      "Jen u kázeňského trestu propadnutí věci",
+      "U všech ukládaných kázeňských trestů",
+      "Jen u pokuty a snížení kapesného"
+    ],
+    "correctOption": 1,
+    "rationale": "Podle § 52 odst. 1 zákona č. 169/1999 Sb. má stížnost odkladný účinek jen u propadnutí věci; ostatní tresty (např. umístění do uzavřeného oddílu) jsou vykonatelné oznámením rozhodnutí.",
+    "source": "§ 52 odst. 1 zákona č. 169/1999 Sb.; § 31 odst. 2 NGŘ č. 41/2024",
+    "explanation": "Podle § 52 odst. 1 zákona č. 169/1999 Sb. má stížnost odkladný účinek jen u propadnutí věci; ostatní tresty (např. umístění do uzavřeného oddílu) jsou vykonatelné oznámením rozhodnutí. (Právní úprava: § 52 odst. 1 zákona č. 169/1999 Sb.; § 31 odst. 2 NGŘ č. 41/2024)"
+  },
+  {
+    "id": "pen-62",
+    "subject": "Penologie",
+    "topic": "Nestřežené pracoviště – kontroly",
+    "question": "Jak často musí dozorce nejméně kontrolovat odsouzené z oddělení se středním stupněm zabezpečení na nestřeženém pracovišti?",
+    "answer": "Nejméně jedenkrát za hodinu",
+    "options": [
+      "Nejméně jedenkrát za směnu",
+      "Nejméně jedenkrát za hodinu",
+      "Nejméně jedenkrát týdně",
+      "Nejméně jedenkrát za čtvrt hodiny"
+    ],
+    "correctOption": 1,
+    "rationale": "Podle § 52 odst. 3 vyhlášky č. 345/1999 Sb. se odsouzení z oddělení se středním stupněm zabezpečení na nestřeženém pracovišti kontrolují nejméně jedenkrát za hodinu; u nízkého stupně zabezpečení nejméně jedenkrát týdně.",
+    "source": "§ 52 odst. 3 vyhlášky č. 345/1999 Sb.",
+    "explanation": "Podle § 52 odst. 3 vyhlášky č. 345/1999 Sb. se odsouzení z oddělení se středním stupněm zabezpečení na nestřeženém pracovišti kontrolují nejméně jedenkrát za hodinu; u nízkého stupně zabezpečení nejméně jedenkrát týdně. (Právní úprava: § 52 odst. 3 vyhlášky č. 345/1999 Sb.)"
+  },
+  {
+    "id": "pen-63",
+    "subject": "Penologie",
+    "topic": "Kázeňská pravomoc – rozsah",
+    "question": "Na jak dlouho může vychovatel nejvýše uložit odsouzenému umístění do uzavřeného oddílu?",
+    "answer": "Až na sedm dnů",
+    "options": [
+      "Až na tři dny",
+      "Až na čtrnáct dnů",
+      "Až na sedm dnů",
+      "Až na pět dnů"
+    ],
+    "correctOption": 2,
+    "rationale": "Podle přílohy č. 1c NGŘ č. 41/2024 může vychovatel uložit umístění do uzavřeného oddílu až na 7 dnů; nemůže uložit zákaz přijetí balíčku, pokutu, celodenní umístění ani samovazbu.",
+    "source": "příloha č. 1c NGŘ č. 41/2024",
+    "explanation": "Podle přílohy č. 1c NGŘ č. 41/2024 může vychovatel uložit umístění do uzavřeného oddílu až na 7 dnů; nemůže uložit zákaz přijetí balíčku, pokutu, celodenní umístění ani samovazbu. (Právní úprava: příloha č. 1c NGŘ č. 41/2024)"
+  },
+  {
+    "id": "pen-64",
+    "subject": "Penologie",
+    "topic": "Kázeňská pravomoc – rozsah",
+    "question": "Do jaké výše může speciální pedagog uložit odsouzenému kázeňský trest pokuty?",
+    "answer": "Až do výše 2 000 Kč",
+    "options": [
+      "Až do výše 2 000 Kč",
+      "Až do výše 500 Kč",
+      "Až do výše 3 000 Kč",
+      "Pokutu vůbec uložit nemůže"
+    ],
+    "correctOption": 0,
+    "rationale": "Speciální pedagog může podle přílohy č. 1c NGŘ č. 41/2024 uložit pokutu až 2 000 Kč; zástupce vedoucího i vedoucí oddělení až 3 000 Kč, první zástupce ředitele a ředitel věznice až 5 000 Kč.",
+    "source": "příloha č. 1c NGŘ č. 41/2024",
+    "explanation": "Speciální pedagog může podle přílohy č. 1c NGŘ č. 41/2024 uložit pokutu až 2 000 Kč; zástupce vedoucího i vedoucí oddělení až 3 000 Kč, první zástupce ředitele a ředitel věznice až 5 000 Kč. (Právní úprava: příloha č. 1c NGŘ č. 41/2024)"
+  },
+  {
+    "id": "pen-65",
+    "subject": "Penologie",
+    "topic": "Kázeňské řízení – role dozorce",
+    "question": "Jaké oprávnění má dozorce v kázeňském řízení vůči odsouzenému, který se opil na pracovišti?",
+    "answer": "Může zpracovat záznam o kázeňském přestupku",
+    "options": [
+      "Může sám uložit důtku nebo propadnutí věci",
+      "Nemá žádné, vše řeší vychovatel",
+      "Může uložit umístění do uzavřeného oddílu na 7 dnů",
+      "Může zpracovat záznam o kázeňském přestupku"
+    ],
+    "correctOption": 3,
+    "rationale": "Dozorce kázeňskou pravomoc nemá; podle § 16 NGŘ č. 41/2024 může kterýkoliv zaměstnanec zpracovat záznam o kázeňském přestupku, který předá zaměstnanci s kázeňskou pravomocí.",
+    "source": "§ 16 NGŘ č. 41/2024",
+    "explanation": "Dozorce kázeňskou pravomoc nemá; podle § 16 NGŘ č. 41/2024 může kterýkoliv zaměstnanec zpracovat záznam o kázeňském přestupku, který předá zaměstnanci s kázeňskou pravomocí. (Právní úprava: § 16 NGŘ č. 41/2024)"
+  },
+  {
+    "id": "pen-66",
+    "subject": "Penologie",
+    "topic": "SARPO – nástupní oddíl",
+    "question": "U kterých odsouzených probíhá diagnostika nástrojem SARPO v nástupním oddíle kmenové věznice?",
+    "answer": "U odsouzených s trestem delším než tři měsíce",
+    "options": [
+      "U všech odsouzených bez ohledu na délku trestu",
+      "Jen u odsouzených s trestem nad pět let",
+      "U odsouzených s trestem delším než tři měsíce",
+      "Jen u recidivistů a mladistvých"
+    ],
+    "correctOption": 2,
+    "rationale": "Diagnostika prostřednictvím SARPO probíhá v nástupním oddíle kmenové věznice (zpravidla 2 týdny) u odsouzených s trestem delším než tři měsíce; jejím výsledkem je komplexní zpráva podle § 41 zákona č. 169/1999 Sb.",
+    "source": "Penologie a KSSVO (2025), s. 16 až 17; § 41 zákona č. 169/1999 Sb.",
+    "explanation": "Diagnostika prostřednictvím SARPO probíhá v nástupním oddíle kmenové věznice (zpravidla 2 týdny) u odsouzených s trestem delším než tři měsíce; jejím výsledkem je komplexní zpráva podle § 41 zákona č. 169/1999 Sb. (Právní úprava: Penologie a KSSVO (2025), s. 16 až 17; § 41 zákona č. 169/1999 Sb.)"
+  },
+  {
+    "id": "pen-67",
+    "subject": "Penologie",
+    "topic": "Vnitřní řád věznice",
+    "question": "Kdo podle § 14 zákona č. 169/1999 Sb. stanoví vnitřní řád věznice pro odsouzené?",
+    "answer": "Ředitel věznice se souhlasem generálního ředitelství VS",
+    "options": [
+      "Ředitel věznice se souhlasem generálního ředitelství VS",
+      "Generální ředitel Vězeňské služby na návrh ředitele věznice",
+      "Ministr spravedlnosti po projednání s generálním ředitelem",
+      "Vedoucí oddělení výkonu trestu se souhlasem ředitele"
+    ],
+    "correctOption": 0,
+    "rationale": "Vnitřní řád věznice pro odsouzené stanoví její ředitel se souhlasem generálního ředitelství Vězeňské služby; jeho přílohou je časový rozvrh dne.",
+    "source": "§ 14 zákona č. 169/1999 Sb.",
+    "explanation": "Vnitřní řád věznice pro odsouzené stanoví její ředitel se souhlasem generálního ředitelství Vězeňské služby; jeho přílohou je časový rozvrh dne. (Právní úprava: § 14 zákona č. 169/1999 Sb.)"
+  },
+  {
+    "id": "pen-68",
+    "subject": "Penologie",
+    "topic": "Druhy pracovišť odsouzených",
+    "question": "Pro které odsouzené je podle studijního materiálu Penologie vhodné pracoviště s volným pohybem mimo věznici (VPMV)?",
+    "answer": "Pro vybrané odsouzené v nízkém či středním stupni",
+    "options": [
+      "Pro odsouzené ve věznici se zvýšenou ostrahou",
+      "Pro všechny odsouzené ve vysokém stupni zabezpečení",
+      "Pro vybrané odsouzené v nízkém či středním stupni",
+      "Pro obviněné s kladným hodnocením chování"
+    ],
+    "correctOption": 2,
+    "rationale": "Pracoviště s volným pohybem mimo věznici je vhodné pro pečlivě vybrané odsouzené ve věznici s ostrahou zařazené v nízkém nebo středním stupni zabezpečení; obvinění mohou pracovat jen v prostoru věznice.",
+    "source": "Penologie a KSSVO (2025), kapitola 7.1 Druhy pracovišť; §§ 51–55 vyhlášky č. 345/1999 Sb.",
+    "explanation": "Pracoviště s volným pohybem mimo věznici je vhodné pro pečlivě vybrané odsouzené ve věznici s ostrahou zařazené v nízkém nebo středním stupni zabezpečení; obvinění mohou pracovat jen v prostoru věznice. (Právní úprava: Penologie a KSSVO (2025), kapitola 7.1 Druhy pracovišť; §§ 51–55 vyhlášky č. 345/1999 Sb.)"
+  },
+  {
+    "id": "pen-69",
+    "subject": "Penologie",
+    "topic": "Balíčky obviněných",
+    "question": "Jak se naloží s balíčkem pro obviněného, jehož hmotnost překračuje povolených 5 kg, nebyl-li vrácen již při návštěvě?",
+    "answer": "Vrátí se odesilateli podle řádu výkonu vazby",
+    "options": [
+      "Vrátí se odesilateli podle řádu výkonu vazby",
+      "Předá se obviněnému a přebytek se uloží do úschovy",
+      "Obsah se přebalí a předá v nejbližším termínu",
+      "Zničí se jako věc zcela nepatrné hodnoty"
+    ],
+    "correctOption": 0,
+    "rationale": "Balíček, který má vyšší než povolenou hmotnost, se vrátí odesilateli, pokud k vrácení nedošlo již při návštěvě; odesilatel se vyrozumí o rozsahu povolených věcí.",
+    "source": "§ 48 odst. 3 vyhlášky č. 109/1994 Sb.; § 16 odst. 2 zákona č. 293/1993 Sb.",
+    "explanation": "Balíček, který má vyšší než povolenou hmotnost, se vrátí odesilateli, pokud k vrácení nedošlo již při návštěvě; odesilatel se vyrozumí o rozsahu povolených věcí. (Právní úprava: § 48 odst. 3 vyhlášky č. 109/1994 Sb.; § 16 odst. 2 zákona č. 293/1993 Sb.)"
+  },
+  {
+    "id": "pen-70",
+    "subject": "Penologie",
+    "topic": "Návštěvy obviněných v koluzní vazbě",
+    "question": "Může ředitel věznice u obviněného v koluzní vazbě umožnit návštěvu bez sluchové, případně zrakové kontroly?",
+    "answer": "Ne, u koluzní vazby ji neumožní",
+    "options": [
+      "Ano, se souhlasem státního zástupce",
+      "Ano, jen jde-li o manželku",
+      "Ano, trvá-li vazba déle než tři měsíce",
+      "Ne, u koluzní vazby ji neumožní"
+    ],
+    "correctOption": 3,
+    "rationale": "Návštěvu bez sluchové, popřípadě zrakové kontroly ředitel věznice u obviněného v koluzní vazbě neumožní; nelze u něj ani zprostředkovat návštěvu příbuzného, který je rovněž ve vazbě nebo výkonu trestu.",
+    "source": "§ 44 odst. 6 a § 45 vyhlášky č. 109/1994 Sb.",
+    "explanation": "Návštěvu bez sluchové, popřípadě zrakové kontroly ředitel věznice u obviněného v koluzní vazbě neumožní; nelze u něj ani zprostředkovat návštěvu příbuzného, který je rovněž ve vazbě nebo výkonu trestu. (Právní úprava: § 44 odst. 6 a § 45 vyhlášky č. 109/1994 Sb.)"
+  },
+  {
+    "id": "pen-71",
+    "subject": "Penologie",
+    "topic": "Nestřežené pracoviště – intervaly dohledu",
+    "question": "Jak často se podle vyhlášky č. 345/1999 Sb. nejméně provádí dohled nad odsouzenými z oddělení s vysokým stupněm zabezpečení na nestřeženém pracovišti?",
+    "answer": "Nejméně jedenkrát za 45 minut",
+    "options": [
+      "Nejméně jedenkrát za 45 minut",
+      "Nejméně jedenkrát týdně",
+      "Nejméně jedenkrát za 2 hodiny",
+      "Nejméně jedenkrát za každých 30 minut"
+    ],
+    "correctOption": 0,
+    "rationale": "Dohled se provádí u nízkého stupně zabezpečení nejméně jednou týdně, u středního nejméně jednou za hodinu a u vysokého nejméně jednou za 45 minut.",
+    "source": "§ 51 odst. 2, § 52 odst. 3 a § 53 odst. 5 vyhlášky č. 345/1999 Sb.",
+    "explanation": "Dohled se provádí u nízkého stupně zabezpečení nejméně jednou týdně, u středního nejméně jednou za hodinu a u vysokého nejméně jednou za 45 minut. (Právní úprava: § 51 odst. 2, § 52 odst. 3 a § 53 odst. 5 vyhlášky č. 345/1999 Sb.)"
+  },
+  {
+    "id": "pen-72",
+    "subject": "Penologie",
+    "topic": "Program zacházení",
+    "question": "V jakém případě se podle § 41 zákona č. 169/1999 Sb. program zacházení pro odsouzeného nezpracovává?",
+    "answer": "Má-li vykonat trest nebo jeho zbytek do 3 měsíců",
+    "options": [
+      "Má-li vykonat trest nebo jeho zbytek do 3 měsíců",
+      "Je-li zařazen do věznice se zvýšenou ostrahou",
+      "Odmítne-li s programem vyslovit písemný souhlas",
+      "Je-li starší šedesáti let a nemůže ze zdravotních důvodů pracovat"
+    ],
+    "correctOption": 0,
+    "rationale": "Program zacházení se nezpracovává, má-li odsouzený vykonat trest nebo jeho zbytek ve výměře nepřesahující 3 měsíce.",
+    "source": "§ 41 zákona č. 169/1999 Sb.",
+    "explanation": "Program zacházení se nezpracovává, má-li odsouzený vykonat trest nebo jeho zbytek ve výměře nepřesahující 3 měsíce. (Právní úprava: § 41 zákona č. 169/1999 Sb.)"
+  },
+  {
+    "id": "pen-73",
+    "subject": "Penologie",
+    "topic": "Program zacházení",
+    "question": "Do jakého programu se podle § 37 vyhlášky č. 345/1999 Sb. zařadí odsouzený, který odmítne přijetí programu zacházení stvrdit podpisem?",
+    "answer": "Do programu základního motivačního zacházení",
+    "options": [
+      "Do programu minimálního zacházení",
+      "Do programu základního motivačního zacházení",
+      "Do programu speciálního zacházení",
+      "Do programu výstupního zacházení s odsouzenými"
+    ],
+    "correctOption": 1,
+    "rationale": "Odsouzený, který odmítne přijetí programu stvrdit podpisem, se zařadí do programu základního motivačního zacházení.",
+    "source": "§ 37 vyhlášky č. 345/1999 Sb.",
+    "explanation": "Odsouzený, který odmítne přijetí programu stvrdit podpisem, se zařadí do programu základního motivačního zacházení. (Právní úprava: § 37 vyhlášky č. 345/1999 Sb.)"
+  },
+  {
+    "id": "pen-74",
+    "subject": "Penologie",
+    "topic": "Předcházení násilí – NGŘ č. 24/2022",
+    "question": "Jak často provádí dozorce prohlídku těla (zrakovou) u vězněné osoby zařazené v seznamu osob, u nichž se realizují opatření k předcházení násilí?",
+    "answer": "Jednou týdně",
+    "options": [
+      "Jednou týdně",
+      "Každý den",
+      "Jednou za 14 dní",
+      "Jednou měsíčně"
+    ],
+    "correctOption": 0,
+    "rationale": "U vězněné osoby zařazené v seznamu se jednou týdně provádí prohlídka těla, aby se zjistilo, zda nenese zjevné stopy po fyzickém násilí; při podezření na násilí se provede neprodleně.",
+    "source": "NGŘ č. 24/2022; Penologie a KSSVO (2025), kapitola 9",
+    "explanation": "U vězněné osoby zařazené v seznamu se jednou týdně provádí prohlídka těla, aby se zjistilo, zda nenese zjevné stopy po fyzickém násilí; při podezření na násilí se provede neprodleně. (Právní úprava: NGŘ č. 24/2022; Penologie a KSSVO (2025), kapitola 9)"
+  },
+  {
+    "id": "pen-75",
+    "subject": "Penologie",
+    "topic": "Předcházení násilí – NGŘ č. 24/2022",
+    "question": "Kdo zajistí pořízení fotodokumentace stop fyzického násilí na těle vězněné osoby v mimopracovní době?",
+    "answer": "Vrchní inspektor strážní služby",
+    "options": [
+      "Inspektor dozorčí služby",
+      "Vedoucí oddělení prevence a stížností",
+      "Lékař zdravotnického střediska",
+      "Vrchní inspektor strážní služby"
+    ],
+    "correctOption": 3,
+    "rationale": "V pracovní době pořizuje fotodokumentaci pověřený orgán, v mimopracovní době ji zajistí vrchní inspektor strážní služby; pořizuje ji osoba stejného pohlaví.",
+    "source": "§ 20 NGŘ č. 24/2022",
+    "explanation": "V pracovní době pořizuje fotodokumentaci pověřený orgán, v mimopracovní době ji zajistí vrchní inspektor strážní služby; pořizuje ji osoba stejného pohlaví. (Právní úprava: § 20 NGŘ č. 24/2022)"
+  },
+  {
+    "id": "pen-76",
+    "subject": "Penologie",
+    "topic": "Předcházení násilí – NGŘ č. 24/2022",
+    "question": "Co se stane, odmítne-li odsouzený se stopami násilí lékařskou prohlídku, k níž byl předveden?",
+    "answer": "Lékař s ním sepíše negativní reverz",
+    "options": [
+      "Prohlídka se provede proti jeho vůli",
+      "Lékař s ním sepíše negativní reverz",
+      "Dozorce sepíše jen služební záznam",
+      "Věc se ihned předá Policii ČR"
+    ],
+    "correctOption": 1,
+    "rationale": "Odmítne-li odsouzený lékařskou prohlídku, sepíše s ním lékař negativní reverz. Psychologem je vyšetřen i tehdy, když to odmítá.",
+    "source": "§ 20 NGŘ č. 24/2022",
+    "explanation": "Odmítne-li odsouzený lékařskou prohlídku, sepíše s ním lékař negativní reverz. Psychologem je vyšetřen i tehdy, když to odmítá. (Právní úprava: § 20 NGŘ č. 24/2022)"
+  },
+  {
+    "id": "pen-77",
+    "subject": "Penologie",
+    "topic": "Práva obviněného",
+    "question": "S kým smí obviněný ve vazbě z koluzních důvodů používat telefon podle § 13a zákona č. 293/1993 Sb.?",
+    "answer": "Pouze se svým obhájcem",
+    "options": [
+      "S osobou blízkou i s obhájcem",
+      "Pouze se svým obhájcem",
+      "Jen s osobou blízkou",
+      "S nikým, telefon je vyloučen"
+    ],
+    "correctOption": 1,
+    "rationale": "Obviněný má právo použít telefon ke kontaktu s osobou blízkou a s obhájcem nebo advokátem; u koluzní vazby jen s obhájcem.",
+    "source": "§ 13a zákona č. 293/1993 Sb.",
+    "explanation": "Obviněný má právo použít telefon ke kontaktu s osobou blízkou a s obhájcem nebo advokátem; u koluzní vazby jen s obhájcem. (Právní úprava: § 13a zákona č. 293/1993 Sb.)"
+  },
+  {
+    "id": "pen-78",
+    "subject": "Penologie",
+    "topic": "Kázeňské tresty – uzavřený oddíl",
+    "question": "Jak často musí být odsouzený v průběhu výkonu samovazby nebo celodenního umístění do uzavřeného oddílu prohlédnut lékařem?",
+    "answer": "Nejméně jednou týdně",
+    "options": [
+      "Nejméně jednou týdně",
+      "Nejméně jednou za měsíc",
+      "Nejméně jednou za 14 dní",
+      "Jen před nástupem"
+    ],
+    "correctOption": 0,
+    "rationale": "K uložení těchto kázeňských trestů je nezbytné předchozí posouzení lékaře; před nástupem a nejméně jednou týdně v průběhu výkonu musí být odsouzený prohlédnut lékařem.",
+    "source": "§ 49 odst. 1 a 2 zákona č. 169/1999 Sb.",
+    "explanation": "K uložení těchto kázeňských trestů je nezbytné předchozí posouzení lékaře; před nástupem a nejméně jednou týdně v průběhu výkonu musí být odsouzený prohlédnut lékařem. (Právní úprava: § 49 odst. 1 a 2 zákona č. 169/1999 Sb.)"
+  },
+  {
+    "id": "pen-79",
+    "subject": "Penologie",
+    "topic": "Kázeňské tresty – uzavřený oddíl",
+    "question": "Kdy smí být odsouzený v uzavřeném oddílu umístěn do cely sám?",
+    "answer": "Při vážných bezpečnostních důvodech nebo bez dalšího odsouzeného",
+    "options": [
+      "Kdykoli na jeho vlastní žádost podanou vedoucímu oddílu",
+      "Vždy, jde-li o celodenní umístění do uzavřeného oddílu a samovazbu",
+      "Při vážných bezpečnostních důvodech nebo bez dalšího odsouzeného",
+      "Jen na základě rozhodnutí lékaře o jeho zdravotní způsobilosti"
+    ],
+    "correctOption": 2,
+    "rationale": "Do cely může být odsouzený umístěn sám jen tehdy, jsou-li pro to vážné důvody bezpečnostní nebo nejsou-li ve výkonu tohoto kázeňského trestu současně alespoň dva odsouzení.",
+    "source": "§ 70 NGŘ č. 02/2022",
+    "explanation": "Do cely může být odsouzený umístěn sám jen tehdy, jsou-li pro to vážné důvody bezpečnostní nebo nejsou-li ve výkonu tohoto kázeňského trestu současně alespoň dva odsouzení. (Právní úprava: § 70 NGŘ č. 02/2022)"
+  },
+  {
+    "id": "pen-80",
+    "subject": "Penologie",
+    "topic": "Zdravotní péče – povinnosti odsouzeného",
+    "question": "Které ustanovení zákona č. 169/1999 Sb. ukládá odsouzenému povinnost podrobit se preventivní vstupní lékařské prohlídce?",
+    "answer": "§ 28 odst. 2 písm. c)",
+    "options": [
+      "§ 28 odst. 2 písm. c)",
+      "§ 16 odst. 5 a 6",
+      "§ 46 odst. 1 písm. b)",
+      "§ 36 odst. 1 a odst. 2"
+    ],
+    "correctOption": 0,
+    "rationale": "Podle § 28 odst. 2 písm. c) je odsouzený povinen podrobit se preventivní vstupní, periodické, mimořádné a výstupní lékařské prohlídce v rozsahu určeném lékařem. § 16 odst. 6 upravuje jeho právo na zdravotní služby.",
+    "source": "§ 28 odst. 2 písm. c) zákona č. 169/1999 Sb.",
+    "explanation": "Podle § 28 odst. 2 písm. c) je odsouzený povinen podrobit se preventivní vstupní, periodické, mimořádné a výstupní lékařské prohlídce v rozsahu určeném lékařem. § 16 odst. 6 upravuje jeho právo na zdravotní služby. (Právní úprava: § 28 odst. 2 písm. c) zákona č. 169/1999 Sb.)"
+  },
+  {
+    "id": "pen-81",
+    "subject": "Penologie",
+    "topic": "Zdravotní péče – výdej léků",
+    "question": "Kdo zajišťuje výdej léků odsouzeným v případech, kdy jej neprovádí zdravotnický pracovník (a není pověřen jiný zaměstnanec)?",
+    "answer": "Inspektor dozorčí služby OVT",
+    "options": [
+      "Dozorce oddílu odsouzeného",
+      "Vychovatel oddílu odsouzeného",
+      "Vrchní inspektor strážní služby",
+      "Inspektor dozorčí služby OVT"
+    ],
+    "correctOption": 3,
+    "rationale": "Výdej léků v intervalech a dávkách stanovených lékařem zajišťuje inspektor dozorčí služby oddělení výkonu trestu, u obviněných vrchní dozorce oddělení výkonu vazby.",
+    "source": "NGŘ č. 02/2022, § 24 odst. 2 písm. g), § 60 písm. s)",
+    "explanation": "Výdej léků v intervalech a dávkách stanovených lékařem zajišťuje inspektor dozorčí služby oddělení výkonu trestu, u obviněných vrchní dozorce oddělení výkonu vazby. (Právní úprava: NGŘ č. 02/2022, § 24 odst. 2 písm. g), § 60 písm. s))"
+  },
+  {
+    "id": "pen-82",
+    "subject": "Penologie",
+    "topic": "Dozor státního zástupce",
+    "question": "Které státní zastupitelství provádí dozor nad dodržováním právních předpisů při výkonu trestu odnětí svobody?",
+    "answer": "Krajské státní zastupitelství, v jehož obvodu se trest vykonává",
+    "options": [
+      "Okresní státní zastupitelství podle bydliště odsouzeného",
+      "Nejvyšší státní zastupitelství se sídlem v Brně",
+      "Vrchní státní zastupitelství podle sídla Generálního ředitelství VS ČR",
+      "Krajské státní zastupitelství, v jehož obvodu se trest vykonává"
+    ],
+    "correctOption": 3,
+    "rationale": "Dozor nad výkonem trestu provádí krajské státní zastupitelství, v jehož obvodu se trest vykonává; obdobný dozor nad výkonem vazby upravuje § 29 zákona č. 293/1993 Sb.",
+    "source": "§ 78 zákona č. 169/1999 Sb.",
+    "explanation": "Dozor nad výkonem trestu provádí krajské státní zastupitelství, v jehož obvodu se trest vykonává; obdobný dozor nad výkonem vazby upravuje § 29 zákona č. 293/1993 Sb. (Právní úprava: § 78 zákona č. 169/1999 Sb.)"
+  },
+  {
+    "id": "pen-83",
+    "subject": "Penologie",
+    "topic": "Kázeňské tresty",
+    "question": "V jakém rozsahu lze odsouzenému uložit kázeňský trest snížení kapesného?",
+    "answer": "Nejvýše o jednu třetinu až na 3 kalendářní měsíce",
+    "options": [
+      "Nejvýše o polovinu až na 6 měsíců",
+      "Nejvýše o jednu třetinu až na 3 kalendářní měsíce",
+      "Nejvýše o čtvrtinu až na 1 kalendářní měsíc",
+      "Odnětí celého kapesného až na dobu 2 kalendářních měsíců"
+    ],
+    "correctOption": 1,
+    "rationale": "Podle § 46 odst. 3 lze uložit snížení kapesného nejvýše o jednu třetinu až na dobu 3 kalendářních měsíců.",
+    "source": "§ 46 odst. 3 zákona č. 169/1999 Sb.",
+    "explanation": "Podle § 46 odst. 3 lze uložit snížení kapesného nejvýše o jednu třetinu až na dobu 3 kalendářních měsíců. (Právní úprava: § 46 odst. 3 zákona č. 169/1999 Sb.)"
+  },
+  {
+    "id": "pen-84",
+    "subject": "Penologie",
+    "topic": "Kázeňské tresty obviněných",
+    "question": "Na jak dlouho lze obviněnému uložit kázeňský trest zákazu nákupu potravin a věcí osobní potřeby (s výjimkou hygienických potřeb)?",
+    "answer": "Až na dobu 1 měsíce",
+    "options": [
+      "Až na dobu tří měsíců",
+      "Až na dobu 14 dnů",
+      "Až na dobu 1 týdne",
+      "Až na dobu 1 měsíce"
+    ],
+    "correctOption": 3,
+    "rationale": "Obviněnému lze uložit zákaz nákupu až na dobu jednoho měsíce; u mladistvých obviněných nesmí tento zákaz přesáhnout jeden týden.",
+    "source": "§ 22 odst. 2 a § 26 odst. 3 zákona č. 293/1993 Sb.",
+    "explanation": "Obviněnému lze uložit zákaz nákupu až na dobu jednoho měsíce; u mladistvých obviněných nesmí tento zákaz přesáhnout jeden týden. (Právní úprava: § 22 odst. 2 a § 26 odst. 3 zákona č. 293/1993 Sb.)"
+  },
+  {
+    "id": "pen-85",
+    "subject": "Penologie",
+    "topic": "Kázeňské tresty obviněných",
+    "question": "Do kdy musí být rozhodnuto o uložení kázeňského trestu obviněnému a rozhodnutí oznámeno?",
+    "answer": "Do 15 dnů od zjištění, nejpozději do 1 měsíce od porušení",
+    "options": [
+      "Do 15 dnů od zjištění, nejpozději do 1 měsíce od porušení",
+      "Do 1 měsíce od zjištění, nejpozději do 1 roku od jeho porušení",
+      "Do 8 dnů od zjištění, nejpozději do 6 měsíců",
+      "Do 3 dnů od zjištění, nejpozději do 15 dnů od porušení"
+    ],
+    "correctOption": 0,
+    "rationale": "O kázeňském trestu obviněnému musí být rozhodnuto a rozhodnutí oznámeno do 15 dnů ode dne, kdy se oprávněný orgán o přestupku dozvěděl, nejpozději do jednoho měsíce od porušení pořádku a kázně.",
+    "source": "§ 23 odst. 3 zákona č. 293/1993 Sb.",
+    "explanation": "O kázeňském trestu obviněnému musí být rozhodnuto a rozhodnutí oznámeno do 15 dnů ode dne, kdy se oprávněný orgán o přestupku dozvěděl, nejpozději do jednoho měsíce od porušení pořádku a kázně. (Právní úprava: § 23 odst. 3 zákona č. 293/1993 Sb.)"
+  },
+  {
+    "id": "pen-86",
+    "subject": "Penologie",
+    "topic": "Kázeňské tresty obviněných",
+    "question": "V jaké lhůtě může obviněný podat stížnost proti rozhodnutí o kázeňském trestu a do kdy se o ní rozhoduje?",
+    "answer": "Do 3 dnů, rozhoduje se do 5 pracovních dnů",
+    "options": [
+      "Do 8 dnů, rozhoduje se do 15 dnů",
+      "Do 3 dnů, rozhoduje se do 5 pracovních dnů",
+      "Do 24 hodin, rozhoduje se ihned",
+      "Do 15 dnů, rozhoduje se do 30 kalendářních dnů"
+    ],
+    "correctOption": 1,
+    "rationale": "Stížnost lze podat do 3 dnů a rozhoduje se o ní do 5 pracovních dnů.",
+    "source": "§ 23 odst. 6 a 7 zákona č. 293/1993 Sb.",
+    "explanation": "Stížnost lze podat do 3 dnů a rozhoduje se o ní do 5 pracovních dnů. (Právní úprava: § 23 odst. 6 a 7 zákona č. 293/1993 Sb.)"
+  },
+  {
+    "id": "pen-87",
+    "subject": "Penologie",
+    "topic": "Návštěvy obviněných",
+    "question": "Jak často má nárok na návštěvu mladistvý obviněný?",
+    "answer": "Jednou za týden",
+    "options": [
+      "Dvakrát týdně",
+      "Jednou za 2 týdny",
+      "Jednou za týden",
+      "Jednou za měsíc"
+    ],
+    "correctOption": 2,
+    "rationale": "Obviněný má nárok na návštěvu jednou za 2 týdny v délce 90 minut, mladistvý obviněný jednou za týden.",
+    "source": "§ 14 a § 26 odst. 2 zákona č. 293/1993 Sb.",
+    "explanation": "Obviněný má nárok na návštěvu jednou za 2 týdny v délce 90 minut, mladistvý obviněný jednou za týden. (Právní úprava: § 14 a § 26 odst. 2 zákona č. 293/1993 Sb.)"
+  }
 ];

@@ -1,39 +1,39 @@
 {
   "popis": "Referenční stav kvality banky otázek. Kontrola check:questions hlídá, že počet otázek s délkovým tellem nevzroste. Po zlepšení obsahu přepiš tento soubor příkazem \"npm run check:questions -- --update-baseline\" a commitni ho.",
-  "vytvoreno": "2026-09-15T20:57:59.395Z",
+  "vytvoreno": "2026-09-30T13:58:46.767Z",
   "cil": {
     "longestIsCorrectPct": 40
   },
   "global": {
-    "questions": 364,
+    "questions": 551,
     "longestIsCorrect": 91,
-    "longestIsCorrectPct": 25,
+    "longestIsCorrectPct": 16.5,
     "shortestIsCorrect": 86,
-    "shortestIsCorrectPct": 23.6,
-    "avgCorrectLen": 219,
-    "avgDistractorLen": 212
+    "shortestIsCorrectPct": 15.6,
+    "avgCorrectLen": 157,
+    "avgDistractorLen": 152
   },
   "predmety": {
     "Pedagogika": {
-      "questions": 31,
+      "questions": 33,
       "longestIsCorrect": 8,
-      "longestIsCorrectPct": 25.8,
+      "longestIsCorrectPct": 24.2,
       "shortestIsCorrect": 7,
-      "shortestIsCorrectPct": 22.6
+      "shortestIsCorrectPct": 21.2
     },
     "Penologie": {
-      "questions": 53,
+      "questions": 88,
       "longestIsCorrect": 13,
-      "longestIsCorrectPct": 24.5,
+      "longestIsCorrectPct": 14.8,
       "shortestIsCorrect": 15,
-      "shortestIsCorrectPct": 28.3
+      "shortestIsCorrectPct": 17
     },
     "Právo": {
-      "questions": 57,
+      "questions": 80,
       "longestIsCorrect": 14,
-      "longestIsCorrectPct": 24.6,
+      "longestIsCorrectPct": 17.5,
       "shortestIsCorrect": 15,
-      "shortestIsCorrectPct": 26.3
+      "shortestIsCorrectPct": 18.8
     },
     "Profesní etika": {
       "questions": 57,
@@ -43,32 +43,32 @@
       "shortestIsCorrectPct": 26.3
     },
     "Psychologie": {
-      "questions": 42,
+      "questions": 52,
       "longestIsCorrect": 10,
-      "longestIsCorrectPct": 23.8,
+      "longestIsCorrectPct": 19.2,
       "shortestIsCorrect": 11,
-      "shortestIsCorrectPct": 26.2
+      "shortestIsCorrectPct": 21.2
     },
     "Služební příprava": {
-      "questions": 60,
+      "questions": 166,
       "longestIsCorrect": 16,
-      "longestIsCorrectPct": 26.7,
+      "longestIsCorrectPct": 9.6,
       "shortestIsCorrect": 10,
-      "shortestIsCorrectPct": 16.7
+      "shortestIsCorrectPct": 6
     },
     "Vězeňská administrativa": {
-      "questions": 29,
+      "questions": 35,
       "longestIsCorrect": 8,
-      "longestIsCorrectPct": 27.6,
+      "longestIsCorrectPct": 22.9,
       "shortestIsCorrect": 4,
-      "shortestIsCorrectPct": 13.8
+      "shortestIsCorrectPct": 11.4
     },
     "Zbraně": {
-      "questions": 10,
+      "questions": 15,
       "longestIsCorrect": 3,
-      "longestIsCorrectPct": 30,
+      "longestIsCorrectPct": 20,
       "shortestIsCorrect": 3,
-      "shortestIsCorrectPct": 30
+      "shortestIsCorrectPct": 20
     },
     "Zdravověda a první pomoc": {
       "questions": 25,

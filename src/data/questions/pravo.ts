@@ -1074,5 +1074,396 @@ export const pravoQuestions: Question[] = [
         rationale: 'Proti rozhodnutí služebního funkcionáře lze podat odvolání do 15 dnů ode dne doručení rozhodnutí. O odvolání rozhoduje služební funkcionář nadřízený tomu, který rozhodnutí vydal.',
         source: '§ 190 zákona č. 361/2003 Sb., o služebním poměru příslušníků bezpečnostních sborů',
         explanation: `Proti rozhodnutí služebního funkcionáře lze podat odvolání do 15 dnů ode dne doručení rozhodnutí. O odvolání rozhoduje služební funkcionář nadřízený tomu, který rozhodnutí vydal. (Právní úprava: § 190 zákona č. 361/2003 Sb., o služebním poměru příslušníků bezpečnostních sborů)`
-    }
+    },
+  {
+    "id": "pr-58",
+    "subject": "Právo",
+    "topic": "Trestní odpovědnost – nepříčetnost",
+    "question": "Za jaký trestný čin odpovídá ten, kdo se požitím návykové látky přivedl do nepříčetnosti a v ní se dopustil činu jinak trestného?",
+    "answer": "Za samostatný trestný čin opilství podle § 360 TZ",
+    "options": [
+      "Za přípravu k dotyčnému trestnému činu (§ 20 TZ)",
+      "Za dotyčný čin, ale jako zmenšeně příčetný (§ 27 TZ)",
+      "Za nic, nepříčetnost vylučuje odpovědnost (§ 26 TZ)",
+      "Za samostatný trestný čin opilství podle § 360 TZ"
+    ],
+    "correctOption": 3,
+    "rationale": "Nepříčetnosti se nemůže dovolávat ten, kdo se do ní přivedl požitím návykové látky; pokud v tomto stavu spáchá čin jinak trestný, odpovídá za trestný čin opilství podle § 360 TZ. Zmenšená příčetnost (§ 27) se týká podstatně snížených schopností pro duševní poruchu.",
+    "source": "§ 26, § 27 a § 360 zákona č. 40/2009 Sb.",
+    "explanation": "Nepříčetnosti se nemůže dovolávat ten, kdo se do ní přivedl požitím návykové látky; pokud v tomto stavu spáchá čin jinak trestný, odpovídá za trestný čin opilství podle § 360 TZ. Zmenšená příčetnost (§ 27) se týká podstatně snížených schopností pro duševní poruchu. (Právní úprava: § 26, § 27 a § 360 zákona č. 40/2009 Sb.)"
+  },
+  {
+    "id": "pr-59",
+    "subject": "Právo",
+    "topic": "Soustava soudů",
+    "question": "Jak je složen senát krajského soudu, který rozhoduje v prvním stupni?",
+    "answer": "Jeden soudce a dva přísedící",
+    "options": [
+      "Předseda senátu a čtyři přísedící",
+      "Jeden soudce a dva přísedící",
+      "Dva soudci a jeden přísedící",
+      "Tři profesionální soudci"
+    ],
+    "correctOption": 1,
+    "rationale": "Krajský soud v prvním stupni rozhoduje v senátu složeném z jednoho soudce a dvou přísedících; ve druhém stupni rozhoduje senát tří soudců.",
+    "source": "učební text Právo pro ZOP A (2022), kapitola Soudy – Obsazení soudů; § 17 zákona č. 141/1961 Sb.",
+    "explanation": "Krajský soud v prvním stupni rozhoduje v senátu složeném z jednoho soudce a dvou přísedících; ve druhém stupni rozhoduje senát tří soudců. (Právní úprava: učební text Právo pro ZOP A (2022), kapitola Soudy – Obsazení soudů; § 17 zákona č. 141/1961 Sb.)"
+  },
+  {
+    "id": "pr-60",
+    "subject": "Právo",
+    "topic": "Trestné činy – útěk vězněné osoby",
+    "question": "Podle kterého ustanovení trestního zákoníku se posuzuje útěk z vazby nebo z výkonu trestu odnětí svobody?",
+    "answer": "§ 337 odst. 3 písm. b) TZ",
+    "options": [
+      "§ 337 odst. 3 písm. b) TZ",
+      "§ 325 odst. 1 písm. a) TZ",
+      "§ 344 odst. 1 a 2 TZ",
+      "§ 329 odst. 1 písm. a) a b) TZ"
+    ],
+    "correctOption": 0,
+    "rationale": "Útěk z vazby nebo z výkonu trestu odnětí svobody je trestným činem podle § 337 odst. 3 písm. b) TZ se sazbou odnětí svobody až na pět let; naříznutí mříže lze podle okolností posoudit jako jeho pokus (§ 21 TZ).",
+    "source": "§ 337 odst. 3 písm. b) zákona č. 40/2009 Sb.",
+    "explanation": "Útěk z vazby nebo z výkonu trestu odnětí svobody je trestným činem podle § 337 odst. 3 písm. b) TZ se sazbou odnětí svobody až na pět let; naříznutí mříže lze podle okolností posoudit jako jeho pokus (§ 21 TZ). (Právní úprava: § 337 odst. 3 písm. b) zákona č. 40/2009 Sb.)"
+  },
+  {
+    "id": "pr-61",
+    "subject": "Právo",
+    "topic": "Nutná obrana",
+    "question": "Proti komu je přípustná nutná obrana, útočí-li současně více osob?",
+    "answer": "Proti kterémukoliv z útočících osob",
+    "options": [
+      "Jen proti tomu, kdo útok vede",
+      "Jen proti útočníkovi, který je nejblíž",
+      "Proti kterémukoliv z útočících osob",
+      "Proti nikomu, jde pak jen o krajní nouzi"
+    ],
+    "correctOption": 2,
+    "rationale": "Obrana musí směřovat proti útočníkovi, čímž se liší od krajní nouze; útočí-li více osob, je nutná obrana přípustná proti kterémukoliv z nich.",
+    "source": "§ 29 zákona č. 40/2009 Sb.; učební text Právo pro ZOP A (2022), kapitola Okolnosti vylučující protiprávnost",
+    "explanation": "Obrana musí směřovat proti útočníkovi, čímž se liší od krajní nouze; útočí-li více osob, je nutná obrana přípustná proti kterémukoliv z nich. (Právní úprava: § 29 zákona č. 40/2009 Sb.; učební text Právo pro ZOP A (2022), kapitola Okolnosti vylučující protiprávnost)"
+  },
+  {
+    "id": "pr-62",
+    "subject": "Právo",
+    "topic": "Nutná obrana",
+    "question": "Lze se bránit v nutné obraně proti jednání osoby, která sama jedná v nutné obraně?",
+    "answer": "Ne, proti jednání dovolenému ji použít nelze",
+    "options": [
+      "Ano, nutná obrana je přípustná vždy",
+      "Ne, pokud útočník nebyl předem varován výzvou",
+      "Ano, pokud je obrana přiměřená",
+      "Ne, proti jednání dovolenému ji použít nelze"
+    ],
+    "correctOption": 3,
+    "rationale": "Nutnou obranu nelze použít proti jednání dovolenému, například proti jednání v nutné obraně nebo krajní nouzi nebo proti výkonu práva či povinnosti policisty.",
+    "source": "§ 29 zákona č. 40/2009 Sb.; učební text Právo pro ZOP A (2022), kapitola Okolnosti vylučující protiprávnost",
+    "explanation": "Nutnou obranu nelze použít proti jednání dovolenému, například proti jednání v nutné obraně nebo krajní nouzi nebo proti výkonu práva či povinnosti policisty. (Právní úprava: § 29 zákona č. 40/2009 Sb.; učební text Právo pro ZOP A (2022), kapitola Okolnosti vylučující protiprávnost)"
+  },
+  {
+    "id": "pr-63",
+    "subject": "Právo",
+    "topic": "Vazba – žádost o propuštění",
+    "question": "V jaké lhůtě musí státní zástupce předložit soudci žádost obviněného o propuštění z vazby, jestliže jí sám nevyhoví?",
+    "answer": "Do pěti pracovních dnů",
+    "options": [
+      "Do pěti pracovních dnů",
+      "Do tří pracovních dnů",
+      "Do deseti kalendářních dnů",
+      "Do 24 hodin od podání"
+    ],
+    "correctOption": 0,
+    "rationale": "Podle § 73b trestního řádu rozhoduje o žádosti v přípravném řízení státní zástupce; nevyhoví-li jí, musí ji do pěti pracovních dnů předložit soudci.",
+    "source": "§ 73b zákona č. 141/1961 Sb.",
+    "explanation": "Podle § 73b trestního řádu rozhoduje o žádosti v přípravném řízení státní zástupce; nevyhoví-li jí, musí ji do pěti pracovních dnů předložit soudci. (Právní úprava: § 73b zákona č. 141/1961 Sb.)"
+  },
+  {
+    "id": "pr-64",
+    "subject": "Právo",
+    "topic": "Vazba – nejvyšší přípustná doba",
+    "question": "Jaká je nejvyšší přípustná doba trvání vazby, je-li obviněný stíhán pro přečin?",
+    "answer": "Jeden rok",
+    "options": [
+      "Šest měsíců",
+      "Tři měsíce",
+      "Dva roky",
+      "Jeden rok"
+    ],
+    "correctOption": 3,
+    "rationale": "Podle § 72a trestního řádu činí nejvyšší přípustná doba vazby jeden rok u přečinu, dva roky u zločinu, tři roky u zvlášť závažného zločinu a čtyři roky u zvlášť závažného zločinu s možností výjimečného trestu.",
+    "source": "§ 72a zákona č. 141/1961 Sb.",
+    "explanation": "Podle § 72a trestního řádu činí nejvyšší přípustná doba vazby jeden rok u přečinu, dva roky u zločinu, tři roky u zvlášť závažného zločinu a čtyři roky u zvlášť závažného zločinu s možností výjimečného trestu. (Právní úprava: § 72a zákona č. 141/1961 Sb.)"
+  },
+  {
+    "id": "pr-65",
+    "subject": "Právo",
+    "topic": "Trestné činy vojenské – příslušník VS",
+    "question": "Kterých trestných činů hlavy XII trestního zákoníku se příslušník Vězeňské služby jako pachatel dopustit nemůže?",
+    "answer": "Zběhnutí (§ 386) a svémocné odloučení (§ 387)",
+    "options": [
+      "Neuposlechnutí rozkazu (§ 375 a § 376)",
+      "Porušení povinnosti strážní (§ 389) a dozorčí služby (§ 390)",
+      "Urážka (§ 378) a násilí vůči nadřízenému (§ 381)",
+      "Zběhnutí (§ 386) a svémocné odloučení (§ 387)"
+    ],
+    "correctOption": 3,
+    "rationale": "Příslušník bezpečnostního sboru je vojákem jen u činů vyjmenovaných v § 114 odst. 4 trestního zákoníku (mj. § 375, § 376, § 378, § 381, § 389, § 390); zběhnutí (§ 386) ani svémocné odloučení (§ 387) mezi nimi nejsou.",
+    "source": "§ 114 odst. 4, § 386 a § 387 zákona č. 40/2009 Sb.",
+    "explanation": "Příslušník bezpečnostního sboru je vojákem jen u činů vyjmenovaných v § 114 odst. 4 trestního zákoníku (mj. § 375, § 376, § 378, § 381, § 389, § 390); zběhnutí (§ 386) ani svémocné odloučení (§ 387) mezi nimi nejsou. (Právní úprava: § 114 odst. 4, § 386 a § 387 zákona č. 40/2009 Sb.)"
+  },
+  {
+    "id": "pr-66",
+    "subject": "Právo",
+    "topic": "Trestné činy vojenské – sazby",
+    "question": "Jakým trestem odnětí svobody je ohroženo porušení povinnosti dozorčí nebo jiné služby podle § 390 trestního zákoníku?",
+    "answer": "Až na jeden rok",
+    "options": [
+      "Až na šest měsíců",
+      "Až na jeden rok",
+      "Až na tři léta",
+      "Na šest měsíců až pět let"
+    ],
+    "correctOption": 1,
+    "rationale": "Kdo v dozorčí nebo jiné službě, byť i z nedbalosti, poruší předpisy nebo pravidla této služby, bude podle § 390 potrestán odnětím svobody až na jeden rok; u porušení povinnosti strážní služby (§ 389) je to až tři léta.",
+    "source": "§ 390 zákona č. 40/2009 Sb.",
+    "explanation": "Kdo v dozorčí nebo jiné službě, byť i z nedbalosti, poruší předpisy nebo pravidla této služby, bude podle § 390 potrestán odnětím svobody až na jeden rok; u porušení povinnosti strážní služby (§ 389) je to až tři léta. (Právní úprava: § 390 zákona č. 40/2009 Sb.)"
+  },
+  {
+    "id": "pr-67",
+    "subject": "Právo",
+    "topic": "Služební poměr – kázeňské tresty",
+    "question": "Jaký je nejvyšší rozsah kázeňského trestu snížení základního tarifu příslušníka podle zákona č. 361/2003 Sb.?",
+    "answer": "Až o 25 % na dobu nejvýše 3 měsíců",
+    "options": [
+      "Až o 25 % na dobu nejvýše 3 měsíců",
+      "Až o 10 % nejvýše na 6 měsíců",
+      "Až o 50 % na dobu nejvýše 1 měsíce",
+      "Až o 15 % na dobu nejvýše 12 kalendářních měsíců"
+    ],
+    "correctOption": 0,
+    "rationale": "Podle § 51 zákona č. 361/2003 Sb. lze uložit snížení základního tarifu až o 25 procent na dobu nejvýše 3 měsíců.",
+    "source": "§ 51 odst. 1 zákona č. 361/2003 Sb.",
+    "explanation": "Podle § 51 zákona č. 361/2003 Sb. lze uložit snížení základního tarifu až o 25 procent na dobu nejvýše 3 měsíců. (Právní úprava: § 51 odst. 1 zákona č. 361/2003 Sb.)"
+  },
+  {
+    "id": "pr-68",
+    "subject": "Právo",
+    "topic": "Promlčení trestní odpovědnosti",
+    "question": "Jaká je promlčecí doba podle § 34 trestního zákoníku u trestného činu, jehož horní hranice trestní sazby odnětí svobody činí nejméně deset let?",
+    "answer": "Patnáct let",
+    "options": [
+      "Patnáct let",
+      "Deset let",
+      "Dvanáct let",
+      "Dvacet pět let"
+    ],
+    "correctOption": 0,
+    "rationale": "Promlčecí doba činí 30 let u činů s výjimečným trestem a vraždy, 15 let při horní hranici nejméně 10 let, 10 let při nejméně 5 letech, 5 let při nejméně 3 letech a 3 léta u ostatních činů.",
+    "source": "§ 34 zákona č. 40/2009 Sb., trestní zákoník",
+    "explanation": "Promlčecí doba činí 30 let u činů s výjimečným trestem a vraždy, 15 let při horní hranici nejméně 10 let, 10 let při nejméně 5 letech, 5 let při nejméně 3 letech a 3 léta u ostatních činů. (Právní úprava: § 34 zákona č. 40/2009 Sb., trestní zákoník)"
+  },
+  {
+    "id": "pr-69",
+    "subject": "Právo",
+    "topic": "Opravné prostředky v trestním řízení",
+    "question": "Má stížnost proti usnesení o vzetí obviněného do vazby odkladný účinek?",
+    "answer": "Ne, tato stížnost odkladný účinek nemá",
+    "options": [
+      "Ano, stížnost má odkladný účinek vždy",
+      "Ne, tato stížnost odkladný účinek nemá",
+      "Ano, ale jen je-li podána obhájcem",
+      "Ne, protože proti vazbě stížnost nelze podat"
+    ],
+    "correctOption": 1,
+    "rationale": "Stížnost má odkladný účinek jen tam, kde to zákon výslovně stanoví; stížnost proti usnesení o vzetí do vazby odkladný účinek nemá, má však účinek devolutivní.",
+    "source": "§ 141 a § 143 odst. 1 zákona č. 141/1961 Sb., trestní řád",
+    "explanation": "Stížnost má odkladný účinek jen tam, kde to zákon výslovně stanoví; stížnost proti usnesení o vzetí do vazby odkladný účinek nemá, má však účinek devolutivní. (Právní úprava: § 141 a § 143 odst. 1 zákona č. 141/1961 Sb., trestní řád)"
+  },
+  {
+    "id": "pr-70",
+    "subject": "Právo",
+    "topic": "Přípravné řízení",
+    "question": "V jaké lhůtě zasílá policejní orgán státnímu zástupci opis záznamu o zahájení úkonů trestního řízení?",
+    "answer": "Do 48 hodin",
+    "options": [
+      "Do 24 hodin",
+      "Do dvou týdnů",
+      "Do 48 hodin",
+      "Do 3 dnů"
+    ],
+    "correctOption": 2,
+    "rationale": "O zahájení úkonů trestního řízení sepíše policejní orgán neprodleně záznam, jehož opis zašle do 48 hodin státnímu zástupci.",
+    "source": "§ 158 odst. 3 zákona č. 141/1961 Sb., trestní řád",
+    "explanation": "O zahájení úkonů trestního řízení sepíše policejní orgán neprodleně záznam, jehož opis zašle do 48 hodin státnímu zástupci. (Právní úprava: § 158 odst. 3 zákona č. 141/1961 Sb., trestní řád)"
+  },
+  {
+    "id": "pr-71",
+    "subject": "Právo",
+    "topic": "Vazba – podmínky",
+    "question": "Jaká je podle § 68 odst. 2 trestního řádu hranice horní trestní sazby úmyslného trestného činu, do níž (nejsou-li dány výjimky) nelze obviněného vzít do vazby?",
+    "answer": "Horní hranice nepřevyšující dvě léta",
+    "options": [
+      "Horní hranice nepřevyšující jeden rok",
+      "Horní hranice nepřevyšující pět let",
+      "Horní hranice nepřevyšující dvě léta",
+      "Horní hranice nepřevyšující tři léta"
+    ],
+    "correctOption": 2,
+    "rationale": "Podle § 68 odst. 2 TŘ nelze vzít do vazby obviněného stíhaného pro úmyslný trestný čin s horní hranicí nepřevyšující dvě léta; tři léta jsou hranicí u nedbalostních trestných činů.",
+    "source": "§ 68 odst. 2 zákona č. 141/1961 Sb.",
+    "explanation": "Podle § 68 odst. 2 TŘ nelze vzít do vazby obviněného stíhaného pro úmyslný trestný čin s horní hranicí nepřevyšující dvě léta; tři léta jsou hranicí u nedbalostních trestných činů. (Právní úprava: § 68 odst. 2 zákona č. 141/1961 Sb.)"
+  },
+  {
+    "id": "pr-72",
+    "subject": "Právo",
+    "topic": "Stadia trestního řízení",
+    "question": "Který soud rozhoduje o odvolání proti rozsudku okresního soudu?",
+    "answer": "Nadřízený krajský soud",
+    "options": [
+      "Nejvyšší soud ČR",
+      "Jiný senát okresního soudu",
+      "Příslušný vrchní soud",
+      "Nadřízený krajský soud"
+    ],
+    "correctOption": 3,
+    "rationale": "O odvolání proti rozsudku okresního soudu rozhoduje nadřízený krajský soud; o odvolání proti rozsudku krajského soudu nadřízený vrchní soud.",
+    "source": "Učební text Právo (2022), Odvolací (opravné) řízení; zákon č. 141/1961 Sb.",
+    "explanation": "O odvolání proti rozsudku okresního soudu rozhoduje nadřízený krajský soud; o odvolání proti rozsudku krajského soudu nadřízený vrchní soud. (Právní úprava: Učební text Právo (2022), Odvolací (opravné) řízení; zákon č. 141/1961 Sb.)"
+  },
+  {
+    "id": "pr-73",
+    "subject": "Právo",
+    "topic": "Ochranná opatření – zabezpečovací detence",
+    "question": "Jak často musí soud nejméně přezkoumat, zda důvody zabezpečovací detence u dospělého chovance trvají?",
+    "answer": "Jednou za dvanáct měsíců",
+    "options": [
+      "Jednou za šest měsíců",
+      "Jednou za dvacet čtyři měsíců",
+      "Jednou za dvanáct měsíců",
+      "Jednou za tři měsíce"
+    ],
+    "correctOption": 2,
+    "rationale": "Soud nejméně jednou za dvanáct měsíců, u mladistvých jednou za šest měsíců, přezkoumá, zda důvody pro další pokračování zabezpečovací detence trvají.",
+    "source": "§ 100 zákona č. 40/2009 Sb.",
+    "explanation": "Soud nejméně jednou za dvanáct měsíců, u mladistvých jednou za šest měsíců, přezkoumá, zda důvody pro další pokračování zabezpečovací detence trvají. (Právní úprava: § 100 zákona č. 40/2009 Sb.)"
+  },
+  {
+    "id": "pr-74",
+    "subject": "Právo",
+    "topic": "Kázeňské řízení – obviněný u soudu",
+    "question": "Co může předseda senátu podle § 66 odst. 2 trestního řádu učinit s obviněným ve vazbě, který se k soudu choval urážlivě?",
+    "answer": "Přenechat ho řediteli ke kázeňskému potrestání",
+    "options": [
+      "Přenechat ho řediteli ke kázeňskému potrestání",
+      "Prodloužit mu vazbu o dalších 30 dnů",
+      "Uložit mu kázeňský trest samovazby",
+      "Nařídit mu ihned přeložení do jiné vazební věznice"
+    ],
+    "correctOption": 0,
+    "rationale": "Podle § 66 odst. 2 TŘ může předseda senátu přenechat obviněného, který se k soudu choval urážlivě, řediteli věznice ke kázeňskému potrestání; ředitel je povinen o výsledku vyrozumět soud.",
+    "source": "§ 66 odst. 2 zákona č. 141/1961 Sb.",
+    "explanation": "Podle § 66 odst. 2 TŘ může předseda senátu přenechat obviněného, který se k soudu choval urážlivě, řediteli věznice ke kázeňskému potrestání; ředitel je povinen o výsledku vyrozumět soud. (Právní úprava: § 66 odst. 2 zákona č. 141/1961 Sb.)"
+  },
+  {
+    "id": "pr-75",
+    "subject": "Právo",
+    "topic": "Odpovědnost mládeže",
+    "question": "Jaké hranice nesmí podle § 31 zákona č. 218/2003 Sb. překročit snížená trestní sazba odnětí svobody u mladistvého (mimo výjimku 5–10 let)?",
+    "answer": "Horní hranice pět let, dolní jeden rok",
+    "options": [
+      "Horní hranice 3 roky, dolní 6 měsíců",
+      "Horní hranice deset let, dolní dva roky",
+      "Horní hranice 8 let, dolní 2 roky",
+      "Horní hranice pět let, dolní jeden rok"
+    ],
+    "correctOption": 3,
+    "rationale": "Trestní sazby se u mladistvých snižují na polovinu, horní hranice nesmí převyšovat pět let a dolní jeden rok; při mimořádně závažném provinění lze uložit odnětí svobody na pět až deset let.",
+    "source": "§ 31 zákona č. 218/2003 Sb.",
+    "explanation": "Trestní sazby se u mladistvých snižují na polovinu, horní hranice nesmí převyšovat pět let a dolní jeden rok; při mimořádně závažném provinění lze uložit odnětí svobody na pět až deset let. (Právní úprava: § 31 zákona č. 218/2003 Sb.)"
+  },
+  {
+    "id": "pr-76",
+    "subject": "Právo",
+    "topic": "Trestní řízení – veřejnost",
+    "question": "Jakou formou rozhoduje soud o vyloučení veřejnosti z hlavního líčení?",
+    "answer": "Usnesením podle § 200 trestního řádu",
+    "options": [
+      "Pokynem vrchního inspektora justiční stráže",
+      "Opatřením předsedy soudu mimo jednání",
+      "Rozsudkem vyhlášeným v jednací síni",
+      "Usnesením podle § 200 trestního řádu"
+    ],
+    "correctOption": 3,
+    "rationale": "O vyloučení veřejnosti rozhoduje soud usnesením podle § 200 trestního řádu; osoby rušící pořádek může předseda senátu vykázat podle § 204 odst. 1.",
+    "source": "§ 200 a § 204 zákona č. 141/1961 Sb.",
+    "explanation": "O vyloučení veřejnosti rozhoduje soud usnesením podle § 200 trestního řádu; osoby rušící pořádek může předseda senátu vykázat podle § 204 odst. 1. (Právní úprava: § 200 a § 204 zákona č. 141/1961 Sb.)"
+  },
+  {
+    "id": "pr-77",
+    "subject": "Právo",
+    "topic": "Zásady trestního řízení",
+    "question": "Ve kterém ustanovení trestního řádu je upravena zásada legality?",
+    "answer": "§ 2 odst. 3 trestního řádu",
+    "options": [
+      "§ 2 odst. 13 trestního řádu",
+      "§ 2 odst. 2 trestního řádu",
+      "§ 2 odst. 3 trestního řádu",
+      "§ 2 odst. 8 tr. řádu"
+    ],
+    "correctOption": 2,
+    "rationale": "Zásada legality je v § 2 odst. 3 TŘ; odst. 2 upravuje presumpci neviny, odst. 8 zásadu obžalovací a odst. 13 právo na obhajobu.",
+    "source": "§ 2 zákona č. 141/1961 Sb.; učební text Právo (2022), s. 66–72",
+    "explanation": "Zásada legality je v § 2 odst. 3 TŘ; odst. 2 upravuje presumpci neviny, odst. 8 zásadu obžalovací a odst. 13 právo na obhajobu. (Právní úprava: § 2 zákona č. 141/1961 Sb.; učební text Právo (2022), s. 66–72)"
+  },
+  {
+    "id": "pr-78",
+    "subject": "Právo",
+    "topic": "Trestná součinnost",
+    "question": "Kolik trestně odpovědných osob nejméně tvoří organizovanou zločineckou skupinu podle § 129 trestního zákoníku?",
+    "answer": "Nejméně tři osoby",
+    "options": [
+      "Nejméně pět osob",
+      "Nejméně deset osob",
+      "Nejméně dvě osoby",
+      "Nejméně tři osoby"
+    ],
+    "correctOption": 3,
+    "rationale": "Organizovaná zločinecká skupina je společenství nejméně tří trestně odpovědných osob s vnitřní organizační strukturou, rozdělením funkcí a dělbou činností.",
+    "source": "§ 129 zákona č. 40/2009 Sb.",
+    "explanation": "Organizovaná zločinecká skupina je společenství nejméně tří trestně odpovědných osob s vnitřní organizační strukturou, rozdělením funkcí a dělbou činností. (Právní úprava: § 129 zákona č. 40/2009 Sb.)"
+  },
+  {
+    "id": "pr-79",
+    "subject": "Právo",
+    "topic": "Vývojová stadia trestného činu",
+    "question": "U kterých trestných činů je trestný pokus podle § 21 trestního zákoníku?",
+    "answer": "U všech úmyslných trestných činů",
+    "options": [
+      "Jen u zvlášť závažných zločinů",
+      "U všech úmyslných trestných činů",
+      "Jen stanoví-li to trestní zákon výslovně",
+      "U úmyslných i nedbalostních činů"
+    ],
+    "correctOption": 1,
+    "rationale": "Pokus je trestný u všech úmyslných trestných činů podle sazby na dokonaný čin; příprava je trestná jen u zvlášť závažných zločinů a jen stanoví-li to zákon výslovně.",
+    "source": "§ 20 a § 21 zákona č. 40/2009 Sb.",
+    "explanation": "Pokus je trestný u všech úmyslných trestných činů podle sazby na dokonaný čin; příprava je trestná jen u zvlášť závažných zločinů a jen stanoví-li to zákon výslovně. (Právní úprava: § 20 a § 21 zákona č. 40/2009 Sb.)"
+  },
+  {
+    "id": "pr-80",
+    "subject": "Právo",
+    "topic": "Opravné prostředky",
+    "question": "V jaké lhůtě a ke kterému soudu se podává dovolání v trestním řízení?",
+    "answer": "Do 2 měsíců k Nejvyššímu soudu",
+    "options": [
+      "Do 8 dnů ke krajskému soudu",
+      "Do 2 měsíců k Nejvyššímu soudu",
+      "Do 3 dnů k příslušnému vrchnímu soudu",
+      "Do 6 měsíců k Ústavnímu soudu"
+    ],
+    "correctOption": 1,
+    "rationale": "Dovolání se podává do 2 měsíců k Nejvyššímu soudu; odvolání a odpor mají lhůtu 8 dnů, stížnost 3 dny.",
+    "source": "§ 265e zákona č. 141/1961 Sb.",
+    "explanation": "Dovolání se podává do 2 měsíců k Nejvyššímu soudu; odvolání a odpor mají lhůtu 8 dnů, stížnost 3 dny. (Právní úprava: § 265e zákona č. 141/1961 Sb.)"
+  }
 ];
