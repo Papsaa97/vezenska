@@ -11,28 +11,16 @@ import StudySectionsEditor from '../common/StudySectionsEditor';
 import CustomStudySections from '../common/CustomStudySections';
 import RichText, { textLines } from '../common/RichText';
 
-/** Barvy a ikony evidenčních stavů v pořadí, v jakém byly natvrdo. */
-const STATE_TONES: { box: string; badge: string; icon: React.ReactNode }[] = [
-  {
-    box: 'bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50',
-    badge: 'bg-amber-500 text-slate-950',
-    icon: <UserCheck className="w-3.5 h-3.5" />,
-  },
-  {
-    box: 'bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50',
-    badge: 'bg-blue-600 text-white',
-    icon: <Clock className="w-3.5 h-3.5" />,
-  },
-  {
-    box: 'bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50',
-    badge: 'bg-emerald-600 text-white',
-    icon: <Eye className="w-3.5 h-3.5" />,
-  },
+/** Ikony evidenčních stavů v pořadí, v jakém byly natvrdo. */
+const STATE_ICONS: React.ReactNode[] = [
+  <UserCheck key="stav-1" className="w-3.5 h-3.5" />,
+  <Clock key="stav-2" className="w-3.5 h-3.5" />,
+  <Eye key="stav-3" className="w-3.5 h-3.5" />,
 ];
 
 const RULE_ICONS: React.ReactNode[] = [
-  <CheckCircle2 key="souhlas" className="w-4 h-4 text-emerald-500" />,
-  <Phone key="telefon" className="w-4 h-4 text-amber-500" />,
+  <CheckCircle2 key="souhlas" className="w-4 h-4 text-amber-600 dark:text-amber-400" />,
+  <Phone key="telefon" className="w-4 h-4 text-amber-600 dark:text-amber-400" />,
 ];
 
 /**
@@ -53,31 +41,32 @@ export default function PrisonAdminVIS() {
 
       <StudySectionsEditor area="vis" state={sectionState} />
 
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 space-y-5">
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-4">
           <div>
-            <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
-              {states?.kicker || 'Vězeňský informační systém VIS'}
-            </span>
-            <h2 className="text-xl font-extrabold text-slate-900 dark:text-slate-100">
+            {states?.kicker && (
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                {states.kicker}
+              </span>
+            )}
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
               {states?.title || 'Vězeňský informační systém'}
             </h2>
           </div>
-          <div className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950 text-xs font-mono font-bold text-blue-700 dark:text-blue-300">
+          <div className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 self-start sm:self-auto">
             § 23a zákona č. 555/1992 Sb.
           </div>
         </div>
 
         {/* 3 Evidential States of Prisoners */}
         {states && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {states.items.map((item, idx) => {
-              const tone = STATE_TONES[idx % STATE_TONES.length];
               return (
-                <div key={idx} className={`p-5 rounded-2xl ${tone.box} space-y-2.5`}>
-                  <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${tone.badge} font-bold text-xs`}>
-                    {tone.icon}
+                <div key={idx} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-2">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-700 dark:text-amber-300 font-bold text-xs">
+                    {STATE_ICONS[idx % STATE_ICONS.length]}
                     <span>{item.label}</span>
                   </div>
                   <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
@@ -101,7 +90,7 @@ export default function PrisonAdminVIS() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
               {rules.items.map((item, idx) => (
-                <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                <div key={idx} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-2">
                   <h4 className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                     {RULE_ICONS[idx % RULE_ICONS.length]}
                     <span>{item.title}</span>

@@ -16,6 +16,7 @@ import {
   Eraser,
   Search,
   Trash2,
+  Award,
 } from 'lucide-react';
 import { updateDailyStreak } from '../utils/gamification';
 import PrisonAdminETR from './prison-admin/PrisonAdminETR';
@@ -77,10 +78,10 @@ interface NavSectionConfig {
 // Single source of truth for section navigation (replaces the former duplicated
 // header-banner buttons + sub-tabs bar that both toggled the same state).
 const NAV_SECTIONS: NavSectionConfig[] = [
-  { id: 'generator', label: 'Generátor záznamů (DP, ZKP, SZ)', shortLabel: 'Generátor záznamů', icon: FileText },
-  { id: 'etr', label: 'ETŘ: Spisová služba & Číslo jednací', shortLabel: 'ETŘ Trenažér', icon: FolderOpen },
-  { id: 'vis', label: 'VIS: Evidence & Lustrace (§ 23a)', shortLabel: 'VIS Evidence', icon: Search },
-  { id: 'style-rules', label: '7 pravidel úředního stylu & Kontrola chyb', shortLabel: 'Styl & kontrola chyb', icon: Sparkles }
+  { id: 'generator', label: 'Vyplnění a tisk úředních záznamů', shortLabel: 'Úřední záznamy', icon: FileText },
+  { id: 'etr', label: 'Spisová služba ETŘ a číslo jednací', shortLabel: 'Spisová služba', icon: FolderOpen },
+  { id: 'vis', label: 'Vězeňský informační systém a poskytování informací (§ 23a)', shortLabel: 'Evidence VIS', icon: Search },
+  { id: 'style-rules', label: 'Pravidla úředního stylu a cvičení hledání chyb', shortLabel: 'Úřední styl', icon: Sparkles }
 ];
 
 /**
@@ -142,7 +143,17 @@ function purgeLegacyDrafts(): void {
   }
 }
 
-export default function PrisonAdministration() {
+interface PrisonAdministrationProps {
+  /** Spustí cvičný test předmětu v modulu Test & Zkouška. */
+  onStartSubjectQuiz?: (subject: string) => void;
+  /** Počet otázek předmětu v bance, které uživatel uvidí. */
+  questionCount?: number;
+}
+
+/** Přesný název předmětu v bance otázek — musí souhlasit s polem `subject`. */
+const ADMIN_SUBJECT = 'Vězeňská administrativa';
+
+export default function PrisonAdministration({ onStartSubjectQuiz, questionCount = 0 }: PrisonAdministrationProps) {
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
   const fieldIds = useId();
 
@@ -313,6 +324,32 @@ export default function PrisonAdministration() {
     return (RECORD_TEMPLATE_MANDATORY_FIELDS[currentTemplate.id] ?? []).filter(field => !(formData[field] || '').trim());
   }, [currentTemplate, formData]);
 
+  /**
+   * Chybí povinné pole po pokusu o kopírování či tisk?
+   *
+   * Dřív měla červený rámeček všechna povinná pole pořád, tedy skoro celý
+   * formulář — rámeček tak nic nesděloval. Teď se zvýrazní jen pole, která
+   * opravdu chybí, a jen poté, co se na ně uživatel pokusil narazit.
+   */
+  const isMissing = useCallback(
+    (field: string) => showValidation && missingMandatoryFields.includes(field),
+    [showValidation, missingMandatoryFields]
+  );
+
+  const fieldBorder = useCallback(
+    (field: string) =>
+      isMissing(field)
+        ? 'border-red-400 dark:border-red-700 ring-1 ring-red-400/40'
+        : 'border-slate-300 dark:border-slate-700',
+    [isMissing]
+  );
+
+  /** Popisky označených zón těla — v textu i tisku místo interních id. */
+  const bodyPartLabels = useMemo(
+    () => selectedBodyParts.map((id) => BODY_PARTS.find((p) => p.id === id)?.label ?? id),
+    [selectedBodyParts]
+  );
+
 
   const handlePrint = useCallback(() => {
     if (missingMandatoryFields.length > 0) {
@@ -385,7 +422,7 @@ export default function PrisonAdministration() {
         `Do služby velen rozkazem: ${formData.dutyOrder || ''}\n` +
         `Použití osobní kamery: ${formData.cameraUsed || 'ANO'}\n` +
         `Použito proti komu: ${formData.targetPerson || ''} (kód: ${formData.targetCode || ''})\n\n` +
-        `Zasažená místa těla dle schématu:\n${selectedBodyParts.length > 0 ? selectedBodyParts.map(p => `- ${p}`).join('\n') : '- Žádné specifické zóny'}\n\n` +
+        `Zasažená místa těla dle schématu:\n${bodyPartLabels.length > 0 ? bodyPartLabels.map(p => `- ${p}`).join('\n') : '- Žádné specifické zóny'}\n\n` +
         `POPIS PRŮBĚHU POUŽITÍ DP:\n` +
         `1. Čas a místo: ${formData.datetimePlace || ''}\n` +
         `2. Co předcházelo: ${formData.precedingEvents || ''}\n` +
@@ -431,6 +468,19 @@ export default function PrisonAdministration() {
         `PŘEDÁNÍ A NALOŽENÍ S VĚCÍ:\n${formData.surrenderedTo || ''}\n\n` +
         `${formData.signatureDate || ''}\n` +
         `${formData.officerSignature || ''}`;
+    } else if (templateId === 'nasilie') {
+      // Dřív tento tiskopis padal do větve služebního záznamu: náhled i kopie
+      // nesly nadpis „SLUŽEBNÍ ZÁZNAM“ a prázdná pole jiného tiskopisu, zatímco
+      // kód osoby, ubytování ani přijatá opatření se nevypsaly vůbec.
+      return `${formData.prisonName || ''}\n\n` +
+        `ZÁZNAM O ZJIŠTĚNÍ FYZICKÉHO NÁSILÍ A PONIŽUJÍCÍHO JEDNÁNÍ\n` +
+        `------------------------------------------------------------------\n` +
+        `Napadená vězněná osoba: ${formData.targetPerson || ''} (kód: ${formData.targetCode || ''})\n` +
+        `Ubytování: ${formData.housingCell || ''}\n\n` +
+        `POPIS OKOLNOSTÍ A PROHLÍDKA TĚLA:\n${formData.eventStory || ''}\n\n` +
+        `PŘIJATÁ OPATŘENÍ:\n${formData.officerReport || ''}\n\n` +
+        `${formData.signatureDate || ''}\n` +
+        `${formData.officerSignature || ''}`;
     } else {
       return `${formData.prisonName || ''}\n\n` +
         `${formData.docTitle || 'SLUŽEBNÍ ZÁZNAM'}\n` +
@@ -442,7 +492,7 @@ export default function PrisonAdministration() {
         `${formData.signatureDate || ''}\n` +
         `${formData.officerSignature || ''}`;
     }
-  }, [templateId, formData, selectedBodyParts]);
+  }, [templateId, formData, bodyPartLabels]);
 
   // Pod recordText, aby text šel do závislostí — dřív se kopíroval text
   // z prvního vykreslení a umlčení pravidla to skrývalo.
@@ -463,40 +513,54 @@ export default function PrisonAdministration() {
   }, [missingMandatoryFields, recordText]);
 
   return (
-    <div className="w-full space-y-6 pb-12 print:max-w-none print:w-full print:p-0 print:m-0 print:space-y-0 print:pb-0">
+    <div className="w-full space-y-5 pb-12 print:max-w-none print:w-full print:p-0 print:m-0 print:space-y-0 print:pb-0">
       
-      {/* Header Banner — purely informative, no action buttons (navigation lives in the segmented control below) */}
-      <div className="bg-gradient-to-r from-amber-600 via-amber-700 to-amber-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden no-print print:hidden">
-        <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-72 h-72 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/30 border border-amber-300/30 text-amber-200 text-xs font-bold uppercase tracking-wider">
-            <FileText className="w-3.5 h-3.5" />
-            <span>Vězeňská administrativa & ETŘ</span>
+      {/* Záhlaví předmětu — stejně klidné jako u Profesní etiky */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 no-print print:hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="w-11 h-11 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+              <FileText className="w-6 h-6" aria-hidden="true" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Vězeňská administrativa & ETŘ</h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                Úřední záznamy, spisová služba ETŘ, evidence ve VIS a úřední styl.
+              </p>
+            </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Spisová služba, tiskopisy & informační systémy VS ČR
-          </h1>
-          <p className="text-amber-100 text-sm max-w-3xl leading-relaxed">
-            Interaktivní trenažér elektronické spisové služby ETŘ (pokyn GŘ č. 4/2016), generátor povinných úředních záznamů (PGŘ č. 3/2024, NGŘ č. 41/2024 a NGŘ č. 24/2022) a metodika informačního systému VIS.
-          </p>
+
+          {onStartSubjectQuiz && (
+            <button
+              type="button"
+              onClick={() => onStartSubjectQuiz(ADMIN_SUBJECT)}
+              className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm flex items-center gap-2 transition-colors cursor-pointer shrink-0 self-start md:self-auto"
+              title={`Test z Vězeňské administrativy — v bance je ${questionCount} otázek`}
+            >
+              <Award className="w-4 h-4" aria-hidden="true" />
+              <span>Spustit test</span>
+              <span className="text-xs font-semibold text-slate-900/70">({questionCount} ot.)</span>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Section navigation — single segmented control (replaces the former duplicated header buttons + sub-tabs bar) */}
-      <div role="tablist" aria-label="Sekce modulu Administrativa a ETŘ" className="grid grid-cols-2 sm:grid-cols-4 gap-2 no-print print:hidden">
+      {/* Navigace podzáložek */}
+      <div role="tablist" aria-label="Části předmětu Vězeňská administrativa" className="grid grid-cols-2 sm:grid-cols-4 gap-2 no-print print:hidden">
         {NAV_SECTIONS.map(({ id, label, shortLabel, icon: Icon }) => {
           const isActive = activeSection === id;
           return (
             <button
+              type="button"
               key={id}
               role="tab"
               aria-selected={isActive}
               title={label}
               onClick={() => setActiveSection(id)}
-              className={`px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              className={`px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer ${
                 isActive
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
+                  ? 'bg-amber-500 text-slate-950'
+                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800'
               }`}
             >
               <Icon className="w-4 h-4 shrink-0" />
@@ -541,30 +605,27 @@ export default function PrisonAdministration() {
           <div className="lg:col-span-7 space-y-5 no-print print:hidden">
             
             {/* Template Selector Bar */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  Výběr úředního záznamu k vyplnění:
-                </span>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
-                  {currentTemplate.badge}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 space-y-3">
+              <span className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                Který záznam chcete vyplnit?
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
                 {templates.map(tpl => {
                   const isSelected = tpl.id === templateId;
                   return (
                     <button
+                      type="button"
                       key={tpl.id}
+                      aria-pressed={isSelected}
                       onClick={() => handleSelectTemplate(tpl.id)}
-                      className={`p-2.5 rounded-xl text-left transition-all border cursor-pointer ${
+                      className={`p-2.5 rounded-xl text-left text-xs transition-colors border cursor-pointer ${
                         isSelected
-                          ? 'bg-amber-500 text-slate-950 border-amber-600 font-bold shadow-sm ring-1 ring-amber-400'
-                          : 'bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold'
+                          ? 'bg-amber-50 dark:bg-amber-500/10 border-amber-400 dark:border-amber-500/60 text-slate-900 dark:text-white'
+                          : 'bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
                       }`}
                     >
-                      <div className="truncate">{tpl.title}</div>
-                      <div className={`text-[0.625rem] truncate ${isSelected ? 'text-slate-900' : 'text-slate-400'}`}>
+                      <div className="font-semibold leading-snug line-clamp-2">{tpl.title}</div>
+                      <div className={`text-[0.6875rem] truncate mt-0.5 ${isSelected ? 'text-amber-700 dark:text-amber-300' : 'text-slate-500 dark:text-slate-400'}`}>
                         {tpl.badge}
                       </div>
                     </button>
@@ -574,9 +635,9 @@ export default function PrisonAdministration() {
             </div>
 
             {/* Form Fields according to selected template */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-              
-              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 space-y-4">
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
                 <div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
                     {currentTemplate.title}
@@ -616,26 +677,18 @@ export default function PrisonAdministration() {
                 </div>
               </div>
 
-              {/* Upozornění na osobní údaje.
+              {/* Upozornění na osobní údaje a povinná pole.
                   Formulář se průběžně ukládá do prohlížeče a obsahuje jméno,
                   datum narození a kód vězněné osoby i popis zranění. Bez
                   tohohle textu uživatel netuší, že po sobě má co uklízet. */}
-              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-xs text-rose-900 dark:text-rose-200">
-                <Lock className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-start gap-2.5 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                <Lock className="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
                 <div>
-                  <strong>Cvičný trenažér — nezadávejte skutečné osobní údaje.</strong> Rozepsaný
-                  koncept se automaticky ukládá do <strong>tohoto prohlížeče</strong> (jen pro váš
-                  účet) a zůstane tam, dokud ho nesmažete tlačítkem <em>Smazat koncepty</em>. Na
-                  sdíleném počítači proto používejte cvičná jména a kódy; skutečný záznam
-                  o vězněné osobě patří výhradně do ETŘ, ne do studijní aplikace.
-                </div>
-              </div>
-
-              {/* Notice regarding mandatory highlighted fields */}
-              <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 flex items-start gap-2.5 text-xs text-amber-800 dark:text-amber-300">
-                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
-                <div>
-                  <strong>Povinné náležitosti formuláře:</strong> Červeně ohraničená pole jsou dle metodiky VS ČR povinná a nesmí zůstat prázdná. Před zkopírováním či tiskem se vyplnění povinných polí ověřuje.
+                  <strong className="text-slate-800 dark:text-slate-100">Cvičný formulář — nezadávejte skutečné osobní údaje.</strong>{' '}
+                  Rozepsaný koncept se ukládá jen do tohoto prohlížeče pod vaším účtem a zůstane
+                  tam, dokud ho nesmažete tlačítkem <em>Smazat koncepty</em>. Skutečný záznam
+                  o vězněné osobě patří výhradně do ETŘ. Pole s hvězdičkou jsou povinná; před
+                  kopírováním a tiskem se jejich vyplnění kontroluje.
                 </div>
               </div>
 
@@ -643,6 +696,27 @@ export default function PrisonAdministration() {
                 <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 flex items-center gap-2 text-xs text-emerald-800 dark:text-emerald-300">
                   <CheckCircle2 className="w-4 h-4 shrink-0" />
                   <span>Načten dříve rozpracovaný koncept tohoto záznamu z tohoto zařízení.</span>
+                </div>
+              )}
+
+              {/* Věznice u ostatních tiskopisů. Pole je povinné a tiskne se v záhlaví,
+                  ale formulář ho dřív nabízel jen u donucovacího prostředku —
+                  po „Vyčistit formulář“ tak nešlo záznam vůbec vytisknout. */}
+              {templateId !== 'dp' && (
+                <div className="text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-41`}>
+                      Věznice (název a adresa) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id={`${fieldIds}-41`}
+                      type="text"
+                      value={formData.prisonName || ''}
+                      onChange={(e) => handleFieldChange('prisonName', e.target.value)}
+                      aria-invalid={isMissing('prisonName')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('prisonName')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
+                    />
+                  </div>
                 </div>
               )}
 
@@ -659,7 +733,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.prisonName || ''}
                         onChange={(e) => handleFieldChange('prisonName', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('prisonName')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('prisonName')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                     <div>
@@ -671,7 +746,7 @@ export default function PrisonAdministration() {
                           <button
                             type="button"
                             onClick={generateCJ}
-                            className="px-2 py-0.5 rounded bg-amber-500 hover:bg-amber-600 text-slate-950 text-[0.625rem] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                            className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[0.625rem] font-bold flex items-center gap-1 transition-colors cursor-pointer"
                             title="Vygenerovat cvičné Č.j. ve formátu VS ČR (náhodné číslo, není přidělené)"
                           >
                             <Zap className="w-3 h-3" />
@@ -680,6 +755,7 @@ export default function PrisonAdministration() {
                           <button
                             type="button"
                             onClick={copyCJ}
+                            aria-label="Zkopírovat Č.j."
                             className="p-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[0.625rem] transition-colors cursor-pointer"
                             title={cjCopyFailed ? 'Zkopírování do schránky se nezdařilo — označte Č.j. a zkopírujte ručně' : 'Zkopírovat Č.j. do schránky'}
                           >
@@ -704,7 +780,8 @@ export default function PrisonAdministration() {
                         value={formData.refNumber || ''}
                         onChange={(e) => handleFieldChange('refNumber', e.target.value)}
                         placeholder="VS-XXXX-1/ČJ-RRRR-80XXXX-XXX"
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono font-bold text-xs"
+                        aria-invalid={isMissing('refNumber')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('refNumber')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono font-bold text-xs`}
                       />
                     </div>
                   </div>
@@ -719,7 +796,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.officer || ''}
                         onChange={(e) => handleFieldChange('officer', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('officer')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('officer')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                     <div>
@@ -731,7 +809,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.dutyOrder || ''}
                         onChange={(e) => handleFieldChange('dutyOrder', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('dutyOrder')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('dutyOrder')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                   </div>
@@ -746,7 +825,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.targetPerson || ''}
                         onChange={(e) => handleFieldChange('targetPerson', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('targetPerson')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('targetPerson')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                     <div>
@@ -758,7 +838,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.targetCode || ''}
                         onChange={(e) => handleFieldChange('targetCode', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('targetCode')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('targetCode')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                   </div>
@@ -771,7 +852,7 @@ export default function PrisonAdministration() {
                         id={`${fieldIds}-zony`}
                         className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5"
                       >
-                        <ShieldAlert className="w-4 h-4 text-red-500" />
+                        <ShieldAlert className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                         <span>Grafické znázornění zasažených míst těla:</span>
                       </span>
                       <span className="text-[0.6875rem] text-slate-500">
@@ -788,9 +869,10 @@ export default function PrisonAdministration() {
                             onClick={() => toggleBodyPart(part.id)}
                             className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                               isMarked
-                                ? 'bg-red-500 text-white shadow-xs font-bold ring-1 ring-red-400'
-                                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100'
+                                ? 'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-500/40'
+                                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'
                             }`}
+                            aria-pressed={isMarked}
                           >
                             {part.label} {isMarked ? '✓' : '+'}
                           </button>
@@ -808,7 +890,8 @@ export default function PrisonAdministration() {
                       type="text"
                       value={formData.datetimePlace || ''}
                       onChange={(e) => handleFieldChange('datetimePlace', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('datetimePlace')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('datetimePlace')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
 
@@ -821,7 +904,8 @@ export default function PrisonAdministration() {
                       rows={2}
                       value={formData.precedingEvents || ''}
                       onChange={(e) => handleFieldChange('precedingEvents', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('precedingEvents')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('precedingEvents')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
 
@@ -834,7 +918,8 @@ export default function PrisonAdministration() {
                       rows={3}
                       value={formData.officerAction || ''}
                       onChange={(e) => handleFieldChange('officerAction', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('officerAction')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('officerAction')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
 
@@ -847,7 +932,8 @@ export default function PrisonAdministration() {
                       rows={2}
                       value={formData.targetBehavior || ''}
                       onChange={(e) => handleFieldChange('targetBehavior', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('targetBehavior')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('targetBehavior')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
 
@@ -860,7 +946,8 @@ export default function PrisonAdministration() {
                       rows={4}
                       value={formData.dpUsedDetails || ''}
                       onChange={(e) => handleFieldChange('dpUsedDetails', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('dpUsedDetails')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('dpUsedDetails')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
 
@@ -874,7 +961,8 @@ export default function PrisonAdministration() {
                         rows={2}
                         value={formData.injuryDamage || ''}
                         onChange={(e) => handleFieldChange('injuryDamage', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('injuryDamage')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('injuryDamage')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                     <div>
@@ -886,7 +974,8 @@ export default function PrisonAdministration() {
                         rows={2}
                         value={formData.firstAid || ''}
                         onChange={(e) => handleFieldChange('firstAid', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('firstAid')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('firstAid')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                   </div>
@@ -901,7 +990,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.medicalExam || ''}
                         onChange={(e) => handleFieldChange('medicalExam', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('medicalExam')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('medicalExam')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                     <div>
@@ -913,7 +1003,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.bossInformed || ''}
                         onChange={(e) => handleFieldChange('bossInformed', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('bossInformed')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('bossInformed')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                     <div>
@@ -925,8 +1016,43 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.photoDoc || ''}
                         onChange={(e) => handleFieldChange('photoDoc', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('photoDoc')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('photoDoc')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
+                    </div>
+                  </div>
+
+                  {/* Svědci a osobní kamera se tisknou v záznamu, ale formulář je dřív
+                      nenabízel — zůstávala v nich hodnota ze vzoru. */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-42`}>
+                        Záznam z osobní kamery
+                      </label>
+                      <select
+                        id={`${fieldIds}-42`}
+                        value={formData.cameraUsed || 'ANO'}
+                        onChange={(e) => handleFieldChange('cameraUsed', e.target.value)}
+                        className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium cursor-pointer"
+                      >
+                        <option value="ANO">ANO</option>
+                        <option value="NE">NE</option>
+                      </select>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <div>
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-43`}>
+                        Svědci (hodnost, jméno, sl. č.)
+                      </label>
+                      <input
+                        id={`${fieldIds}-43`}
+                        type="text"
+                        value={formData.witnesses || ''}
+                        onChange={(e) => handleFieldChange('witnesses', e.target.value)}
+                        aria-invalid={isMissing('witnesses')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('witnesses')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
+                      />
+                    </div>
                     </div>
                   </div>
 
@@ -939,14 +1065,15 @@ export default function PrisonAdministration() {
                       rows={2}
                       value={formData.evaluation || ''}
                       onChange={(e) => handleFieldChange('evaluation', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('evaluation')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('evaluation')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
 
                   {/* ČÁST DRUHÁ — schvalovací řetězec dle Přílohy k PGŘ č. 3/2024 (stanovisko, prošetření 1. ZŘV, rozhodnutí ředitele) */}
                   <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
-                    <div className="flex items-start gap-2 p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 text-[0.6875rem] text-blue-900 dark:text-blue-200">
-                      <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-600 dark:text-blue-400" />
+                    <div className="flex items-start gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-[0.6875rem] text-slate-600 dark:text-slate-300">
+                      <Info className="w-4 h-4 shrink-0 mt-0.5 text-slate-500 dark:text-slate-400" />
                       <span>
                         <strong>Část druhá záznamu</strong> — o oprávněnosti a přiměřenosti zákroku nerozhoduje zakročující příslušník sám. Tato část se vyplňuje až následně: stanovisko zpracovává vedoucí oddělení, zprávu o prošetření 1. zástupce ředitele věznice (1. ZŘV) a závazné rozhodnutí vydává ředitel věznice.
                       </span>
@@ -961,7 +1088,8 @@ export default function PrisonAdministration() {
                         rows={2}
                         value={formData.departmentHeadOpinion || ''}
                         onChange={(e) => handleFieldChange('departmentHeadOpinion', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('departmentHeadOpinion')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('departmentHeadOpinion')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
 
@@ -974,7 +1102,8 @@ export default function PrisonAdministration() {
                         rows={2}
                         value={formData.zrvReport || ''}
                         onChange={(e) => handleFieldChange('zrvReport', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('zrvReport')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('zrvReport')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
 
@@ -987,7 +1116,8 @@ export default function PrisonAdministration() {
                         rows={2}
                         value={formData.directorDecision || ''}
                         onChange={(e) => handleFieldChange('directorDecision', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('directorDecision')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('directorDecision')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                   </div>
@@ -1007,7 +1137,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.targetPerson || ''}
                         onChange={(e) => handleFieldChange('targetPerson', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('targetPerson')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('targetPerson')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                     <div>
@@ -1019,7 +1150,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.targetBirth || ''}
                         onChange={(e) => handleFieldChange('targetBirth', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('targetBirth')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('targetBirth')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                     <div>
@@ -1031,7 +1163,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.prisonType || ''}
                         onChange={(e) => handleFieldChange('prisonType', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('prisonType')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('prisonType')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                   </div>
@@ -1045,7 +1178,8 @@ export default function PrisonAdministration() {
                       rows={6}
                       value={formData.actDescription || ''}
                       onChange={(e) => handleFieldChange('actDescription', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[0.6875rem]"
+                      aria-invalid={isMissing('actDescription')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('actDescription')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[0.6875rem]`}
                     />
                   </div>
 
@@ -1058,7 +1192,8 @@ export default function PrisonAdministration() {
                       type="text"
                       value={formData.targetStatement || ''}
                       onChange={(e) => handleFieldChange('targetStatement', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('targetStatement')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('targetStatement')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
 
@@ -1071,7 +1206,8 @@ export default function PrisonAdministration() {
                       rows={3}
                       value={formData.evidenceList || ''}
                       onChange={(e) => handleFieldChange('evidenceList', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[0.6875rem]"
+                      aria-invalid={isMissing('evidenceList')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('evidenceList')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[0.6875rem]`}
                     />
                   </div>
                 </div>
@@ -1089,7 +1225,8 @@ export default function PrisonAdministration() {
                       type="text"
                       value={formData.docTitle || ''}
                       onChange={(e) => handleFieldChange('docTitle', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('docTitle')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('docTitle')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
 
@@ -1102,7 +1239,8 @@ export default function PrisonAdministration() {
                       type="text"
                       value={formData.dutyOrder || ''}
                       onChange={(e) => handleFieldChange('dutyOrder', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('dutyOrder')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('dutyOrder')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
 
@@ -1115,7 +1253,8 @@ export default function PrisonAdministration() {
                       rows={5}
                       value={formData.eventStory || ''}
                       onChange={(e) => handleFieldChange('eventStory', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('eventStory')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('eventStory')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
 
@@ -1128,7 +1267,22 @@ export default function PrisonAdministration() {
                       rows={3}
                       value={formData.actionsTimeline || ''}
                       onChange={(e) => handleFieldChange('actionsTimeline', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('actionsTimeline')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('actionsTimeline')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-44`}>
+                      Svědci (hodnost, jméno, sl. č.) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id={`${fieldIds}-44`}
+                      type="text"
+                      value={formData.witnesses || ''}
+                      onChange={(e) => handleFieldChange('witnesses', e.target.value)}
+                      aria-invalid={isMissing('witnesses')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('witnesses')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
                 </div>
@@ -1147,7 +1301,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.datetime || ''}
                         onChange={(e) => handleFieldChange('datetime', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('datetime')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('datetime')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                     <div>
@@ -1159,7 +1314,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.targetPerson || ''}
                         onChange={(e) => handleFieldChange('targetPerson', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('targetPerson')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('targetPerson')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                   </div>
@@ -1173,7 +1329,8 @@ export default function PrisonAdministration() {
                       rows={5}
                       value={formData.itemsList || ''}
                       onChange={(e) => handleFieldChange('itemsList', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[0.6875rem]"
+                      aria-invalid={isMissing('itemsList')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('itemsList')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[0.6875rem]`}
                     />
                   </div>
 
@@ -1186,7 +1343,22 @@ export default function PrisonAdministration() {
                       rows={3}
                       value={formData.seizureReason || ''}
                       onChange={(e) => handleFieldChange('seizureReason', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('seizureReason')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('seizureReason')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1" htmlFor={`${fieldIds}-45`}>
+                      Předání a naložení s odňatou věcí (komu, kam uloženo) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id={`${fieldIds}-45`}
+                      type="text"
+                      value={formData.surrenderedTo || ''}
+                      onChange={(e) => handleFieldChange('surrenderedTo', e.target.value)}
+                      aria-invalid={isMissing('surrenderedTo')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('surrenderedTo')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
                 </div>
@@ -1205,7 +1377,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.targetPerson || ''}
                         onChange={(e) => handleFieldChange('targetPerson', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('targetPerson')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('targetPerson')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                     <div>
@@ -1217,7 +1390,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.targetCode || ''}
                         onChange={(e) => handleFieldChange('targetCode', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('targetCode')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('targetCode')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                     <div>
@@ -1229,7 +1403,8 @@ export default function PrisonAdministration() {
                         type="text"
                         value={formData.housingCell || ''}
                         onChange={(e) => handleFieldChange('housingCell', e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                        aria-invalid={isMissing('housingCell')}
+                        className={`w-full p-2.5 rounded-xl border ${fieldBorder('housingCell')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                       />
                     </div>
                   </div>
@@ -1243,7 +1418,8 @@ export default function PrisonAdministration() {
                       rows={5}
                       value={formData.eventStory || ''}
                       onChange={(e) => handleFieldChange('eventStory', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('eventStory')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('eventStory')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
 
@@ -1256,7 +1432,8 @@ export default function PrisonAdministration() {
                       rows={3}
                       value={formData.officerReport || ''}
                       onChange={(e) => handleFieldChange('officerReport', e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-red-300 dark:border-red-900/60 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                      aria-invalid={isMissing('officerReport')}
+                      className={`w-full p-2.5 rounded-xl border ${fieldBorder('officerReport')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                     />
                   </div>
                 </div>
@@ -1273,7 +1450,8 @@ export default function PrisonAdministration() {
                     type="text"
                     value={formData.signatureDate || ''}
                     onChange={(e) => handleFieldChange('signatureDate', e.target.value)}
-                    className="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium"
+                    aria-invalid={isMissing('signatureDate')}
+                    className={`w-full p-2 rounded-xl border ${fieldBorder('signatureDate')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium`}
                   />
                 </div>
                 <div>
@@ -1285,7 +1463,8 @@ export default function PrisonAdministration() {
                     type="text"
                     value={formData.officerSignature || ''}
                     onChange={(e) => handleFieldChange('officerSignature', e.target.value)}
-                    className="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[0.6875rem]"
+                    aria-invalid={isMissing('officerSignature')}
+                    className={`w-full p-2 rounded-xl border ${fieldBorder('officerSignature')} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium font-mono text-[0.6875rem]`}
                   />
                 </div>
               </div>
@@ -1319,61 +1498,43 @@ export default function PrisonAdministration() {
               </div>
             )}
 
-            {/* Action Bar */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between gap-2 flex-wrap no-print print:hidden">
-              <div className="flex items-center gap-2 flex-wrap">
-                <button
-                  type="button"
-                  onClick={handleCopyRecord}
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
-                >
-                  {copiedSuccess ? <Check className="w-4 h-4 text-slate-950" /> : <Copy className="w-4 h-4" />}
-                  <span>{copiedSuccess ? 'Zkopírováno!' : 'Kopírovat záznam'}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handlePrint}
-                  className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-950 hover:bg-slate-800 dark:hover:bg-slate-100 font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
-                  title="Vytisknout úřední záznam ve formátu A4 nebo uložit jako PDF"
-                >
-                  <Printer className="w-4 h-4" />
-                  <span>Vytisknout úřední záznam / PDF</span>
-                </button>
-              </div>
-              <span className="text-[0.6875rem] font-bold text-amber-600 dark:text-amber-400">
+            {/* Akce nad záznamem */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 flex items-center gap-2 flex-wrap no-print print:hidden">
+              <button
+                type="button"
+                onClick={handlePrint}
+                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Vytisknout záznam na A4 nebo ho uložit jako PDF"
+              >
+                <Printer className="w-4 h-4" />
+                <span>Vytisknout / PDF</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleCopyRecord}
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                {copiedSuccess ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                <span>{copiedSuccess ? 'Zkopírováno' : 'Kopírovat text'}</span>
+              </button>
+              <span className="text-[0.6875rem] text-slate-500 dark:text-slate-400 sm:ml-auto">
                 Podle vzoru úředního záznamu
               </span>
             </div>
 
-            {/* Document Paper Preview (Screen Only) */}
-            <div id="printable-record-area" className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-300 dark:border-slate-800 shadow-md font-mono text-xs leading-relaxed text-slate-800 dark:text-slate-200 overflow-y-auto max-h-[60vh] lg:max-h-[750px] whitespace-pre-wrap select-all no-print print:hidden">
+            {/* Náhled textu záznamu (jen na obrazovce) */}
+            <div id="printable-record-area" className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 font-mono text-xs leading-relaxed text-slate-800 dark:text-slate-200 overflow-y-auto max-h-[60vh] lg:max-h-[750px] whitespace-pre-wrap select-all no-print print:hidden">
               {recordText}
             </div>
 
-            {/* Action Bar below Document Preview */}
-            <div className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm no-print print:hidden">
-              <div className="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-2">
-                <Printer className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                <span className="text-[0.6875rem] sm:text-xs font-medium">Tiskopis A4 se záhlavím, náležitostmi a podpisovými doložkami</span>
-              </div>
-              <button
-                type="button"
-                onClick={handlePrint}
-                className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center gap-2 transition-colors shadow-sm cursor-pointer shrink-0"
-              >
-                <Printer className="w-4 h-4" />
-                <span>Vytisknout úřední záznam / PDF</span>
-              </button>
-            </div>
-
-            {/* Explanatory Note Box */}
-            <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 space-y-1.5 text-xs text-blue-900 dark:text-blue-200 no-print print:hidden">
-              <div className="font-bold flex items-center gap-1.5">
-                <Info className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                <span>Metodické upozornění pro závěrečnou zkoušku ZOP:</span>
+            {/* Na co si dát pozor */}
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5 text-xs text-slate-600 dark:text-slate-300 no-print print:hidden">
+              <div className="font-bold flex items-center gap-1.5 text-slate-800 dark:text-slate-100">
+                <Info className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                <span>Na co si dát pozor</span>
               </div>
               <p className="text-[0.6875rem] leading-normal">
-                U ústní i písemné zkoušky komisaři striktně vyžadují dodržení struktury 7 povinných bodů záznamu, přesnou citaci zákonné výzvy dle § 6 odst. 3 písm. b) zákona č. 555/1992 Sb. a správné uvedení porušeného ustanovení § 28 zákona č. 169/1999 Sb. u kázeňského přestupku.
+                Dodržte strukturu záznamu bod po bodu, zákonnou výzvu podle § 6 odst. 3 písm. b) zákona č. 555/1992 Sb. uveďte doslovně a u kázeňského přestupku vždy uveďte porušenou povinnost podle § 28 zákona č. 169/1999 Sb., ne jen vnitřní řád.
               </p>
             </div>
 
@@ -1398,7 +1559,7 @@ export default function PrisonAdministration() {
                   </div>
                   <div className="text-right text-xs space-y-0.5">
                     <div className="font-mono font-bold text-black text-xs">
-                      {formData.refNumber ? `Č. j.: ${formData.refNumber}` : 'Č. j.: VS-......................../ČJ-2024-........'}
+                      {formData.refNumber ? `Č. j.: ${formData.refNumber}` : `Č. j.: VS-......................../ČJ-${new Date().getFullYear()}-........`}
                     </div>
                     <div className="text-slate-700 text-[0.6875rem]">
                       Datum vyhotovení: {formData.signatureDate || new Date().toLocaleDateString('cs-CZ')}
@@ -1448,7 +1609,7 @@ export default function PrisonAdministration() {
                   {/* Body impact zones */}
                   <div className="print-card my-2 p-2 border border-slate-300 text-xs">
                     <strong>Zasažená místa těla dle schématu zásahových zón:</strong>{' '}
-                    {selectedBodyParts.length > 0 ? selectedBodyParts.join(', ') : 'Bez zasažení rizikových zón'}
+                    {bodyPartLabels.length > 0 ? bodyPartLabels.join(', ') : 'Bez zasažení rizikových zón'}
                   </div>
 
                   {/* Structured Report Sections */}
@@ -1747,8 +1908,71 @@ export default function PrisonAdministration() {
                 </div>
               )}
 
-              {/* TEMPLATE 4: SLUŽEBNÍ ZÁZNAM (SZ) */}
-              {(templateId === 'sz' || (templateId !== 'dp' && templateId !== 'zkp' && templateId !== 'odneti')) && (
+              {/* TEMPLATE 5: ZJIŠTĚNÍ FYZICKÉHO NÁSILÍ (NGŘ č. 24/2022) */}
+              {templateId === 'nasilie' && (
+                <div>
+                  <div className="text-center my-3">
+                    <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">
+                      ZÁZNAM O ZJIŠTĚNÍ FYZICKÉHO NÁSILÍ A PONIŽUJÍCÍHO JEDNÁNÍ
+                    </h2>
+                    <p className="text-[0.6875rem] font-bold text-slate-800 italic mt-0.5">
+                      podle Přílohy č. 1 k NGŘ č. 24/2022
+                    </p>
+                  </div>
+
+                  <div className="print-card my-3 border border-slate-400 text-xs">
+                    <div className="grid grid-cols-3">
+                      <div className="p-2 border-r border-slate-300">
+                        <strong>Napadená vězněná osoba:</strong> {formData.targetPerson}
+                      </div>
+                      <div className="p-2 border-r border-slate-300">
+                        <strong>Identifikační kód:</strong> {formData.targetCode}
+                      </div>
+                      <div className="p-2">
+                        <strong>Ubytování:</strong> {formData.housingCell}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 text-xs">
+                    <div className="print-card p-3 border border-slate-300">
+                      <div className="font-bold text-black mb-1">I. Popis okolností zjištěného případu a prohlídka těla:</div>
+                      <p className="whitespace-pre-wrap">{formData.eventStory}</p>
+                    </div>
+
+                    <div className="print-card p-3 border border-slate-300">
+                      <div className="font-bold text-black mb-1">II. Přijatá opatření, informování a lékařská prohlídka:</div>
+                      <p className="whitespace-pre-wrap">{formData.officerReport}</p>
+                    </div>
+                  </div>
+
+                  <div
+                    className="print-avoid-break break-inside-avoid mt-6 pt-3 border-t-2 border-black text-xs"
+                    style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}
+                  >
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="border border-slate-400 p-2.5 rounded bg-white">
+                        <div className="text-[0.6875rem]"><strong>Místo a datum:</strong> {formData.signatureDate}</div>
+                        <div className="mt-8 pt-2 border-t border-dotted border-black text-center">
+                          <div className="text-[0.6875rem] font-bold text-black">Zjistil a zaznamenal</div>
+                          <div className="text-[0.625rem] text-slate-700 font-mono mt-0.5">
+                            {formData.officerSignature || 'hodnost, jméno, služební číslo'}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="border border-slate-400 p-2.5 rounded bg-white">
+                        <div className="text-[0.6875rem]"><strong>Vzal na vědomí:</strong> nadřízený / VISS</div>
+                        <div className="mt-8 pt-2 border-t border-dotted border-black text-center">
+                          <div className="text-[0.6875rem] font-bold text-black">Podpis nadřízeného</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TEMPLATE 4: SLUŽEBNÍ ZÁZNAM (SZ) — i pro případný další tiskopis */}
+              {(templateId === 'sz' || !['dp', 'zkp', 'odneti', 'nasilie'].includes(templateId)) && (
                 <div>
                   <div className="text-center my-3">
                     <h2 className="text-base font-black uppercase tracking-wide text-black m-0 p-0">

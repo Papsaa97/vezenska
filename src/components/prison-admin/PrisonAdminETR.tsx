@@ -12,29 +12,17 @@ import StudySectionsEditor from '../common/StudySectionsEditor';
 import CustomStudySections from '../common/CustomStudySections';
 import RichText from '../common/RichText';
 
-/** Barvy a ikony karet zásad v pořadí, v jakém byly natvrdo; další se opakují dokola. */
-const PRINCIPLE_TONES: { box: string; title: string; icon: React.ReactNode }[] = [
-  {
-    box: 'bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40',
-    title: 'text-amber-800 dark:text-amber-300',
-    icon: <Shield className="w-4 h-4" />,
-  },
-  {
-    box: 'bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/40',
-    title: 'text-blue-800 dark:text-blue-300',
-    icon: <ArrowRight className="w-4 h-4" />,
-  },
-  {
-    box: 'bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40',
-    title: 'text-red-800 dark:text-red-300',
-    icon: <AlertTriangle className="w-4 h-4" />,
-  },
+/** Ikony karet zásad v pořadí, v jakém byly natvrdo; další se opakují dokola. */
+const PRINCIPLE_ICONS: React.ReactNode[] = [
+  <Shield key="zpracovatel" className="w-4 h-4" />,
+  <ArrowRight key="hierarchie" className="w-4 h-4" />,
+  <AlertTriangle key="pozor" className="w-4 h-4" />,
 ];
 
 // ─── Component ─────────────────────────────────────────────────────────────────
 
 /**
- * ETŘ sekce — Elektrická evidence trestního řízení, Číslo jednací, Spisová služba.
+ * ETŘ sekce — elektronická spisová služba a číslo jednací.
  * Obsahuje interaktivní generátor čísla jednacího s vlastním lokálním state.
  */
 export default function PrisonAdminETR() {
@@ -77,34 +65,35 @@ export default function PrisonAdminETR() {
       <StudySectionsEditor area="etr" state={sectionState} />
 
       {/* Interactive Číslo Jednací Decoder */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 space-y-5">
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-4">
           <div>
-            <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
-              Interaktivní analyzátor &amp; generátor
-            </span>
-            <h2 className="text-xl font-extrabold text-slate-900 dark:text-slate-100">
-              Struktura čísla jednacího (ČJ) v systému ETŘ
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+              Jak je složené číslo jednací (ČJ)
             </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Změňte kteroukoli část a hned uvidíte výsledný tvar.
+            </p>
           </div>
-          <div className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-mono font-bold text-slate-700 dark:text-slate-300">
+          <div className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 self-start sm:self-auto">
             Pokyn GŘ VS ČR č. 4/2016
           </div>
         </div>
 
         {/* Generated Code Display Box */}
-        <div className="bg-slate-950 rounded-2xl p-5 text-center space-y-3 shadow-inner">
-          <div className="text-xs font-semibold text-slate-400">
-            Výsledný vygenerovaný tvar ČJ v IS ETŘ:
+        <div className="bg-slate-100 dark:bg-slate-950 rounded-2xl p-5 text-center space-y-3">
+          <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+            Výsledný tvar ČJ:
           </div>
-          <div className="text-xl sm:text-3xl font-black text-amber-400 font-mono tracking-wider break-all">
+          <div className="text-xl sm:text-2xl font-bold text-amber-700 dark:text-amber-400 font-mono tracking-wider break-all">
             {fullGeneratedCj}
           </div>
           <div className="flex items-center justify-center gap-2">
             <button
+              type="button"
               onClick={handleCopyCj}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-semibold transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
             >
               {cjCopyFailed ? (
                 <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
@@ -113,16 +102,16 @@ export default function PrisonAdminETR() {
               ) : (
                 <Copy className="w-3.5 h-3.5" />
               )}
-              <span>{cjCopyFailed ? 'Kopírování selhalo' : cjCopied ? 'Zkopírováno!' : 'Kopírovat ČJ'}</span>
+              <span>{cjCopyFailed ? 'Kopírování selhalo' : cjCopied ? 'Zkopírováno' : 'Kopírovat ČJ'}</span>
             </button>
           </div>
           {cjCopyFailed && (
-            <div role="alert" className="text-[0.6875rem] font-semibold text-red-400">
+            <div role="alert" className="text-[0.6875rem] font-semibold text-red-600 dark:text-red-400">
               Schránka není dostupná — označte ČJ výše a zkopírujte ho ručně.
             </div>
           )}
-          <div className="text-[0.6875rem] text-slate-400">
-            V systému ETŘ vidí všichni oprávnění uživatelé vždy ČJ a název věci!
+          <div className="text-[0.6875rem] text-slate-500 dark:text-slate-400">
+            ČJ a název věci vidí v ETŘ vždy všichni oprávnění uživatelé.
           </div>
         </div>
 
@@ -136,7 +125,7 @@ export default function PrisonAdminETR() {
               type="text"
               value={cjOrg}
               onChange={(e) => setCjOrg(e.target.value)}
-              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
+              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-semibold text-slate-900 dark:text-slate-100 font-mono"
             />
             <span className="text-[0.625rem] text-slate-400 block">VS = Vězeňská služba</span>
           </div>
@@ -148,7 +137,7 @@ export default function PrisonAdminETR() {
               type="text"
               value={cjSpisNumber}
               onChange={(e) => setCjSpisNumber(e.target.value)}
-              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
+              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-semibold text-slate-900 dark:text-slate-100 font-mono"
             />
             <span className="text-[0.625rem] text-slate-400 block">Pořadové číslo spisu</span>
           </div>
@@ -160,7 +149,7 @@ export default function PrisonAdminETR() {
               type="text"
               value={cjDocNumber}
               onChange={(e) => setCjDocNumber(e.target.value)}
-              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
+              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-semibold text-slate-900 dark:text-slate-100 font-mono"
             />
             <span className="text-[0.625rem] text-slate-400 block">Pořadí v rámci spisu</span>
           </div>
@@ -171,13 +160,13 @@ export default function PrisonAdminETR() {
               id={`${fieldIds}-3`}
               value={cjSpisType}
               onChange={(e) => setCjSpisType(e.target.value as 'ČJ' | 'PŘ' | 'TČ')}
-              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono cursor-pointer"
+              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-semibold text-slate-900 dark:text-slate-100 font-mono cursor-pointer"
             >
-              <option value="ČJ">ČJ (Běžné / Svodkové)</option>
-              <option value="PŘ">PŘ (Přestupky)</option>
-              <option value="TČ">TČ (Trestní řízení)</option>
+              <option value="ČJ">ČJ</option>
+              <option value="PŘ">PŘ</option>
+              <option value="TČ">TČ</option>
             </select>
-            <span className="text-[0.625rem] text-slate-400 block">ČJ / PŘ / TČ</span>
+            <span className="text-[0.625rem] text-slate-400 block">ČJ běžný, PŘ přestupek, TČ trestní řízení</span>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
@@ -187,7 +176,7 @@ export default function PrisonAdminETR() {
               type="text"
               value={cjYear}
               onChange={(e) => setCjYear(e.target.value)}
-              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
+              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-semibold text-slate-900 dark:text-slate-100 font-mono"
             />
             <span className="text-[0.625rem] text-slate-400 block">Kalendářní rok</span>
           </div>
@@ -199,7 +188,7 @@ export default function PrisonAdminETR() {
               type="text"
               value={cjOrgCode}
               onChange={(e) => setCjOrgCode(e.target.value)}
-              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-bold text-amber-600 font-mono"
+              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-semibold text-slate-900 dark:text-slate-100 font-mono"
             />
             <span className="text-[0.625rem] text-slate-400 block">80 = VS ČR + kód OJ</span>
           </div>
@@ -216,7 +205,7 @@ export default function PrisonAdminETR() {
               value={cjCustomExt}
               onChange={(e) => setCjCustomExt(e.target.value)}
               placeholder="LOG/02"
-              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 font-bold text-amber-600 font-mono"
+              className="w-full p-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 font-semibold text-slate-900 dark:text-slate-100 font-mono"
             />
           </div>
         </div>
@@ -225,11 +214,10 @@ export default function PrisonAdminETR() {
         {principles && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
             {principles.items.map((item, idx) => {
-              const tone = PRINCIPLE_TONES[idx % PRINCIPLE_TONES.length];
               return (
-                <div key={idx} className={`p-4 rounded-2xl ${tone.box} space-y-2 text-xs`}>
-                  <div className={`font-bold ${tone.title} flex items-center gap-1.5`}>
-                    {tone.icon}
+                <div key={idx} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
+                  <div className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                    <span className="text-amber-600 dark:text-amber-400">{PRINCIPLE_ICONS[idx % PRINCIPLE_ICONS.length]}</span>
                     <span>{item.title}</span>
                   </div>
                   <p className="text-slate-600 dark:text-slate-300 text-[0.6875rem] leading-relaxed">
@@ -245,16 +233,16 @@ export default function PrisonAdminETR() {
 
       {/* Step-by-Step Interactive Guide to ETŘ Operations */}
       {operations && (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <Layers className="w-5 h-5 text-amber-500" />
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 space-y-4">
+          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <Layers className="w-5 h-5 text-amber-600 dark:text-amber-400" />
             <span>{operations.title}</span>
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {operations.items.map((item, idx) => (
-              <div key={idx} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 space-y-2 text-xs">
-                <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-sm">
+              <div key={idx} className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 space-y-2 text-xs">
+                <div className="w-7 h-7 rounded-lg bg-amber-500/15 text-amber-700 dark:text-amber-300 font-bold flex items-center justify-center text-sm">
                   {item.label || idx + 1}
                 </div>
                 <h4 className="font-bold text-slate-900 dark:text-slate-100">{item.title}</h4>
