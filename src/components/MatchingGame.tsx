@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { Puzzle, RotateCcw, Timer, Trophy, ArrowRight, Award, Printer, Plus, Edit3, Trash2, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { MatchingCategory, MatchingRecord } from '../types';
 import DiagramGame, { DiagramStats } from './DiagramGame';
+import WeaponGame from './WeaponGame';
 import { recordMatchingCompletion, MATCHING_XP } from '../utils/gamification';
 import { NAV_TAB_LABELS } from '../data/navTabs';
 import PrintHeader from './common/PrintHeader';
@@ -207,6 +208,9 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
     [categoryEntries, selectedCategoryId]
   );
   const isDiagram = activeCategory?.type === 'diagram';
+  const isWeapon = activeCategory?.type === 'weapon';
+  // Schéma i poznávačka zbraně si čas a chyby počítají samy.
+  const selfTimed = isDiagram || isWeapon;
 
   // Obsazení funkcí stárne. Úprava lektorem nese vlastní datum uložení,
   // výchozí data datum ze zdroje (pole asOf v matching.ts).
@@ -249,7 +253,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
   };
 
   const printRights = useMemo(() => {
-    if (!activeCategory || activeCategory.type === 'diagram') return [];
+    if (!activeCategory || activeCategory.type === 'diagram' || activeCategory.type === 'weapon') return [];
     return [...activeCategory.pairs].map(p => ({ id: p.id, text: p.right })).sort((a, b) => a.text.localeCompare(b.text, 'cs'));
   }, [activeCategory]);
 
@@ -278,7 +282,7 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
     setTimeElapsed(0);
     setCompletedRecord(null);
     setDiagramStats(null);
-    setIsTimerRunning(activeCategory.type !== 'diagram');
+    setIsTimerRunning(activeCategory.type !== 'diagram' && activeCategory.type !== 'weapon');
     startTimeRef.current = Date.now();
     setGameKey(prev => prev + 1);
   }, [activeCategory, clearMismatchTimeout]);
@@ -357,10 +361,12 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
     return null;
   }, [gameCategories, selectedCategoryId]);
 
-  const shownTime = isDiagram ? diagramStats?.timeElapsed ?? 0 : timeElapsed;
-  const shownMistakes = isDiagram ? diagramStats?.mistakes ?? 0 : mistakesCount;
-  const shownMatched = isDiagram ? diagramStats?.matched ?? 0 : matchedPairs.length;
-  const shownTotal = isDiagram ? activeCategory?.parts?.length ?? 0 : activeCategory?.pairs.length ?? 0;
+  const shownTime = selfTimed ? diagramStats?.timeElapsed ?? 0 : timeElapsed;
+  const shownMistakes = selfTimed ? diagramStats?.mistakes ?? 0 : mistakesCount;
+  const shownMatched = selfTimed ? diagramStats?.matched ?? 0 : matchedPairs.length;
+  const shownTotal = isWeapon
+    ? diagramStats?.total ?? 0
+    : isDiagram ? activeCategory?.parts?.length ?? 0 : activeCategory?.pairs.length ?? 0;
 
   const secondaryBtn = 'px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm flex items-center gap-2 transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer';
 
@@ -598,6 +604,16 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
               onRestart={initGame}
               onNextCategory={setSelectedCategoryId}
               onNavigateToBadges={onNavigateToBadges}
+            />
+          ) : isWeapon ? (
+            <WeaponGame
+              key={gameKey}
+              category={activeCategory}
+              onGameComplete={(record) => {
+                setCompletedRecord(record);
+                if (onGameComplete) onGameComplete(record);
+              }}
+              onStatsChange={setDiagramStats}
             />
           ) : isDiagram ? (
             <DiagramGame

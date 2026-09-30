@@ -17,7 +17,7 @@ import {
 import { activateOnKey } from '../utils/a11y';
 
 /** Fisher–Yates: každá permutace stejně pravděpodobná (sort(random) není). */
-function shuffle<T>(input: T[]): T[] {
+export function shuffle<T>(input: T[]): T[] {
   const arr = [...input];
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -26,7 +26,7 @@ function shuffle<T>(input: T[]): T[] {
   return arr;
 }
 
-function DraggablePart({
+export function DraggablePart({
   part,
   isMatched,
   isSelected,

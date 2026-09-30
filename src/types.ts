@@ -38,14 +38,49 @@ export interface MatchingDiagramPart {
   left: number;
   labelTop?: number;
   labelLeft?: number;
+  /**
+   * Šířka a výška pole pro název v procentech obrázku. Obrázky z příručky mají
+   * místo původních popisků prázdná pole, na která vedou vytištěné čáry — pole
+   * se proto kreslí jako obdélník na místě popisku a hra nekreslí vlastní čáru.
+   */
+  slotWidth?: number;
+  slotHeight?: number;
+}
+
+/** Jeden obrázek zbraně v poznávačce typu 'weapon'. */
+export interface WeaponView {
+  id: string;
+  title: string;
+  imageUrl: string;
+  /** Rozměry obrázku v pixelech — určují poměr stran plochy, na které leží pole. */
+  width: number;
+  height: number;
+  parts: MatchingDiagramPart[];
+}
+
+/** Řádek tabulky takticko-technických dat, do kterého student vepisuje hodnotu. */
+export interface WeaponSpecRow {
+  id: string;
+  label: string;
+  /** Správná hodnota tak, jak ji uvádí příručka (ukazuje se v řešení). */
+  answer: string;
+  /** Jednotka za polem (mm, g, m, nábojů…); zapsaná studentem se toleruje. */
+  unit?: string;
+  /** Další uznávané zápisy téže hodnoty. */
+  accepted?: string[];
 }
 
 export interface MatchingCategory {
   id: string;
   title: string;
-  type?: 'classic' | 'diagram';
+  type?: 'classic' | 'diagram' | 'weapon';
   imageUrl?: string;
   parts?: MatchingDiagramPart[];
+  /** Poznávačka zbraně: několik obrázků k popisu a tabulka hodnot. */
+  views?: WeaponView[];
+  specs?: WeaponSpecRow[];
+  /** Odkud údaje pocházejí (ukazuje se pod poznávačkou). */
+  source?: string;
   pairs: MatchingPair[];
   /**
    * Údaje, které stárnou (obsazení funkcí): k jakému datu platí. Poznávačka
