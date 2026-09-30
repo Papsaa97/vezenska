@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, ShieldAlert, AlertTriangle, Building, Mail, Phone } from 'lucide-react';
+import { Info, ShieldAlert, AlertTriangle, Building, Mail, Phone } from 'lucide-react';
 import { useStudySections } from '../../hooks/useStudySections';
 import StudySectionsEditor from '../common/StudySectionsEditor';
 import CustomStudySections from '../common/CustomStudySections';
@@ -25,12 +25,33 @@ const matchesDept = (dept: string, filter: string) => dept.toLowerCase().include
 /** Barvy ikon kontaktů v pořadí, v jakém byly natvrdo (VS ČR zelená, MSp modrá). */
 const CONTACT_COLORS = ['text-emerald-400', 'text-blue-400'];
 
+/**
+ * Slovní stupeň míry rizika (součin pravděpodobnosti a dopadu, 1–25).
+ *
+ * Dřív tu byl posuvníkový „kalkulátor“, který jen násobil dvě čísla, a
+ * tabulka pod ním barvila podle jiné hranice (od 10 červeně) než kalkulátor
+ * (od 15). Teď platí jedno pásmo pro vysvětlivku i tabulku.
+ */
+function riskBand(score: number) {
+  if (score >= 15) {
+    return { label: 'Vysoké', className: 'bg-red-500/20 text-red-300 border-red-500/40 print:bg-red-100 print:text-red-900 print:border-red-300' };
+  }
+  if (score >= 8) {
+    return { label: 'Střední', className: 'bg-amber-500/20 text-amber-300 border-amber-500/40 print:bg-amber-100 print:text-amber-900 print:border-amber-300' };
+  }
+  return { label: 'Nízké', className: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 print:bg-emerald-100 print:text-emerald-900 print:border-emerald-300' };
+}
+
+const RISK_BANDS: { range: string; score: number }[] = [
+  { range: '1–7', score: 1 },
+  { range: '8–14', score: 8 },
+  { range: '15–25', score: 15 },
+];
+
 export const PEAnticorruption: React.FC = () => {
   // Bloky z repozitáře přepsané úpravami lektora (contentLibrary.ts, druh 'study_section').
   const sectionState = useStudySections('protikorupce');
   const { byId, custom } = sectionState;
-  const [probScore, setProbScore] = useState<number>(2);
-  const [impactScore, setImpactScore] = useState<number>(3);
   const [catalogFilter, setCatalogFilter] = useState<string>('all');
 
   const contacts = byId('protikorupce-linky');
@@ -48,71 +69,14 @@ export const PEAnticorruption: React.FC = () => {
     ? riskCatalogItems
     : riskCatalogItems.filter(item => matchesDept(item.label, catalogFilter));
 
-  const calculatedRiskLevel = probScore * impactScore;
-
-  const getRiskColor = (score: number) => {
-    if (score >= 15) return { bg: 'bg-red-500', text: 'text-red-500', border: 'border-red-500', label: 'Vysoké / Kritické riziko (15–25)' };
-    if (score >= 8) return { bg: 'bg-amber-500', text: 'text-amber-500', border: 'border-amber-500', label: 'Střední riziko (8–14)' };
-    return { bg: 'bg-emerald-500', text: 'text-emerald-500', border: 'border-emerald-500', label: 'Nízké riziko (1–7)' };
-  };
-
-  const currentRiskColor = getRiskColor(calculatedRiskLevel);
-
   return (
     <div className="space-y-6">
       <StudySectionsEditor area="protikorupce" state={sectionState} />
 
-      {/* Risk Calculator & Matrix */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 print:block print:space-y-4">
-        <div className="lg:col-span-6 bg-slate-900 print:bg-white p-6 print:p-4 rounded-2xl border border-slate-800 print:border-slate-300 print-card break-inside-avoid print:text-[#111827] space-y-5 print:shadow-none" style={{ breakInside: 'avoid' }}>
-          <div className="flex items-center gap-2">
-            <Calculator className="w-5 h-5 text-emerald-400 print:text-slate-900" />
-            <h3 className="font-bold text-white print:text-[#111827] text-base">Kalkulátor míry korupčního rizika (NGŘ 28/2018)</h3>
-          </div>
-          <p className="text-xs text-slate-300 print:text-[#111827]">
-            Dle metodiky VS ČR se míra korupčního rizika vypočítává jako prostý součin: <br />
-            <strong className="text-emerald-300 print:text-slate-900 font-mono">Míra rizika = Pravděpodobnost výskytu (1–5) × Dopad jevu na chod OSS (1–5)</strong>
-          </p>
-
-          <div className="space-y-4 pt-2 no-print print:hidden">
-            <div>
-              <div className="flex justify-between text-xs font-semibold mb-1.5">
-                <span className="text-slate-300">1. Pravděpodobnost výskytu jevu (1–5):</span>
-                <span className="text-emerald-400 font-bold font-mono">Stupeň {probScore} / 5</span>
-              </div>
-              <input type="range" min={1} max={5} value={probScore} onChange={(e) => setProbScore(parseInt(e.target.value))} className="w-full accent-emerald-500 cursor-pointer" />
-              <div className="flex justify-between text-[0.625rem] text-slate-400 mt-1">
-                <span>1: Výjimečný</span><span>2: Nepravděpodobný</span><span>3: Pravděpodobný</span><span>4: Častý</span><span>5: Téměř jistý</span>
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-xs font-semibold mb-1.5">
-                <span className="text-slate-300">2. Míra dopadu jevu na chod OSS (1–5):</span>
-                <span className="text-emerald-400 font-bold font-mono">Stupeň {impactScore} / 5</span>
-              </div>
-              <input type="range" min={1} max={5} value={impactScore} onChange={(e) => setImpactScore(parseInt(e.target.value))} className="w-full accent-emerald-500 cursor-pointer" />
-              <div className="flex justify-between text-[0.625rem] text-slate-400 mt-1">
-                <span>1: Bez vlivu</span><span>2: Malé ztráty</span><span>3: Střední ztráty</span><span>4: Velké ztráty</span><span>5: Devastující</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-xl bg-slate-800/90 print:bg-slate-50 border border-slate-700 print:border-slate-300 flex items-center justify-between print:text-[#111827]">
-            <div>
-              <span className="text-[0.6875rem] font-semibold text-slate-400 print:text-slate-600 uppercase tracking-wider block">Vypočtená míra rizika:</span>
-              <span className={`text-2xl font-bold font-mono ${currentRiskColor.text} print:text-slate-900`}>{calculatedRiskLevel} / 25</span>
-            </div>
-            <div className="text-right">
-              <span className={`px-3 py-1 rounded-full text-xs font-bold border ${currentRiskColor.bg}/20 ${currentRiskColor.text} ${currentRiskColor.border} print:bg-slate-200 print:text-slate-900 print:border-slate-400`}>
-                {currentRiskColor.label}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Whistleblowing Contacts */}
+      {/* Kontakty protikorupčních linek */}
+      <div>
         {contacts && (
-          <div className="lg:col-span-6 bg-slate-900 print:bg-white p-6 print:p-4 rounded-2xl border border-slate-800 print:border-slate-300 print-card break-inside-avoid print:text-[#111827] space-y-4 print:shadow-none" style={{ breakInside: 'avoid' }}>
+          <div className="bg-slate-900 print:bg-white p-6 print:p-4 rounded-2xl border border-slate-800 print:border-slate-300 print-card break-inside-avoid print:text-[#111827] space-y-4 print:shadow-none" style={{ breakInside: 'avoid' }}>
             <div className="flex items-center gap-2">
               <ShieldAlert className="w-5 h-5 text-amber-400 print:text-slate-900" />
               <h3 className="font-bold text-white print:text-[#111827] text-base">{contacts.title}</h3>
@@ -122,7 +86,7 @@ export const PEAnticorruption: React.FC = () => {
                 <RichText text={contacts.intro} />
               </p>
             )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
               {contacts.items.map((contact, idx) => (
                 <div key={`${idx}-${contact.title}`} className="p-3.5 bg-slate-800/80 print:bg-slate-50 rounded-xl border border-slate-700 print:border-slate-300 space-y-2 text-xs print:text-[#111827]">
                   <h4 className="font-bold text-white print:text-[#111827] flex items-center gap-1.5">
@@ -163,14 +127,31 @@ export const PEAnticorruption: React.FC = () => {
               </select>
             </div>
           </div>
+          <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-slate-800/60 print:bg-slate-50 border border-slate-700 print:border-slate-300 text-xs text-slate-300 print:text-[#111827] leading-relaxed">
+            <Info className="w-4 h-4 mt-0.5 shrink-0 text-blue-400 print:text-slate-700" aria-hidden="true" />
+            <div className="space-y-2">
+              <p>
+                <strong className="text-white print:text-slate-900">Jak číst míru rizika:</strong> každé riziko dostává dvě
+                známky od 1 do 5 — <strong className="text-white print:text-slate-900">jak pravděpodobné je</strong>, že
+                k jednání dojde, a <strong className="text-white print:text-slate-900">jak vážné by byly následky</strong>.
+                Jejich součin (1–25) říká, kolik pozornosti a jak přísná opatření riziko potřebuje.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {RISK_BANDS.map(({ range, score }) => (
+                  <span key={range} className={`px-2 py-0.5 rounded-md border font-semibold ${riskBand(score).className}`}>
+                    {riskBand(score).label} {range}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse print:text-[#111827]">
               <thead>
                 <tr className="border-b border-slate-800 print:border-slate-300 text-slate-400 print:text-[#111827] bg-slate-950/40 print:bg-slate-100">
                   <th className="p-3 font-semibold">Oddělení / Činnost</th>
                   <th className="p-3 font-semibold">Identifikované korupční riziko</th>
-                  <th className="p-3 font-semibold text-center font-mono">P × D</th>
-                  <th className="p-3 font-semibold text-center">Míra</th>
+                  <th className="p-3 font-semibold text-center">Míra rizika</th>
                   <th className="p-3 font-semibold">Stanovená protikorupční opatření</th>
                 </tr>
               </thead>
@@ -187,12 +168,19 @@ export const PEAnticorruption: React.FC = () => {
                         <span className="text-[0.6875rem] text-slate-400 print:text-slate-600">{item.title}</span>
                       </td>
                       <td className="p-3 text-slate-300 print:text-[#111827] max-w-xs"><RichText text={item.text} /></td>
-                      <td className="p-3 text-center font-mono text-slate-400 print:text-[#111827] whitespace-nowrap">{hasRating ? `${item.probability} × ${item.impact}` : '—'}</td>
                       <td className="p-3 text-center whitespace-nowrap">
-                        {score !== null && (
-                          <span className={`px-2 py-0.5 rounded-full font-bold font-mono text-xs ${score >= 10 ? 'bg-red-500/20 text-red-400 border border-red-500/30 print:bg-red-100 print:text-red-900 print:border-red-300' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30 print:bg-amber-100 print:text-amber-900 print:border-amber-300'}`}>
-                            {score}
+                        {score !== null ? (
+                          <span
+                            className={`inline-flex flex-col items-center px-2.5 py-1 rounded-lg border font-bold text-xs ${riskBand(score).className}`}
+                            title={`Pravděpodobnost ${item.probability} × dopad ${item.impact} = ${score}`}
+                          >
+                            <span>{riskBand(score).label}</span>
+                            <span className="font-mono text-[0.625rem] font-semibold opacity-80">
+                              {item.probability} × {item.impact} = {score}
+                            </span>
                           </span>
+                        ) : (
+                          <span className="text-slate-500">—</span>
                         )}
                       </td>
                       <td className="p-3 text-slate-300 print:text-[#111827] max-w-sm"><RichText text={item.note} /></td>

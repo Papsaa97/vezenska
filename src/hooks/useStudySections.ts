@@ -8,7 +8,7 @@ import {
   StudySectionArea,
   StudySectionFields,
 } from '../data/studySections';
-import { defaultEthicsSections, ethicsSectionFields } from '../data/professionalEthicsData';
+import { defaultEthicsSections, ethicsAreaFields, ethicsSectionFields } from '../data/professionalEthicsData';
 import { adminSectionFields, defaultAdminSections } from '../data/prisonAdminData';
 
 /**
@@ -20,9 +20,15 @@ const DEFAULT_STUDY_SECTIONS: StudySection[] = [...defaultEthicsSections, ...def
 const DEFAULT_IDS = new Set(DEFAULT_STUDY_SECTIONS.map((s) => s.id));
 const SECTION_FIELDS: Record<string, StudySectionFields> = { ...ethicsSectionFields, ...adminSectionFields };
 
-/** Popisky polí formuláře pro daný blok; vlastní bloky mají obecné. */
-export function sectionFieldsFor(id: string | undefined): StudySectionFields {
-  return (id && SECTION_FIELDS[id]) || GENERIC_SECTION_FIELDS;
+const AREA_FIELDS: Partial<Record<StudySectionArea, StudySectionFields>> = { ...ethicsAreaFields };
+
+/**
+ * Popisky polí formuláře pro daný blok. Výchozí blok má vlastní podle id;
+ * blok přidaný lektorem dostane popisky své podzáložky (pojmy se vykreslují
+ * jako karty pojmů), jinak obecné.
+ */
+export function sectionFieldsFor(id: string | undefined, area: StudySectionArea): StudySectionFields {
+  return (id && SECTION_FIELDS[id]) || AREA_FIELDS[area] || GENERIC_SECTION_FIELDS;
 }
 
 export interface StudySectionsState {

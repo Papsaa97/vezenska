@@ -7,7 +7,7 @@
  * a 'study_section' (migrace 042). Tenhle soubor zůstává výchozí podobou,
  * ke které se dá kdykoli vrátit.
  */
-import { StudySection, StudySectionFields, sectionItem } from './studySections';
+import { StudySection, StudySectionArea, StudySectionFields, sectionItem } from './studySections';
 
 // ─── Trenažér etických dilemat ───────────────────────────────────────────────
 
@@ -118,6 +118,86 @@ export const defaultDilemmaScenarios: DilemmaScenario[] = [
 // ─── Textové bloky ───────────────────────────────────────────────────────────
 
 export const defaultEthicsSections: StudySection[] = [
+  // ─── Klíčové pojmy (podzáložka Pojmy) ─────────────────────────────────────
+  // Jedna skupina = jeden blok; název bloku je zároveň filtr nad mřížkou pojmů.
+  // Položka: label = štítek, title = pojem, text = krátká definice,
+  // note = podrobný výklad (rozbalí se kliknutím).
+  {
+    id: 'pojmy-normativni',
+    area: 'pojmy',
+    title: 'Normativní systémy a axiologie',
+    kicker: '',
+    intro: '',
+    outro: '',
+    items: [
+      sectionItem({ label: 'Základní pojem', title: 'Etika', text: 'Praktická filozofická disciplína, věda o správném způsobu života a teorie normativních systémů.', note: 'Hledá a formuluje pravidla pro harmonické, spravedlivé a vzájemně prospěšné soužití lidí ve společnosti. Směřuje k neměnným etickým pravidlům a zkoumá směřování k nejvyššímu etickému cíli (dobru).' }),
+      sectionItem({ label: 'Axiologie', title: 'Etický cíl', text: 'Ideový směr zaměřený k absolutnímu dobru.', note: 'Nemá materiální podstatu, není to dosažitelný bod, ale směr a celoživotní kompas. Podle směru k etickému cíli řadíme hodnoty do hodnotových žebříčků a poměřujeme své úmysly a činy.' }),
+      sectionItem({ label: 'Axiologie', title: 'Axiologie', text: 'Etická disciplína zabývající se vědou o hodnotách (z řeckého axia = hodnota).', note: 'Zkoumá procesy vzniku hodnot, jejich třídění na materiální a nemateriální a uspořádání do hodnotových žebříčků. U zralého člověka stojí nejvýše nemateriální hodnoty (život, spravedlnost, čest).' }),
+      sectionItem({ label: 'Deontologie', title: 'Deontologie', text: 'Etická nauka o povinnostech (z řeckého deon = povinnost / to, co je správné).', note: 'Zabývá se vytvářením žebříčku a pořadí plnění povinností odvozených z hodnotového žebříčku. Profesní deontologie stanovuje etické povinnosti a standardy příslušníka bezpečnostního sboru.' }),
+      sectionItem({ label: 'Axiologie', title: 'Hodnoty', text: 'Cokoli, k čemu osoba svobodně a dobrovolně zaujme pozitivní vztah.', note: 'Dělí se na materiální (majetek, peníze) a nemateriální (láska k lidem, spravedlnost, pravda, důstojnost). Z hodnot se rodí plnění povinností.' }),
+      sectionItem({ label: 'Deontologie', title: 'Povinnosti', text: 'Požadavky a závazky k jednání, které člověk naplňuje a vytváří tak další hodnoty.', note: 'Plněním povinností se zabývá deontologie. Ve službě jsou povinnosti konkretizovány zákony (z. č. 555/1992 Sb., z. č. 361/2003 Sb.) a Etickým kodexem.' }),
+      sectionItem({ label: 'Metodologie', title: 'Deskriptivní etika', text: 'Disciplína, která věcně popisuje reálné etické kontexty situací bez jejich hodnocení.', note: 'Analyzuje zúčastněné osoby, čas, místo, vztahy a reálné chování lidí. Na jejím základě pak normativní etika stanovuje, jaké by jednání mělo být.' }),
+      sectionItem({ label: 'Základní pojem', title: 'Normativní systém', text: 'Souhrn hodnotících sankcí, pravidel a vzorů regulujících lidské chování.', note: 'Společnost stojí na třech provázaných vrstvách normativních systémů: mravnost (svědomí), morálka (společenské zvyklosti) a právo (státní donucení).' }),
+      sectionItem({ label: 'Normativní systém', title: 'Mravnost', text: 'Vnitřní, individuální normativní systém opírající se výhradně o svědomí.', note: 'Svědomí je jedinou interní pozitivní i negativní sankcí (čisté svědomí vs. pocit viny a výčitky). Mravnost je nezávislá na vnějším pozorování.' }),
+      sectionItem({ label: 'Normativní systém', title: 'Morálka', text: 'Normativní systém opírající se o nepsané společenské zvyklosti, tradice a kulturu.', note: 'Reguluje vnější chování pomocí pozitivních (uznání, respekt) a negativních (odsouzení, ostrakizace) sociálních sankcí. Hrozí u ní riziko tzv. dvojí morálky a pokrytectví.' }),
+      sectionItem({ label: 'Normativní systém', title: 'Kodifikované právo', text: 'Formální normativní systém psaných právních norem s legitimní donucovací mocí státu.', note: 'Nastupuje tam, kde mravnost a morálka nestačí zabránit nebezpečným činům. Opírá se o státem vynucované vnější sankce (tresty, pokuty, ochrana práv).' }),
+      sectionItem({ label: 'Socializace', title: 'Vzory pro socializaci člověka', text: 'Osoby a instituce ovlivňující osvojování společenských a etických norem.', note: 'Primární socializace probíhá v rodině, sekundární ve škole, vrstevnických skupinách a profesním prostředí. Příslušník VS ČR musí působit jako pozitivní vzor.' }),
+      sectionItem({ label: 'Právní stát', title: 'Právní vědomí', text: 'Znalost platného práva spojená s vnitřním postojem k jeho dodržování.', note: 'Neznamená pouze pasivní znalost paragrafů, ale míru ztotožnění se se smyslem zákonů a ochotu dobrovolně a čestně je v praxi uplatňovat.' }),
+      sectionItem({ label: 'Normativní systém', title: 'Sankce', text: 'Následky jednání sloužící k upevnění normativního systému.', note: 'Dělí se na vnitřní (svědomí) a vnější (společenské či právní), a zároveň na pozitivní (odměna, pochvala, statut) a negativní (trest, pokuta, zavržení).' }),
+    ],
+  },
+  {
+    id: 'pojmy-korupce',
+    area: 'pojmy',
+    title: 'Protikorupční pojmy',
+    kicker: '',
+    intro: '',
+    outro: '',
+    items: [
+      sectionItem({ label: 'Protikorupční', title: 'Korupce', text: 'Zneužití postavení a pravomoci k získání neoprávněného prospěchu pro sebe či jiného.', note: 'Výsledkem je nenárokový zisk obou stran (korumpujícího i korumpovaného) na úkor veřejného zájmu. Trestá se dle § 331–333 TZ (sazby až 12 let).' }),
+      sectionItem({ label: 'Protikorupční', title: 'Klientelismus', text: 'Systém neformálních vazeb založený na poskytování vzájemných protislužeb a výhod.', note: 'Obchází standardní transparentní procedury (např. při veřejných zakázkách nebo přidělování pracovních pozic) a poškozuje rovnost šancí.' }),
+      sectionItem({ label: 'Bezpečnost', title: 'Informace se stávají komoditou', text: 'Rizikový jev, kdy jsou neveřejné úřední informace zpeněžovány nebo směňovány za výhody.', note: 'Úniky z VIS, osobních spisů nebo o umístění vězňů představují zásadní bezpečnostní a korupční ohrožení. Vyžaduje přísnou mlčenlivost dle § 9 a § 23a.' }),
+      sectionItem({ label: 'Protikorupční', title: 'Katalog korupčních rizik', text: 'Příloha NGŘ č. 28/2018 definující riziková místa ve VS ČR a jejich eliminaci.', note: 'Obsahuje přehled činností, rizik, pravděpodobnost (1–5), dopad (1–5), celkovou míru rizika (1–25) a konkrétní kontrolní protikorupční opatření.' }),
+    ],
+  },
+  {
+    id: 'pojmy-prava',
+    area: 'pojmy',
+    title: 'Lidská práva a ústava',
+    kicker: '',
+    intro: '',
+    outro: '',
+    items: [
+      sectionItem({ label: 'Legislativa', title: 'Ochrana osobních údajů (GDPR)', text: 'Zákonná ochrana dat o vězněných osobách, zaměstnancích a třetích subjektech.', note: 'Příslušník má přístup jen k údajům nezbytným pro službu. Neoprávněné nahlížení nebo předávání údajů bez právního zájmu je přísně sankcionováno.' }),
+      sectionItem({ label: 'Lidská práva', title: 'Předsudek a rovný přístup', text: 'Požadavek nestranného jednání bez apriorních negativních soudů o osobách.', note: 'Dle Čl. 3 Listiny a Čl. 4 Etického kodexu nesmí být nikdo diskriminován pro rasu, národnost, pohlaví, víru či majetek. S vězni se jedná korektně.' }),
+      sectionItem({ label: 'Lidská práva', title: 'Genderový stereotyp a předsudek', text: 'Zjednodušující představy o rolích mužů a žen v bezpečnostním sboru i věznici.', note: 'VS ČR garantuje rovné postavení žen a mužů ve službě i specifická ochranná opatření pro vězněné ženy a matky s dětmi dle EVP a Bangkokských pravidel.' }),
+      sectionItem({ label: 'Mezinárodní', title: 'OSN (New York, Ženeva)', text: 'Organizace spojených národů garantující univerzální ochranu lidských práv.', note: 'Centrála v New Yorku, Výbor proti mučení s evropskou pobočkou v Ženevě. Vydává globální standardy pro vězeňství (Mandelova a Bangkokská pravidla).' }),
+      sectionItem({ label: 'Mezinárodní', title: 'Mandelova pravidla OSN', text: 'Standardní minimální pravidla OSN pro zacházení s vězni (1955/1957, revize 2015).', note: 'Pojmenována na počest Nelsona Mandely. Stanovují globální minimum pro ubytování, hygienu, lékařskou péči, zákaz mučení a lidskou důstojnost.' }),
+      sectionItem({ label: 'Mezinárodní', title: 'Rada Evropy (Štrasburk)', text: 'Mezinárodní evropská organizace chránící demokracii a lidská práva (založena 1949).', note: 'Sídlí ve Štrasburku. Přijala Úmluvu o lidských právech, Evropská vězeňská pravidla a zřídila soudní (ESLP) i inspekční (CPT) orgány.' }),
+      sectionItem({ label: 'Mezinárodní', title: 'CPT (Výbor pro prevenci mučení)', text: 'Evropský výbor pro prevenci mučení a nelidského či ponižujícího zacházení.', note: 'Orgán Rady Evropy ve Štrasburku. Vysílá nezávislé inspekční delegace do věznic (periodicky 1x za 5 let nebo ad hoc) a publikuje zprávy o stavu vězeňství.' }),
+      sectionItem({ label: 'Mezinárodní', title: 'Evropská vězeňská pravidla (EVP)', text: 'Doporučení Rec(2006)2-rev Rady Evropy (aktualizováno Výborem ministrů 1. 7. 2020).', note: 'Náročnější evropský standard zacházení s vězni; klade důraz na normalizaci života, dynamickou bezpečnost, vzdělávání personálu a zákaz ponižování.' }),
+      sectionItem({ label: 'Občanská společnost', title: 'Nevládní organizace (NGO)', text: 'Nezávislé občanské organizace sledující dodržování lidských práv.', note: 'Nejsou státními institucemi. V ČR působí zejména Český helsinský výbor a Amnesty International, které monitorují stav vězeňství a pomáhají obětem.' }),
+      sectionItem({ label: 'Ústava ČR', title: 'Ústavní zákon č. 1/1993 Sb.', text: 'Ústava České republiky – základní zákon státu definující dělbu moci a právní stát.', note: 'Zakotvuje svrchovanost lidu, dělbu moci (zákonodárná, výkonná, soudní) a v Čl. 10 přednost mezinárodních smluv o lidských právech před zákonem.' }),
+      sectionItem({ label: 'Ústava ČR', title: 'Ústavní zákon č. 2/1993 Sb.', text: 'Listina základních práv a svobod – součást ústavního pořádku ČR.', note: 'Garantuje nezadatelná lidská práva (právo na život, lidskou důstojnost, zákaz mučení Čl. 7, osobní svobodu Čl. 8, zákaz diskriminace Čl. 3).' }),
+    ],
+  },
+  {
+    id: 'pojmy-sluzba',
+    area: 'pojmy',
+    title: 'Služební etika',
+    kicker: '',
+    intro: '',
+    outro: '',
+    items: [
+      sectionItem({ label: 'Služební etika', title: 'Autorita přirozená a formální', text: 'Rozlišení autority plynoucí z osobních kvalit vs. autority dané služebním zařazením.', note: 'Formální autorita vychází z hodnosti a funkce. Přirozená autorita je založena na odbornosti, morální integritě, spravedlivém přístupu a schopnosti jít příkladem.' }),
+      sectionItem({ label: 'Služební etika', title: 'Kompetence', text: 'Zákonem svěřená oprávnění a povinnosti k výkonu konkrétních úkolů.', note: 'Příslušník smí uplatňovat státní moc pouze v mezích zákona (§ 6 z. č. 555/1992 Sb., Čl. 2 odst. 2 Ústavy) a nesmí své kompetence překročit ani zneužít.' }),
+      sectionItem({ label: 'Komunikace', title: 'Asertivita', text: 'Schopnost klidně, pevně a slušně prosazovat zákonné požadavky bez agrese a pasivity.', note: 'Založena na sebeúctě a respektu k právům druhých. Slouží jako obrana proti manipulaci a zastrašování; příslušník neustupuje z oprávněných požadavků.' }),
+      sectionItem({ label: 'Bezpečnostní služba', title: 'Osobní prohlídka a gender', text: 'Pravidlo provádění osobních prohlídek výhradně osobou stejného pohlaví.', note: 'Při prohlídce civilisty/občana musí být přítomni 2 příslušníci stejného pohlaví jako prohlížená osoba (jeden provádí, druhý svědčí). Intimní prohlídky smí provádět pouze lékař.' }),
+      sectionItem({ label: 'Služební etika', title: 'Použití zbraně v etických kontextech', text: 'Aplikace § 18 zákona č. 555/1992 Sb. a prolomení imperativu „Nezabiješ" při obraně životů.', note: 'Stát zákonem zmocňuje příslušníka k použití zbraně při odvrácení smrtelného útoku nebo útěku nebezpečného vězně. Příslušník musí šetřit život a poskytnout první pomoc.' }),
+      sectionItem({ label: 'Bezpečnostní služba', title: 'Zákonná ochrana na strážním stanovišti', text: 'Specifické právní postavení ozbrojeného strážného veleného na stanoviště.', note: 'Všechny osoby (včetně nadřízených) jsou povinny řídit se pokyny strážného. Nadřízený nesmí vydat nezákonný pokyn ani odvracet jeho pozornost či žádat zbraň.' }),
+      sectionItem({ label: 'Předpis VS ČR', title: 'Kodex profesní etiky VS ČR', text: 'Příloha č. 6 k NGŘ č. 28/2018 obsahující 8 závazných článků pro personál.', note: 'Stanovuje etické standardy profesionality, nestrannosti, odmítání korupce a ochranu důstojnosti. Jeho porušení je kvalifikováno jako porušení služební kázně.' }),
+    ],
+  },
   {
     id: 'kodex-desatero',
     area: 'kodex',
@@ -141,7 +221,7 @@ export const defaultEthicsSections: StudySection[] = [
   {
     id: 'kodex-clanky',
     area: 'kodex',
-    title: 'Znění Kodexu profesní etiky (Příloha č. 6 k NGŘ č. 28/2018)',
+    title: 'Kodex profesní etiky – přehled článků (Příloha č. 6 k NGŘ č. 28/2018)',
     kicker: '',
     intro: '',
     outro: '',
@@ -203,7 +283,7 @@ export const defaultEthicsSections: StudySection[] = [
   {
     id: 'protikorupce-katalog',
     area: 'protikorupce',
-    title: 'Příklady z oficiálních Katalogů korupčních rizik VS ČR (NGŘ 28/2018)',
+    title: 'Příklady korupčních rizik podle oblastí činnosti',
     kicker: '',
     intro: '',
     outro: '',
@@ -311,6 +391,27 @@ export const defaultEthicsSections: StudySection[] = [
 ];
 
 /** Co které pole výchozích bloků znamená — pro formulář lektora. */
+/**
+ * Popisky formuláře skupiny klíčových pojmů. Platí pro výchozí skupiny
+ * i pro ty, které lektor přidá — v podzáložce Pojmy se každý blok vykreslí
+ * jako skupina karet, ne obecným rozvržením.
+ */
+const CONCEPT_GROUP_FIELDS: StudySectionFields = {
+  title: 'Název skupiny (zobrazí se jako filtr)',
+  itemsLegend: 'Pojmy',
+  item: {
+    label: 'Štítek (např. Axiologie)',
+    title: 'Pojem',
+    text: 'Krátká definice',
+    note: 'Podrobný výklad (ukáže se po rozkliknutí karty)',
+  },
+};
+
+/** Popisky podle podzáložky — pro bloky, které nemají vlastní podle id. */
+export const ethicsAreaFields: Partial<Record<StudySectionArea, StudySectionFields>> = {
+  pojmy: CONCEPT_GROUP_FIELDS,
+};
+
 export const ethicsSectionFields: Record<string, StudySectionFields> = {
   'kodex-desatero': {
     title: 'Nadpis bloku',
