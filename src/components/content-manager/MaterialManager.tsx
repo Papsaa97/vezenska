@@ -30,6 +30,7 @@ import {
   TaggedMaterial,
   deleteMaterial,
   downloadMaterial,
+  findExistingCopy,
   formatFileSize,
   getFileKind,
   invalidateMaterialsCache,
@@ -122,10 +123,18 @@ export default function MaterialManager() {
   const enqueue = (files: FileList | File[]) => {
     const accepted: QueuedFile[] = [];
     const rejected: string[] = [];
+    const alreadyThere: string[] = [];
 
     for (const file of Array.from(files)) {
       if (!ALLOWED_UPLOAD_MIME.includes(file.type)) {
         rejected.push(file.name);
+        continue;
+      }
+      // Stejný soubor nahraný podruhé se v knihovně ukázal dvakrát. Patří-li
+      // k dalšímu předmětu, stačí mu v seznamu níž přidat štítek.
+      const existing = findExistingCopy(file, materials);
+      if (existing) {
+        alreadyThere.push(`${file.name} (v knihovně jako „${existing.displayName}")`);
         continue;
       }
       accepted.push({
@@ -143,14 +152,16 @@ export default function MaterialManager() {
       });
     }
 
-    setUploadMsg(
-      rejected.length > 0
-        ? {
-            type: 'error',
-            text: `Nepodporovaný typ souboru: ${rejected.join(', ')}. Povoleno: ${ALLOWED_UPLOAD_EXT_LABEL}`,
-          }
-        : null
-    );
+    const problems: string[] = [];
+    if (rejected.length > 0) {
+      problems.push(`Nepodporovaný typ souboru: ${rejected.join(', ')}. Povoleno: ${ALLOWED_UPLOAD_EXT_LABEL}`);
+    }
+    if (alreadyThere.length > 0) {
+      problems.push(
+        `Už nahráno, přeskočeno: ${alreadyThere.join(', ')}. Má-li soubor patřit i k jinému předmětu nebo třídě, upravte mu štítky v seznamu.`
+      );
+    }
+    setUploadMsg(problems.length > 0 ? { type: 'error', text: problems.join(' ') } : null);
   };
 
   const handleUpload = async (e: React.FormEvent) => {

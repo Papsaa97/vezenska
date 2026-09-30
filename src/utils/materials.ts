@@ -387,6 +387,35 @@ export function normalizeTag(value: string): string {
 
 // ─── Nahrání a stažení ───────────────────────────────────────────────────────
 
+/** Jméno souboru, pod kterým ležel u lektora — bez razítka a bez přípony. */
+function storageBaseName(storagePath: string): string {
+  const fileName = storagePath.split('/').pop() ?? '';
+  const underscoreIdx = fileName.lastIndexOf('__');
+  return underscoreIdx !== -1 ? fileName.slice(0, underscoreIdx) : fileName.replace(/\.[^.]+$/, '');
+}
+
+/**
+ * Najde v knihovně soubor, který je nejspíš tentýž jako nově vybraný: má
+ * stejnou velikost v bajtech a stejné jméno (původní nebo přejmenované).
+ *
+ * Každé nahrání dostane nové časové razítko, takže úložiště samo dvojí
+ * nahrání téhož souboru nepozná. Kdo chce mít soubor u dalšího předmětu,
+ * má mu přidat štítek, ne ho nahrát znovu.
+ */
+export function findExistingCopy(
+  file: Pick<File, 'name' | 'size'>,
+  items: TaggedMaterial[]
+): TaggedMaterial | undefined {
+  const wanted = sanitizePath(file.name.replace(/\.[^.]+$/, ''));
+  if (!wanted) return undefined;
+  return items.find(
+    (m) =>
+      m.size === file.size &&
+      (sanitizePath(storageBaseName(m.name)) === wanted || sanitizePath(m.displayName) === wanted)
+  );
+}
+
+
 export interface UploadResult {
   storagePath: string | null;
   error: string | null;

@@ -71,8 +71,8 @@ function pluralFiles(count: number): string {
  * Knihovna studijních souborů.
  *
  * Soubory se sem řadí podle štítků, které jim lektor dal ve správci souborů —
- * jeden soubor tak může být u Práva i u Penologie zároveň a navíc patřit
- * konkrétní třídě. Starší soubory bez štítků se zařadí podle složky, ve které
+ * jeden soubor tak může patřit k Právu i k Penologii zároveň a navíc
+ * konkrétní třídě. V přehledu „Vše“ je ale každý soubor jen jednou. Starší soubory bez štítků se zařadí podle složky, ve které
  * ve Storage leží, takže se z knihovny nic neztratilo.
  */
 export default function MaterialLibrary() {
@@ -135,16 +135,25 @@ export default function MaterialLibrary() {
     });
   }, [materials, activeSubject, activeClassId, searchQuery]);
 
-  /** Sekce k vykreslení: předmět → soubory. Soubor s více štítky je ve všech. */
+  /**
+   * Sekce k vykreslení: předmět → soubory.
+   *
+   * Soubor s více štítky předmětu se ukáže jen jednou, v sekci prvního z nich
+   * (v pořadí předmětů). Dřív byl v každé sekci a knihovna pak vypadala, jako
+   * by se soubory zdvojovaly. Ostatní předměty souboru nese karta jako štítky
+   * a filtr na kterýkoli z nich ho najde.
+   */
   const sections = useMemo(() => {
     const groups: { subject: string; items: TaggedMaterial[] }[] = [];
+    const placed = new Set<string>();
 
     // Při filtru na jeden předmět jen jeho sekce — soubor se dvěma štítky by
     // jinak vytáhl i sekci druhého předmětu.
     const shownSubjects =
       activeSubject === 'Vše' ? presentSubjects : presentSubjects.filter((s) => s === activeSubject);
     for (const subject of shownSubjects) {
-      const items = filtered.filter((m) => m.subjects.includes(subject));
+      const items = filtered.filter((m) => !placed.has(m.name) && m.subjects.includes(subject));
+      for (const item of items) placed.add(item.name);
       if (items.length > 0) groups.push({ subject, items });
     }
 
@@ -343,6 +352,17 @@ export default function MaterialLibrary() {
                             <span className="text-[0.6875rem] text-slate-400 font-mono">
                               {formatFileSize(material.size)}
                             </span>
+                            {material.subjects
+                              .filter((subject) => subject !== section.subject)
+                              .map((subject) => (
+                                <span
+                                  key={`predmet-${subject}`}
+                                  title="Soubor patří i k tomuto předmětu"
+                                  className="text-[0.625rem] font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
+                                >
+                                  i {subject}
+                                </span>
+                              ))}
                             {material.classIds.map((classId) => {
                               const label = classNameById(classId);
                               if (!label) return null;
