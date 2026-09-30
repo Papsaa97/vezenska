@@ -860,7 +860,10 @@ export default function App() {
         {activeTab === 'admin' && (
           <div className="w-full h-full overflow-y-auto pr-1 print:h-auto print:overflow-visible print:p-0 print:m-0">
             <div className={PAGE_CONTAINER}>
-              <PrisonAdministration />
+              <PrisonAdministration
+                onStartSubjectQuiz={handleStartSubjectQuiz}
+                questionCount={allQuestions.filter(q => q.subject === 'Vězeňská administrativa' && (isPrivileged || !isQuestionHidden(q))).length}
+              />
             </div>
           </div>
         )}

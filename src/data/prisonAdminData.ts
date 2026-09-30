@@ -54,7 +54,7 @@ export const FIELD_LABELS: Record<string, string> = {
   cameraUsed: 'Použití osobní kamery'
 };
 
-// Pre-defined official templates based directly on VS ČR training documents
+// Cvičné vzory tiskopisů podle studijních podkladů akademie (neoficiální)
 /**
  * Upravitelná část tiskopisu: popis a ukázkový vzor vyplnění.
  *
@@ -133,7 +133,7 @@ export const defaultRecordTemplates: RecordTemplate[] = [
     id: 'sz',
     title: 'Služební záznam',
     subtitle: 'Základní úřední písemnost o mimořádné nebo evidenční události',
-    badge: 'Standard VS ČR',
+    badge: 'Obecný vzor',
     normReference: 'Zákon č. 555/1992 Sb., spisový řád VS ČR',
     defaultData: {
       prisonName: 'Vězeňská služba České republiky / Věznice Rýnovice',
@@ -184,7 +184,7 @@ export const defaultRecordTemplates: RecordTemplate[] = [
 
 /** Povinná pole každého tiskopisu (struktura formuláře, ne upravitelný obsah). */
 export const RECORD_TEMPLATE_MANDATORY_FIELDS: Record<string, string[]> = {
-  dp: ['officer', 'dutyOrder', 'targetPerson', 'targetCode', 'datetimePlace', 'precedingEvents', 'officerAction', 'targetBehavior', 'dpUsedDetails', 'injuryDamage', 'firstAid', 'medicalExam', 'bossInformed', 'photoDoc', 'evaluation', 'departmentHeadOpinion', 'zrvReport', 'directorDecision'],
+  dp: ['prisonName', 'refNumber', 'officer', 'dutyOrder', 'targetPerson', 'targetCode', 'datetimePlace', 'precedingEvents', 'officerAction', 'targetBehavior', 'dpUsedDetails', 'injuryDamage', 'firstAid', 'medicalExam', 'bossInformed', 'photoDoc', 'evaluation', 'departmentHeadOpinion', 'zrvReport', 'directorDecision'],
   zkp: ['prisonName', 'targetPerson', 'targetBirth', 'prisonType', 'actDescription', 'targetStatement', 'evidenceList', 'signatureDate', 'officerSignature'],
   sz: ['prisonName', 'docTitle', 'dutyOrder', 'eventStory', 'actionsTimeline', 'witnesses', 'signatureDate', 'officerSignature'],
   odneti: ['prisonName', 'datetime', 'targetPerson', 'itemsList', 'seizureReason', 'surrenderedTo', 'signatureDate', 'officerSignature'],
@@ -359,7 +359,7 @@ export const defaultAdminSections: StudySection[] = [
     id: 'styl-pravidla',
     area: 'styl',
     title: '7 základních požadavků kladených na úřední písemnost',
-    kicker: 'Metodika tvorby úředních písemností VS ČR',
+    kicker: '',
     intro: '',
     outro: '',
     items: [

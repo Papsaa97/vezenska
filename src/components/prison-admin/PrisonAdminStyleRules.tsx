@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { CheckCircle2, RefreshCw, Check } from 'lucide-react';
 import { updateDailyStreak } from '../../utils/gamification';
 import { activateOnKey } from '../../utils/a11y';
@@ -49,6 +49,17 @@ export default function PrisonAdminStyleRules() {
     });
   }, [exerciseChecked]);
 
+  /** Výsledek po vyhodnocení: nalezené chyby a zbytečně označené úseky. */
+  const result = useMemo(() => {
+    const segments = currentExerciseData?.originalTextSegments ?? [];
+    const errors = segments.filter((seg) => seg.isError);
+    return {
+      total: errors.length,
+      found: errors.filter((seg) => userErrorsFound.includes(seg.id)).length,
+      wrong: segments.filter((seg) => !seg.isError && userErrorsFound.includes(seg.id)).length,
+    };
+  }, [currentExerciseData, userErrorsFound]);
+
   const handleCheckExercise = useCallback(() => {
     setExerciseChecked(true);
     updateDailyStreak();
@@ -66,25 +77,26 @@ export default function PrisonAdminStyleRules() {
 
       {/* The 7 Golden Rules */}
       {(rules || signature) && (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 space-y-4">
           {rules && (
             <>
               <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
                 {rules.kicker && (
-                  <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                     {rules.kicker}
                   </span>
                 )}
-                <h2 className="text-xl font-extrabold text-slate-900 dark:text-slate-100">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
                   {rules.title}
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
                 {rules.items.map((item, idx) => (
-                  <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
-                    <div className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                      <span>{item.label ? `${item.label}. ` : ''}{item.title}</span>
+                  <div key={idx} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                    <div className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                      {item.label && <span className="text-amber-600 dark:text-amber-400">{item.label}.</span>}
+                      <span>{item.title}</span>
                     </div>
                     <p className="text-slate-600 dark:text-slate-300 text-[0.6875rem]"><RichText text={item.text} /></p>
                   </div>
@@ -94,8 +106,8 @@ export default function PrisonAdminStyleRules() {
           )}
 
           {signature && (
-            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs space-y-1.5">
-              <div className="font-bold text-amber-700 dark:text-amber-300">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 text-xs space-y-1.5">
+              <div className="font-bold text-slate-900 dark:text-slate-100">
                 {signature.title}
               </div>
               {signature.items.map((item, idx) => (
@@ -155,28 +167,30 @@ export default function PrisonAdminStyleRules() {
           Zatím tu nejsou žádná cvičení{canEdit ? ' — přidejte je tlačítkem Přidat cvičení.' : '.'}
         </p>
       ) : (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
             <div>
-              <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
-                Tréninkový modul
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                Cvičení: najděte chyby
               </span>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
                 {currentExerciseData.title}
               </h3>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {exercises.map((ex, idx) => (
                 <button
+                  type="button"
                   key={ex.id}
+                  aria-pressed={exerciseIdx === idx}
                   onClick={() => {
                     setSelectedExercise(idx);
                     handleResetExercise();
                   }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
                     exerciseIdx === idx
-                      ? 'bg-amber-500 text-slate-950 font-bold'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                      ? 'bg-amber-50 dark:bg-amber-500/10 border-amber-400 dark:border-amber-500/60 text-slate-900 dark:text-white'
+                      : 'bg-slate-100 dark:bg-slate-800 border-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                   }`}
                 >
                   {ex.badge}
@@ -190,7 +204,7 @@ export default function PrisonAdminStyleRules() {
           </p>
 
           {/* Clickable text segments */}
-          <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 leading-loose text-sm font-serif">
+          <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 leading-loose text-sm font-serif">
             {currentExerciseData.originalTextSegments.map(seg => {
               const isSelected = userErrorsFound.includes(seg.id);
               let badgeClass = 'hover:bg-amber-200/50 dark:hover:bg-amber-900/40 rounded px-1 cursor-pointer transition-colors';
@@ -204,7 +218,7 @@ export default function PrisonAdminStyleRules() {
                   badgeClass = 'bg-amber-200 dark:bg-amber-950 text-amber-900 dark:text-amber-200 px-1 rounded line-through';
                 }
               } else if (isSelected) {
-                badgeClass = 'bg-amber-300 dark:bg-amber-700 text-slate-950 dark:text-white font-bold px-1 rounded';
+                badgeClass = 'bg-amber-200 dark:bg-amber-500/30 text-slate-950 dark:text-white px-1 rounded cursor-pointer';
               }
 
               return (
@@ -230,15 +244,17 @@ export default function PrisonAdminStyleRules() {
             <div className="flex items-center gap-3">
               {!exerciseChecked ? (
                 <button
+                  type="button"
                   onClick={handleCheckExercise}
                   disabled={userErrorsFound.length === 0}
-                  className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-slate-950 font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer shadow-md"
+                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Zkontrolovat označené chyby ({userErrorsFound.length})</span>
                 </button>
               ) : (
                 <button
+                  type="button"
                   onClick={handleResetExercise}
                   className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer"
                 >
@@ -248,10 +264,15 @@ export default function PrisonAdminStyleRules() {
               )}
             </div>
 
+            {/* Dřív tu stálo jen „Vyhodnoceno“ — výsledek musel student
+                spočítat z barev sám. */}
             {exerciseChecked && (
-              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                <Check className="w-4 h-4" />
-                <span>Vyhodnoceno</span>
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>
+                  Nalezeno {result.found} z {result.total} chyb
+                  {result.wrong > 0 && `, ${result.wrong} ${result.wrong === 1 ? 'úsek označen' : 'úseky označeny'} zbytečně`}
+                </span>
               </span>
             )}
           </div>
@@ -263,18 +284,28 @@ export default function PrisonAdminStyleRules() {
                 Rozbor a správné znění oprav:
               </h4>
               <div className="space-y-2">
-                {currentExerciseData.originalTextSegments.map(seg => (
-                  <div
-                    key={seg.id}
-                    className={`p-3 rounded-xl text-xs ${
-                      seg.isError
-                        ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 text-amber-900 dark:text-amber-200'
-                        : 'bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
-                    }`}
-                  >
-                    <div className="font-semibold">{seg.correction}</div>
-                  </div>
-                ))}
+                {currentExerciseData.originalTextSegments.map(seg => {
+                  const marked = userErrorsFound.includes(seg.id);
+                  const verdict = seg.isError
+                    ? marked
+                      ? { text: 'Našli jste', cls: 'text-emerald-700 dark:text-emerald-300' }
+                      : { text: 'Přehlédnuto', cls: 'text-red-700 dark:text-red-300' }
+                    : marked
+                      ? { text: 'Označeno zbytečně', cls: 'text-amber-700 dark:text-amber-300' }
+                      : { text: 'V pořádku', cls: 'text-slate-500 dark:text-slate-400' };
+                  return (
+                    <div
+                      key={seg.id}
+                      className="p-3 rounded-xl text-xs bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 space-y-1"
+                    >
+                      <div className="flex flex-wrap items-baseline gap-x-2">
+                        <span className={`font-bold ${verdict.cls}`}>{verdict.text}</span>
+                        <span className="font-serif italic text-slate-500 dark:text-slate-400">„{seg.text.trim()}“</span>
+                      </div>
+                      <div>{seg.correction}</div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
