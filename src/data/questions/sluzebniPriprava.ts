@@ -788,17 +788,17 @@ export const sluzebniPripravaQuestions: Question[] = [
     "subject": "Služební příprava",
     "topic": "Dozorčí služba – ubytovna odsouzených",
     "question": "Komu je dozorce oddělení výkonu trestu přímo podřízen?",
-    "answer": "Inspektorovi dozorčí služby oddělení výkonu trestu",
+    "answer": "Vrchnímu inspektorovi dozorčí služby OVT",
     "options": [
-      "Inspektorovi dozorčí služby oddělení výkonu trestu",
+      "Vrchnímu inspektorovi dozorčí služby OVT",
       "Vrchnímu inspektorovi strážní služby",
       "Vychovateli oddílu, na kterém koná službu",
-      "Vedoucímu oddělení výkonu trestu a všem jeho zástupcům"
+      "Inspektorovi dozorčí služby OVT ve směně"
     ],
     "correctOption": 0,
-    "rationale": "Dozorce oddělení výkonu trestu je přímo podřízen inspektorovi dozorčí služby (IDS) oddělení výkonu trestu. Pokyny vychovatele respektuje jen v oblasti realizace práv a oprávněných zájmů odsouzených.",
-    "source": "§ 62 NGŘ č. 02/2022",
-    "explanation": "Dozorce oddělení výkonu trestu je přímo podřízen inspektorovi dozorčí služby (IDS) oddělení výkonu trestu. Pokyny vychovatele respektuje jen v oblasti realizace práv a oprávněných zájmů odsouzených. (Právní úprava: § 62 NGŘ č. 02/2022)"
+    "rationale": "Dozorce oddělení výkonu trestu je přímo podřízen vrchnímu inspektorovi dozorčí služby oddělení výkonu trestu; inspektor dozorčí služby jeho nadřízeným ve směně není. Pokyny vychovatele respektuje jen v oblasti realizace práv a oprávněných zájmů odsouzených.",
+    "source": "§ 64 odst. 1 a 5 NGŘ č. 2/2026",
+    "explanation": "Dozorce oddělení výkonu trestu je přímo podřízen vrchnímu inspektorovi dozorčí služby oddělení výkonu trestu; inspektor dozorčí služby jeho nadřízeným ve směně není. Pokyny vychovatele respektuje jen v oblasti realizace práv a oprávněných zájmů odsouzených. (Právní úprava: § 64 odst. 1 a 5 NGŘ č. 2/2026)"
   },
   {
     "id": "sp-54",
@@ -2045,7 +2045,7 @@ export const sluzebniPripravaQuestions: Question[] = [
     "id": "sp-127",
     "subject": "Služební příprava",
     "topic": "Organizace dozorčí služby",
-    "question": "Komu je inspektor dozorčí služby (IDS) podřízen v mimopracovní době věznice?",
+    "question": "Komu je vrchní inspektor dozorčí služby OVT podřízen v mimopracovní době věznice?",
     "answer": "Vrchnímu inspektorovi strážní služby",
     "options": [
       "Inspektorovi strážní služby operátorovi",
@@ -2054,9 +2054,9 @@ export const sluzebniPripravaQuestions: Question[] = [
       "Vrchnímu inspektorovi strážní služby"
     ],
     "correctOption": 3,
-    "rationale": "IDS je přímo podřízen určenému zástupci vedoucího oddělení a nadřízen dozorcům ve směně; v mimopracovní době věznice je podřízen vrchnímu inspektorovi strážní služby.",
-    "source": "§ 25 a § 60 NGŘ č. 02/2022",
-    "explanation": "IDS je přímo podřízen určenému zástupci vedoucího oddělení a nadřízen dozorcům ve směně; v mimopracovní době věznice je podřízen vrchnímu inspektorovi strážní služby. (Právní úprava: § 25 a § 60 NGŘ č. 02/2022)"
+    "rationale": "Vrchní inspektor dozorčí služby oddělení výkonu trestu je přímo podřízen určenému zástupci vedoucího oddělení a nadřízen inspektorovi dozorčí služby i dozorcům ve směně; v mimopracovní době věznice je podřízen vrchnímu inspektorovi strážní služby. Inspektor dozorčí služby je od NGŘ č. 2/2026 podřízen vrchnímu inspektorovi dozorčí služby.",
+    "source": "§ 60 odst. 1 a § 62 odst. 1 NGŘ č. 2/2026",
+    "explanation": "Vrchní inspektor dozorčí služby oddělení výkonu trestu je přímo podřízen určenému zástupci vedoucího oddělení a nadřízen inspektorovi dozorčí služby i dozorcům ve směně; v mimopracovní době věznice je podřízen vrchnímu inspektorovi strážní služby. Inspektor dozorčí služby je od NGŘ č. 2/2026 podřízen vrchnímu inspektorovi dozorčí služby. (Právní úprava: § 60 odst. 1 a § 62 odst. 1 NGŘ č. 2/2026)"
   },
   {
     "id": "sp-128",
