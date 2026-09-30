@@ -223,11 +223,9 @@ export default function BadgesView({
     <div className="w-full space-y-6 pb-8">
       
       {/* 1. HERO RANK & PROGRESS BANNER */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 text-white p-5 sm:p-7 border border-slate-700/80 shadow-xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
-        <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="rounded-2xl bg-slate-900 text-white p-5 border border-slate-800">
 
-        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           {/* Rank & Profile info */}
           <div className="flex items-center gap-4 sm:gap-6">
             <ShoulderInsignia rank={currentRank} />
@@ -246,7 +244,7 @@ export default function BadgesView({
                 </span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
+              <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
                 {currentRank.name}
               </h2>
               <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl line-clamp-2">
@@ -256,7 +254,7 @@ export default function BadgesView({
           </div>
 
           {/* XP & Next Rank Progress */}
-          <div className="w-full md:w-80 bg-slate-900/80 backdrop-blur-md rounded-xl p-4 border border-slate-700/60 shrink-0">
+          <div className="w-full md:w-80 bg-slate-800/60 rounded-xl p-4 border border-slate-700/60 shrink-0">
             <div className="flex items-center justify-between text-xs mb-1.5">
               <span className="font-semibold text-slate-300 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
@@ -270,7 +268,7 @@ export default function BadgesView({
             {/* Progress Bar */}
             <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
               <div 
-                className="h-full bg-gradient-to-r from-blue-500 via-sky-400 to-amber-400 rounded-full transition-all duration-700"
+                className="h-full bg-amber-400 rounded-full transition-all duration-700"
                 style={{ width: `${progressPercent}%` }}
               ></div>
             </div>
@@ -281,11 +279,12 @@ export default function BadgesView({
             </div>
 
             <button
+              type="button"
               onClick={() => setShowRanksModal(true)}
               className="w-full mt-3 py-1.5 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-600/80 rounded-lg text-xs font-semibold text-slate-200 transition-colors flex items-center justify-center gap-1.5"
             >
               <Award className="w-3.5 h-3.5 text-amber-400" />
-              <span>Zobrazit přehled všech hodností VS ČR</span>
+              <span>Přehled hodností</span>
               <ChevronRight className="w-3.5 h-3.5 ml-auto text-slate-400" />
             </button>
           </div>
@@ -485,7 +484,7 @@ export default function BadgesView({
       )}
 
       {/* 4. CALL TO ACTION FOOTER */}
-      <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 dark:from-blue-950/50 dark:to-indigo-950/50 rounded-2xl p-6 border border-blue-200 dark:border-blue-900/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <h3 className="text-base sm:text-lg font-bold text-slate-800 dark:text-white mb-1">
             Chcete získat další odznaky a povýšit hodnost?

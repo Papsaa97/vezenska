@@ -686,15 +686,12 @@ export default function ClassBulletinBoard() {
       )}
 
       {/* ─── Záhlaví nástěnky s volbou „Moje třída" ───────────────────────── */}
-      <header className="no-print bg-gradient-to-r from-slate-900 via-slate-850 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 border border-slate-700/60 shadow-xl relative overflow-hidden">
-        <div className="absolute -right-12 -top-12 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute right-1/3 -bottom-16 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="space-y-2.5">
+      <header className="no-print bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="space-y-2 min-w-0">
             {/* Horní řádek: Pill ZOP + Volič „Moje třída" */}
             <div className="flex items-center gap-2.5 flex-wrap">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold">
                 <School className="w-3.5 h-3.5" />
                 <span>Základní odborná příprava (ZOP)</span>
               </div>
@@ -706,20 +703,20 @@ export default function ClassBulletinBoard() {
                     type="button"
                     onClick={() => setIsClassDropdownOpen((prev) => !prev)}
                     aria-expanded={isClassDropdownOpen}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/25 to-yellow-500/25 border border-amber-400/40 text-amber-200 text-xs font-bold hover:bg-amber-500/30 transition-all cursor-pointer shadow-sm"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-bold hover:bg-amber-500/20 transition-colors cursor-pointer"
                     title="Kterou třídu zobrazit v podrobném přehledu"
                   >
-                    <Bookmark className="w-3.5 h-3.5 text-amber-400" />
+                    <Bookmark className="w-3.5 h-3.5" />
                     <span>Zobrazená třída:</span>
-                    <span className="text-white underline underline-offset-2">
+                    <span className="text-slate-900 dark:text-white underline underline-offset-2">
                       {selectedMyClass || 'zatím nevybráno'}
                     </span>
                     <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isClassDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {isClassDropdownOpen && (
-                    <div className="absolute left-0 mt-2 w-56 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-2 z-50 space-y-1">
-                      <div className="px-2.5 py-1.5 text-[0.625rem] font-bold text-slate-400 uppercase tracking-wider">
+                    <div className="absolute left-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-2 z-50 space-y-1">
+                      <div className="px-2.5 py-1.5 text-[0.625rem] font-bold text-slate-500 dark:text-slate-400">
                         Zobrazit nástěnku třídy
                       </div>
                       {classes.map((cls) => (
@@ -730,7 +727,7 @@ export default function ClassBulletinBoard() {
                           className={`w-full px-3 py-2 rounded-xl text-left text-xs font-semibold flex items-center justify-between cursor-pointer transition-colors ${
                             cls.className.toLowerCase() === selectedMyClass.toLowerCase()
                               ? 'bg-blue-600 text-white font-bold'
-                              : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
                           }`}
                         >
                           <span>{cls.className}</span>
@@ -743,10 +740,10 @@ export default function ClassBulletinBoard() {
                   )}
                 </div>
               ) : (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/25 to-yellow-500/25 border border-amber-400/40 text-amber-200 text-xs font-bold shadow-sm">
-                  <Bookmark className="w-3.5 h-3.5 text-amber-400" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-bold">
+                  <Bookmark className="w-3.5 h-3.5" />
                   <span>Moje třída:</span>
-                  <span className="text-white">
+                  <span className="text-slate-900 dark:text-white">
                     {profile?.user_class
                       ? profile.user_class
                       : pendingRequest
@@ -754,7 +751,7 @@ export default function ClassBulletinBoard() {
                       : 'nezařazen(a)'}
                   </span>
                   {profile?.role === 'velitel_tridy' && (
-                    <span className="ml-1 px-1.5 py-0.2 rounded bg-purple-600/60 text-purple-200 text-[0.625rem]">
+                    <span className="ml-1 px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[0.625rem]">
                       Velitel
                     </span>
                   )}
@@ -762,17 +759,14 @@ export default function ClassBulletinBoard() {
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              <span>Informační tabule tříd ZOP</span>
-            </h1>
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Nástěnka tříd</h1>
 
-            <p className="hidden sm:block text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
-              Denní operativní rozvrhy, ústrojová kázeň, nepravidelné výpomoci na Pankráci, služby na
-              recepci Akademie a zkouškové termíny.
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Rozvrhy, ústroj, výpomoci, služby a zkouškové termíny jednotlivých tříd.
             </p>
 
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-amber-300/90 font-medium pt-1">
-              <Calendar className="w-4 h-4 text-amber-400" />
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
+              <Calendar className="w-4 h-4" aria-hidden="true" />
               {/* Velké jen první písmeno — `capitalize` dělalo „Úterý 29. Září“. */}
               <span>{todayFormatted.charAt(0).toUpperCase() + todayFormatted.slice(1)}</span>
             </div>
@@ -781,13 +775,16 @@ export default function ClassBulletinBoard() {
           {/* Pravé ovládací prvky v záhlaví */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 shrink-0">
             {/* Přepínač zobrazení: Podrobný přehled vs. Mřížka */}
-            <div className="flex items-center bg-slate-900/90 border border-slate-700/90 rounded-2xl p-1 shadow-inner">
+            <div role="tablist" aria-label="Zobrazení nástěnky" className="flex items-center bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-1">
               <button
+                type="button"
+                role="tab"
+                aria-selected={viewMode === 'expanded'}
                 onClick={() => setViewMode('expanded')}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                   viewMode === 'expanded'
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                 }`}
                 title="Podrobný přehled zvolené třídy na celou šířku"
               >
@@ -796,6 +793,9 @@ export default function ClassBulletinBoard() {
               </button>
 
               <button
+                type="button"
+                role="tab"
+                aria-selected={viewMode === 'grid'}
                 onClick={() => setViewMode('grid')}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                   viewMode === 'grid'
@@ -811,11 +811,13 @@ export default function ClassBulletinBoard() {
               {canSeeAssignments && (
                 <button
                   type="button"
+                  role="tab"
+                  aria-selected={viewMode === 'assignments'}
                   onClick={() => setViewMode('assignments')}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                     viewMode === 'assignments'
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                   title="Nezařazení uživatelé, žádosti a nominace"
                 >
@@ -827,22 +829,24 @@ export default function ClassBulletinBoard() {
 
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={loadData}
                 disabled={loading}
-                className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700 transition-all cursor-pointer"
+                className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
                 title="Obnovit data nástěnky"
                 aria-label="Obnovit"
               >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-blue-400' : ''}`} />
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-blue-500' : ''}`} aria-hidden="true" />
               </button>
 
               {isPrivileged && (
                 <button
+                  type="button"
                   onClick={() => {
                     setEditingItem(null);
                     setIsEditModalOpen(true);
                   }}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-600/30 flex items-center gap-2 border border-blue-400/40 transition-all transform active:scale-95 cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Přidat třídu</span>
@@ -853,7 +857,7 @@ export default function ClassBulletinBoard() {
         </div>
 
         {/* Vyhledávací lišta */}
-        <div className="relative z-10 mt-6 pt-5 border-t border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="relative w-full sm:w-80">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
@@ -868,22 +872,24 @@ export default function ClassBulletinBoard() {
                 if (e.target.value.trim() && viewMode !== 'grid') setViewMode('grid');
               }}
               placeholder="Hledat třídu, službu, osobu…"
-              className="w-full pl-9 pr-8 py-2 text-xs sm:text-sm rounded-xl bg-slate-900/80 border border-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+              aria-label="Hledat třídu, službu nebo osobu"
+              className="w-full pl-9 pr-8 py-2 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
             />
             {searchQuery && (
               <button
+                type="button"
                 onClick={() => setSearchQuery('')}
-            aria-label="Vymazat hledání"
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                aria-label="Vymazat hledání"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
 
-          <div className="text-xs text-slate-400 flex items-center gap-2">
+          <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <span>Zobrazeno:</span>
-            <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-200 font-bold border border-slate-700">
+            <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold border border-slate-200 dark:border-slate-700">
               {viewMode === 'assignments'
                 ? 'zařazení do tříd'
                 : viewMode === 'expanded'
@@ -902,16 +908,16 @@ export default function ClassBulletinBoard() {
       {/* ─── Jídelníček ──────────────────────────────────────────────────── */}
       <JidelnicekCard canEdit={isPrivileged} />
 
-      {/* ─── Celoškolní informace pro všechny (Akademie VS ČR) ───────────── */}
+      {/* ─── Celoškolní informace pro všechny ────────────────────────────── */}
       <section className="no-print bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm p-5 sm:p-6 space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center font-black">
-              <Radio className="w-4 h-4 animate-pulse" />
+              <Radio className="w-4 h-4" aria-hidden="true" />
             </div>
             <div>
               <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                <span>Informace pro všechny – Akademie VS ČR</span>
+                <span>Informace pro všechny</span>
                 <span className="text-[0.625rem] px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 font-bold border border-amber-300/40">
                   Celoškolní hlášení
                 </span>

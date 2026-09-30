@@ -1091,7 +1091,7 @@ export default function App() {
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
                   <h3 id={mobileMenuTitleId} className="font-bold text-sm text-slate-900 dark:text-white uppercase tracking-wider">
-                    Všechny moduly Akademie VS ČR
+                    Všechny moduly
                   </h3>
                 </div>
                 <button

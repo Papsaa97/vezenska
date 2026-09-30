@@ -295,7 +295,8 @@ export async function analyzeExamContent(
 
       return parsed;
     } catch (err: unknown) {
-      console.warn(`Model ${modelName} failed, trying next...`, err);
+      // Jen text chyby: celý objekt může nést tělo požadavku včetně klíče.
+      console.warn(`Model ${modelName} failed, trying next...`, err instanceof Error ? err.message : String(err));
       lastError = err;
       continue;
     }
@@ -303,7 +304,7 @@ export async function analyzeExamContent(
 
   // All models failed
   if (lastError) {
-    console.error('Gemini Analysis Error:', lastError);
+    console.error('Gemini Analysis Error:', lastError instanceof Error ? lastError.message : String(lastError));
 
     let rawMessage = lastError instanceof Error ? lastError.message : String(lastError);
 

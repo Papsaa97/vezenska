@@ -261,17 +261,17 @@ export const defaultStoppageDrills: StoppageDrill[] = [
       {
         text: 'Okamžitě zbraň otočit výhozním okénkem k očím a zkontrolovat, co se stalo.',
         isCorrect: false,
-        feedback: 'FATÁLNÍ CHYBA: Nikdy neotáčejte zbraň proti sobě! Při zpožděném zážehu hrozí výbuch náboje přímo do obličeje.'
+        feedback: 'Závažná chyba: Nikdy neotáčejte zbraň proti sobě! Při zpožděném zážehu hrozí výbuch náboje přímo do obličeje.'
       },
       {
         text: 'Držet zbraň v bezpečném směru do terče min. 10 sekund, poté provést Tap-Rack (dorazit zásobník, energicky natáhnout závěr a vyhodit vadný náboj).',
         isCorrect: true,
-        feedback: 'SPRÁVNĚ: Bezpečný směr a vyčkání chrání před zpožděným výstřelem (Hangfire). Dril Tap-Rack spolehlivě odstraní vadný náboj a podá nový.'
+        feedback: 'Správně: Bezpečný směr a vyčkání chrání před zpožděným výstřelem (Hangfire). Dril Tap-Rack spolehlivě odstraní vadný náboj a podá nový.'
       },
       {
         text: 'Opakovaně mačkat spoušť plnou silou bez vyčkání.',
         isCorrect: false,
-        feedback: 'CHYBA: Opakované mačkání spouště u vadného náboje nic nevyřeší a ztrácí se drahocenný čas v krizové situaci.'
+        feedback: 'Chyba: Opakované mačkání spouště u vadného náboje nic nevyřeší a ztrácí se drahocenný čas v krizové situaci.'
       }
     ]
   },
@@ -287,17 +287,17 @@ export const defaultStoppageDrills: StoppageDrill[] = [
       {
         text: 'Udržovat bezpečný směr, hranou dlaně přejet přes závěr vzad (Sweep) / natáhnout závěr vzad a vypustit.',
         isCorrect: true,
-        feedback: 'SPRÁVNĚ: Rychlé mechanické smetení nábojnice (Sweep/Rack) vyčistí výhozní okno a závěr zaskočí do přední polohy.'
+        feedback: 'Správně: Rychlé mechanické smetení nábojnice (Sweep/Rack) vyčistí výhozní okno a závěr zaskočí do přední polohy.'
       },
       {
         text: 'Začít rozebírat zbraň a vytlačovat záchyt závěru.',
         isCorrect: false,
-        feedback: 'CHYBA: Při vzpříčené nábojnici se zbraň nerozebírá – jde o jednoduchou závadu řešitelnou během 2 sekund.'
+        feedback: 'Chyba: Při vzpříčené nábojnici se zbraň nerozebírá – jde o jednoduchou závadu řešitelnou během 2 sekund.'
       },
       {
         text: 'Udeřit zbraní o stůl nebo betonovou podlahu.',
         isCorrect: false,
-        feedback: 'CHYBA: Nárazy zbraně o tvrdý podklad poškozují mechanismus a hrozí nebezpečný odraz.'
+        feedback: 'Chyba: Nárazy zbraně o tvrdý podklad poškozují mechanismus a hrozí nebezpečný odraz.'
       }
     ]
   },
@@ -313,17 +313,17 @@ export const defaultStoppageDrills: StoppageDrill[] = [
       {
         text: 'Silou bouchat pěstí do zadního čela závěru a snažit se jej zavřít.',
         isCorrect: false,
-        feedback: 'NEBEZPEČNÁ CHYBA: Závěr je blokován dvěma náboji! Silový doraz deformuje střelu a může dojít k poškození zbraně nebo iniciaci.'
+        feedback: 'Nebezpečná chyba: Závěr je blokován dvěma náboji! Silový doraz deformuje střelu a může dojít k poškození zbraně nebo iniciaci.'
       },
       {
         text: 'Uzamknout závěr vzadu (Lock), energicky vytrhnout zásobník (Rip), 2–3× prorazit závěr (Rack), zasunout nový zásobník a natáhnout.',
         isCorrect: true,
-        feedback: 'SPRÁVNĚ: Standardní taktický postup pro Double Feed (Lock – Rip – Rack – Reload). Jedině tak se uvolní sevření nábojů v komoře.'
+        feedback: 'Správně: Standardní taktický postup pro Double Feed (Lock – Rip – Rack – Reload). Jedině tak se uvolní sevření nábojů v komoře.'
       },
       {
         text: 'Zahodit zbraň a utéct z palebné čáry.',
         isCorrect: false,
-        feedback: 'CHYBA: Příslušník VS ČR musí umět závadu na služební zbrani bezpečně a chladnokrevně vyřešit.'
+        feedback: 'Chyba: Příslušník VS ČR musí umět závadu na služební zbrani bezpečně a chladnokrevně vyřešit.'
       }
     ]
   },
@@ -339,17 +339,17 @@ export const defaultStoppageDrills: StoppageDrill[] = [
       {
         text: 'Udržovat bezpečný směr do terče, energicky udeřit dlaní do zadního čela závěru směrem vpřed.',
         isCorrect: true,
-        feedback: 'SPRÁVNĚ: Úder dlaní (Forward Tap) pomůže závěru překonat mechanický odpor a bezpečně uzamknout hlaveň.'
+        feedback: 'Správně: Úder dlaní (Forward Tap) pomůže závěru překonat mechanický odpor a bezpečně uzamknout hlaveň.'
       },
       {
         text: 'Dívat se zepředu do hlavně, zda tam není kamínek.',
         isCorrect: false,
-        feedback: 'FATÁLNÍ CHYBA: Pohled do hlavně nabité zbraně je hrubé porušení všech bezpečnostních předpisů!'
+        feedback: 'Závažná chyba: Pohled do hlavně nabité zbraně je hrubé porušení všech bezpečnostních předpisů!'
       },
       {
         text: 'Zatáhnout za hlaveň kleštěmi.',
         isCorrect: false,
-        feedback: 'CHYBA: Nářadí se při střelbě nepoužívá, manipulace se provádí výhradně manuálně.'
+        feedback: 'Chyba: Nářadí se při střelbě nepoužívá, manipulace se provádí výhradně manuálně.'
       }
     ]
   }
