@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useId } from 'react';
-import { BookOpen, Clock, Play, CheckCircle2, XCircle, Star, RotateCcw, Volume2, Award, Flag, Printer, ArrowRight, ArrowLeft, ShieldAlert, Sparkles, Cloud, Database, Eye } from 'lucide-react';
+import { BookOpen, Clock, Play, CheckCircle2, XCircle, Star, RotateCcw, Volume2, Award, Flag, Printer, ArrowRight, ArrowLeft, ShieldAlert, Sparkles, Cloud, Database } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Question, QuizSessionRecord, QuestionAttempt } from '../types';
 import { normalizeSubject } from './SubjectsHub';
@@ -30,9 +30,11 @@ interface QuizProps {
 type GameState = 'setup' | 'playing' | 'results';
 type Confidence = 'know' | 'guess' | 'dont_know';
 
-/** Počet otázek ostré zkoušky a její časový limit v minutách. */
+/** Počet otázek zkoušky nanečisto a její celkový časový limit v minutách. */
 const EXAM_QUESTION_COUNT = 50;
 const EXAM_TIME_LIMIT_MINUTES = 45;
+/** Od kolika zbývajících sekund se odpočet zkoušky zvýrazní. */
+const EXAM_WARNING_SECONDS = 5 * 60;
 
 /**
  * Rovnoměrné promíchání (Fisher–Yates).
@@ -78,7 +80,6 @@ export default function Quiz({
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>(['all']);
   /** Okruh, na který se test zužuje; null = celý předmět. Nastavuje ho jen předvolba z navigace. */
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
-  const [timeLimit, setTimeLimit] = useState<number | null>(null);
   const [questionCount, setQuestionCount] = useState<number>(10);
   const [isMistakesMode, setIsMistakesMode] = useState<boolean>(false);
   const [mistakeHistory, setMistakeHistory] = useState<Set<string>>(new Set());
@@ -91,10 +92,10 @@ export default function Quiz({
    */
   const [setupError, setSetupError] = useState<string | null>(null);
 
-  /** Čeká se na potvrzení odevzdání ostré zkoušky. */
+  /** Čeká se na potvrzení odevzdání zkoušky nanečisto. */
   const [confirmSubmitExam, setConfirmSubmitExam] = useState<boolean>(false);
 
-  // Special State Exam Mode (50 questions, 45 min, komisionální zkouška ZOP A)
+  // Zkouška nanečisto: 50 otázek, jeden celkový limit 45 minut, vyhodnocení až na konci.
   const [isExamMode, setIsExamMode] = useState<boolean>(false);
   const [examStudentName, setExamStudentName] = useState<string>('Frekventant ZOP A');
   const [examGlobalTimeLeft, setExamGlobalTimeLeft] = useState<number>(EXAM_TIME_LIMIT_MINUTES * 60);
@@ -108,14 +109,13 @@ export default function Quiz({
   const [confidences, setConfidences] = useState<Record<string, Confidence>>({});
   const [currentConfidence, setCurrentConfidence] = useState<Confidence>('know');
   const [isAnswered, setIsAnswered] = useState(false);
-  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [quizStartTime, setQuizStartTime] = useState<number>(Date.now());
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isOptionsRevealed, setIsOptionsRevealed] = useState(false);
-  const [isTimedOut, setIsTimedOut] = useState(false);
-  const [timedOutMap, setTimedOutMap] = useState<Record<string, boolean>>({});
 
-  const timerRef = useRef<number | null>(null);
+  // POZN.: cvičný test měl dřív volitelný limit na otázku (30, 15 a 5 s) a možnosti
+  // odpovědí schované za tlačítkem „Zobrazit možnosti“. Za 5 s nešlo ani dočíst
+  // zadání a skrývání bylo jen krok navíc u každé otázky. Tempo teď hlídá jen
+  // celkový limit zkoušky nanečisto; procvičování je bez stopek.
   const examTimerRef = useRef<number | null>(null);
   const examTimeLeftRef = useRef<number>(EXAM_TIME_LIMIT_MINUTES * 60);
 
@@ -228,9 +228,6 @@ export default function Quiz({
     setConfidences({});
     setFlaggedQuestions(new Set());
     setIsAnswered(false);
-    setIsOptionsRevealed(true);
-    setIsTimedOut(false);
-    setTimedOutMap({});
     setGameState('playing');
     setQuizStartTime(Date.now());
     setExamGlobalTimeLeft(EXAM_TIME_LIMIT_MINUTES * 60);
@@ -286,16 +283,8 @@ export default function Quiz({
     setConfidences({});
     setCurrentConfidence('know');
     setIsAnswered(false);
-    setIsOptionsRevealed(false);
-    setIsTimedOut(false);
-    setTimedOutMap({});
     setGameState('playing');
     setQuizStartTime(Date.now());
-    if (timeLimit) {
-      setTimeLeft(timeLimit);
-    } else {
-      setTimeLeft(null);
-    }
   };
 
   // Odpočet 45 minut u závěrečné zkoušky — jen tiká.
@@ -340,27 +329,6 @@ export default function Quiz({
     }
   }, [gameState, isExamMode, examGlobalTimeLeft]);
 
-  // Question timer logic (in practice mode)
-  useEffect(() => {
-    if (!isExamMode && gameState === 'playing' && !isAnswered && isOptionsRevealed && timeLimit !== null && timeLeft !== null && timeLeft > 0) {
-      timerRef.current = window.setInterval(() => {
-        setTimeLeft(prev => (prev !== null && prev > 0 ? prev - 1 : 0));
-      }, 1000);
-    } else if (!isExamMode && gameState === 'playing' && isOptionsRevealed && timeLimit !== null && timeLeft === 0 && !isAnswered && !isTimedOut) {
-      // Time limit expired: do NOT auto-answer.
-      // Flag current question as timed out; options remain active for user to choose.
-      setIsTimedOut(true);
-      const currentQ = quizQuestions[currentIndex];
-      if (currentQ?.id) {
-        setTimedOutMap(prev => ({ ...prev, [currentQ.id]: true }));
-      }
-    }
-    
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [gameState, isAnswered, isOptionsRevealed, timeLeft, timeLimit, isExamMode, isTimedOut, currentIndex, quizQuestions]);
-
   const handleAnswer = (optionIndex: number) => {
     if (isExamMode) {
       // In exam mode, selection is recorded and can be changed before submitting
@@ -376,12 +344,10 @@ export default function Quiz({
 
     const currentQ = quizQuestions[currentIndex];
     const currentQId = currentQ.id;
-    const answeredAfterTimeout = Boolean(isTimedOut || (timeLimit !== null && timeLeft === 0) || timedOutMap[currentQId]);
-    
+
     setIsAnswered(true);
     setAnswers(prev => ({ ...prev, [currentQId]: optionIndex }));
     setConfidences(prev => ({ ...prev, [currentQId]: currentConfidence }));
-    setTimedOutMap(prev => ({ ...prev, [currentQId]: answeredAfterTimeout }));
     
     const isCorrect = optionIndex === currentQ.correctOption;
     
@@ -403,8 +369,6 @@ export default function Quiz({
     // (`sessionStats`) včetně historie úspěšnosti po otázkách. Nikdy se nikde
     // nečetl — úspěšnost počítá výsledková obrazovka z `attempts` a graf
     // vývoje je v záložce Statistiky. Odstraněno, ať se nepočítá pro nic.
-
-    if (timerRef.current) clearInterval(timerRef.current);
   };
 
   const toggleFlag = (questionId: string) => {
@@ -418,12 +382,10 @@ export default function Quiz({
 
   const finishExam = () => {
     if (examTimerRef.current) clearInterval(examTimerRef.current);
-    if (timerRef.current) clearInterval(timerRef.current);
-    
+
     const finishedAttempts: QuestionAttempt[] = quizQuestions.map(q => {
       const selected = answers[q.id] !== undefined ? answers[q.id] : -1;
       const isCorrect = selected === q.correctOption;
-      const wasTimedOut = Boolean(timedOutMap[q.id]);
       return {
         questionId: q.id,
         questionText: q.question,
@@ -446,7 +408,6 @@ export default function Quiz({
         // jako „falešná jistota“. Nevyplněná jistota teď zůstane nevyplněná
         // a statistika takové pokusy do rozpadu jistoty nepočítá.
         confidence: confidences[q.id],
-        timedOut: wasTimedOut
       };
     });
 
@@ -454,8 +415,6 @@ export default function Quiz({
     const totalCount = finishedAttempts.length;
     const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
     const timeSpent = Math.max(1, Math.round((Date.now() - quizStartTime) / 1000));
-    const correctInLimit = finishedAttempts.filter(a => a.isCorrect && !a.timedOut).length;
-    const correctAfterLimit = finishedAttempts.filter(a => a.isCorrect && a.timedOut).length;
 
     // V režimu chyb pocházejí otázky ze všech předmětů bez ohledu na filtr,
     // takže se test zapíše podle skutečných otázek, ne podle rozbalovacího seznamu.
@@ -476,8 +435,6 @@ export default function Quiz({
       accuracy,
       timeSpentSeconds: timeSpent,
       attempts: finishedAttempts,
-      correctInLimit,
-      correctAfterLimit
     };
 
     if (onSaveQuizResult) {
@@ -499,9 +456,6 @@ export default function Quiz({
       setCurrentIndex(prev => prev + 1);
       setIsAnswered(false);
       setCurrentConfidence('know');
-      setIsOptionsRevealed(isExamMode ? true : false);
-      setIsTimedOut(false);
-      if (timeLimit) setTimeLeft(timeLimit);
     } else {
       finishExam();
     }
@@ -535,7 +489,7 @@ export default function Quiz({
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
                 <ShieldAlert className="w-4 h-4" />
-                Zkušební paleta
+                Přehled otázek
               </span>
               <span className="text-xs font-bold text-slate-500">
                 {answeredCount} / {quizQuestions.length}
@@ -583,7 +537,7 @@ export default function Quiz({
                 className="w-full mt-3 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Award className="w-4 h-4" />
-                <span>Odevzdat zkoušku ZOP A</span>
+                <span>Odevzdat zkoušku</span>
               </button>
             </div>
           </div>
@@ -597,24 +551,24 @@ export default function Quiz({
         <div className="bg-gradient-to-br from-indigo-900 via-blue-900 to-slate-900 text-white rounded-xl shadow-md p-4 border border-blue-400/30">
           <div className="flex items-center gap-2 text-xs font-bold text-amber-300 uppercase tracking-wider mb-1">
             <Award className="w-4 h-4" />
-            <span>Zkouškový standard</span>
+            <span>Jako u zkoušky</span>
           </div>
-          <h4 className="font-bold text-sm mb-1.5">Ostrá zkouška ZOP A</h4>
+          <h4 className="font-bold text-sm mb-1.5">Zkouška nanečisto</h4>
           <p className="text-[0.6875rem] text-slate-300 leading-relaxed mb-3">
-            Komisionální simulace: {EXAM_QUESTION_COUNT} otázek poměrně ze všech předmětů v bance, limit {EXAM_TIME_LIMIT_MINUTES} min, závěrečný protokol.
+            {EXAM_QUESTION_COUNT} otázek ze všech předmětů, celkem {EXAM_TIME_LIMIT_MINUTES} minut. Mezi otázkami se dá vracet a odpovědi měnit, výsledek a vysvětlení uvidíte až po odevzdání.
           </p>
           <button
             onClick={startExamMode}
             className="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <Play className="w-3.5 h-3.5 fill-current" />
-            <span>Spustit ostrou zkoušku (50 ot.)</span>
+            <span>Spustit zkoušku nanečisto</span>
           </button>
         </div>
 
         <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-5">
           <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">
-            Vlastní tréninkový test
+            Procvičování
           </h3>
           <div className="space-y-4">
             {questions.length > 0 && questions[0]?.id?.startsWith('custom-q') && (
@@ -671,34 +625,6 @@ export default function Quiz({
               )}
             </div>
 
-            <div className={isMistakesMode ? 'opacity-50 pointer-events-none' : ''}>
-              {/* Popisuje skupinu voleb, ne jedno pole. */}
-              <span id={`${fieldIds}-limit`} className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
-                Časový limit na otázku
-              </span>
-              <div className="grid grid-cols-2 gap-1.5" role="group" aria-labelledby={`${fieldIds}-limit`}>
-                {[
-                  { label: 'Bez limitu', value: null },
-                  { label: '30 s', value: 30 },
-                  { label: '15 s', value: 15 },
-                  { label: '5 s', value: 5 }
-                ].map(opt => (
-                  <button
-                    key={opt.label}
-                    onClick={() => setTimeLimit(opt.value)}
-                    disabled={gameState === 'playing'}
-                    className={`p-1.5 text-xs border rounded-lg font-medium transition-colors ${
-                      timeLimit === opt.value 
-                        ? 'border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300 font-bold' 
-                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            
             <div className={isMistakesMode ? 'opacity-50 pointer-events-none' : ''}>
               <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5" htmlFor={`${fieldIds}-1`}>
                 Počet otázek: {questionCount}
@@ -765,8 +691,9 @@ export default function Quiz({
               )}
             </div>
             <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg leading-relaxed mb-6">
-              Vyberte si režim: buď <strong>Ostrou závěrečnou zkoušku</strong> (50 otázek, 45 minut, generování protokolu) nebo <strong>Cvičný kvíz</strong> pro jednotlivé předměty.
-              {' '}Parametry ostré zkoušky jsou <strong>nastavení této aplikace</strong>, ne citace zkušebního řádu — ověřte si je u svého lektora.
+              <strong>Zkouška nanečisto</strong> je {EXAM_QUESTION_COUNT} otázek ze všech předmětů s jedním celkovým limitem {EXAM_TIME_LIMIT_MINUTES} minut a vyhodnocením až na konci.
+              {' '}<strong>Procvičování</strong> je bez časového limitu a po každé odpovědi hned ukáže, proč je správná.
+              {' '}Počet otázek a limit jsou nastavení této aplikace, ne pravidla skutečné zkoušky. Ta si ověřte u svého lektora.
             </p>
 
             {setupError && (
@@ -786,7 +713,7 @@ export default function Quiz({
                 className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm cursor-pointer"
               >
                 <Award className="w-4 h-4" />
-                <span>Ostrá zkouška (50 otázek, 45 min)</span>
+                <span>Zkouška nanečisto ({EXAM_QUESTION_COUNT} otázek, {EXAM_TIME_LIMIT_MINUTES} min)</span>
               </button>
               <button
                 type="button"
@@ -794,7 +721,7 @@ export default function Quiz({
                 className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" />
-                <span>Cvičný test podle filtrů</span>
+                <span>Procvičování podle filtrů</span>
               </button>
             </div>
           </div>
@@ -806,9 +733,6 @@ export default function Quiz({
       const correctCount = quizQuestions.filter(q => answers[q.id] === q.correctOption).length;
       const totalCount = quizQuestions.length;
       const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
-      const correctInLimit = quizQuestions.filter(q => answers[q.id] === q.correctOption && !timedOutMap[q.id]).length;
-      const correctAfterLimit = quizQuestions.filter(q => answers[q.id] === q.correctOption && Boolean(timedOutMap[q.id])).length;
-      const totalTimedOut = quizQuestions.filter(q => Boolean(timedOutMap[q.id])).length;
       
       let gradeLabel = 'Neprospěl';
       let gradeColor = 'text-rose-600 dark:text-rose-400';
@@ -844,10 +768,10 @@ export default function Quiz({
             <div className="text-center pb-6 border-b border-slate-200 dark:border-slate-800 no-print">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider mb-2">
                 <Award className="w-4 h-4 text-amber-500" />
-                <span>{isExamMode ? 'Protokol o testu ZOP A' : 'Cvičný test'}</span>
+                <span>{isExamMode ? 'Zkouška nanečisto' : 'Procvičování'}</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
-                {isExamMode ? 'Hodnocení zkouškového testu' : 'Výsledek cvičného testu'}
+                {isExamMode ? 'Výsledek zkoušky nanečisto' : 'Výsledek procvičování'}
               </h2>
               <div className="text-5xl sm:text-6xl font-black my-4 text-blue-600 dark:text-blue-400">
                 {percentage} %
@@ -859,24 +783,6 @@ export default function Quiz({
                 Správně zodpovězeno {correctCount} z {totalCount} otázek
               </p>
 
-              {/* In-limit vs after-limit statistics — jen u testu s limitem na otázku */}
-              {timeLimit !== null && !isExamMode && (
-              <div className="flex flex-wrap items-center justify-center gap-2.5 mt-3.5 no-print">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold text-emerald-800 dark:text-emerald-300">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>Správně v limitu: <strong className="font-bold">{correctInLimit}</strong></span>
-                </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs font-semibold text-amber-800 dark:text-amber-300">
-                  <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                  <span>Správně po limitu: <strong className="font-bold">{correctAfterLimit}</strong></span>
-                </div>
-                {totalTimedOut > 0 && (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                    <span>Celkem po limitu: <strong className="font-bold">{totalTimedOut}</strong> z {totalCount}</span>
-                  </div>
-                )}
-              </div>
-              )}
             </div>
 
             {/* XP Award & Progress Banner (Screen only) */}
@@ -923,7 +829,7 @@ export default function Quiz({
             {/* Personalization for Protocol (Screen only) */}
             <div className="my-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3 no-print">
               <div className="flex items-center gap-2 w-full sm:w-auto">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 whitespace-nowrap">Jméno na protokolu:</span>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 whitespace-nowrap">Jméno na výsledku:</span>
                 <input
                   type="text"
                   value={examStudentName}
@@ -971,20 +877,20 @@ export default function Quiz({
             {/* Official Printable Certificate (Visible during print) */}
             <div className="hidden print:block my-4 p-6 border-2 border-slate-900 text-slate-900 bg-white print-card print-avoid-break">
               <div className="text-center border-b-2 border-slate-900 pb-3 mb-4">
-                <h1 className="text-base font-bold uppercase tracking-widest text-slate-950">Generální ředitelství Vězeňské služby ČR</h1>
-                <h2 className="text-sm font-extrabold uppercase mt-1 text-slate-800">Akademie Vězeňské služby • Stráž pod Ralskem</h2>
-                <h3 className="text-sm font-black mt-2 underline uppercase">
-                  {isExamMode ? 'Simulace závěrečné zkoušky ZOP A – cvičný protokol' : 'Výsledek cvičného testu'}
+                <h1 className="text-base font-bold uppercase tracking-widest text-slate-950">Akademie Vězeňské služby ČR – Studijní portál</h1>
+                <h3 className="text-sm font-black mt-2 uppercase">
+                  {isExamMode ? 'Výsledek zkoušky nanečisto' : 'Výsledek procvičování'}
                 </h3>
+                <p className="text-[0.6875rem] italic mt-1">Cvičný výsledek pro samostudium, nejde o úřední doklad.</p>
               </div>
 
               <div className="grid grid-cols-2 gap-3 text-xs mb-4">
                 <div><strong>Frekventant:</strong> {examStudentName || 'Frekventant ZOP A'}</div>
                 <div><strong>Datum a čas konání:</strong> {new Date().toLocaleString('cs-CZ')}</div>
-                <div><strong>Typ:</strong> {isExamMode ? 'Simulace písemného testu ZOP A (cvičná, neúřední)' : 'Cvičný test'}</div>
+                <div><strong>Typ:</strong> {isExamMode ? `Zkouška nanečisto (${EXAM_QUESTION_COUNT} otázek)` : 'Procvičování'}</div>
                 <div><strong>Dosažené skóre:</strong> {correctCount} / {totalCount} ({percentage} %)</div>
                 <div><strong>Celkový výsledek:</strong> <span className="font-extrabold">{gradeLabel}</span></div>
-                <div><strong>Časový limit:</strong> 45 minut</div>
+                <div><strong>Časový limit:</strong> {isExamMode ? `${EXAM_TIME_LIMIT_MINUTES} minut celkem` : 'bez limitu'}</div>
               </div>
 
               <div className="mb-4">
@@ -1011,17 +917,6 @@ export default function Quiz({
                 </table>
               </div>
 
-              <div className="mt-8 pt-4 grid grid-cols-3 gap-6 text-center text-[0.6875rem]">
-                <div className="border-t border-slate-800 pt-1">
-                  <span>Předseda zkušební komise</span>
-                </div>
-                <div className="border-t border-slate-800 pt-1">
-                  <span>Člen pro právní přípravu</span>
-                </div>
-                <div className="border-t border-slate-800 pt-1">
-                  <span>Člen pro bezpečnostní službu</span>
-                </div>
-              </div>
             </div>
 
             {/* Action buttons (Screen only) */}
@@ -1030,10 +925,10 @@ export default function Quiz({
                 <button
                   onClick={() => window.print()}
                   className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
-                  title="Vytisknout zkušební protokol a rozbor otázek ve formátu A4"
+                  title="Vytisknout výsledek a rozbor otázek ve formátu A4"
                 >
                   <Printer className="w-4 h-4 text-blue-600" />
-                  <span>Vytisknout / PDF protokol</span>
+                  <span>Vytisknout / PDF</span>
                 </button>
 
                 {percentage < 100 && (
@@ -1082,7 +977,7 @@ export default function Quiz({
                 <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 print:mt-4 print:pt-4">
                   <div className="hidden print:block mb-4">
                     <PrintHeader
-                      subject={`Protokol o zkoušce ZOP A – ${reviewFilter === 'all' || wrongQuestions.length === 0 ? 'Přehled všech testových otázek' : 'Rozbor chybných odpovědí'}`}
+                      subject={`${isExamMode ? 'Zkouška nanečisto' : 'Procvičování'} – ${reviewFilter === 'all' || wrongQuestions.length === 0 ? 'Přehled všech testových otázek' : 'Rozbor chybných odpovědí'}`}
                       docTitle="Detailní přehled testových otázek, variant A–D a zákonných pramenů"
                     />
                   </div>
@@ -1121,17 +1016,6 @@ export default function Quiz({
                               }`}>
                                 {answers[q.id] === undefined ? 'Nezodpovězeno' : isWrong ? 'Chybná odpověď' : 'Správně zodpovězeno'}
                               </span>
-                              {timeLimit === null || isExamMode ? null : timedOutMap[q.id] ? (
-                                <span className="text-[0.6875rem] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 flex items-center gap-1 print:bg-amber-50 print:text-amber-900 print:border-amber-300">
-                                  <Clock className="w-3 h-3" />
-                                  Po limitu (nestihnuto)
-                                </span>
-                              ) : (
-                                <span className="text-[0.6875rem] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 flex items-center gap-1 print:bg-slate-50 print:text-slate-700 print:border-slate-300">
-                                  <CheckCircle2 className="w-3 h-3" />
-                                  V limitu
-                                </span>
-                              )}
                             </div>
                           </div>
 
@@ -1246,38 +1130,26 @@ export default function Quiz({
             </div>
             
             <div className="flex items-center gap-2">
-              {/* Exam Global Countdown */}
-              {isExamMode ? (
-                <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950/40 px-3 py-1 rounded-lg border border-amber-200 dark:border-amber-800">
-                  <Clock className="w-4 h-4 text-amber-600 animate-pulse" />
-                  <span className="font-mono font-bold text-sm text-amber-700 dark:text-amber-300">
-                    {formatExamTime(examGlobalTimeLeft)}
-                  </span>
-                </div>
-              ) : timeLimit !== null ? (
-                <div className="flex items-center gap-1.5">
-                  {isTimedOut || timeLeft === 0 ? (
-                    <span className="inline-flex items-center gap-1 font-mono font-bold text-xs sm:text-sm px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
-                      <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 animate-pulse" />
-                      00:00 (Vypršel)
+              {/* Celkový odpočet zkoušky nanečisto. Bliká a zčervená až v posledních
+                  pěti minutách — do té doby nemá rušit od čtení otázek. */}
+              {isExamMode && (() => {
+                const isLastMinutes = examGlobalTimeLeft <= EXAM_WARNING_SECONDS;
+                return (
+                  <div
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-lg border ${
+                      isLastMinutes
+                        ? 'bg-rose-50 dark:bg-rose-950/50 border-rose-300 dark:border-rose-700'
+                        : 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800'
+                    }`}
+                    title="Zbývající čas celé zkoušky"
+                  >
+                    <Clock className={`w-4 h-4 ${isLastMinutes ? 'text-rose-600 animate-pulse' : 'text-amber-600'}`} />
+                    <span className={`font-mono font-bold text-sm ${isLastMinutes ? 'text-rose-700 dark:text-rose-300' : 'text-amber-700 dark:text-amber-300'}`}>
+                      {formatExamTime(examGlobalTimeLeft)}
                     </span>
-                  ) : !isOptionsRevealed ? (
-                    <span className="inline-flex items-center gap-1 font-mono font-semibold text-xs sm:text-sm px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700" title="Odpočet se spustí po zobrazení možností">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
-                      00:{String(timeLimit).padStart(2, '0')}
-                    </span>
-                  ) : (
-                    <span className={`inline-flex items-center gap-1 font-mono font-bold text-xs sm:text-sm px-2.5 py-1 rounded-lg ${
-                      timeLeft !== null && timeLeft <= 5
-                        ? 'bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-700 animate-pulse'
-                        : 'bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
-                    }`}>
-                      <Clock className="w-3.5 h-3.5" />
-                      00:{String(timeLeft).padStart(2, '0')}
-                    </span>
-                  )}
-                </div>
-              ) : null}
+                  </div>
+                );
+              })()}
 
               {/* Audio Speech */}
               {isSpeechSupported() && (
@@ -1331,50 +1203,11 @@ export default function Quiz({
                 transition={{ duration: 0.2 }}
                 className="max-w-3xl"
               >
-                {/* Timed-out alert badge when time expires */}
-                {!isExamMode && (isTimedOut || (timeLimit !== null && timeLeft === 0)) && !isAnswered && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-5 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 text-xs sm:text-sm font-bold shadow-xs"
-                  >
-                    <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 animate-pulse" />
-                    <span>Časový limit vypršel – odpověz dodatečně</span>
-                  </motion.div>
-                )}
-
                 <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-relaxed mb-6">
                   {currentQ.question}
                 </h2>
                 
-                {/* Two-phase button when options are hidden */}
-                {!isExamMode && !isOptionsRevealed && !isAnswered ? (
-                  <div className="my-6">
-                    <button
-                      type="button"
-                      onClick={() => setIsOptionsRevealed(true)}
-                      className="w-full sm:w-auto min-h-[44px] px-6 py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm sm:text-base rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2.5 cursor-pointer touch-manipulation active:scale-[0.98]"
-                    >
-                      <Eye className="w-5 h-5" />
-                      <span>Zobrazit možnosti</span>
-                      {timeLimit !== null && (
-                        <span className="ml-1.5 px-2 py-0.5 text-xs bg-white/20 rounded-md font-mono font-bold">
-                          {timeLimit} s
-                        </span>
-                      )}
-                    </button>
-                    {timeLimit !== null ? (
-                      <p className="mt-2.5 text-xs text-slate-400 dark:text-slate-500">
-                        Časový limit ({timeLimit} s) se spustí až v okamžiku kliknutí a odkrytí odpovědí.
-                      </p>
-                    ) : (
-                      <p className="mt-2.5 text-xs text-slate-400 dark:text-slate-500">
-                        Promyslete si otázku a poté stiskněte tlačítko pro výběr z variant.
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <motion.div
+                <motion.div
                     initial={!isExamMode ? { opacity: 0, y: 10 } : false}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.25, ease: 'easeOut' }}
@@ -1479,7 +1312,6 @@ export default function Quiz({
                       </motion.div>
                     )}
                   </motion.div>
-                )}
               </motion.div>
             </AnimatePresence>
           </div>
@@ -1548,7 +1380,7 @@ export default function Quiz({
       <ConfirmDialog
         isOpen={confirmSubmitExam}
         tone="danger"
-        title="Odevzdat zkoušku zkušební komisi?"
+        title="Odevzdat zkoušku nanečisto?"
         description={
           unansweredCount > 0 ? (
             <>
@@ -1558,7 +1390,7 @@ export default function Quiz({
             </>
           ) : (
             <>
-              Zodpověděl jste všech {quizQuestions.length} otázek. Po odevzdání se zkouška
+              Odpověděli jste na všech {quizQuestions.length} otázek. Po odevzdání se zkouška
               uzavře, vyhodnotí a uloží do vašich statistik — měnit odpovědi už nebude možné.
             </>
           )
