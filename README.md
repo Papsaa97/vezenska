@@ -58,7 +58,8 @@ shodí build.
 
 Druhá část hlídá **délkový tell**: nese délka možnosti informaci o tom, která
 odpověď je správná? Při zavedení kontroly byla správná odpověď nejdelší ze čtyř
-u 343 ze 377 otázek (91 %), takže se test dal projít bez znalosti předmětu.
+u 343 ze tehdejších 377 otázek (91 %), takže se test dal projít bez znalosti
+předmětu. Aktuální počet otázek vypisuje `npm run check:questions`.
 
 Hlídají se **oba extrémy**. Dorovnat distraktory tak, aby byly všechny delší než
 správná odpověď, tell neodstraní — jen ho překlopí na „vyber nejkratší“. Ráčna
