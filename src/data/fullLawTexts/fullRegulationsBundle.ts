@@ -264,9 +264,9 @@ o organizaci a výkonu strážní, dozorčí a eskortní služby
 2. Strážný nesmí opustit svěřené stanoviště, dokud není řádně vystřídán velitelem stráže nebo určeným příslušníkem.
 3. Při narušení vnitřního zakázaného pásma nebo střeženého perimetru postupuje strážný podle stupňů výzvy:
 a) „Stůj!“,
-b) „Stůj, nebo střelím!“,
+b) „Stůj, nebo střelím!“ (výzva s výstrahou podle § 18 odst. 3 zákona č. 555/1992 Sb.),
 c) varovný výstřel do bezpečného prostoru pod úhlem 45°,
-d) použití zbraně (střelba na dolní končetiny narušitele).
+d) použití střelné zbraně s nutnou opatrností tak, aby co nejvíce šetřil život osoby, proti níž zakročuje (§ 18 odst. 4 zákona č. 555/1992 Sb.).
 
 Článek 2 – Eskortní služba a červený pruh
 1. Eskortu tvoří velitel eskorty, eskortující strážní a řidič eskortního vozidla.

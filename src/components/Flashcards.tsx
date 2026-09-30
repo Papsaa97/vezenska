@@ -65,8 +65,6 @@ const LEITNER_BOX_NUMBERS: number[] = Object.keys(LEITNER_INTERVAL_DAYS)
 
 const LEITNER_MAX_BOX = LEITNER_BOX_NUMBERS[LEITNER_BOX_NUMBERS.length - 1];
 
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
-
 /** „po 1 dni“, „po 3 dnech“ — popis intervalu krabičky odvozený z tabulky. */
 function formatIntervalDays(days: number): string {
   return days === 1 ? 'po 1 dni' : `po ${days} dnech`;
@@ -86,22 +84,33 @@ function pluralCards(count: number): string {
   return `${count} kartiček`;
 }
 
-/** Je kartička v daném boxu dnes ke zopakování? */
-function isDueForReview(box: number, lastReviewedISO: string | undefined): boolean {
-  // Nikdy neopakovaná kartička je splatná vždy.
-  if (!lastReviewedISO) return true;
-  const last = new Date(lastReviewedISO).getTime();
-  if (Number.isNaN(last)) return true;
-  const interval = LEITNER_INTERVAL_DAYS[box] ?? 1;
-  return Date.now() - last >= interval * MS_PER_DAY;
+/** Půlnoc místního dne, do kterého čas `ms` patří. */
+function startOfLocalDay(ms: number): number {
+  const d = new Date(ms);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 }
 
-/** Kdy bude kartička zase na řadě (ms od epochy); u nikdy neopakované teď. */
+/**
+ * Kdy bude kartička zase na řadě (ms od epochy); u nikdy neopakované teď.
+ *
+ * Počítají se kalendářní dny, ne klouzavé 24hodinové bloky: kartička
+ * zopakovaná večer s intervalem 1 den je zase na řadě hned zítra ráno,
+ * ne až zítra večer.
+ */
 function nextReviewAt(box: number, lastReviewedISO: string | undefined): number {
   if (!lastReviewedISO) return Date.now();
   const last = new Date(lastReviewedISO).getTime();
   if (Number.isNaN(last)) return Date.now();
-  return last + (LEITNER_INTERVAL_DAYS[box] ?? 1) * MS_PER_DAY;
+  const due = new Date(startOfLocalDay(last));
+  due.setDate(due.getDate() + (LEITNER_INTERVAL_DAYS[box] ?? 1));
+  return due.getTime();
+}
+
+/** Je kartička v daném boxu dnes ke zopakování? */
+function isDueForReview(box: number, lastReviewedISO: string | undefined): boolean {
+  // Nikdy neopakovaná kartička je splatná vždy.
+  if (!lastReviewedISO) return true;
+  return Date.now() >= nextReviewAt(box, lastReviewedISO);
 }
 
 interface DeckFilters {
@@ -177,7 +186,9 @@ export default function Flashcards({
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [confirmResetLeitner, setConfirmResetLeitner] = useState(false);
 
-  // Leitnerovy krabičky. Patří účtu, ne zařízení (utils/userScopedStorage).
+  // Leitnerovy krabičky. Ukládají se v tomto prohlížeči, zvlášť pro každý účet
+  // (utils/userScopedStorage); na jiné zařízení se nepřenášejí. Klíčem je id
+  // otázky z databáze, takže záložní banka (bez připojení) má postup vlastní.
   const progressRevision = useProgressRevision();
 
   const [isLeitnerMode, setIsLeitnerMode] = useState<boolean>(
@@ -356,7 +367,11 @@ export default function Flashcards({
     if (!currentQuestion) return;
     const currentBox = leitnerBoxes[currentQuestion.id] || 1;
     // Správná odpověď: posun o 1 box výše (až do nejvyššího boxu), chyba: zpět do Boxu 1.
-    const nextBox = known ? Math.min(LEITNER_MAX_BOX, currentBox + 1) : 1;
+    // Výš ale postoupí jen kartička, která je dnes na řadě. Dřív šla kartička
+    // o box výš při každém „Umím“, takže se dala za jedno sezení proklikat
+    // z Boxu 1 až do Boxu 5 a rozložené opakování ztratilo smysl.
+    const wasDue = isDueForReview(currentBox, leitnerReviews[currentQuestion.id]);
+    const nextBox = known ? (wasDue ? Math.min(LEITNER_MAX_BOX, currentBox + 1) : currentBox) : 1;
 
     const nextBoxes = { ...leitnerBoxes, [currentQuestion.id]: nextBox };
     setLeitnerBoxes(nextBoxes);
@@ -368,7 +383,7 @@ export default function Flashcards({
     // neumím“ datum nedostane, takže zůstane ve dnešní frontě a vrátí se v
     // dalším kole — dřív čekala do zítřka.
     const nextReviews = { ...leitnerReviews };
-    if (known) nextReviews[currentQuestion.id] = new Date().toISOString();
+    if (known && wasDue) nextReviews[currentQuestion.id] = new Date().toISOString();
     else delete nextReviews[currentQuestion.id];
     setLeitnerReviews(nextReviews);
     leitnerReviewsRef.current = nextReviews;
@@ -401,9 +416,17 @@ export default function Flashcards({
   };
 
   // Visibility toggle for lektor/admin
+  const [visibilityError, setVisibilityError] = useState<string | null>(null);
   const handleToggleVisibility = useCallback(async (q: Question) => {
     if (!canEdit || !q) return;
     const res = await toggleQuestionVisibilityInSupabase(q);
+    // Neuložené skrytí se nesmí tvářit jako hotové — studenti by kartičku
+    // dál viděli, zatímco lektor by ji měl označenou jako skrytou.
+    if (!res.success) {
+      setVisibilityError(`Skrytí se nepodařilo uložit${res.error ? `: ${res.error}` : ''}.`);
+      return;
+    }
+    setVisibilityError(null);
     const updated: Question = {
       ...q,
       is_hidden: res.isHidden,
@@ -432,8 +455,13 @@ export default function Flashcards({
       if (editingQuestion || isHelpModalOpen || confirmResetLeitner) return;
 
       const target = e.target as HTMLElement | null;
+      // Kartička sama je role="button" a mezerník/Enter si obsluhuje přes
+      // activateOnKey. Šipky a F ale po kliknutí na kartičku (fokus zůstane
+      // na ní) dřív nefungovaly, protože se tu vracelo u každého tlačítka.
+      const onCard = Boolean(target?.closest('[data-flashcard="true"]'));
+      if (onCard && (e.code === 'Space' || e.key === 'Enter')) return;
       // Prvky, které si klávesy obsluhují samy.
-      if (target?.closest('input, textarea, select, button, a[href], [role="button"], [contenteditable="true"]')) {
+      if (!onCard && target?.closest('input, textarea, select, button, a[href], [role="button"], [contenteditable="true"]')) {
         return;
       }
 
@@ -544,7 +572,7 @@ export default function Flashcards({
               {/* V Leitnerově režimu balíček tvoří jen kartičky zvolené krabičky
                   nebo dnešní fronty, takže se ukazují obě čísla — jinak
                   „Karta 2 z 362“ vedle „364 kartiček“ vypadalo jako chyba. */}
-              {isLeitnerMode && selectedLeitnerBox !== 'all' && shuffledQuestions.length !== baseCount
+              {shuffledQuestions.length !== baseCount
                 ? `${shuffledQuestions.length} v balíčku z ${pluralCards(baseCount)} ve výběru`
                 : `${pluralCards(baseCount)} ve výběru`}
             </span>
@@ -908,11 +936,17 @@ export default function Flashcards({
                 </div>
               )}
 
+              {visibilityError && (
+                <p role="alert" className="mb-3 p-3 rounded-xl text-sm bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300">
+                  {visibilityError}
+                </p>
+              )}
               {/* The 3D Card */}
               <div className="relative min-h-[360px] md:min-h-[420px] h-auto w-full perspective-1000">
                 <div
                   role="button"
                   tabIndex={0}
+                  data-flashcard="true"
                   aria-label={isFlipped ? 'Otočit kartičku na otázku' : 'Otočit kartičku na odpověď'}
                   className={`w-full min-h-[360px] md:min-h-[420px] h-full transition-all duration-500 preserve-3d cursor-pointer ${isFlipped ? 'rotate-y-180' : ''}`}
                   onClick={handleFlip}
