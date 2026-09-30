@@ -450,21 +450,21 @@ export const vezenskaAdministrativaQuestions: Question[] = [
         explanation: 'Služební záznam musí obsahovat přesný čas, místo, identifikaci zúčastněných osob a věcný popis děje.'
     },
     {
-        id: 'va_27',
-        subject: 'Vězeňská administrativa',
-        topic: 'Kázeňské řízení a lhůty',
-        question: 'V jaké zákonné lhůtě od zjištění kázeňského přestupku odsouzeného musí být přestupek projednán a uložen kázeňský trest dle § 52 zákona o VTOS?',
-        answer: 'Kázeňský trest lze uložit do 1 měsíce ode dne, kdy se o přestupku dozvěděl kterýkoliv zaměstnanec VS ČR, nejpozději však do 1 roku od spáchání přestupku.',
-        options: [
-            'Do 24 hodin od spáchání, jinak je přestupek automaticky promlčen.',
-            'Kázeňský trest lze uložit do 1 měsíce ode dne, kdy se o přestupku dozvěděl kterýkoliv zaměstnanec VS ČR, nejpozději však do 1 roku od spáchání přestupku.',
-            'Lhůta není zákonem omezena, kázeňský trest lze uložit kdykoliv po dobu výkonu trestu.',
-            'Přesně do 6 měsíců od podání písemného návrhu dozorce oddělení.'
-        ],
-        correctOption: 1,
-        rationale: 'Dle § 52 odst. 3 zákona č. 169/1999 Sb. o VTOS platí subjektivní prekluzivní lhůta 1 měsíc od okamžiku, kdy se o přestupku dozvěděl zaměstnanec VS, a objektivní lhůta 1 rok od jeho spáchání.',
-        source: '§ 52 odst. 3 zákona č. 169/1999 Sb., o výkonu trestu odnětí svobody',
-        explanation: 'Dle § 52 odst. 3 ZVTOS je subjektivní lhůta 1 měsíc a objektivní lhůta 1 rok od spáchání kázeňského přestupku.'
+      "id": "va_27",
+      "subject": "Vězeňská administrativa",
+      "topic": "Kázeňské řízení a lhůty",
+      "question": "Do kdy nejpozději lze odsouzenému uložit kázeňský trest podle § 47 odst. 3 zákona č. 169/1999 Sb.?",
+      "answer": "Do 1 roku od spáchání přestupku; kratší lhůtu od zjištění zákon nestanoví.",
+      "options": [
+        "Do 24 hodin od spáchání, jinak se přestupek už nemůže projednat.",
+        "Do 1 roku od spáchání přestupku; kratší lhůtu od zjištění zákon nestanoví.",
+        "Do 1 měsíce ode dne, kdy se o něm zaměstnanec dozvěděl, a nejpozději do 1 roku od spáchání.",
+        "Kdykoli během výkonu trestu, lhůtu zákon nijak neomezuje."
+      ],
+      "correctOption": 1,
+      "rationale": "Podle § 47 odst. 3 zákona č. 169/1999 Sb. nelze kázeňský trest uložit, jestliže od spáchání kázeňského přestupku uplynula doba jednoho roku. Kratší lhůtu počítanou od zjištění přestupku zákon u odsouzených nestanoví; lhůtu 15 dnů od zjištění a nejvýše 1 měsíc od porušení kázně má jen řízení s obviněnými (§ 23 odst. 3 zákona č. 293/1993 Sb.).",
+      "source": "§ 47 odst. 3 zákona č. 169/1999 Sb., o výkonu trestu odnětí svobody",
+      "explanation": "Podle § 47 odst. 3 zákona č. 169/1999 Sb. nelze kázeňský trest uložit, jestliže od spáchání kázeňského přestupku uplynula doba jednoho roku. Kratší lhůtu počítanou od zjištění přestupku zákon u odsouzených nestanoví; lhůtu 15 dnů od zjištění a nejvýše 1 měsíc od porušení kázně má jen řízení s obviněnými (§ 23 odst. 3 zákona č. 293/1993 Sb.). (Právní úprava: § 47 odst. 3 zákona č. 169/1999 Sb., o výkonu trestu odnětí svobody)"
     },
   {
     "id": "va_28",

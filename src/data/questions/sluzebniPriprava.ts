@@ -447,18 +447,18 @@ export const sluzebniPripravaQuestions: Question[] = [
     "id": "sp-33",
     "subject": "Vězeňská administrativa",
     "topic": "Justiční stráž – Doručování písemností a obálky",
-    "question": "U kterého typu soudní obálky NIKDY nenastává fikce doručení vhozením do schránky (§ 146 / OSŘ)?",
-    "answer": "Obálka typu II (zelený pruh) – doručování do vlastních rukou s vyloučením vložení do schránky (např. platební rozkaz, trestní příkaz); po 10 dnech se vrací soudu.",
+    "question": "U kterého typu soudní obálky NIKDY nenastává fikce doručení vhozením do schránky?",
+    "answer": "Obálka typu II – do vlastních rukou s vyloučením vložení do schránky (např. platební rozkaz); po 10 dnech se vrací soudu.",
     "options": [
-      "Obálka typu I (červený pruh) – standardní úřední zásilka, kde je vhození do schránky přísně zakázáno a po 3 dnech dochází ke skartaci.",
-      "Obálka typu II (zelený pruh) – doručování do vlastních rukou s vyloučením vložení do schránky (např. platební rozkaz, trestní příkaz); po 10 dnech se vrací soudu.",
-      "Obálka typu III (fialový pruh) – určená výhradně pro doručování mezinárodních zatykačů a předvolání svědků s fikcí po 30 dnech.",
-      "Obálka typu IV (žlutý pruh) – písemnost doručovaná výhradně statutárním orgánům právnických osob do datové schránky s okamžitým účinkem."
+      "Obálka typu I – standardní zásilka, kde je vhození do schránky přísně zakázáno a po 3 dnech dochází ke skartaci.",
+      "Obálka typu II – do vlastních rukou s vyloučením vložení do schránky (např. platební rozkaz); po 10 dnech se vrací soudu.",
+      "Obálka typu III – určená výhradně pro doručování mezinárodních zatykačů a předvolání svědků s fikcí po 30 dnech.",
+      "Obálka typu IV – písemnost doručovaná výhradně statutárním orgánům právnických osob do datové schránky s okamžitým účinkem."
     ],
     "correctOption": 1,
-    "rationale": "U obálky typu II (§ 49 odst. 5 OSŘ a § 64 odst. 4 TrŘ) zákon vylučuje náhradní doručení vhozením do schránky. Písemnost se vrací soudu jako nedoručená.",
-    "source": "§ 146 NGŘ č. 33/2019 a § 49 odst. 5 OSŘ",
-    "explanation": "U obálky typu II (§ 49 odst. 5 OSŘ a § 64 odst. 4 TrŘ) zákon vylučuje náhradní doručení vhozením do schránky. Písemnost se vrací soudu jako nedoručená. (Právní úprava: § 146 NGŘ č. 33/2019 a § 49 odst. 5 OSŘ)"
+    "rationale": "U obálky typu II je náhradní doručení vložením do schránky vyloučeno (§ 49 odst. 5 OSŘ); doručující orgán vrátí písemnost soudu po marném uplynutí 10 dnů od jejího připravení k vyzvednutí. V trestním řízení totéž platí pro písemnosti podle § 64 odst. 5 a 6 trestního řádu (např. obžaloba, rozsudek, trestní příkaz).",
+    "source": "§ 49 odst. 5 zákona č. 99/1963 Sb. (OSŘ) a § 64 odst. 5 a 6 trestního řádu",
+    "explanation": "U obálky typu II je náhradní doručení vložením do schránky vyloučeno (§ 49 odst. 5 OSŘ); doručující orgán vrátí písemnost soudu po marném uplynutí 10 dnů od jejího připravení k vyzvednutí. V trestním řízení totéž platí pro písemnosti podle § 64 odst. 5 a 6 trestního řádu (např. obžaloba, rozsudek, trestní příkaz). (Právní úprava: § 49 odst. 5 zákona č. 99/1963 Sb. (OSŘ) a § 64 odst. 5 a 6 trestního řádu)"
   },
   {
     "id": "sp-34",
@@ -668,18 +668,18 @@ export const sluzebniPripravaQuestions: Question[] = [
     "id": "sp-46",
     "subject": "Služební příprava",
     "topic": "Zákonné podmínky užití zbraně",
-    "question": "Jaká povinnost příslušníka VS ČR předchází použití zbraně podle § 20 zákona č. 555/1992 Sb., je-li to s ohledem na okolnosti možné?",
-    "answer": "Vyzvat osobu, proti které zakročuje, aby upustila od protiprávního jednání, s výstrahou, že bude použito zbraně, a užít výstražného výstřelu.",
+    "question": "Jaká povinnost příslušníka VS ČR předchází použití střelné zbraně podle § 18 odst. 3 zákona č. 555/1992 Sb.?",
+    "answer": "Vyzvat osobu, aby upustila od protiprávního jednání, s výstrahou, že bude použito střelné zbraně.",
     "options": [
-      "Vyzvat osobu, proti které zakročuje, aby upustila od protiprávního jednání, s výstrahou, že bude použito zbraně, a užít výstražného výstřelu.",
-      "Okamžitě zahájit mířenou palbu na dolní končetiny bez jakéhokoliv předchozího varování; výzva ani výstražný výstřel se podle zákona nevyžadují, postačí následné hlášení nadřízenému.",
+      "Vyzvat osobu, aby upustila od protiprávního jednání, s výstrahou, že bude použito střelné zbraně.",
+      "Vystřelit nejprve varovný výstřel do vzduchu; ústní výzvu zákon nepožaduje.",
       "Vyžádat si vždy předchozí písemný souhlas ředitele věznice nebo státního zástupce.",
-      "Nejprve použít slzotvorný prostředek a pouta a teprve poté tasit střelnou zbraň."
+      "Nejprve vždy použít slzotvorný prostředek a pouta a teprve po jejich selhání tasit a použít střelnou zbraň."
     ],
     "correctOption": 0,
-    "rationale": "Dle § 20 zákona č. 555/1992 Sb. je příslušník před použitím zbraně povinen, je-li to s ohledem na okolnosti případu možné, vyzvat osobu k upuštění od jednání s výstrahou použití zbraně a použít výstražný výstřel.",
-    "source": "§ 20 zákona č. 555/1992 Sb., o VS a JS ČR",
-    "explanation": "Před použitím zbraně je příslušník povinen vyzvat osobu s výstrahou a užít výstražného výstřelu, dovolují-li to okolnosti."
+    "rationale": "Podle § 18 odst. 3 zákona č. 555/1992 Sb. je příslušník před použitím střelné zbraně v případech podle odst. 1 písm. a) až d) povinen vyzvat osobu, aby upustila od protiprávního jednání, s výstrahou, že bude použito střelné zbraně. Upustit od výzvy smí jen tehdy, je-li ohrožen život nebo zdraví a zákrok nesnese odkladu. Varovný výstřel není povinnou součástí výzvy, je to samostatný donucovací prostředek podle § 17 odst. 2 písm. m); § 20 upravuje až povinnosti po použití zbraně.",
+    "source": "§ 18 odst. 3 zákona č. 555/1992 Sb., o VS a JS ČR",
+    "explanation": "Podle § 18 odst. 3 zákona č. 555/1992 Sb. je příslušník před použitím střelné zbraně v případech podle odst. 1 písm. a) až d) povinen vyzvat osobu, aby upustila od protiprávního jednání, s výstrahou, že bude použito střelné zbraně. Upustit od výzvy smí jen tehdy, je-li ohrožen život nebo zdraví a zákrok nesnese odkladu. Varovný výstřel není povinnou součástí výzvy, je to samostatný donucovací prostředek podle § 17 odst. 2 písm. m); § 20 upravuje až povinnosti po použití zbraně. (Právní úprava: § 18 odst. 3 zákona č. 555/1992 Sb., o VS a JS ČR)"
   },
   {
     "id": "sp-47",
