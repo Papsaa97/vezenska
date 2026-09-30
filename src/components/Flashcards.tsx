@@ -492,7 +492,7 @@ export default function Flashcards({
   const isCurrentFavorite = currentQuestion ? favorites.includes(currentQuestion.id) : false;
 
   return (
-    <div className="w-full flex flex-col gap-5 md:h-full md:min-h-0">
+    <div className="w-full flex flex-col gap-5">
       {/* Leitner Explanation Modal */}
       <LeitnerHelpModal
         isOpen={isHelpModalOpen}
@@ -557,9 +557,9 @@ export default function Flashcards({
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-5 md:flex-1 md:min-h-0">
+      <div className="flex flex-col md:flex-row md:items-start gap-5">
         {/* Sidebar Controls */}
-        <aside className={`w-full md:w-72 flex-col gap-5 shrink-0 md:h-full md:overflow-y-auto no-print ${isMobileFiltersOpen ? 'flex' : 'hidden md:flex'}`}>
+        <aside className={`w-full md:w-72 flex-col gap-5 shrink-0 no-print ${isMobileFiltersOpen ? 'flex' : 'hidden md:flex'}`}>
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
             <h2 className="text-sm font-semibold text-slate-900 dark:text-white mb-4">
               Nastavení drilu
@@ -730,7 +730,7 @@ export default function Flashcards({
         </aside>
 
         {/* Main Flashcard Area */}
-        <section className="flex-1 flex flex-col min-h-[100dvh] md:min-h-0 h-auto md:h-full overflow-y-auto md:overflow-hidden shrink-0">
+        <section className="flex-1 min-w-0 flex flex-col">
           {isDueQueueDone ? (
             <div role="status" className="w-full h-full bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-12 text-center">
               <CheckCircle2 className="w-12 h-12 text-emerald-500 mb-3" aria-hidden="true" />
@@ -790,7 +790,7 @@ export default function Flashcards({
               </button>
             </div>
           ) : (
-            <div className="w-full h-full flex flex-col justify-center items-center max-w-2xl mx-auto">
+            <div className="w-full h-full flex flex-col justify-center-safe items-center max-w-2xl mx-auto">
               {/* Lišta nad kartičkou: postup, box, akce. Leží mimo otáčející se
                   plochu, takže je stejná z obou stran a nic se nezdvojuje. */}
               <div className="flex justify-between items-center gap-3 mb-4 px-2 w-full no-print">

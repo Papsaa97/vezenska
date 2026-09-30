@@ -31,8 +31,7 @@ import {
   ReferenceLine,
   Cell,
   PieChart,
-  Pie,
-  Legend
+  Pie
 } from 'recharts';
 import { Question, QuizSessionRecord, TopicPerformance } from '../types';
 import { PASS_PERCENT, DISTINCTION_PERCENT } from '../constants/grading';
@@ -93,6 +92,16 @@ function formatDurationCs(totalSeconds: number): string {
   if (hours > 0) return `${hours} h ${minutes} min`;
   if (minutes > 0) return `${minutes} min`;
   return `${totalSeconds} s`;
+}
+
+/**
+ * Popisek osy Y u grafu okruhů. Recharts dlouhý název zalomí do více řádků,
+ * které pak lezou přes sousední sloupce; zkrácený popisek se vejde na řádek
+ * a celý název je v bublině po najetí.
+ */
+function shortenAxisLabel(label: string): string {
+  const MAX = 26;
+  return label.length > MAX ? `${label.slice(0, MAX - 1).trimEnd()}…` : label;
 }
 
 function formatShortDateCs(date: Date): string {
@@ -171,9 +180,36 @@ export default function Statistics({
   const isDark = useIsDarkMode();
   const palette = useMemo(() => getChartPalette(isDark), [isDark]);
 
+  /**
+   * Předmět a okruh odpovědi se berou z aktuální banky otázek, ne ze záznamu.
+   * Starší záznamy nesou názvy z dřívějších verzí banky („taktika“,
+   * „Bezpečnostní služba“, okruh = název předmětu…), které v aplikaci už
+   * neexistují a ve statistikách vypadaly jako nesmysl. Odpověď na otázku,
+   * která v bance zůstala, se přepíše na její současný předmět a okruh.
+   */
+  const bankIndex = useMemo(() => {
+    const byId = new Map<string, { subject: string; topic: string }>();
+    const subjects = new Set<string>();
+    const topicKeys = new Set<string>();
+    questions.forEach(q => {
+      const topic = q.topic || 'Základní okruh';
+      byId.set(q.id, { subject: q.subject, topic });
+      subjects.add(q.subject);
+      topicKeys.add(`${q.subject}\u0000${topic}`);
+    });
+    return { byId, subjects, topicKeys };
+  }, [questions]);
+
   // Filter history based on time and subject
   const filteredHistory = useMemo((): FilteredSession[] => {
-    let list: FilteredSession[] = history.map(item => ({ ...item, partial: false }));
+    let list: FilteredSession[] = history.map(item => ({
+      ...item,
+      partial: false,
+      attempts: item.attempts.map(a => {
+        const current = bankIndex.byId.get(a.questionId);
+        return current ? { ...a, subject: current.subject, topic: current.topic } : a;
+      }),
+    }));
 
     const now = Date.now();
     if (timeFilter === '7d') {
@@ -216,7 +252,7 @@ export default function Statistics({
     }
 
     return list.sort((a, b) => a.timestamp - b.timestamp);
-  }, [history, timeFilter, selectedSubjectFilter]);
+  }, [history, timeFilter, selectedSubjectFilter, bankIndex]);
 
   // Aggregate all question attempts from filtered history
   const allAttempts = useMemo(() => {
@@ -248,6 +284,8 @@ export default function Statistics({
     allAttempts.forEach(att => {
       const t = att.topic || 'Základní okruh';
       const key = `${att.subject}\u0000${t}`;
+      // Okruh, který v současné bance není, se do přehledu okruhů nepočítá.
+      if (!bankIndex.topicKeys.has(key)) return;
       const entry = map.get(key) || { topic: t, subject: att.subject, total: 0, correct: 0 };
       entry.total += 1;
       if (att.isCorrect) entry.correct += 1;
@@ -269,7 +307,7 @@ export default function Statistics({
     });
 
     return result.sort((a, b) => a.accuracy - b.accuracy);
-  }, [allAttempts]);
+  }, [allAttempts, bankIndex]);
 
   /** Kolik okruhů z banky se v tomto výběru vůbec neobjevilo. */
   const untestedTopicCount = useMemo(() => {
@@ -312,6 +350,8 @@ export default function Statistics({
   const subjectStats = useMemo(() => {
     const map = new Map<string, { subject: string; total: number; correct: number }>();
     allAttempts.forEach(att => {
+      // Předmět z dřívější verze banky nemá v přehledu předmětů co dělat.
+      if (!bankIndex.subjects.has(att.subject)) return;
       const entry = map.get(att.subject) || { subject: att.subject, total: 0, correct: 0 };
       entry.total += 1;
       if (att.isCorrect) entry.correct += 1;
@@ -325,7 +365,7 @@ export default function Statistics({
       correct: s.correct,
       incorrect: s.total - s.correct
     })).sort((a, b) => a.accuracy - b.accuracy);
-  }, [allAttempts]);
+  }, [allAttempts, bankIndex]);
 
   // Timeline data for Time Chart
   const timeSeriesData = useMemo(() => {
@@ -842,8 +882,9 @@ export default function Statistics({
                   <YAxis
                     type="category"
                     dataKey="label"
-                    width={140}
+                    width={170}
                     tick={{ fontSize: 11, fill: palette.tick }}
+                    tickFormatter={shortenAxisLabel}
                     stroke={palette.axis}
                     interval={0}
                   />
@@ -1058,7 +1099,7 @@ export default function Statistics({
             testech, u kterých byla označena jistota — ostrá zkouška se na ni neptá, takže do rozpadu nevstupuje.
           </p>
 
-          <div className="h-56 w-full">
+          <div className="h-48 w-full">
             {confidenceData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -1082,11 +1123,6 @@ export default function Statistics({
                       name ?? ''
                     ]}
                   />
-                  <Legend
-                    verticalAlign="bottom"
-                    iconType="circle"
-                    formatter={(value) => <span className="text-xs text-slate-600 dark:text-slate-300">{value}</span>}
-                  />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -1097,6 +1133,21 @@ export default function Statistics({
               </div>
             )}
           </div>
+          {/* Popisky pod grafem, ne v něm: legenda Recharts se do výšky grafu
+              nevešla a její řádky se kreslily přes prstenec. */}
+          {confidenceData.length > 0 && (
+            <ul className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+              {confidenceData.map((entry) => (
+                <li key={entry.name} className="flex items-start gap-2 min-w-0">
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0 mt-0.5" style={{ backgroundColor: entry.color }} aria-hidden="true" />
+                  <span className="min-w-0">
+                    {entry.name}{' '}
+                    <span className="text-slate-400 dark:text-slate-500">({entry.value})</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 
