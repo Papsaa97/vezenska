@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { Scale, BookOpen, ClipboardCheck, Printer, CheckCircle2, Info, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { legalDatabase } from '../data/legalCompasData';
-import { VscrRegulation, VSCR_REGULATIONS_REGISTRY } from '../data/vscrRegulationsRegistry';
+import { RegulationDocument, VscrRegulation, VSCR_REGULATIONS_REGISTRY } from '../data/vscrRegulationsRegistry';
 import { NAV_TAB_LABELS } from '../data/navTabs';
 import {
   LEGAL_CATEGORY_LABELS,
@@ -31,6 +31,13 @@ import LegalEditorModal from './legal-compass/LegalEditorModal';
 import LegalAuditModal from './legal-compass/LegalAuditModal';
 import LegalReaderModal from './legal-compass/LegalReaderModal';
 import LegalRegistryView from './legal-compass/LegalRegistryView';
+import FileViewerModal from './common/FileViewerModal';
+import {
+  findRepealedNgr,
+  isRepealed,
+  regulationDocumentAsMaterial,
+  uploadRegulationDocument,
+} from '../utils/regulationDocuments';
 import { readScoped } from '../utils/userScopedStorage';
 import { useStorageOwner } from '../hooks/useProgressRevision';
 import { FAVORITES_SYNCED_EVENT, LEGAL_FAVS_KEY, saveFavoriteIds } from '../utils/gamification';
@@ -112,6 +119,12 @@ export default function LegalCompass() {
   /** Zakládá se nový předpis (true), nebo se upravuje existující (false)? */
   const [editorIsNew, setEditorIsNew] = useState(false);
   const [editingRegulation, setEditingRegulation] = useState<Partial<VscrRegulation> | null>(null);
+  /** Soubor s textem předpisu vybraný v editoru; nahraje se až při uložení. */
+  const [pendingDocFile, setPendingDocFile] = useState<File | null>(null);
+  /** Předpis, který ukládaný předpis nahrazuje ('' = žádný). */
+  const [replacesId, setReplacesId] = useState('');
+  /** Otevřený nahraný text předpisu. */
+  const [viewedDocument, setViewedDocument] = useState<{ doc: RegulationDocument; code: string } | null>(null);
 
   /** Předpis, u kterého čekáme na potvrzení odebrání / návratu k výchozímu. */
   const [pendingDelete, setPendingDelete] = useState<
@@ -316,12 +329,16 @@ export default function LegalCompass() {
       officialUrl: '',
       fullLegalText: ''
     });
+    setPendingDocFile(null);
+    setReplacesId('');
     setEditorIsNew(true);
     setShowEditorModal(true);
   };
 
   const handleOpenEditModal = (reg: VscrRegulation) => {
     setEditingRegulation({ ...reg });
+    setPendingDocFile(null);
+    setReplacesId('');
     setEditorIsNew(false);
     setShowEditorModal(true);
   };
@@ -350,21 +367,59 @@ export default function LegalCompass() {
       summary: editingRegulation.summary || '',
       practicalApplication: editingRegulation.practicalApplication || '',
       officialUrl: editingRegulation.officialUrl || '',
-      fullLegalText: editingRegulation.fullLegalText || ''
+      fullLegalText: editingRegulation.fullLegalText || '',
+      status: editingRegulation.status === 'zruseny' ? 'zruseny' : undefined,
+      replacedBy: editingRegulation.status === 'zruseny' ? editingRegulation.replacedBy?.trim() || undefined : undefined,
+      reviewNote: editingRegulation.reviewNote?.trim() || undefined,
+      document: editingRegulation.document,
+      previousDocuments: editingRegulation.previousDocuments,
     };
 
     if (regulationsBusy) return;
     setRegulationsBusy(true);
+
+    // Soubor se nahraje až teď, aby zrušený editor nenechal v úložišti
+    // osiřelý soubor. Předchozí znění se nemaže — přesune se do historie.
+    if (pendingDocFile) {
+      const upload = await uploadRegulationDocument(pendingDocFile, regToSave.code);
+      if (upload.error || !upload.document) {
+        setRegulationsBusy(false);
+        showToast(upload.error ?? 'Soubor se nepodařilo nahrát.', 'error');
+        return;
+      }
+      if (regToSave.document) {
+        regToSave.previousDocuments = [regToSave.document, ...(regToSave.previousDocuments ?? [])];
+      }
+      regToSave.document = upload.document;
+    }
+
     const res = await saveRegulation(regToSave);
-    setRegulationsBusy(false);
     if (res.error) {
+      setRegulationsBusy(false);
       // Editor zůstane otevřený, aby se rozepsaný text neztratil.
       showToast(res.error, 'error');
       return;
     }
+
+    // Nové NGŘ nahrazuje starší: to se označí jako zrušené a odkáže na nové.
+    const replaced = replacesId ? regulationsList.find((r) => r.id === replacesId) : undefined;
+    let replacedError: string | null = null;
+    if (replaced) {
+      const replacedRes = await saveRegulation({ ...replaced, status: 'zruseny', replacedBy: regToSave.code });
+      replacedError = replacedRes.error;
+    }
+    setRegulationsBusy(false);
+    setPendingDocFile(null);
+    setReplacesId('');
     setShowEditorModal(false);
     setEditingRegulation(null);
-    showToast(`Předpis „${regToSave.code}“ je uložen a vidí ho všichni.`);
+    if (replacedError) {
+      showToast(`Předpis „${regToSave.code}“ je uložen, ale ${replaced?.code} se nepodařilo označit jako zrušený: ${replacedError}`, 'error');
+    } else if (replaced) {
+      showToast(`Předpis „${regToSave.code}“ je uložen a ${replaced.code} je označen jako zrušený.`);
+    } else {
+      showToast(`Předpis „${regToSave.code}“ je uložen a vidí ho všichni.`);
+    }
   };
 
   /**
@@ -544,8 +599,23 @@ export default function LegalCompass() {
         foldSearchText(reg.fullLegalText).includes(q);
 
       return matchType && matchQuery;
-    });
+    })
+      // Zrušené předpisy na konec: student je má najít, ale číst jako první
+      // má to, co platí. Řazení je stabilní, jinak pořadí zůstává.
+      .sort((a, b) => Number(isRepealed(a)) - Number(isRepealed(b)));
   }, [registrySearchQuery, selectedRegistryType, regulationsList]);
+
+  /** Předpisy, které lze v editoru označit jako nahrazené. */
+  const replaceableRegulations = useMemo(
+    () => regulationsList.filter((r) => !isRepealed(r) && r.id !== editingRegulation?.id),
+    [regulationsList, editingRegulation?.id]
+  );
+
+  /** Zrušené NGŘ, ze kterého vychází otevřený článek Paragrafového výkladu. */
+  const currentArticleRepealed = useMemo(
+    () => (currentArticle ? findRepealedNgr(currentArticle.actNumber, regulationsList) : null),
+    [currentArticle, regulationsList]
+  );
 
   // Oblíbené se počítají jen z článků, které v databázi opravdu jsou. Klíč
   // v úložišti může držet id článku, který už z aplikace zmizel, a pilulka by
@@ -753,6 +823,15 @@ export default function LegalCompass() {
         setModalSearchQuery={setModalSearchQuery}
         fileInputRef={fileInputRef}
         canEdit={canEditRegulations}
+        openRegulationDocument={(reg) => reg.document && setViewedDocument({ doc: reg.document, code: reg.code })}
+        currentArticleRepealed={currentArticleRepealed}
+      />
+
+      {/* Nahraný text předpisu (NGŘ) */}
+      <FileViewerModal
+        material={viewedDocument ? regulationDocumentAsMaterial(viewedDocument.doc, viewedDocument.code) : null}
+        isOpen={viewedDocument !== null}
+        onClose={() => setViewedDocument(null)}
       />
 
       {/* Modal: Editor předpisů */}
@@ -763,6 +842,12 @@ export default function LegalCompass() {
         setShowEditorModal={setShowEditorModal}
         setEditingRegulation={setEditingRegulation}
         handleSaveRegulation={handleSaveRegulation}
+        busy={regulationsBusy}
+        pendingFile={pendingDocFile}
+        setPendingFile={setPendingDocFile}
+        replacesId={replacesId}
+        setReplacesId={setReplacesId}
+        replaceableRegulations={replaceableRegulations}
       />
 
       {/* Modal: Audit integrity */}
