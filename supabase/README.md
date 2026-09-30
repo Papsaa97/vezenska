@@ -63,6 +63,16 @@ projektu spusťte v tomto pořadí:
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li
 > 012 před 013, stačí 012 spustit ještě jednou.
 
+## Ověření RLS pod skutečnými rolemi (`overeni/kontrola_rls.sql`)
+
+„Náhled role“ v aplikaci mění jen rozhraní, databázová oprávnění z prohlížeče
+neověří. `overeni/kontrola_rls.sql` se přihlásí jako `anon`, jako první
+student a jako první velitel třídy a zkusí číst osobní tabulky a zapisovat
+tam, kam nesmí (zvýšit si roli, měnit banku otázek, poslat zprávu jménem
+správce). Každý pokus se vrátí zpět, takže je bezpečné ho spustit i na
+produkci; není to migrace. Výsledkem je tabulka, kde má být všude `OK`.
+Spusť ho po každé migraci, která mění politiky.
+
 ## Chyba „infinite recursion detected in policy for relation profiles" (42P17)
 
 Hlásí-li aplikace tohle — v červeném pruhu nahoře nebo u nenačtené nástěnky —
