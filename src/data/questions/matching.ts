@@ -26,7 +26,7 @@ export const matchingCategories: MatchingCategory[] = [
       { id: 'org3', left: 'Justiční stráž (JS)', right: 'Zajišťuje pořádek, bezpečnost a ochranu osob v budovách soudů a státních zastupitelství' },
       { id: 'org4', left: 'Správní služba', right: 'Rozhoduje ve správním řízení, zajišťuje organizační, ekonomickou, výchovnou, vzdělávací a zdravotnickou činnost' },
       { id: 'org5', left: 'Akademie VS ČR (Stráž pod Ralskem)', right: 'Vzdělávací instituce zajišťující základní i specializovanou přípravu příslušníků (ZOP)' },
-      { id: 'org6', left: 'Oddělení prevence a stížností (OPS)', right: 'Pověřený kontrolní orgán prošetřující stížnosti vězněných osob a mimořádné události' }
+      { id: 'org6', left: 'Oddělení prevence a stížností (OPaS)', right: 'Pověřený kontrolní orgán prošetřující stížnosti vězněných osob a mimořádné události' }
     ]
   },
   {

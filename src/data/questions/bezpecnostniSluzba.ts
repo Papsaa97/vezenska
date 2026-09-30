@@ -606,16 +606,16 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     "subject": "Zbraně",
     "topic": "Pistole CZ 75",
     "question": "Jaká je kapacita zásobníku pistole CZ 75 B a její plný palebný průměr?",
-    "answer": "16 nábojů, plný palebný průměr 32 nábojů",
+    "answer": "15 nábojů, plný palebný průměr 30 nábojů",
     "options": [
-      "16 nábojů, plný palebný průměr 32 nábojů",
+      "15 nábojů, plný palebný průměr 30 nábojů",
       "12 nábojů, palebný průměr 24 nábojů",
       "20 nábojů, plný palebný průměr 60 nábojů ve 3 zásobnících",
       "10 nábojů, plný palebný průměr 20 nábojů"
     ],
     "correctOption": 0,
-    "rationale": "Pistole CZ 75 B ráže 9 mm Luger má dvouřadý zásobník na 16 nábojů; plný palebný průměr jsou 2 zásobníky po 16 nábojích, tedy 32 nábojů.",
+    "rationale": "Pistole CZ 75 B ráže 9 mm Luger má dvouřadý zásobník na 15 nábojů; plný palebný průměr jsou 2 zásobníky po 15 nábojích, tedy 30 nábojů.",
     "source": "Učební text Speciální příprava – střelecká teorie, s. 3–8",
-    "explanation": "Pistole CZ 75 B ráže 9 mm Luger má dvouřadý zásobník na 16 nábojů; plný palebný průměr jsou 2 zásobníky po 16 nábojích, tedy 32 nábojů. (Právní úprava: Učební text Speciální příprava – střelecká teorie, s. 3–8)"
+    "explanation": "Pistole CZ 75 B ráže 9 mm Luger má dvouřadý zásobník na 15 nábojů; plný palebný průměr jsou 2 zásobníky po 15 nábojích, tedy 30 nábojů. (Právní úprava: Učební text Speciální příprava – střelecká teorie, s. 3–8)"
   }
 ];

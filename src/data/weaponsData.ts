@@ -44,14 +44,14 @@ export const defaultWeapons: WeaponData[] = [
     id: 'cz75b',
     name: 'Pistole CZ 75 B',
     caliber: '9×19 mm Luger',
-    capacity: '16 nábojů (dvouřadý zásobník)',
+    capacity: '15 nábojů (dvouřadý zásobník)',
     serviceRole: 'Základní služební zbraň příslušníků Vězeňské služby a Justiční stráže ČR.',
     technicalSpecs: [
       { label: 'Ráže', value: '9×19 mm Luger' },
-      { label: 'Kapacita zásobníku', value: '16 nábojů' },
+      { label: 'Kapacita zásobníku', value: '15 nábojů' },
       { label: 'Spoušťový mechanismus', value: 'SA / DA (Single Action / Double Action)' },
-      { label: 'Hmotnost s prázdným zásobníkem', value: '1 000 g' },
-      { label: 'Délka hlavně', value: '114 mm' },
+      { label: 'Hmotnost prázdné zbraně', value: '1 000 g' },
+      { label: 'Délka hlavně', value: '120 mm' },
       { label: 'Pojistné prvky', value: 'Manuální pojistka, blokování zápalníku, bezpečnostní ozub na kohoutu' }
     ],
     safetySteps: [
@@ -161,7 +161,7 @@ export const defaultWeapons: WeaponData[] = [
       { label: 'Kapacita zásobníku', value: '30 nábojů' },
       { label: 'Režimy střelby', value: 'Zajištěno (0), Jednotlivé rány (1), Tříranná dávka (3), Plná dávka (∞)' },
       { label: 'Teoretická rychlost střelby', value: '1 150 ran / min' },
-      { label: 'Hmotnost s prázdným zásobníkem', value: '2 770 g' },
+      { label: 'Hmotnost prázdné zbraně', value: '2 450 g' },
       { label: 'Konstrukce', value: 'Dynamický neuzamčený závěr, polymerové tělo, sklopná a teleskopická ramenní opěra' }
     ],
     safetySteps: [
