@@ -9,6 +9,7 @@ import {
   DECREE_345_1999_FULL,
   DECREE_109_1994_FULL,
   NGR_33_2019_FULL,
+  NGR_02_2022_FULL,
   NGR_16_2022_FULL,
   NGR_24_2022_FULL,
   NGR_28_2018_FULL,
@@ -42,6 +43,38 @@ export interface VscrRegulation {
   practicalApplication: string;
   officialUrl?: string;
   fullLegalText: string;
+  /**
+   * Platí předpis, nebo ho už něco zrušilo? Chybí-li, předpis platí.
+   *
+   * Hlavně pro NGŘ: ta ve Sbírce nejsou, takže za ně aktuálnost nehlídá
+   * `npm run sync:laws` a musí ji ručně nastavit lektor, když vyjde nové.
+   */
+  status?: RegulationStatus;
+  /** Označení předpisu, který tento nahradil (např. „NGŘ č. 14/2026“). */
+  replacedBy?: string;
+  /**
+   * Co u záznamu chybí nebo je potřeba ověřit. Zobrazí se všem, aby student
+   * poznal, že čte neúplný záznam; lektor poznámku po doplnění smaže.
+   */
+  reviewNote?: string;
+  /** Nahraný text předpisu (PDF nebo Word) v kbelíku studijních materiálů. */
+  document?: RegulationDocument;
+  /** Dřívější nahrané verze — při nahrazení souboru se nemažou. */
+  previousDocuments?: RegulationDocument[];
+}
+
+export type RegulationStatus = 'platny' | 'zruseny';
+
+/** Soubor s textem předpisu, nahraný lektorem. */
+export interface RegulationDocument {
+  /** Cesta v kbelíku 'studijni-materialy' (složka 'predpisy/'). */
+  path: string;
+  /** Původní název souboru, pod kterým se i stahuje. */
+  fileName: string;
+  size: number;
+  mimeType: string;
+  /** Kdy byl soubor nahrán (ISO). */
+  uploadedAt: string;
 }
 
 export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
@@ -283,87 +316,119 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
   // =========================================================================
   // 3. NAŘÍZENÍ GENERÁLNÍHO ŘEDITELE VĚZEŇSKÉ SLUŽBY ČR (NGŘ)
   // =========================================================================
+  //
+  // NGŘ nejsou ve Sbírce zákonů, takže je `npm run sync:laws` nestahuje a nikdo
+  // za lektora nehlídá, jestli ještě platí. Text konkrétního NGŘ se proto do
+  // aplikace NAHRÁVÁ jako soubor (Katalog předpisů → Upravit → Nahrát soubor)
+  // a nové NGŘ, které starší nahrazuje, to u starého vyznačí (status/replacedBy).
+  //
+  // Názvy a paragrafy níže jsou ověřené proti podkladům ze závěrečných zkoušek
+  // ZOP A 2026 („závěrečky zop.pdf“ ve sdílených souborech projektu). Dřívější
+  // verze registru přiřazovala čtyřem NGŘ cizí obsah — 33/2019 jako „řád
+  // prohlídek“, 16/2022 jako „strážní, dozorčí a eskortní službu“, 24/2022 jako
+  // „vstupy a vjezdy“ a 41/2024 jako „spisový řád a ETŘ“ — a k tomu vymyšlené
+  // články. Podle podkladů je 33/2019 o vězeňské a justiční stráži (prohlídky,
+  // eskorty i vstupy jsou jeho části), 16/2022 o mimořádných událostech,
+  // 24/2022 o předcházení násilí a 41/2024 o kázeňském řízení.
   {
     id: 'ngr-33-2019',
-    code: 'NGŘ č. 33/2019 (a NGŘ č. 2/2026)',
-    title: 'Nařízení generálního ředitele Vězeňské služby ČR o provádění prohlídek osob, věcí a prostor ve věznicích a vazebních věznicích',
-    shortTitle: 'Řád prohlídek a kontrol (NGŘ 33/2019)',
+    code: 'NGŘ č. 33/2019',
+    title: 'Nařízení generálního ředitele Vězeňské služby ČR o vězeňské a justiční stráži',
+    shortTitle: 'Vězeňská a justiční stráž (NGŘ 33/2019)',
     type: 'ngr',
     authority: 'Generální ředitelství VS ČR',
-    effectiveFrom: '1. 10. 2019',
-    lastAmendment: 'NGŘ č. 2/2026',
-    scope: 'Stanoví závazné postupy a cykly pro provádění osobních prohlídek vězněných osob, technických kontrol prostor, detekci nepovolených předmětů a drog.',
+    lastAmendment: 'NGŘ č. 8/2022',
+    scope: 'Strážní a eskortní služba, prohlídky věznice a osob a vstup osob a vjezd vozidel do střežených objektů VS ČR.',
     keyProvisions: [
-      'Druhy osobních prohlídek: orientační, důkladná (se svlečením do naha), lékařská prohlídka tělesných otvorů',
-      'Důkladnou osobní prohlídku se svlečením smí provádět VÝHRADNĚ příslušník STEJNÉHO POHLAVÍ jako prohlížená osoba a bez přítomnosti třetích osob!',
-      'Závazný 90denní cyklus: generální kontrola všech cel, ložnic, pracovišť a prostor věznice musí proběhnout nejméně 1x za 90 dnů',
-      'Použití technických prostředků: detektory kovů, detektory nelineárních přechodů (na skryté mobily), narkotesty, endoskopy, služební psi na vyhledávání OPL'
+      '§ 51 – Střídání strážných na strážních stanovištích se provádí po rozdílení směny a nabití zbraní na určeném místě',
+      '§ 79 a § 80 – Povinnosti strážného a strážného u hlavního vchodu; strážný nesmí vpustit zjevně podnapilé osoby, osoby s neplatným, poškozeným či nečitelným dokladem ani osoby mladší 15 let bez doprovodu osoby starší 18 let (§ 80 odst. 3 písm. e)',
+      '§ 43 a § 73 – Eskorta do zdravotnického zařízení na písemnou žádost lékaře; povinnosti velitele eskorty (§ 73 odst. 1 a 2)',
+      '§ 85 – Střežení vězněných osob v mimovězeňském zdravotnickém zařízení',
+      '§ 89 až § 92 – Generální, dílčí a technická prohlídka; o opatřeních k zajištění bezpečnosti se vždy informuje vedoucí oddělení (§ 92 odst. 4)',
+      '§ 96 – Preventivní osobní prohlídka, mimo jiné při generální a dílčí prohlídce u všech vězněných osob a před umístěním k výkonu kázeňského trestu',
+      '§ 99 až § 103 – Vstup osob do střeženého objektu; po každé osobní prohlídce ostatních osob se sepisuje služební záznam (§ 99 odst. 5), kontrola ručním detektorem kovů (§ 101)'
     ],
     importanceForZOP: 'Klíčový (ZOP A)',
-    tags: ['NGŘ', 'prohlídky', '90 dnů cyklus', 'stejné pohlaví', 'kontrola cel', 'drogy'],
-    summary: 'Nejčastěji zkoušené nařízení v předmětu Bezpečnostní služba. Zabraňuje vnášení drog, zbraní a mobilů.',
-    practicalApplication: 'Provádění osobních prohlídek při návratech z pracovišť, nástupech do vazby a pravidelných prohlídkách cel.',
+    tags: ['NGŘ', 'strážní služba', 'eskortní služba', 'prohlídky', 'vstupy a vjezdy', 'hlavní vchod'],
+    summary: 'Nejčastěji citované NGŘ v závěrečných zkouškách ZOP A: strážní služba, eskorty, prohlídky i vstupy do objektu.',
+    practicalApplication: 'Služba na strážních stanovištích a u hlavního vchodu, eskorty k soudům a do zdravotnických zařízení, generální a dílčí prohlídky.',
     fullLegalText: NGR_33_2019_FULL
+  },
+  {
+    id: 'ngr-02-2022',
+    code: 'NGŘ č. 2/2022',
+    title: 'Nařízení generálního ředitele Vězeňské služby ČR o zaměstnancích a příslušnících zabezpečujících výkon vazby, výkon trestu odnětí svobody a výkon zabezpečovací detence',
+    shortTitle: 'Dozorčí služba – výkon vazby a trestu (NGŘ 2/2022)',
+    type: 'ngr',
+    authority: 'Generální ředitelství VS ČR',
+    scope: 'Povinnosti dozorců oddělení výkonu vazby a výkonu trestu a dalších zaměstnanců zabezpečujících výkon vazby, trestu a zabezpečovací detence. Nahradilo NGŘ č. 5/2016.',
+    keyProvisions: [
+      '§ 28 až § 32 – Dozorce oddělení výkonu vazby; na stanovišti v oddílu cel obviněných převezme při nástupu klíče od cel, prověří uzamčení všech cel a spojovací a signálně zabezpečovací prostředky (§ 32 odst. 3)',
+      '§ 62 a § 68 odst. 3 – Povinnosti dozorce oddělení výkonu trestu',
+      '§ 70 – Dozorce zajišťující komplexní výkon dozorčí služby v uzavřeném oddílu je přímo podřízen inspektorovi dozorčí služby'
+    ],
+    importanceForZOP: 'Klíčový (ZOP A)',
+    tags: ['NGŘ', 'dozorčí služba', 'dozorce', 'výkon vazby', 'výkon trestu'],
+    summary: 'Předpis pro dozorčí službu na odděleních výkonu vazby a trestu — v závěrečných zkouškách ZOP A druhé nejcitovanější NGŘ.',
+    practicalApplication: 'Nástup do služby na oddílu, kontrola cel a vězněných osob, spolupráce s inspektorem dozorčí služby.',
+    reviewNote: 'Ověřte, zda ho nenahradilo NGŘ č. 2/2026 o dozorčí službě. Pokud ano, označte ho v editoru jako zrušené.',
+    fullLegalText: NGR_02_2022_FULL
   },
   {
     id: 'ngr-16-2022',
     code: 'NGŘ č. 16/2022',
-    title: 'Nařízení generálního ředitele Vězeňské služby ČR o organizaci a výkonu strážní, dozorčí a eskortní služby',
-    shortTitle: 'Strážní, dozorčí a eskortní služba (NGŘ 16/2022)',
+    title: 'Nařízení generálního ředitele Vězeňské služby ČR o mimořádných událostech',
+    shortTitle: 'Mimořádné události (NGŘ 16/2022)',
     type: 'ngr',
     authority: 'Generální ředitelství VS ČR',
-    effectiveFrom: '1. 6. 2022',
-    scope: 'Komplexně upravuje taktiku strážní služby na věžích a stanovištích, výkon dozorčí služby na ubytovnách a organizaci eskort.',
+    scope: 'Rozdělení mimořádných událostí na závažné a ostatní, povinnost je hlásit a náležitosti hlášení.',
     keyProvisions: [
-      'Stanovení složení eskorty (velitel eskorty, strážný, řidič) a minimálních početních stavů dle rizikovosti eskortované osoby',
-      'Kategorie eskortovaných osob a barevné označení eskortních listů (červený pruh pro zvlášť nebezpečné pachatele a útěkáře)',
-      'Pravidla pro použití služebního psa při eskortách a střežení perimetru věznice',
-      'Postup strážného při narušení perimetru: výzva „Stůj!“, „Stůj, nebo střelím!“, varovný výstřel a střelba do nohou'
+      '§ 3 písm. c) – Zaměstnanec neprodleně hlásí mimořádnou událost svému přímému nadřízenému',
+      '§ 5 – Závažné mimořádné události (např. útěk vězněné osoby podle písm. a); věznice je neprodleně hlásí stálé službě generálního ředitelství a dozorovému státnímu zástupci',
+      '§ 6 – Ostatní mimořádné události',
+      '§ 8 – Náležitosti hlášení: k jaké události došlo, kdy, kde a proč, případně jak a kdo ji zavinil, jak a kdy byla zjištěna a jaká byla přijata opatření'
     ],
     importanceForZOP: 'Klíčový (ZOP A)',
-    tags: ['NGŘ', 'eskortní služba', 'strážní služba', 'dozorčí služba', 'červený pruh', 'narušení perimetru'],
-    summary: 'Taktická norma pro všechny bezpečnostní směny. Určuje přesné postupy při střežení věznice i transportu vězňů.',
-    practicalApplication: 'Každodenní plánování a provádění eskort k civilním lékařům, soudům a mezi věznicemi.',
+    tags: ['NGŘ', 'mimořádné události', 'hlášení', 'závažná MU', 'ostatní MU'],
+    summary: 'Určuje, co je závažná a co ostatní mimořádná událost a komu a jak se hlásí.',
+    practicalApplication: 'Hlášení útěku, napadení, sebepoškození, nálezu nepovolených věcí a dalších událostí ve službě.',
+    reviewNote: 'Ověřte, zda ho nenahradilo NGŘ č. 14/2026 o mimořádných událostech. Pokud ano, označte ho v editoru jako zrušené.',
     fullLegalText: NGR_16_2022_FULL
   },
   {
     id: 'ngr-24-2022',
     code: 'NGŘ č. 24/2022',
-    title: 'Nařízení generálního ředitele Vězeňské služby ČR o režimu vstupů osob a vjezdů vozidel do střežených objektů VS ČR',
-    shortTitle: 'Vstupy osob a vjezdy vozidel (NGŘ 24/2022)',
+    title: 'Nařízení generálního ředitele Vězeňské služby ČR o předcházení, zabránění a včasném odhalování násilí u obviněných, odsouzených a chovanců',
+    shortTitle: 'Předcházení násilí mezi vězněnými (NGŘ 24/2022)',
     type: 'ngr',
     authority: 'Generální ředitelství VS ČR',
-    effectiveFrom: '1. 9. 2022',
-    scope: 'Stanoví bezpečnostní režim na hlavních vchodech a vjezdových propustích věznic, evidenci vstupujících a kontrolu vozidel.',
+    scope: 'Vytypované vězněné osoby, úkoly zaměstnanců při předcházení a odhalování násilí a jeho zaznamenání.',
     keyProvisions: [
-      'Režim vjezdové propusti: NIKDY nesmí být otevřena obě vrata současně! Vozidlo musí vjet do propusti, vnější vrata se uzavřou, provede se kontrola a teprve poté se otevřou vnitřní vrata',
-      'Kontrola vozidla: kontrola podvozku zrcadlem, kontrola ložné plochy, kabiny řidiče a motorového prostoru',
-      'Vstup osob: kontrola dokladu totožnosti, detekční rám, uložení zbraní a mobilních telefonů do úschovných skříněk před vstupem',
-      'Oprávnění vstupu bez prohlídky: prezident republiky, členové vlády, poslanci, senátoři, soudci a státní zástupci při výkonu pravomoci'
+      '§ 3 – Vytypované vězněné osoby (zařazení do seznamu a opatření k nim)',
+      '§ 20 – Postup při zjištění fyzického násilí',
+      'Příloha č. 1 – „Záznam o zjištění (oznámení) fyzického násilí a zaznamenání známek nevhodného nebo ponižujícího jednání“; zjištění se eviduje v informačním systému v záložce „Fyzické násilí“'
     ],
     importanceForZOP: 'Klíčový (ZOP A)',
-    tags: ['NGŘ', 'vstupy a vjezdy', 'vjezdová propusť', 'obě vrata', 'kontrola podvozku', 'detektory'],
-    summary: 'Klíčový bezpečnostní předpis pro službu na hlavním vchodu (stanoviště č. 1) a vjezdové bráně.',
-    practicalApplication: 'Kontrola všech civilních návštěv, advokátů, zásobovacích vozidel i zaměstnanců při příchodu do věznice.',
+    tags: ['NGŘ', 'násilí', 'prevence', 'vytypované osoby', 'fyzické násilí'],
+    summary: 'Chrání zranitelné vězněné osoby a ukládá zaznamenat každé zjištěné fyzické násilí.',
+    practicalApplication: 'Rozmísťování na cely, prohlídky na stopy násilí, sepsání záznamu o fyzickém násilí.',
     fullLegalText: NGR_24_2022_FULL
   },
   {
     id: 'ngr-28-2018',
     code: 'NGŘ č. 28/2018',
-    title: 'Nařízení generálního ředitele Vězeňské služby ČR o Rezortním protikorupčním programu a Etickém kodexu',
-    shortTitle: 'Protikorupční program a etický kodex (NGŘ 28/2018)',
+    title: 'Nařízení generálního ředitele Vězeňské služby ČR, kterým se vydává Interní protikorupční program Vězeňské služby ČR',
+    shortTitle: 'Protikorupční program a Kodex profesní etiky (NGŘ 28/2018)',
     type: 'ngr',
     authority: 'Generální ředitelství VS ČR',
-    effectiveFrom: '1. 11. 2018',
-    scope: 'Definuje etické standardy příslušníků, matici korupčních rizik, ochranu oznamovatelů (whistleblowing) a zákaz přijímání darů.',
+    scope: 'Interní protikorupční program VS ČR; jeho přílohou č. 6 je Kodex profesní etiky zaměstnance a příslušníka VS ČR.',
     keyProvisions: [
-      'Etické principy: zákonnost, nestrannost, profesionalita, důstojnost a loajalita ke sboru',
-      'Matice korupčních rizik s bodovou škálou 1–25 (Pravděpodobnost 1–5 x Dopad 1–5)',
-      'Kritická korupční místa ve věznici: zaměstnávání odsouzených, zařazování do oddílů s mírnějším režimem, schvalování nákupů a balíčků',
-      'Postup při nabídce úplatku: okamžité odmítnutí, sepsání záznamu a nahlášení nadřízenému a odboru prevence a stížností / GIBS'
+      'Korupce je zneužívání pravomoci a veřejných prostředků k dosažení vlastních individuálních či skupinových zájmů (část A Preambule)',
+      'Část 1.3 – Systém pro oznámení podezření na korupci',
+      'Příloha č. 6 – Kodex profesní etiky zaměstnance a příslušníka VS ČR'
     ],
     importanceForZOP: 'Klíčový (ZOP A)',
-    tags: ['NGŘ', 'etika', 'protikorupční program', 'matice rizik 1-25', 'whistleblowing', 'GIBS'],
+    tags: ['NGŘ', 'etika', 'protikorupční program', 'Kodex profesní etiky', 'oznámení korupce'],
     summary: 'Stěžejní předpis pro předmět Profesní etika. Chrání příslušníka před korupcí a profesním selháním.',
     practicalApplication: 'Prevence korupčních nabídek od rodin odsouzených a udržení vysoké profesní integrity.',
     fullLegalText: NGR_28_2018_FULL
@@ -371,22 +436,21 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
   {
     id: 'ngr-41-2024',
     code: 'NGŘ č. 41/2024',
-    title: 'Nařízení generálního ředitele Vězeňské služby ČR o Spisovém řádu a provozu elektronického systému ETŘ',
-    shortTitle: 'Spisový řád a ETŘ (NGŘ 41/2024)',
+    title: 'Nařízení generálního ředitele Vězeňské služby ČR o kázeňském řízení u obviněných, odsouzených a chovanců',
+    shortTitle: 'Kázeňské řízení (NGŘ 41/2024)',
     type: 'ngr',
     authority: 'Generální ředitelství VS ČR',
-    effectiveFrom: '1. 3. 2024',
-    scope: 'Upravuje tvorbu, evidenci, oběh a archivaci písemností, generování čísel jednacích (Č.j.) a práci v modulu ETŘ.',
+    scope: 'Zmocnění ke kázeňské pravomoci, záznam o kázeňském přestupku, projednání a právní moc rozhodnutí o kázeňském trestu.',
     keyProvisions: [
-      'Struktura Čísla jednacího (Č.j.): VS-pořadové_číslo-oddělení/ČJ-rok-kód_útvaru-pořadí',
-      'Životní cyklus úředního záznamu v ETŘ: Čekající na zpracování (ČJ) → Připraveno k podpisu (PŘ) → Schváleno / Trvalé číslo (TČ)',
-      'Pravidla skartačního řízení: skartační znaky S (stoupa / zničení), V (výběr / archiv), A (archiválie trvalé hodnoty)',
-      'Lhůta pro vyhotovení záznamu o kázeňském přestupku (ZKP): neprodleně, nejpozději do konce směny'
+      '§ 16 – Záznam o kázeňském přestupku může zpracovat kterýkoliv zaměstnanec, zpravidla v den spáchání, na tiskopisu podle přílohy č. 4; předá ho zaměstnanci s kázeňskou pravomocí',
+      '§ 16 odst. 3 – Popis skutku vždy obsahuje přesné určení času a místa, způsob a okolnosti spáchání a vylíčení průběhu jednání',
+      '§ 17 – Postačila-li k nápravě domluva, záznam se nesepisuje a vyřešení domluvou se zapíše do Vězeňského informačního systému',
+      '§ 31 odst. 2 – Rozhodnutí o uložení kázeňského trestu (s výjimkou propadnutí věci) nabývá právní moci dnem oznámení'
     ],
     importanceForZOP: 'Klíčový (ZOP A)',
-    tags: ['NGŘ', 'ETŘ', 'spisová služba', 'číslo jednací', 'skartace', 'úřední záznam'],
-    summary: 'Základní norma pro předmět Vězeňská administrativa. Řídí veškerou úřední korespondenci a evidenci.',
-    practicalApplication: 'Generování úředních záznamů o mimořádných událostech, kázeňských listů a hlášení v systému VIS/ETŘ.',
+    tags: ['NGŘ', 'kázeňské řízení', 'kázeňský přestupek', 'záznam', 'kázeňský trest'],
+    summary: 'Předpis pro kázeňské řízení — dozorce sám kázeňskou pravomoc nemá, ale záznam o přestupku sepsat může.',
+    practicalApplication: 'Sepsání záznamu o kázeňském přestupku a jeho předání, řešení domluvou a zápis do VIS.',
     fullLegalText: NGR_41_2024_FULL
   },
   {
@@ -396,19 +460,87 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     shortTitle: 'Zbraňová služba a střelecká příprava (NGŘ 19/2023)',
     type: 'ngr',
     authority: 'Generální ředitelství VS ČR',
-    effectiveFrom: '1. 5. 2023',
     scope: 'Stanoví bezpečnostní pravidla manipulace se služebními zbraněmi (CZ 75 B, CZ Scorpion EVO 3A1, brokovnice), jejich ukládání a provádění cvičných střeleb.',
     keyProvisions: [
-      'Zbraňová bezpečnost: rána jistoty vždy do lapače střel pod úhlem 45 stupňů!',
+      'Zbraňová bezpečnost: se zbraní se vždy zachází jako s nabitou, hlaveň míří do bezpečného prostoru',
       'Ukládání zbraní ve zbrojnici: vybité, kohout vypuštěn, zásobník mimo zbraň, uzamčeno v trezoru',
-      'Pravidelný střelecký výcvik a povinné přezkoušení příslušníků nejméně 2x ročně',
-      'Postup při závadách na zbrani: selhač, zádržka (stovepipe), vzpříčený náboj (double feed) – klepni, natáhni, pokračuj (TAP-RACK)'
+      'Postup při závadách na zbrani: klepni, natáhni, pokračuj (TAP-RACK)'
     ],
-    importanceForZOP: 'Klíčový (ZOP A)',
-    tags: ['NGŘ', 'zbraně', 'střelba', 'CZ 75 B', 'Scorpion EVO 3', 'bezpečnost', 'lapač střel'],
-    summary: 'Základní střelecký a zbraňový předpis pro předmět Služební příprava.',
+    importanceForZOP: 'Vysoký',
+    tags: ['NGŘ', 'zbraně', 'střelba', 'CZ 75 B', 'Scorpion EVO 3', 'bezpečnost'],
+    summary: 'Zbraňový předpis pro předmět Služební příprava.',
     practicalApplication: 'Vydávání a přebírání zbraní ve zbrojnici před nástupem do služby a na eskorty.',
+    reviewNote: 'Číslo, název ani obsah tohoto NGŘ nejsou v podkladech ze závěrečných zkoušek. Nahrajte platné znění, nebo záznam odeberte.',
     fullLegalText: NGR_19_2023_FULL
+  },
+
+  // --- NGŘ, o kterých víme, ale jejich text v aplikaci zatím není ----------
+  //
+  // Doplněno podle lektora (2026-09-30). Úplný název, účinnost a text se
+  // doplní nahráním souboru v Katalogu předpisů; nic z toho se tu nevymýšlí.
+  {
+    id: 'ngr-2-2026',
+    code: 'NGŘ č. 2/2026',
+    title: 'NGŘ č. 2/2026 – dozorčí služba',
+    shortTitle: 'Dozorčí služba (NGŘ 2/2026)',
+    type: 'ngr',
+    authority: 'Generální ředitelství VS ČR',
+    scope: 'Dozorčí služba.',
+    keyProvisions: [],
+    importanceForZOP: 'Klíčový (ZOP A)',
+    tags: ['NGŘ', 'dozorčí služba', 'k doplnění'],
+    summary: '',
+    practicalApplication: '',
+    reviewNote: 'Doplňte úplný název, účinnost a nahrajte text NGŘ. Nahrazuje-li NGŘ č. 2/2022, vyberte ho v editoru v poli „Nahrazuje předpis“.',
+    fullLegalText: ''
+  },
+  {
+    id: 'ngr-14-2026',
+    code: 'NGŘ č. 14/2026',
+    title: 'NGŘ č. 14/2026 – mimořádné události',
+    shortTitle: 'Mimořádné události (NGŘ 14/2026)',
+    type: 'ngr',
+    authority: 'Generální ředitelství VS ČR',
+    scope: 'Mimořádné události.',
+    keyProvisions: [],
+    importanceForZOP: 'Klíčový (ZOP A)',
+    tags: ['NGŘ', 'mimořádné události', 'k doplnění'],
+    summary: '',
+    practicalApplication: '',
+    reviewNote: 'Doplňte úplný název, účinnost a nahrajte text NGŘ. Nahrazuje-li NGŘ č. 16/2022, vyberte ho v editoru v poli „Nahrazuje předpis“.',
+    fullLegalText: ''
+  },
+  {
+    id: 'ngr-12-2025',
+    code: 'NGŘ č. 12/2025',
+    title: 'NGŘ č. 12/2025 – OPaS',
+    shortTitle: 'OPaS (NGŘ 12/2025)',
+    type: 'ngr',
+    authority: 'Generální ředitelství VS ČR',
+    scope: 'OPaS.',
+    keyProvisions: [],
+    importanceForZOP: 'Vysoký',
+    tags: ['NGŘ', 'OPaS', 'k doplnění'],
+    summary: '',
+    practicalApplication: '',
+    reviewNote: 'Doplňte úplný název, účinnost a nahrajte text NGŘ.',
+    fullLegalText: ''
+  },
+  {
+    id: 'ngr-21-2026',
+    code: 'NGŘ č. 21/2026',
+    title: 'NGŘ č. 21/2026 – název doplňte',
+    shortTitle: 'NGŘ 21/2026',
+    type: 'ngr',
+    authority: 'Generální ředitelství VS ČR',
+    scope: '',
+    keyProvisions: [],
+    importanceForZOP: 'Vysoký',
+    tags: ['NGŘ', 'k doplnění'],
+    summary: '',
+    practicalApplication: '',
+    reviewNote: 'Doplňte název, účinnost a nahrajte text NGŘ.',
+    fullLegalText: ''
   },
 
   // =========================================================================

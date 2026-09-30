@@ -12,6 +12,7 @@ import { resolveRegulationSource } from '../../utils/esbirka/status';
 import PrintHeader from '../common/PrintHeader';
 import OfficialSectionPanel, { findArticleSnapshot } from './OfficialSectionPanel';
 import { formatIsoDate } from './legalCompassLabels';
+import { isRepealed } from '../../utils/regulationDocuments';
 
 /** Nadpis bloku v detailu ustanovení — obyčejný nadpis místo verzálkového štítku. */
 const BLOCK_HEADING =
@@ -87,6 +88,10 @@ interface LegalRegistryViewProps {
   setActiveModalRegulation: (reg: VscrRegulation | null) => void;
   setModalSearchQuery: (v: string) => void;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
+  /** Otevře nahraný text předpisu (NGŘ) v prohlížeči souborů. */
+  openRegulationDocument: (reg: VscrRegulation) => void;
+  /** Zrušené NGŘ, ze kterého vychází otevřený článek výkladu; jinak null. */
+  currentArticleRepealed: VscrRegulation | null;
 }
 
 export default function LegalRegistryView({
@@ -129,6 +134,8 @@ export default function LegalRegistryView({
   setActiveModalRegulation,
   setModalSearchQuery,
   fileInputRef,
+  openRegulationDocument,
+  currentArticleRepealed,
 }: LegalRegistryViewProps) {
   if (viewMode === 'registry') {
     return (
@@ -271,6 +278,16 @@ export default function LegalRegistryView({
           </div>
         </div>
 
+        {/* Jak udržet NGŘ aktuální — jen pro ty, kdo je smějí měnit. */}
+        {canEdit && (
+          <p className="no-print text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2">
+            <strong className="text-slate-800 dark:text-slate-200">Aktualizace NGŘ:</strong> nové NGŘ přidejte
+            tlačítkem „Přidat předpis“, nahrajte jeho PDF a v poli „Nahrazuje předpis“ vyberte to staré — to se
+            označí jako zrušené. Při změně stávajícího NGŘ otevřete „Upravit“ a nahrajte novější znění; to
+            předchozí zůstane v historii.
+          </p>
+        )}
+
         {/* Search & Filter Bar for Registry */}
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between no-print">
           {/* Search Box */}
@@ -342,11 +359,15 @@ export default function LegalRegistryView({
             }[reg.type];
 
             const source = resolveRegulationSource(reg);
+            const repealed = isRepealed(reg);
+            const hasStudyText = reg.fullLegalText.trim().length > 0;
 
             return (
               <div
                 key={reg.id}
-                className="border rounded-2xl p-4 sm:p-5 transition-all space-y-3.5 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 dark:hover:border-slate-700 border-slate-200 dark:border-slate-800"
+                className={`border rounded-2xl p-4 sm:p-5 transition-all space-y-3.5 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 dark:hover:border-slate-700 border-slate-200 dark:border-slate-800 ${
+                  repealed ? 'opacity-75' : ''
+                }`}
               >
                 {/* Card Header */}
                 <div className="flex items-start justify-between gap-3">
@@ -362,7 +383,19 @@ export default function LegalRegistryView({
                         {reg.importanceForZOP}
                       </span>
                       {/* Poctivé rozlišení: má aplikace znění z e-Sbírky, nebo jen výběr? */}
-                      {source.summary ? (
+                      {repealed && (
+                        <span className="px-2 py-0.5 rounded-md text-[0.625rem] font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60">
+                          Zrušeno{reg.replacedBy ? ` – nahrazeno ${reg.replacedBy}` : ''}
+                        </span>
+                      )}
+                      {reg.document ? (
+                        <span
+                          className="px-2 py-0.5 rounded-md text-[0.625rem] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
+                          title={`Soubor ${reg.document.fileName}`}
+                        >
+                          Text nahrán{reg.document.uploadedAt ? ` ${formatIsoDate(reg.document.uploadedAt)}` : ''}
+                        </span>
+                      ) : source.summary ? (
                         <span
                           className="px-2 py-0.5 rounded-md text-[0.625rem] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
                           title={`Informativní znění staženo z e-Sbírky ${formatIsoDate(source.summary.stazenoDne)}`}
@@ -371,7 +404,7 @@ export default function LegalRegistryView({
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded-md text-[0.625rem] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                          Jen studijní výběr
+                          {reg.type === 'ngr' ? 'Text NGŘ zatím nenahrán' : 'Jen studijní výběr'}
                         </span>
                       )}
                     </div>
@@ -410,6 +443,17 @@ export default function LegalRegistryView({
                   )}
                 </div>
 
+                {/* Co u záznamu chybí — vidí to všichni, aby nikdo nečetl
+                    neúplný záznam jako hotový. */}
+                {reg.reviewNote && (
+                  <p className="text-xs text-amber-900 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 rounded-xl px-3 py-2 flex items-start gap-2">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" aria-hidden="true" />
+                    <span>
+                      <strong>K doplnění:</strong> {reg.reviewNote}
+                    </span>
+                  </p>
+                )}
+
                 {/* Scope & Summary */}
                 <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                   {reg.scope}
@@ -442,17 +486,46 @@ export default function LegalRegistryView({
 
                 {/* Full Legal Text Modal Trigger & External Link */}
                 <div className="pt-3 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between gap-2 flex-wrap">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveModalRegulation(reg);
-                      setModalSearchQuery('');
-                    }}
-                    className="px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white"
-                  >
-                    <BookOpen className="w-4 h-4" aria-hidden="true" />
-                    <span>{source.summary ? 'Číst informativní znění' : 'Číst studijní výběr'}</span>
-                  </button>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {reg.document && (
+                      <button
+                        type="button"
+                        onClick={() => openRegulationDocument(reg)}
+                        className="px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white"
+                        title={`Otevřít nahraný text: ${reg.document.fileName}`}
+                      >
+                        <FileText className="w-4 h-4" aria-hidden="true" />
+                        <span>Otevřít text {reg.type === 'ngr' ? 'NGŘ' : 'předpisu'}</span>
+                      </button>
+                    )}
+                    {(source.summary || hasStudyText) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveModalRegulation(reg);
+                          setModalSearchQuery('');
+                        }}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-pointer ${
+                          reg.document
+                            ? 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700'
+                            : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                        }`}
+                      >
+                        <BookOpen className="w-4 h-4" aria-hidden="true" />
+                        <span>{source.summary ? 'Číst informativní znění' : 'Číst studijní výběr'}</span>
+                      </button>
+                    )}
+                    {canEdit && !reg.document && reg.type === 'ngr' && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditModal(reg)}
+                        className="px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-pointer bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700"
+                      >
+                        <Upload className="w-4 h-4" aria-hidden="true" />
+                        <span>Nahrát text NGŘ</span>
+                      </button>
+                    )}
+                  </div>
 
                   {source.portalUrl && (
                     <a
@@ -723,6 +796,19 @@ export default function LegalRegistryView({
                   </button>
                 </div>
               </div>
+
+              {/* Výklad vychází z NGŘ, které lektor v katalogu označil jako
+                  zrušené — student musí vědět, že může číst zastaralé pravidlo. */}
+              {currentArticleRepealed && (
+                <p role="note" className="text-xs text-rose-900 dark:text-rose-200 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/60 rounded-xl px-3 py-2 flex items-start gap-2">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" aria-hidden="true" />
+                  <span>
+                    {currentArticleRepealed.code} je zrušené
+                    {currentArticleRepealed.replacedBy ? ` a nahradilo ho ${currentArticleRepealed.replacedBy}` : ''}.
+                    Výklad níže může být zastaralý; ověřte ho v aktuálním znění.
+                  </span>
+                </p>
+              )}
 
               {/* Blok 1: studijní přepis ustanovení
                   Dřív byl nadpis „Doslovné znění zákona“. Kontrola doslovnosti

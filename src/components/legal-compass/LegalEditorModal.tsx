@@ -1,9 +1,11 @@
 import React, { useId } from 'react';
-import { Edit3, Plus, X } from 'lucide-react';
+import { Edit3, FileText, Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { VscrRegulation } from '../../data/vscrRegulationsRegistry';
+import { formatFileSize } from '../../utils/materials';
+import { REGULATION_DOC_ACCEPT } from '../../utils/regulationDocuments';
 import { useDialog } from '../../hooks/useDialog';
-import { REGULATION_TYPE_LABELS, REGULATION_TYPE_ORDER } from './legalCompassLabels';
+import { REGULATION_TYPE_LABELS, REGULATION_TYPE_ORDER, formatIsoDate } from './legalCompassLabels';
 
 interface LegalEditorModalProps {
   showEditorModal: boolean;
@@ -16,6 +18,16 @@ interface LegalEditorModalProps {
   setShowEditorModal: (v: boolean) => void;
   setEditingRegulation: React.Dispatch<React.SetStateAction<Partial<VscrRegulation> | null>>;
   handleSaveRegulation: () => void;
+  /** Probíhá ukládání (a případně nahrávání souboru)? */
+  busy: boolean;
+  /** Soubor vybraný k nahrání; nahraje se až při uložení. */
+  pendingFile: File | null;
+  setPendingFile: (file: File | null) => void;
+  /** Id předpisu, který ukládaný předpis nahrazuje ('' = žádný). */
+  replacesId: string;
+  setReplacesId: (id: string) => void;
+  /** Předpisy, které lze označit jako nahrazené (platné, kromě upravovaného). */
+  replaceableRegulations: VscrRegulation[];
 }
 
 const INPUT_CLASS =
@@ -28,6 +40,12 @@ export default function LegalEditorModal({
   setShowEditorModal,
   setEditingRegulation,
   handleSaveRegulation,
+  busy,
+  pendingFile,
+  setPendingFile,
+  replacesId,
+  setReplacesId,
+  replaceableRegulations,
 }: LegalEditorModalProps) {
   // Jedinečný základ id, kterým se popisek sváže se svým vstupem (htmlFor níže).
   const fieldIds = useId();
@@ -193,6 +211,144 @@ export default function LegalEditorModal({
                 />
               </div>
 
+              {/* Aktuálnost předpisu. NGŘ nejsou v e-Sbírce, takže platnost
+                  za lektora nikdo jiný nehlídá. */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-9`}>Účinnost od</label>
+                  <input
+                    id={`${fieldIds}-9`}
+                    type="text"
+                    placeholder="např. 1. 3. 2026"
+                    value={editingRegulation.effectiveFrom || ''}
+                    onChange={(e) => setEditingRegulation(prev => ({ ...prev, effectiveFrom: e.target.value }))}
+                    className={INPUT_CLASS}
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-10`}>Poslední změna</label>
+                  <input
+                    id={`${fieldIds}-10`}
+                    type="text"
+                    placeholder="např. NGŘ č. 8/2022"
+                    value={editingRegulation.lastAmendment || ''}
+                    onChange={(e) => setEditingRegulation(prev => ({ ...prev, lastAmendment: e.target.value || undefined }))}
+                    className={INPUT_CLASS}
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-11`}>Stav</label>
+                  <select
+                    id={`${fieldIds}-11`}
+                    value={editingRegulation.status === 'zruseny' ? 'zruseny' : 'platny'}
+                    onChange={(e) =>
+                      setEditingRegulation(prev => ({
+                        ...prev,
+                        status: e.target.value === 'zruseny' ? 'zruseny' : 'platny',
+                      }))
+                    }
+                    className={INPUT_CLASS}
+                  >
+                    <option value="platny">Platný</option>
+                    <option value="zruseny">Zrušený</option>
+                  </select>
+                </div>
+              </div>
+
+              {editingRegulation.status === 'zruseny' && (
+                <div>
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-12`}>Nahrazen předpisem</label>
+                  <input
+                    id={`${fieldIds}-12`}
+                    type="text"
+                    placeholder="např. NGŘ č. 14/2026"
+                    value={editingRegulation.replacedBy || ''}
+                    onChange={(e) => setEditingRegulation(prev => ({ ...prev, replacedBy: e.target.value || undefined }))}
+                    className={INPUT_CLASS}
+                  />
+                </div>
+              )}
+
+              {replaceableRegulations.length > 0 && (
+                <div>
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-13`}>Nahrazuje předpis</label>
+                  <select
+                    id={`${fieldIds}-13`}
+                    value={replacesId}
+                    onChange={(e) => setReplacesId(e.target.value)}
+                    className={INPUT_CLASS}
+                  >
+                    <option value="">Nic nenahrazuje</option>
+                    {replaceableRegulations.map((reg) => (
+                      <option key={reg.id} value={reg.id}>
+                        {reg.code} – {reg.shortTitle}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-[0.6875rem] text-slate-500 dark:text-slate-400">
+                    Vybraný předpis se po uložení označí jako zrušený a u něj se ukáže odkaz na tento.
+                  </p>
+                </div>
+              )}
+
+              {/* Text předpisu jako soubor */}
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-3 space-y-2">
+                <p className="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <FileText className="w-4 h-4" aria-hidden="true" />
+                  Text předpisu (PDF nebo Word)
+                </p>
+                {editingRegulation.document ? (
+                  <p className="text-slate-600 dark:text-slate-400">
+                    Nahráno: <strong>{editingRegulation.document.fileName}</strong>
+                    {' '}({formatFileSize(editingRegulation.document.size)}
+                    {editingRegulation.document.uploadedAt ? `, ${formatIsoDate(editingRegulation.document.uploadedAt)}` : ''})
+                  </p>
+                ) : (
+                  <p className="text-slate-500 dark:text-slate-400">Zatím není nahraný žádný soubor.</p>
+                )}
+                <label className="font-semibold text-slate-700 dark:text-slate-300 block" htmlFor={`${fieldIds}-14`}>
+                  {editingRegulation.document ? 'Nahradit novějším zněním' : 'Nahrát soubor'}
+                </label>
+                <input
+                  id={`${fieldIds}-14`}
+                  type="file"
+                  accept={REGULATION_DOC_ACCEPT}
+                  onChange={(e) => {
+                    setPendingFile(e.target.files?.[0] ?? null);
+                    e.target.value = '';
+                  }}
+                  className="block w-full text-xs text-slate-600 dark:text-slate-300 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 dark:file:bg-indigo-950 dark:file:text-indigo-300 file:font-semibold"
+                />
+                {pendingFile && (
+                  <p className="text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+                    <span>Po uložení se nahraje: {pendingFile.name} ({formatFileSize(pendingFile.size)})</span>
+                    <button
+                      type="button"
+                      onClick={() => setPendingFile(null)}
+                      className="underline cursor-pointer"
+                    >
+                      Zrušit výběr
+                    </button>
+                  </p>
+                )}
+                <p className="text-[0.6875rem] text-slate-500 dark:text-slate-400">
+                  Soubor uvidí každý přihlášený uživatel portálu. Starší nahrané znění se nemaže, zůstává
+                  v historii předpisu.
+                </p>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-15`}>Co je potřeba doplnit nebo ověřit</label>
+                <textarea
+                  id={`${fieldIds}-15`}
+                  rows={2}
+                  placeholder="Zobrazí se u předpisu všem. Po doplnění poznámku smažte."
+                  value={editingRegulation.reviewNote || ''}
+                  onChange={(e) => setEditingRegulation(prev => ({ ...prev, reviewNote: e.target.value || undefined }))}
+                  className={INPUT_CLASS}
+                />
+              </div>
+
               <div>
                 <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1" htmlFor={`${fieldIds}-8`}>
                   Studijní výběr ustanovení (text pro čtení a vyhledávání)
@@ -219,9 +375,10 @@ export default function LegalEditorModal({
               <button
                 type="button"
                 onClick={handleSaveRegulation}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs cursor-pointer transition-colors"
+                disabled={busy}
+                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs cursor-pointer transition-colors disabled:opacity-60 disabled:cursor-wait"
               >
-                Uložit pro všechny
+                {busy ? (pendingFile ? 'Nahrávám…' : 'Ukládám…') : 'Uložit pro všechny'}
               </button>
             </div>
           </motion.div>

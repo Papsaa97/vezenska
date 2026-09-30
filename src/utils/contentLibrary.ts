@@ -4,7 +4,7 @@ import { SubjectInfo, subjectsMeta } from '../data/questions/subjectsInfo';
 import { Scenario, ScenarioStep, ScenarioChoice } from '../data/scenariosData';
 import { StoppageDrill, WeaponData, WeaponStep } from '../data/weaponsData';
 import { Jidelnicek } from '../data/jidelnicek';
-import { VscrRegulation } from '../data/vscrRegulationsRegistry';
+import { RegulationDocument, VscrRegulation } from '../data/vscrRegulationsRegistry';
 import { DilemmaOption, DilemmaScenario } from '../data/professionalEthicsData';
 import { STUDY_SECTION_AREAS, StudySection, StudySectionItem } from '../data/studySections';
 import {
@@ -457,6 +457,30 @@ function normalizeRegulation(value: unknown): VscrRegulation | null {
     practicalApplication: str(raw.practicalApplication),
     officialUrl: str(raw.officialUrl) || undefined,
     fullLegalText: str(raw.fullLegalText),
+    status: raw.status === 'zruseny' ? 'zruseny' : raw.status === 'platny' ? 'platny' : undefined,
+    replacedBy: str(raw.replacedBy).trim() || undefined,
+    reviewNote: str(raw.reviewNote).trim() || undefined,
+    document: normalizeRegulationDocument(raw.document) ?? undefined,
+    previousDocuments: Array.isArray(raw.previousDocuments)
+      ? raw.previousDocuments
+          .map(normalizeRegulationDocument)
+          .filter((d): d is RegulationDocument => d !== null)
+      : undefined,
+  };
+}
+
+/** Nahraný soubor předpisu; bez cesty v úložišti není co otevřít. */
+function normalizeRegulationDocument(value: unknown): RegulationDocument | null {
+  const raw = record(value);
+  if (!raw) return null;
+  const path = str(raw.path).trim();
+  if (!path) return null;
+  return {
+    path,
+    fileName: str(raw.fileName).trim() || path.split('/').pop() || path,
+    size: typeof raw.size === 'number' && raw.size >= 0 ? raw.size : 0,
+    mimeType: str(raw.mimeType) || 'application/pdf',
+    uploadedAt: str(raw.uploadedAt),
   };
 }
 

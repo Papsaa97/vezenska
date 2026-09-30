@@ -240,58 +240,77 @@ Cely obviněných jsou po celých 24 hodin uzamčeny. Příslušníci do cely vs
 Vycházka obviněných probíhá denně v délce nejméně 1 hodiny ve vyhrazených vycházkových prostorech s bezpečnostním oplocením a monitorováním. Obvinění v koluzní vazbě vykonávají vycházku odděleně od ostatních.`;
 
 export const NGR_33_2019_FULL = `NAŘÍZENÍ GENERÁLNÍHO ŘEDITELE VĚZEŇSKÉ SLUŽBY ČR č. 33/2019
-o provádění prohlídek osob, věcí a prostor ve věznicích a vazebních věznicích
-(ve znění NGŘ č. 2/2026)
+o vězeňské a justiční stráži (ve znění NGŘ č. 8/2022)
+Studijní výběr podle podkladů k závěrečným zkouškám ZOP A 2026 — není to text nařízení.
+Platné znění nahrává lektor jako soubor v Katalogu předpisů.
 
-Článek 1 – Druhy a účel prohlídek
-1. Prohlídky se provádějí za účelem zajištění bezpečnosti, nalezení a odebrání nepovolených věcí, omamných a psychotropních látek, zbraní a komunikačních zařízení.
-2. Druhy osobních prohlídek:
-a) Orientační osobní prohlídka – provádí se zběžnou kontrolou oděvu hmatem a ručním detektorem kovů při běžném pohybu po věznici a návratu z pracovišť.
-b) Důkladná osobní prohlídka – provádí se se svlečením do naha v oddělené místnosti. Příslušník detailně vizuálně zkontroluje celé tělo včetně chodidel, meziprstních prostorů, vlasů a ústní dutiny.
-c) Lékařská prohlídka tělesných otvorů – provádí se pouze v odůvodněných případech podezření na ukrytí věcí v tělních dutinách a smí ji provést výhradně lékař zdravotnického střediska!
+§ 51 – Střídání strážných
+Střídání strážných na strážních stanovištích se provádí po rozdílení směny a nabití zbraní na určeném místě. Podrobný postup stanoví ředitel věznice ve strážní dokumentaci.
 
-Článek 2 – Zásada stejného pohlaví
-Důkladnou osobní prohlídku se svlečením oděvu smí provádět VÝHRADNĚ příslušník stejného pohlaví jako prohlížená vězněná osoba! Přítomnost osob jiného pohlaví je při prohlídce vyloučena.
+§ 79 a § 80 – Strážný a strážný u hlavního vchodu
+Strážný při výkonu služby nesmí nikomu vydat svoji zbraň ani zásobníky s náboji, a to ani osobám, jimž je podřízen. Strážný u hlavního vchodu při příchodu na stanoviště převezme mimo jiné klíče od brány pro vozidla a od vchodu pro vstup osob (§ 80 odst. 1). Nesmí vpustit zjevně podnapilé osoby nebo osoby pod vlivem návykových látek, osoby s neplatným, poškozeným či nečitelným dokladem totožnosti ani osoby mladší 15 let bez doprovodu osoby starší 18 let (§ 80 odst. 3 písm. e).
 
-Článek 3 – 90denní cyklus prohlídek prostor
-Všechny ubytovací cely, ložnice, společné prostory, dílny, sklady a venkovní areály věznice musí být podrobeny generální technické bezpečnostní kontrole nejméně jedenkrát za 90 dnů. O provedení kontroly se pořizuje elektronický záznam v systému VIS.`;
+§ 43 a § 73 – Eskorty
+Eskorta do zdravotnického zařízení se provádí na žádost lékaře, zpracovanou písemně s podpisem lékaře (§ 43 odst. 1). Povinnosti velitele eskorty stanoví § 73 odst. 1 a 2, mimo jiné pro náhlé zhoršení zdravotního stavu eskortovaného (§ 73 odst. 1 písm. n) a o).
+
+§ 85 – Střežení v mimovězeňském zdravotnickém zařízení
+
+§ 89 až § 92 – Prohlídky věznice
+Prohlídky se dělí na generální, dílčí (§ 90) a technické (§ 91). Postup stanoví § 92; o opatřeních k zajištění bezpečnosti se vždy informuje vedoucí oddělení (§ 92 odst. 4).
+
+§ 96 – Preventivní osobní prohlídka
+Provádí se mimo jiné při generální a dílčí prohlídce u všech vězněných osob a před umístěním k výkonu kázeňského trestu do uzavřeného oddílu, samovazby nebo zvláštní cely (§ 96 odst. 1 písm. f).
+
+§ 99 až § 103 – Vstup osob do střeženého objektu
+Služební záznam se sepisuje i po každé provedené osobní prohlídce ostatních osob (§ 99 odst. 5). Kontrola ručním detektorem kovů navazuje na pozitivní signál detekčního rámu (§ 101). Kdo a na jaký doklad smí do objektu vstoupit, stanoví § 103.`;
+
+export const NGR_02_2022_FULL = `NAŘÍZENÍ GENERÁLNÍHO ŘEDITELE VĚZEŇSKÉ SLUŽBY ČR č. 2/2022
+o zaměstnancích a příslušnících zabezpečujících výkon vazby, výkon trestu odnětí svobody a výkon zabezpečovací detence
+Studijní výběr podle podkladů k závěrečným zkouškám ZOP A 2026 — není to text nařízení.
+Platné znění nahrává lektor jako soubor v Katalogu předpisů.
+
+Nahradilo NGŘ č. 5/2016.
+
+§ 28 až § 32 – Dozorce oddělení výkonu vazby
+Dozorce na stanovišti v oddílu cel obviněných je povinen zejména převzít při nástupu do výkonu služby klíče od cel, prověřit, zda jsou všechny cely řádně uzamčeny, a prověřit spojovací a signálně zabezpečovací prostředky (§ 32 odst. 3).
+
+§ 62 a § 68 odst. 3 – Dozorce oddělení výkonu trestu
+
+§ 70 – Komplexní výkon dozorčí služby v uzavřeném oddílu
+Dozorce je přímo podřízen inspektorovi dozorčí služby.`;
 
 export const NGR_16_2022_FULL = `NAŘÍZENÍ GENERÁLNÍHO ŘEDITELE VĚZEŇSKÉ SLUŽBY ČR č. 16/2022
-o organizaci a výkonu strážní, dozorčí a eskortní služby
+o mimořádných událostech
+Studijní výběr podle podkladů k závěrečným zkouškám ZOP A 2026 — není to text nařízení.
+Platné znění nahrává lektor jako soubor v Katalogu předpisů.
 
-Článek 1 – Strážní služba na stanovištích
-1. Strážný vykonává službu na určeném stanovišti (strážní věž, perimetr, hlavní vchod, vjezdová vrata).
-2. Strážný nesmí opustit svěřené stanoviště, dokud není řádně vystřídán velitelem stráže nebo určeným příslušníkem.
-3. Při narušení vnitřního zakázaného pásma nebo střeženého perimetru postupuje strážný podle stupňů výzvy:
-a) „Stůj!“,
-b) „Stůj, nebo střelím!“ (výzva s výstrahou podle § 18 odst. 3 zákona č. 555/1992 Sb.),
-c) varovný výstřel do bezpečného prostoru pod úhlem 45°,
-d) použití střelné zbraně s nutnou opatrností tak, aby co nejvíce šetřil život osoby, proti níž zakročuje (§ 18 odst. 4 zákona č. 555/1992 Sb.).
+§ 3 písm. c) – Hlášení zaměstnance
+Zaměstnanec je povinen neprodleně nahlásit mimořádnou událost svému přímému nadřízenému.
 
-Článek 2 – Eskortní služba a červený pruh
-1. Eskortu tvoří velitel eskorty, eskortující strážní a řidič eskortního vozidla.
-2. Eskortní list se označuje červeným pruhem u osob odsouzených k výjimečnému trestu (20–30 let nebo doživotí), osob s útěkovými sklony a organizovaného zločinu.
-3. U vězňů s červeným pruhem se při eskortě obligatorně nasazují pouta s poutacím opaskem a eskortní hlídka je posílena psovodem se služebním psem.`;
+§ 5 – Závažné mimořádné události
+Například útěk vězněné osoby (písm. a). Závažnou mimořádnou událost věznice neprodleně hlásí stálé službě generálního ředitelství a dozorovému státnímu zástupci a ředitel věznice telefonicky generálnímu řediteli.
+
+§ 6 – Ostatní mimořádné události
+Například náhlá změna zdravotního stavu vězněné osoby hrozící bezprostředním ohrožením života (písm. c).
+
+§ 8 – Náležitosti hlášení
+K jaké události došlo, kdy, kde a proč, případně jak a kdo ji zavinil, jak a kdy byla zjištěna a jaká byla přijata opatření.`;
 
 export const NGR_24_2022_FULL = `NAŘÍZENÍ GENERÁLNÍHO ŘEDITELE VĚZEŇSKÉ SLUŽBY ČR č. 24/2022
-o režimu vstupů osob a vjezdů vozidel do střežených objektů VS ČR
+o předcházení, zabránění a včasném odhalování násilí u obviněných, odsouzených a chovanců
+Studijní výběr podle podkladů k závěrečným zkouškám ZOP A 2026 — není to text nařízení.
+Platné znění nahrává lektor jako soubor v Katalogu předpisů.
 
-Článek 1 – Bezpečnostní režim vjezdové propusti vozidel
-1. Zásada vzájemného blokování: Vnější a vnitřní vrata vjezdové propusti jsou zabezpečena tak, že NIKDY nesmí dojít k současnému otevření obou vrat!
-2. Postup kontroly vozidla v propusti:
-a) řidič zastaví vozidlo, vypne motor a vystoupí z kabiny,
-b) strážný zkontroluje totožnost řidiče a posádky,
-c) provede se kontrola podvozku zrcadlem nebo inspekční kamerou,
-d) provede se fyzická kontrola nákladového prostoru, kabiny řidiče a motoru,
-e) po uzavření vnějších vrat se otevřou vnitřní vrata pro vjezd do areálu.
+§ 2 písm. a)
+Vedoucím oddělení výkonu vazby a trestu se rozumí vedoucí oddělení výkonu trestu, výkonu vazby, výkonu vazby a trestu, případně výkonu zabezpečovací detence.
 
-Článek 2 – Režim hlavního vchodu (Stanoviště č. 1)
-1. Každá vstupující osoba je povinna prokázat se průkazem totožnosti a projít bezpečnostním rámem.
-2. Všechna příruční zavazadla procházejí kontrolou rentgenovým inspekčním přístrojem (RTG).
-3. Do střeženého objektu je přísně zakázáno vnášet soukromé střelné zbraně, nože, mobilní telefony, záznamová zařízení a alkohol. Tyto předměty se odkládají do trezorových schránek ve vstupním prostoru.`;
+§ 3 – Vytypované vězněné osoby
+
+§ 20 – Postup při zjištění fyzického násilí
+Zjištění se zaznamená na formuláři podle přílohy č. 1 („Záznam o zjištění (oznámení) fyzického násilí a zaznamenání známek nevhodného nebo ponižujícího jednání“) a zaeviduje v informačním systému v záložce „Fyzické násilí“.`;
 
 export const NGR_28_2018_FULL = `NAŘÍZENÍ GENERÁLNÍHO ŘEDITELE VĚZEŇSKÉ SLUŽBY ČR č. 28/2018
-o Rezortním protikorupčním programu a Etickém kodexu příslušníků a zaměstnanců VS ČR
+kterým se vydává Interní protikorupční program Vězeňské služby ČR
 
 Článek 1 – Etické zásady příslušníka VS ČR
 1. Příslušník vykonává službu čestně, nestranně, odpovědně a v souladu s právním řádem České republiky.
@@ -305,22 +324,18 @@ o Rezortním protikorupčním programu a Etickém kodexu příslušníků a zam�
 Příslušník je povinen nabídku úplatku nebo jakékoli neoprávněné výhody okamžitě a jednoznačně odmítnout, sepsat o události úřední záznam a neprodleně informovat svého nadřízeného, odbor prevence a stížností a Generální inspekci bezpečnostních sborů (GIBS).`;
 
 export const NGR_41_2024_FULL = `NAŘÍZENÍ GENERÁLNÍHO ŘEDITELE VĚZEŇSKÉ SLUŽBY ČR č. 41/2024
-o Spisovém řádu a elektronickém systému tvorby rozhodnutí (ETŘ)
+o kázeňském řízení u obviněných, odsouzených a chovanců
+Studijní výběr podle podkladů k závěrečným zkouškám ZOP A 2026 — není to text nařízení.
+Platné znění nahrává lektor jako soubor v Katalogu předpisů.
 
-Článek 1 – Struktura a generování Čísla jednacího (Č.j.)
-1. Každá úřední písemnost a záznam musí být označeny platným číslem jednacím vygenerovaným v systému ETŘ.
-2. Struktura Čísla jednacího VS ČR:
-VS-[pořadové číslo spisu]-[kód oddělení]/ČJ-[rok]-[kód organizační jednotky]-[pořadové číslo záznamu].
+§ 16 – Záznam o kázeňském přestupku
+Záznam může zpracovat kterýkoliv zaměstnanec, zpravidla v den spáchání přestupku, na tiskopisu podle přílohy č. 4, a předá ho zaměstnanci s kázeňskou pravomocí. Popis skutku musí vždy obsahovat přesné určení času a místa, způsob a okolnosti spáchání a vylíčení průběhu jednání (§ 16 odst. 3).
 
-Článek 2 – Životní cyklus dokumentu v ETŘ
-1. ČJ – dokument založen, čeká na zpracování referentem,
-2. PŘ – dokument připraven k podpisu a schválení velitelem,
-3. TČ – dokument schválen, podepsán kvalifikovaným elektronickým podpisem a uzamčen v archivu.
+§ 17 – Vyřešení domluvou
+Postačila-li k nápravě domluva, záznam o kázeňském přestupku se nesepisuje a vyřešení domluvou se zapíše do Vězeňského informačního systému.
 
-Článek 3 – Skartační řízení a znaky
-- Znak „S“ (Stoupa): dokument určený k bezpečné fyzické skartaci po uplynutí skartační lhůty (např. 5 let u běžných hlášení).
-- Znak „V“ (Výběr): dokument podléhající odbornému posouzení v archivním řízení.
-- Znak „A“ (Archiv): dokument trvalé historické hodnoty určený k trvalému uložení v Národním archivu.`;
+§ 31 odst. 2 – Právní moc
+Rozhodnutí o uložení kázeňského trestu (s výjimkou propadnutí věci) nabývá právní moci dnem oznámení.`;
 
 export const NGR_19_2023_FULL = `NAŘÍZENÍ GENERÁLNÍHO ŘEDITELE VĚZEŇSKÉ SLUŽBY ČR č. 19/2023
 o zbraňové službě, manipulaci se zbraněmi a střelecké přípravě ve VS ČR
