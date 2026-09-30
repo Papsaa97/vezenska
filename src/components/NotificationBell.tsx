@@ -1,10 +1,27 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Bell, CheckCheck, Check, Loader2, Inbox, AlertTriangle, Trash2 } from 'lucide-react';
+import { Bell, BellRing, CheckCheck, Check, Loader2, Inbox, AlertTriangle, Trash2, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { writeFailure } from '../utils/supabaseWrite';
 import { useAuth } from '../context/AuthContext';
 import { UserNotification } from './UserManager';
+import { usePushNotifications } from '../hooks/usePushNotifications';
+import { obnovitOdberZarizeni } from '../utils/pushNotifications';
+import { PUSH_STAV_POPIS } from './PushNotificationSettings';
+
+/**
+ * Nabídka „posílat i do zařízení“ ve zvonečku jde zavřít; pamatuje si to
+ * prohlížeč (zapnout jde dál v profilu).
+ */
+const PUSH_OFFER_DISMISSED_KEY = 'vscr_push_nabidka_zavrena';
+
+function readOfferDismissed(): boolean {
+  try {
+    return localStorage.getItem(PUSH_OFFER_DISMISSED_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
 
 function formatDateTime(iso: string): string {
   const date = new Date(iso);
@@ -45,6 +62,24 @@ export default function NotificationBell() {
   /** Chyba načtení nebo zápisu. Bez ní se selhání projeví jen tím, že se „nic nestane". */
   const [notice, setNotice] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const push = usePushNotifications();
+  const [offerDismissed, setOfferDismissed] = useState<boolean>(readOfferDismissed);
+
+  const dismissOffer = () => {
+    setOfferDismissed(true);
+    try {
+      localStorage.setItem(PUSH_OFFER_DISMISSED_KEY, '1');
+    } catch {
+      // Bez localStorage se nabídka ukáže znovu po obnovení stránky.
+    }
+  };
+
+  // Zařízení přihlášené k odběru se po přihlášení přiřadí aktuálnímu účtu
+  // a obnoví se mu datum — i když ho mezitím používal někdo jiný.
+  const userId = user?.id;
+  useEffect(() => {
+    if (userId) void obnovitOdberZarizeni();
+  }, [userId]);
 
   /** `quiet`: obnovení na pozadí, bez točícího se kolečka místo seznamu. */
   const loadNotifications = useCallback(async (userId: string, quiet = false) => {
@@ -228,6 +263,40 @@ export default function NotificationBell() {
                 )}
               </div>
             </div>
+
+            {!offerDismissed && (push.stav === 'vypnuto' || push.stav === 'ios-plocha' || push.chyba) && (
+              <div className="flex items-start gap-2 bg-emerald-950/40 border border-emerald-800/60 rounded-xl px-2.5 py-2 text-[0.6875rem] text-emerald-100 leading-snug">
+                <BellRing className="w-3.5 h-3.5 shrink-0 mt-0.5 text-emerald-400" aria-hidden="true" />
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  {push.stav === 'vypnuto' ? (
+                    <>
+                      <span className="block">Chcete oznámení dostávat i do tohoto zařízení, když aplikaci nemáte otevřenou?</span>
+                      <button
+                        type="button"
+                        onClick={() => void push.zapnout()}
+                        disabled={push.pracuji}
+                        className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-2 py-1 font-bold text-white cursor-pointer disabled:opacity-50"
+                      >
+                        {push.pracuji && <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />}
+                        Zapnout upozornění
+                      </button>
+                    </>
+                  ) : push.stav === 'ios-plocha' ? (
+                    <span className="block">{PUSH_STAV_POPIS['ios-plocha']}</span>
+                  ) : null}
+                  {push.chyba && <span className="block text-amber-300">{push.chyba}</span>}
+                </div>
+                <button
+                  type="button"
+                  onClick={dismissOffer}
+                  aria-label="Skrýt nabídku upozornění do zařízení"
+                  title="Skrýt (zapnout jde i v profilu)"
+                  className="shrink-0 p-0.5 rounded text-emerald-300/70 hover:text-white cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
 
             {notice && (
               <div
