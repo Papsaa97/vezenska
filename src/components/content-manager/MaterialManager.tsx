@@ -134,7 +134,7 @@ export default function MaterialManager() {
       // k dalšímu předmětu, stačí mu v seznamu níž přidat štítek.
       const existing = findExistingCopy(file, materials);
       if (existing) {
-        alreadyThere.push(`${file.name} (v knihovně jako „${existing.displayName}")`);
+        alreadyThere.push(`${file.name} (v knihovně jako „${existing.displayName}“)`);
         continue;
       }
       accepted.push({
@@ -199,7 +199,13 @@ export default function MaterialManager() {
 
     setUploadMsg(
       failures.length === 0
-        ? { type: 'success', text: `Nahráno souborů: ${uploaded}.` }
+        ? {
+            type: 'success',
+            text:
+              batchSubjects.length === 0 && batchClassIds.length === 0
+                ? `Nahráno souborů: ${uploaded}. Zatím nemají štítek — doplníte ho v seznamu níže (tlačítko „Bez štítků“).`
+                : `Nahráno souborů: ${uploaded}.`,
+          }
         : {
             type: 'error',
             text: `Nahráno ${uploaded} z ${queue.length}. Problémy: ${failures.join(' · ')}`,
@@ -245,7 +251,7 @@ export default function MaterialManager() {
       return;
     }
 
-    setActionMsg({ type: 'success', text: `Štítky souboru „${editName.trim()}" uloženy.` });
+    setActionMsg({ type: 'success', text: `Štítky souboru „${editName.trim()}“ uloženy.` });
     setEditingPath(null);
     invalidateMaterialsCache();
   };
@@ -456,6 +462,19 @@ export default function MaterialManager() {
               v seznamu níže.
             </p>
           </div>
+
+          {queue.length > 0 && batchSubjects.length === 0 && batchClassIds.length === 0 && (
+            <p
+              role="status"
+              className="flex items-start gap-2 p-3 rounded-xl text-sm bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-200"
+            >
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
+              <span>
+                Bez štítku se soubor neobjeví u žádného předmětu ani třídy, jen v Knihovně mezi „Nezařazenými“.
+                Vyberte předmět nebo třídu, případně štítky doplňte později v seznamu.
+              </span>
+            </p>
+          )}
 
           <AnimatePresence>
             {uploadMsg && (

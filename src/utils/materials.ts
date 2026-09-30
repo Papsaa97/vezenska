@@ -270,7 +270,7 @@ export interface TagWriteResult {
 
 /**
  * Uloží štítky jednoho souboru. Prázdné pole je platná hodnota — znamená
- * „soubor nepatří nikam", ne „odvoď si to ze složky".
+ * „soubor nepatří nikam“, ne „odvoď si to ze složky“.
  */
 export async function saveMaterialTags(
   storagePath: string,
@@ -439,7 +439,7 @@ export async function uploadMaterial(file: File, displayName: string): Promise<U
     .upload(storagePath, file, { contentType: file.type, upsert: false });
 
   if (error) {
-    return { storagePath: null, error: `Nahrání „${displayName}" selhalo: ${error.message}` };
+    return { storagePath: null, error: `Nahrání „${displayName}“ selhalo: ${error.message}` };
   }
   return { storagePath, error: null };
 }

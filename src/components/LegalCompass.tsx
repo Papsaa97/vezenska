@@ -66,7 +66,7 @@ export default function LegalCompass() {
   // Dynamic Regulations Database State
   // Předpisy = výchozí registr + úpravy lektorů ze společné databáze. Dřív
   // úpravy ležely jen v localStorage lektora, přestože tlačítko slibovalo
-  // „Uložit do databáze" — nikdo jiný je neviděl.
+  // „Uložit do databáze“ — nikdo jiný je neviděl.
   const {
     items: regulationsList,
     save: saveRegulation,
@@ -364,7 +364,7 @@ export default function LegalCompass() {
     }
     setShowEditorModal(false);
     setEditingRegulation(null);
-    showToast(`Předpis „${regToSave.code}" je uložen a vidí ho všichni.`);
+    showToast(`Předpis „${regToSave.code}“ je uložen a vidí ho všichni.`);
   };
 
   /**
@@ -539,7 +539,7 @@ export default function LegalCompass() {
         foldSearchText(reg.practicalApplication).includes(q) ||
         reg.keyProvisions.some(p => foldSearchText(p).includes(q)) ||
         reg.tags.some(t => foldSearchText(t).includes(q)) ||
-        // Bez tohohle se hledání „donucovací prostředky" netrefilo do předpisu,
+        // Bez tohohle se hledání „donucovací prostředky“ netrefilo do předpisu,
         // který je má v textu, ale ne v souhrnu ani ve výčtu klíčových ustanovení.
         foldSearchText(reg.fullLegalText).includes(q);
 

@@ -63,6 +63,47 @@ export interface DutyRosterItem {
   notes?: string;             // např. "Sraz před vchodem Akademie v 06:15, odjezd služebním mikrobusem"
 }
 
+/**
+ * Den termínu z pole `date`, které lektor píše volně: „2026-09-18“,
+ * „18. 9. 2026“ i jen „18. 9.“ (pak letošní rok). Nerozpoznané datum
+ * vrací null — takový termín se nikdy neskrývá.
+ */
+export function parseDutyDate(value: string): Date | null {
+  const text = value.trim();
+  const iso = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(text);
+  if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+  const cz = /^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})?/.exec(text);
+  if (cz) {
+    const year = cz[3] ? Number(cz[3]) : new Date().getFullYear();
+    return new Date(year, Number(cz[2]) - 1, Number(cz[1]));
+  }
+  return null;
+}
+
+/** Termín, jehož den už skončil. Dnešní termín ještě proběhlý není. */
+export function isDutyPast(duty: DutyRosterItem, now: Date = new Date()): boolean {
+  const day = parseDutyDate(duty.date);
+  if (!day) return false;
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return day.getTime() < today.getTime();
+}
+
+/**
+ * Termíny seřazené podle data, nadcházející dřív než proběhlé. Proběhlé
+ * výpomoci na Nástěnce dřív visely dál, dokud je někdo ručně nesmazal.
+ */
+export function splitDutyRoster(roster: DutyRosterItem[] | undefined): {
+  upcoming: DutyRosterItem[];
+  past: DutyRosterItem[];
+} {
+  const time = (duty: DutyRosterItem) => parseDutyDate(duty.date)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+  const sorted = [...(roster ?? [])].sort((a, b) => time(a) - time(b));
+  return {
+    upcoming: sorted.filter((duty) => !isDutyPast(duty)),
+    past: sorted.filter((duty) => isDutyPast(duty)).reverse(),
+  };
+}
+
 export interface DayUniformItem {
   day: string;            // 'Pondělí' | 'Úterý' | 'Středa' | 'Čtvrtek' | 'Pátek' nebo libovolný den
   outfit: string;         // např. "PS II, čepice"
@@ -419,7 +460,7 @@ const FOLDER_NAME = 'rozvrhy';
 
 // ─── Proč tu nejsou žádná výchozí data ───────────────────────────────────────
 //
-// Dřív tu stály dvě „ukázkové" třídy a dvě celoškolní hlášení: vymyšlené služby
+// Dřív tu stály dvě „ukázkové“ třídy a dvě celoškolní hlášení: vymyšlené služby
 // se jmény příslušníků, vymyšlené rozkazy podepsané neexistujícím velitelem
 // výcviku a odkazy na materiály vedoucí na `#`. Aplikace je při prvním spuštění
 // zapsala do localStorage a od té chvíle je ukazovala jako skutečný obsah
@@ -433,7 +474,7 @@ const FOLDER_NAME = 'rozvrhy';
 /**
  * Třída zvolená v tomhle zařízení, nebo prázdný řetězec, když žádná zvolená není.
  *
- * Dřív odsud padalo natvrdo „ZOP A11". Kdo si třídu nikdy nevybral, viděl
+ * Dřív odsud padalo natvrdo „ZOP A11“. Kdo si třídu nikdy nevybral, viděl
  * nástěnku cizí třídy jako svoji — a protože se hodnota odsud dostala i do
  * profilu, zapsala se do databáze jako jeho skutečná třída. Prázdná hodnota je
  * poctivá odpověď: uživatel si má třídu vybrat sám.

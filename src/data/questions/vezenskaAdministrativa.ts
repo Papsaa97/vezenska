@@ -158,18 +158,18 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     id: 'va_10',
     subject: 'Vězeňská administrativa',
     topic: 'Záznam o použití donucovacích prostředků',
-    question: 'Jak přesně zní zákonná výzva příslušníka před použitím donucovacího prostředku dle § 6 odst. 3 písm. b) zákona č. 555/1992 Sb.?',
-    answer: '„Jménem zákona, vyzývám Vás, zanechte svého protiprávního jednání nebo proti Vám bude použito donucovacích prostředků.“',
+    question: 'Jaká slova musí příslušník podle § 6 odst. 3 písm. b) zákona č. 555/1992 Sb. použít před výzvou k upuštění od protiprávního jednání?',
+    answer: '„Jménem zákona“ – další znění výzvy zákon nepředepisuje, příslušník ji formuluje podle situace.',
     options: [
-              `„Jménem zákona, vyzývám Vás, zanechte svého protiprávního jednání nebo proti Vám bude použito donucovacích prostředků.“`,
-              `„Jménem republiky Vás vyzývám k okamžitému upuštění od útoku, jinak bude použito fyzické síly a chvatů sebeobrany.“`,
-              `„Vězeňská služba, z moci úřední Vás vyzývám, upusťte od protiprávního jednání, jinak budou použita donucovací opatření.“`,
-              `„Jménem zákona, stůjte, nebo použiji donucovacích prostředků a služební zbraně!“`
+              `„Jménem zákona“ – další znění výzvy zákon nepředepisuje, příslušník ji formuluje podle situace.`,
+              `„Jménem republiky“ – a za nimi celé znění výzvy, které pevně stanoví prováděcí vyhláška.`,
+              `„Z moci úřední“ – a za nimi celé znění výzvy, které pevně stanoví nařízení generálního ředitele.`,
+              `Žádná – zákon určitá slova nevyžaduje, stačí srozumitelná výzva s pohrůžkou zákroku.`
             ],
     correctOption: 0,
-    rationale: 'Zákonná výzva dle § 6 odst. 3 písm. b) zákona č. 555/1992 Sb. musí být v záznamu o použití DP přesně a doslovně citována: „Jménem zákona, vyzývám Vás, zanechte svého protiprávního jednání nebo proti Vám bude použito donucovacích prostředků.“',
+    rationale: 'Podle § 6 odst. 3 písm. b) zákona č. 555/1992 Sb. použije příslušník před výzvou slova „jménem zákona“. Doslovné znění celé výzvy zákon nestanoví; příslušník ji formuluje srozumitelně podle situace a do záznamu o použití DP ji uvede tak, jak ji skutečně pronesl.',
     source: '§ 6 odst. 3 písm. b) z. č. 555/1992 Sb.',
-      explanation: `Zákonná výzva dle § 6 odst. 3 písm. b) zákona č. 555/1992 Sb. musí být v záznamu o použití DP přesně a doslovně citována: „Jménem zákona, vyzývám Vás, zanechte svého protiprávního jednání nebo proti Vám bude použito donucovacích prostředků.“ (Právní úprava: § 6 odst. 3 písm. b) z. č. 555/1992 Sb.)`
+      explanation: `Podle § 6 odst. 3 písm. b) zákona č. 555/1992 Sb. použije příslušník před výzvou slova „jménem zákona“. Doslovné znění celé výzvy zákon nestanoví; příslušník ji formuluje srozumitelně podle situace a do záznamu o použití DP ji uvede tak, jak ji skutečně pronesl. (Právní úprava: § 6 odst. 3 písm. b) z. č. 555/1992 Sb.)`
 },
   {
     id: 'va_11',
@@ -358,7 +358,7 @@ export const vezenskaAdministrativaQuestions: Question[] = [
     correctOption: 2,
     rationale: 'Zákon č. 555/1992 Sb. a navazující metodické listy jasně stanoví povinnost ohlásit a formálně zdokumentovat každé použití DP. Záznam musí obsahovat zákonné náležitosti (důvod, předchozí výzva, výsledek).',
     source: '§ 20 odst. 1 zákona č. 555/1992 Sb. a Metodický list č. 5/2014',
-      explanation: `Zákon č. 555/1992 Sb. a navazující metodické listy jasně stanoví povinnost ohlásit a formálně zdokumentovat každé použití DP. Záznam musí obsahovat zákonné náležitosti (důvod, předchozí výzva, výsledek). (Právní úprava: § 22 zákona č. 555/1992 Sb. a Metodický list č. 5/2014)`
+      explanation: `Zákon č. 555/1992 Sb. a navazující metodické listy jasně stanoví povinnost ohlásit a formálně zdokumentovat každé použití DP. Záznam musí obsahovat zákonné náležitosti (důvod, předchozí výzva, výsledek). (Právní úprava: § 20 odst. 1 a 2 zákona č. 555/1992 Sb. a Metodický list č. 5/2014)`
 },
   // 18. Archivnictví a spisová služba
   {

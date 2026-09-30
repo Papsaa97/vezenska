@@ -30,7 +30,7 @@ export function purgeLegacyOfflineCache(): void {
  * Předpisy, které lektor dřív upravil nebo přidal jen v tomto prohlížeči.
  *
  * Úpravy předpisů se ukládaly do localStorage, přestože tlačítko slibovalo
- * „Uložit do databáze". Kolegové ani studenti je proto nikdy neviděli. Teď jdou
+ * „Uložit do databáze“. Kolegové ani studenti je proto nikdy neviděli. Teď jdou
  * do společné tabulky content_blocks (druh 'regulation'); tahle funkce jen
  * najde staré místní úpravy, aby je lektor mohl jedním tlačítkem nahrát.
  */

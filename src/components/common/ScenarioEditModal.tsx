@@ -6,10 +6,10 @@ import { makeContentId } from '../../utils/contentLibrary';
 import { useDialog } from '../../hooks/useDialog';
 
 const CATEGORIES: Scenario['category'][] = [
-  'Právo & Donucovací prostředky',
+  'Právo, etika & Donucovací prostředky',
   'Mimořádné události & Zásah',
   'Eskorty & Střelba',
-  'Vstupy & Justiční stráž',
+  'Ostraha, vstupy & Justiční stráž',
 ];
 
 const DIFFICULTIES: Scenario['difficulty'][] = ['Základní', 'Pokročilá', 'Expertní'];
@@ -50,7 +50,7 @@ function emptyStep(seed: string): ScenarioStep {
  *
  * Situace je posloupnost kroků; každý krok nabízí volby a každá volba má
  * zpětnou vazbu i zákonný podklad. Správná volba buď odkáže na další krok,
- * nebo scénář ukončí — proto je u ní výběr „pokračovat krokem".
+ * nebo scénář ukončí — proto je u ní výběr „pokračovat krokem“.
  */
 export default function ScenarioEditModal({
   scenario,
@@ -133,7 +133,7 @@ export default function ScenarioEditModal({
     const stepWithoutCorrect = cleanSteps.find((step) => !step.choices.some((c) => c.isCorrect));
     if (stepWithoutCorrect) {
       setErrorMsg(
-        `Krok „${stepWithoutCorrect.title || stepWithoutCorrect.id}" nemá označenou správnou volbu — ` +
+        `Krok „${stepWithoutCorrect.title || stepWithoutCorrect.id}“ nemá označenou správnou volbu — ` +
           'bez ní se ze situace nedá projít dál.'
       );
       return;
@@ -292,7 +292,7 @@ export default function ScenarioEditModal({
                   value={briefing}
                   onChange={(e) => setBriefing(e.target.value)}
                   rows={3}
-                  placeholder="Jste velen jako strážný u hlavního vchodu do věznice…"
+                  placeholder="Konáte službu strážného u hlavního vchodu do věznice…"
                   className={INPUT_CLASS}
                 />
               </div>

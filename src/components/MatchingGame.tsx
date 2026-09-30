@@ -208,6 +208,18 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
   );
   const isDiagram = activeCategory?.type === 'diagram';
 
+  // Obsazení funkcí stárne. Úprava lektorem nese vlastní datum uložení,
+  // výchozí data datum ze zdroje (pole asOf v matching.ts).
+  const personnelAsOf = useMemo(() => {
+    const base = categories.find(c => c.id === selectedCategoryId);
+    if (!activeCategory?.asOf && !base?.asOf) return null;
+    if (activeEntry?.editedAt) {
+      const edited = new Date(activeEntry.editedAt);
+      if (!Number.isNaN(edited.getTime())) return edited.toLocaleDateString('cs-CZ');
+    }
+    return activeCategory?.asOf ?? base?.asOf ?? null;
+  }, [categories, selectedCategoryId, activeCategory, activeEntry]);
+
   // Vybraná poznávačka může zmizet — lektor ji smaže, nebo se seznam teprve
   // dočte ze serveru. Bez tohohle by hra zůstala na prázdné obrazovce.
   useEffect(() => {
@@ -431,6 +443,12 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
           Zatím tu není žádná poznávačka.
           {canEdit && ' Přidejte první tlačítkem níže.'}
         </div>
+      )}
+
+      {personnelAsOf && (
+        <p className="text-xs text-slate-600 dark:text-slate-400">
+          Údaje o obsazení funkcí: stav k {personnelAsOf}. Obsazení se mění — před zkouškou si je ověřte na vscr.cz.
+        </p>
       )}
 
       {/* Správa poznávaček — jen lektor a správce */}

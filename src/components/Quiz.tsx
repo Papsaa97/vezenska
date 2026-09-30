@@ -4,12 +4,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Question, QuizSessionRecord, QuestionAttempt } from '../types';
 import { normalizeSubject } from './SubjectsHub';
 import { speakText, isSpeechSupported, stopSpeaking } from '../utils/speech';
-import { getSubjectInfo } from '../data/questions/subjectsInfo';
+import { getSubjectInfo, subjectsMeta } from '../data/questions/subjectsInfo';
 import PrintHeader from './common/PrintHeader';
 import ConfirmDialog from './common/ConfirmDialog';
 import { DISTINCTION_PERCENT, MIN_XP_PERCENT, PASS_PERCENT } from '../constants/grading';
 import { quizSessionXp } from '../utils/gamification';
 import { buildMasteryMap, masteryOf, orderForPractice, subjectReadiness } from '../utils/questionMastery';
+
+const SUBJECT_ORDER: readonly string[] = Object.values(subjectsMeta).map(info => info.name);
 
 interface QuizProps {
   questions: Question[];
@@ -162,10 +164,16 @@ export default function Quiz({
     return { total, mastered, percent: total > 0 ? Math.round((mastered / total) * 100) : 0 };
   }, [readiness]);
 
-  const subjects = useMemo(
-    () => Array.from(new Set((questions || []).map(q => q?.subject).filter((s): s is string => Boolean(s)))),
-    [questions]
-  );
+  // Pořadí jako v záložce Předměty (Právo první), ne podle toho, v jakém
+  // pořadí přišly otázky z databáze.
+  const subjects = useMemo(() => {
+    const names = Array.from(new Set((questions || []).map(q => q?.subject).filter((s): s is string => Boolean(s))));
+    const rank = (name: string) => {
+      const index = SUBJECT_ORDER.indexOf(name);
+      return index === -1 ? SUBJECT_ORDER.length : index;
+    };
+    return names.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b, 'cs'));
+  }, [questions]);
 
   // Předvolba z navigace (Předměty, Statistiky). Okruh se nastavuje spolu
   // s předmětem: dřív se z tlačítek „Procvičit nejslabší okruh“ a „Drilovat“
@@ -446,7 +454,7 @@ export default function Quiz({
         // Text odpovědi je to jediné, podle čeho umí test vyhodnotit server:
         // `selected` je index do pole promíchaného v shuffleQuestionOptions(),
         // takže mimo tenhle prohlížeč nic neznamená. Prázdný řetězec znamená
-        // „nevybráno" a server ho vyhodnotí jako chybu — stejně jako klient níže.
+        // „nevybráno“ a server ho vyhodnotí jako chybu — stejně jako klient níže.
         selectedText: selected >= 0 ? (q.options?.[selected] ?? '') : '',
         // Jistota se zaznamená jen tam, kde se na ni aplikace opravdu zeptala,
         // tedy ve cvičném režimu.

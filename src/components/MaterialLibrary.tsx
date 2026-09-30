@@ -299,7 +299,7 @@ export default function MaterialLibrary() {
           <FolderOpen className="w-14 h-14 opacity-30" />
           <div className="text-center">
             <div className="font-semibold text-slate-500 dark:text-slate-400">Žádné materiály k zobrazení</div>
-            <div className="text-xs mt-1">Lektoři mohou přidávat materiály v sekci „Správa obsahu".</div>
+            <div className="text-xs mt-1">Lektoři mohou přidávat materiály v sekci „Správa obsahu“.</div>
           </div>
         </div>
       )}

@@ -10,6 +10,7 @@ import {
   Shield, 
   Building2, 
   Crosshair, 
+  Target,
   Brain, 
   HeartPulse, 
   GraduationCap, 
@@ -66,6 +67,7 @@ function RenderBadgeIcon({ name, className }: { name: string; className?: string
     case 'Shield': return <Shield {...props} />;
     case 'Building2': return <Building2 {...props} />;
     case 'Crosshair': return <Crosshair {...props} />;
+    case 'Target': return <Target {...props} />;
     case 'Brain': return <Brain {...props} />;
     case 'HeartPulse': return <HeartPulse {...props} />;
     case 'FileText': return <FileText {...props} />;
@@ -317,7 +319,7 @@ export default function BadgesView({
                   <span className="text-xs font-normal text-slate-400"> / {quizHistory.length}</span>
                 )}
               </div>
-              <div className="text-[0.6875rem] text-slate-400 font-medium">Testů od {MIN_XP_PERCENT} % (do odznaků)</div>
+              <div className="text-[0.6875rem] text-slate-400 font-medium">Započítaných testů (od {MIN_XP_PERCENT} %)</div>
             </div>
           </div>
 
@@ -337,7 +339,7 @@ export default function BadgesView({
             </div>
             <div>
               <div className="text-lg font-bold text-white leading-tight">{matchingHistory.length}</div>
-              <div className="text-[0.6875rem] text-slate-400 font-medium">Odehraných pexes</div>
+              <div className="text-[0.6875rem] text-slate-400 font-medium">Dokončených Poznávaček</div>
             </div>
           </div>
         </div>

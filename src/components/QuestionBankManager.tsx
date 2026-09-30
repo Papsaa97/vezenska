@@ -59,6 +59,8 @@ export const QUIZ_SUBJECTS = [
 
 export type QuizSubject = typeof QUIZ_SUBJECTS[number];
 
+const LEGACY_FALLBACK_SUBJECTS: ReadonlySet<string> = new Set(['Taktika', 'Ostatní']);
+
 export interface QuizQuestionItem {
   id: string;
   subject: string;
@@ -190,8 +192,14 @@ export default function QuestionBankManager({ onQuestionsUpdated }: QuestionBank
       'Bezpečnostní služba',
       ...subjectEntries.filter((entry) => entry.isDeleted).map((entry) => entry.item.name),
     ]);
-    return Array.from(new Set<string>([...QUIZ_SUBJECTS, ...names])).filter((name) => !removed.has(name));
-  }, [subjectEntries]);
+    // „Taktika“ a „Ostatní“ jsou jen záchytné názvy starých dat; studentům se
+    // v Předmětech neukazují, dokud k nim nic není. Nabízí se tedy jen tehdy,
+    // když v bance už nějaká otázka s tímto předmětem je.
+    const usedSubjects = new Set(questions.map((q) => q.subject));
+    return Array.from(new Set<string>([...QUIZ_SUBJECTS, ...names]))
+      .filter((name) => !removed.has(name))
+      .filter((name) => !LEGACY_FALLBACK_SUBJECTS.has(name) || usedSubjects.has(name));
+  }, [subjectEntries, questions]);
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);

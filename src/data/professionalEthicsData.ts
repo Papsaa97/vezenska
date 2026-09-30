@@ -72,7 +72,7 @@ export const defaultDilemmaScenarios: DilemmaScenario[] = [
   {
     id: 'dilema-3',
     title: 'Střet zájmů a nabídka výhody od rodiny odsouzeného',
-    description: 'Po skončení návštěvního dne vás na parkovišti před věznicí osloví manželka odsouzeného z vašeho oddílu. Nabízí vám dárkovou tašku s kvalitní kávou a prémiovým alkoholem se slovy: „To je jen malé poděkování za to, jak jste na manžela hodný."',
+    description: 'Po skončení návštěvního dne vás na parkovišti před věznicí osloví manželka odsouzeného z vašeho oddílu. Nabízí vám dárkovou tašku s kvalitní kávou a prémiovým alkoholem se slovy: „To je jen malé poděkování za to, jak jste na manžela hodný.“',
     options: [
       {
         text: 'Dar rázně a zdvořile odmítnout, vysvětlit zákaz přijímání jakýchkoli darů dle Čl. 5 Kodexu etiky a bezodkladně sepsat úřední záznam a informovat nadřízeného a oddělení prevence a stížností.',
@@ -94,7 +94,7 @@ export const defaultDilemmaScenarios: DilemmaScenario[] = [
   {
     id: 'dilema-4',
     title: 'Nezákonný pokyn nadřízeného na strážním stanovišti',
-    description: 'Jste velen se zbraní na strážní stanoviště u vchodu. Přichází nadřízený důstojník a nařizuje vám, abyste mu okamžitě vydal svou nabitou služební zbraň, protože si ji chce prohlédnout, a mezitím pustil do objektu neznámou dodávku bez kontroly dokladů a prohlídky.',
+    description: 'Konáte službu se zbraní na strážním stanovišti u vchodu. Přichází nadřízený důstojník a nařizuje vám, abyste mu okamžitě vydal svou nabitou služební zbraň, protože si ji chce prohlédnout, a mezitím pustil do objektu neznámou dodávku bez kontroly dokladů a prohlídky.',
     options: [
       {
         text: 'Pokyn nadřízeného odmítnout splnit, zbraň zásadně nevydat, vozidlo do objektu bez řádné kontroly nevpustit a trvat na dodržení zákona a strážního řádu (příslušník na stanovišti požívá zákonné ochrany a nesmí plnit pokyny v rozporu se zákonem).',
@@ -193,7 +193,7 @@ export const defaultEthicsSections: StudySection[] = [
       sectionItem({ label: 'Služební etika', title: 'Kompetence', text: 'Zákonem svěřená oprávnění a povinnosti k výkonu konkrétních úkolů.', note: 'Příslušník smí uplatňovat státní moc pouze v mezích zákona (§ 6 z. č. 555/1992 Sb., Čl. 2 odst. 2 Ústavy) a nesmí své kompetence překročit ani zneužít.' }),
       sectionItem({ label: 'Komunikace', title: 'Asertivita', text: 'Schopnost klidně, pevně a slušně prosazovat zákonné požadavky bez agrese a pasivity.', note: 'Založena na sebeúctě a respektu k právům druhých. Slouží jako obrana proti manipulaci a zastrašování; příslušník neustupuje z oprávněných požadavků.' }),
       sectionItem({ label: 'Bezpečnostní služba', title: 'Osobní prohlídka a gender', text: 'Pravidlo provádění osobních prohlídek výhradně osobou stejného pohlaví.', note: 'Při prohlídce civilisty/občana musí být přítomni 2 příslušníci stejného pohlaví jako prohlížená osoba (jeden provádí, druhý svědčí). Intimní prohlídky smí provádět pouze lékař.' }),
-      sectionItem({ label: 'Služební etika', title: 'Použití zbraně v etických kontextech', text: 'Aplikace § 18 zákona č. 555/1992 Sb. a prolomení imperativu „Nezabiješ" při obraně životů.', note: 'Stát zákonem zmocňuje příslušníka k použití zbraně při odvrácení smrtelného útoku nebo útěku nebezpečného vězně. Příslušník musí šetřit život a poskytnout první pomoc.' }),
+      sectionItem({ label: 'Služební etika', title: 'Použití zbraně v etických kontextech', text: 'Aplikace § 18 zákona č. 555/1992 Sb. a prolomení imperativu „Nezabiješ“ při obraně životů.', note: 'Stát zákonem zmocňuje příslušníka k použití zbraně při odvrácení smrtelného útoku nebo útěku nebezpečného vězně. Příslušník musí šetřit život a poskytnout první pomoc.' }),
       sectionItem({ label: 'Bezpečnostní služba', title: 'Zákonná ochrana na strážním stanovišti', text: 'Specifické právní postavení ozbrojeného strážného veleného na stanoviště.', note: 'Všechny osoby (včetně nadřízených) jsou povinny řídit se pokyny strážného. Nadřízený nesmí vydat nezákonný pokyn ani odvracet jeho pozornost či žádat zbraň.' }),
       sectionItem({ label: 'Předpis VS ČR', title: 'Kodex profesní etiky VS ČR', text: 'Příloha č. 6 k NGŘ č. 28/2018 obsahující 8 závazných článků pro personál.', note: 'Stanovuje etické standardy profesionality, nestrannosti, odmítání korupce a ochranu důstojnosti. Jeho porušení je kvalifikováno jako porušení služební kázně.' }),
     ],

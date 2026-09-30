@@ -40,7 +40,7 @@ interface FeedbackManagerProps {
 export default function FeedbackManager({ onNewCountChange }: FeedbackManagerProps = {}) {
   const [items, setItems] = useState<FeedbackItem[]>([]);
   const [loading, setLoading] = useState(true);
-  /** Chyba načtení. Bez ní by se neúspěšný dotaz tvářil jako „žádná zpětná vazba". */
+  /** Chyba načtení. Bez ní by se neúspěšný dotaz tvářil jako „žádná zpětná vazba“. */
   const [loadError, setLoadError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterValue>('all');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -60,7 +60,7 @@ export default function FeedbackManager({ onNewCountChange }: FeedbackManagerPro
         .limit(500);
 
       if (error) {
-        // Prázdný seznam je tvrzení „nic nepřišlo". Když dotaz selže, není to
+        // Prázdný seznam je tvrzení „nic nepřišlo“. Když dotaz selže, není to
         // pravda a správce by přišel o hlášení, aniž by tušil, že nějaká jsou.
         setLoadError(error.message);
         setItems([]);

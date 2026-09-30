@@ -104,9 +104,9 @@ export const defaultRecordTemplates: RecordTemplate[] = [
       photoDoc: 'Pořízena v čase 20:30 hod., pořídil VISS ppor. Milan Slizký.',
       witnesses: 'prap. Josef Suchý, sl. č. 25 014, dozorce OVT',
       evaluation: 'Ze svého pohledu považuji použití DP za nutné, neboť jsem se domníval, že jinak nelze zajistit bezpečnost mou ani okolí, a jednání odsouzeného bezprostředně předcházelo. Ve 20:20 byl odsouzený ubytován na KO, cela č. 7.',
-      departmentHeadOpinion: 'Stanovisko vedoucího oddělení: Postup zakročujícího příslušníka pprap. Jana Mokrého odpovídal § 6 odst. 3 písm. b) a §§ 17–20 zákona č. 555/1992 Sb., zákonná výzva i použití slzotvorného prostředku a hmatů a chvatů byly přiměřené intenzitě útoku. Doporučuji uznat zákrok za oprávněný a přiměřený.',
-      zrvReport: 'Zpráva o prošetření okolností a důvodů použití DP (1. ZŘV): Na základě prošetření záznamu, fotodokumentace a vyjádření svědka prap. Josefa Suchého bylo zjištěno, že k použití DP došlo v souladu se zákonem a vnitřními předpisy. Nebyly zjištěny skutečnosti nasvědčující excesu ani nepřiměřenosti zákroku.',
-      directorDecision: 'Rozhodnutí ředitele věznice: Na základě stanoviska vedoucího oddělení a zprávy 1. ZŘV o prošetření okolností a důvodů podle Přílohy k PGŘ č. 3/2024 rozhoduji, že použití donucovacího prostředku dne 02.05.2024 bylo OPRÁVNĚNÉ A PŘIMĚŘENÉ.',
+      departmentHeadOpinion: 'Postup zakročujícího příslušníka pprap. Jana Mokrého odpovídal § 6 odst. 3 písm. b) a §§ 17–20 zákona č. 555/1992 Sb., zákonná výzva i použití slzotvorného prostředku a hmatů a chvatů byly přiměřené intenzitě útoku. Doporučuji uznat zákrok za oprávněný a přiměřený.',
+      zrvReport: 'Na základě prošetření záznamu, fotodokumentace a vyjádření svědka prap. Josefa Suchého bylo zjištěno, že k použití DP došlo v souladu se zákonem a vnitřními předpisy. Nebyly zjištěny skutečnosti nasvědčující excesu ani nepřiměřenosti zákroku.',
+      directorDecision: 'Na základě stanoviska vedoucího oddělení a zprávy 1. ZŘV o prošetření okolností a důvodů podle Přílohy k PGŘ č. 3/2024 rozhoduji, že použití donucovacího prostředku dne 02.05.2024 bylo OPRÁVNĚNÉ A PŘIMĚŘENÉ.',
       signatureDate: 'V Ostrově nad Ohří dne 02.05.2024',
       officerSignature: 'v. ref. pprap. Jan Mokrý, sl. č. 26 569, dozorce OVT'
     }
@@ -236,10 +236,10 @@ export const defaultStyleExercises: StyleExercise[] = [
     badge: 'Cvičení 1: Služební záznam',
     instruction: 'V níže uvedeném textu označte všechny závažné chyby proti metodice VS ČR (kliknutím na problematická místa):',
     originalTextSegments: [
-      { id: 1, text: 'Včera odpoledne kolem třetí hodiny ', isError: true, correction: 'Chyba: Vágní časové určení. Správně: „Dne 14.03.2024 v čase 15:10 hod."' },
-      { id: 2, text: 'jsme byli s kolegou na oddíle ', isError: true, correction: 'Chyba: 1. osoba množného čísla bez uvedení rozkazu. Správně: „Dne ... jsem byl velen rozkazem... byl jsem přítomen s prap. Novákem..."' },
-      { id: 3, text: 'a viděli jsme tam tohoto vězně, jak dělal bordel na cele. ', isError: true, correction: 'Chyba: Nespisovný a obecný výraz („bordel", „tento vězeň"). Správně: „ods. Petr Král, nar. ..., kopal do dveří cely č. 12."' },
-      { id: 4, text: 'Řekl jsem mu, ať se uklidní, jinak dostane. ', isError: true, correction: 'Chyba: Chybí přesná zákonná výzva a citace. Správně: „Použil jsem zákonnou výzvu dle § 6 odst. 3 písm. b) z. č. 555/1992 Sb. slovy: ..."' },
+      { id: 1, text: 'Včera odpoledne kolem třetí hodiny ', isError: true, correction: 'Chyba: Vágní časové určení. Správně: „Dne 14.03.2024 v čase 15:10 hod.“' },
+      { id: 2, text: 'jsme byli s kolegou na oddíle ', isError: true, correction: 'Chyba: 1. osoba množného čísla bez uvedení rozkazu. Správně: „Dne ... jsem byl velen rozkazem... byl jsem přítomen s prap. Novákem...“' },
+      { id: 3, text: 'a viděli jsme tam tohoto vězně, jak dělal bordel na cele. ', isError: true, correction: 'Chyba: Nespisovný a obecný výraz („bordel“, „tento vězeň“). Správně: „ods. Petr Král, nar. ..., kopal do dveří cely č. 12.“' },
+      { id: 4, text: 'Řekl jsem mu, ať se uklidní, jinak dostane. ', isError: true, correction: 'Chyba: Chybí přesná zákonná výzva a citace. Správně: „Použil jsem zákonnou výzvu dle § 6 odst. 3 písm. b) z. č. 555/1992 Sb. slovy: ...“' },
       { id: 5, text: 'Potom jsme ho odvedli k doktorovi a bylo to nahlášeno.', isError: true, correction: 'Chyba: Neurčitý časový sled a anonymní trpný rod. Správně: Uvést přesný čas předvedení k MUDr. a konkrétní orgány, kterým byla událost ohlášena (ISS-O, VISS).' }
     ]
   },
@@ -251,7 +251,7 @@ export const defaultStyleExercises: StyleExercise[] = [
     originalTextSegments: [
       { id: 1, text: 'Dne 10.02.2024 v čase 09:15 jsem zjistil odsouzeného Jana Malého na ložnici č. 201, ', isError: false, correction: 'V pořádku (přesný datum, čas, jméno i místo).' },
       { id: 2, text: 'který porušil vnitřní řád věznice tím, že neměl uklizeno. ', isError: true, correction: 'Chyba: Nelze uvést POUZE porušení Vnitřního řádu! Vždy musí být uvedeno porušení zákonné povinnosti dle § 28 zákona č. 169/1999 Sb.' },
-      { id: 3, text: 'Odsouzený mi řekl, že na to kašle a uklízet nebude. ', isError: true, correction: 'Chyba: Chybí doslovná přímá řeč v uvozovkách. Správně: užil slov, cituji: „..."' },
+      { id: 3, text: 'Odsouzený mi řekl, že na to kašle a uklízet nebude. ', isError: true, correction: 'Chyba: Chybí doslovná přímá řeč v uvozovkách. Správně: užil slov, cituji: „...“' },
       { id: 4, text: 'Odsouzený odmítl se k věci vyjádřit, tak jsem to nechal být a podepsal sám bez svědků.', isError: true, correction: 'Chyba: Do protokolu se musí výslovně zapsat, že odsouzený odmítl vyjádření/podpis, a uvést svědky přítomné incidentu.' }
     ]
   }
@@ -270,15 +270,15 @@ export const defaultAdminSections: StudySection[] = [
     items: [
       sectionItem({
         title: '1. krok: Určení zpracovatele',
-        text: 'Při založení spisu je **nejdůležitější krok** přidat zpracovatele přes záložku *„Přiděleno"*. Pokud není zpracovatel určen, vidí spis **všichni z celé OJ**. Po přidělení jej vidí zpracovatel a jeho vedoucí.',
+        text: 'Při založení spisu je **nejdůležitější krok** přidat zpracovatele přes záložku *„Přiděleno“*. Pokud není zpracovatel určen, vidí spis **všichni z celé OJ**. Po přidělení jej vidí zpracovatel a jeho vedoucí.',
       }),
       sectionItem({
         title: 'Hierarchie změny typu spisu',
         text: 'Ke změně typu spisu může dojít pouze v jednosměrné hierarchii: **ČJ → Přestupek (PŘ) → Trestný čin (TČ)**. Nikdy v opačném pořadí (zpětnou výjimku může provést pouze administrátor).',
       }),
       sectionItem({
-        title: 'Pravidlo políčka „ZAMKNOUT"',
-        text: 'Při běžné úpravě popisu ČJ (např. doplnění oddělení LOG/02) se **NIKDY nekliká na „ZAMKNOUT"**! Zamčení omezí viditelnost na deliktní režim a komplikuje běžný oběh dokumentu.',
+        title: 'Pravidlo políčka „ZAMKNOUT“',
+        text: 'Při běžné úpravě popisu ČJ (např. doplnění oddělení LOG/02) se **NIKDY nekliká na „ZAMKNOUT“**! Zamčení omezí viditelnost na deliktní režim a komplikuje běžný oběh dokumentu.',
       }),
     ],
   },
@@ -308,7 +308,7 @@ export const defaultAdminSections: StudySection[] = [
       sectionItem({
         label: '4',
         title: 'Skartační řízení',
-        text: 'Skartační znaky: **„S"** (stoupa/skart), **„V"** (výběr – nutno nejprve přehodnotit na S nebo A) a **„A"** (archiválie). Skartační návrh schvaluje komise a archiv PČR.',
+        text: 'Skartační znaky: **„S“** (stoupa/skart), **„V“** (výběr – nutno nejprve přehodnotit na S nebo A) a **„A“** (archiválie). Skartační návrh schvaluje komise a archiv PČR.',
       }),
     ],
   },
@@ -364,11 +364,11 @@ export const defaultAdminSections: StudySection[] = [
     outro: '',
     items: [
       sectionItem({ label: '1', title: 'Spisovná čeština a odbornost', text: 'Užití spisovného jazyka včetně přesné terminologie bezpečnostního sboru. Žádné hovorové výrazy ani slang.' }),
-      sectionItem({ label: '2', title: '1. osoba jednotného čísla', text: 'Vždy minulý čas: „Já jsem viděl, zjistil, vyzval, zajistil..." (nikoli neurčitý trpný rod nebo množné číslo).' }),
+      sectionItem({ label: '2', title: '1. osoba jednotného čísla', text: 'Vždy minulý čas: „Já jsem viděl, zjistil, vyzval, zajistil...“ (nikoli neurčitý trpný rod nebo množné číslo).' }),
       sectionItem({ label: '3', title: 'Max. 3 věty v souvětí', text: 'Krátká, srozumitelná souvětí zabraňující zkreslení výpovědi a zmatení chronologického děje.' }),
       sectionItem({ label: '4', title: 'Konkrétní čas a místo', text: 'Zákaz vágních příslovcí (tam, zde, v odpoledních hodinách, asi, hned, potom). Vždy uvést přesný čas a číslo ložnice/cely.' }),
       sectionItem({ label: '5', title: 'Zákaz vycpávkových slov', text: 'Nepoužívat bezobsahová ukazovací zájmena (ten, tento, onen, jakoby).' }),
-      sectionItem({ label: '6', title: 'Přesný pravopis přímé řeči', text: 'Doslovná citace verbálních projevů a vulgarismů v uvozovkách: „Sledujte dobře, jak se píší mezery v přímé řeči."' }),
+      sectionItem({ label: '6', title: 'Přesný pravopis přímé řeči', text: 'Doslovná citace verbálních projevů a vulgarismů v uvozovkách: „Sledujte dobře, jak se píší mezery v přímé řeči.“' }),
     ],
   },
   {

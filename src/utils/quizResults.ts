@@ -165,7 +165,7 @@ export async function saveQuizResult(
 
   // Záložní cesta pro výsledky uvízlé ve frontě ze starší verze aplikace a pro
   // testy z otázek AI asistenta, které server ohodnotit neumí. Politika
-  // „Vlastní výsledek jen jako neověřený" jim nedovolí nastavit overeno, takže se
+  // „Vlastní výsledek jen jako neověřený“ jim nedovolí nastavit overeno, takže se
   // uloží bez razítka a do XP v admin konzoli se nezapočítají.
   const { data, error } = await supabase
     .from('quiz_results')

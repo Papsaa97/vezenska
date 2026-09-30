@@ -311,7 +311,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // hodnota z databáze — i prázdná. Kopie z prohlížeče se použije jen tehdy,
     // když se profil načíst nepodařilo, a to pouze pro zobrazení.
     //
-    // Nezadaná třída je prázdný řetězec. Dřív se tu dosazovala „ZOP A11", takže
+    // Nezadaná třída je prázdný řetězec. Dřív se tu dosazovala „ZOP A11“, takže
     // každý účet vypadal, že do té třídy patří.
     const effectiveClass = profileData
       ? profileData.user_class?.trim() || ''
@@ -497,7 +497,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             full_name: fullName,
             role: 'student',
             // Bez třídy. Registrace nemá jak vědět, do které třídy člověk nastupuje;
-            // dosazená „ZOP A11" se pak tvářila jako jeho skutečné zařazení.
+            // dosazená „ZOP A11“ se pak tvářila jako jeho skutečné zařazení.
           },
           { onConflict: 'id' }
         );

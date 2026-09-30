@@ -331,7 +331,7 @@ export default function Scenarios() {
                     className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[0.6875rem] font-bold cursor-pointer ${SECONDARY_BUTTON}`}
                   >
                     {entry?.isHidden ? <EyeOff className="w-3.5 h-3.5" aria-hidden="true" /> : <Eye className="w-3.5 h-3.5" aria-hidden="true" />}
-                    {entry?.isHidden ? 'Zveřejnit' : 'Skrýt'}
+                    {entry?.isHidden ? 'Zveřejnit studentům' : 'Skrýt studentům'}
                   </button>
                   <button
                     type="button"
@@ -452,9 +452,9 @@ export default function Scenarios() {
           {score.total > 0 && (
             <span
               className="text-xs font-semibold px-2.5 py-1 rounded-md border bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700"
-              title="Správná rozhodnutí v tomto průchodu scénářem"
+              title="Kolik voleb v tomto průchodu bylo správných; opakovaný pokus po chybě se počítá jako další volba"
             >
-              Rozhodnutí: <strong>{score.correct}</strong> / {score.total}
+              Správné volby: <strong>{score.correct}</strong> z {score.total}
             </span>
           )}
           <span className="text-xs font-semibold px-2.5 py-1 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 rounded-md border border-blue-200 dark:border-blue-800">

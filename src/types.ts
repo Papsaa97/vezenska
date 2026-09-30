@@ -47,6 +47,11 @@ export interface MatchingCategory {
   imageUrl?: string;
   parts?: MatchingDiagramPart[];
   pairs: MatchingPair[];
+  /**
+   * Údaje, které stárnou (obsazení funkcí): k jakému datu platí. Poznávačka
+   * s tímto polem ukazuje „stav k …“ a výzvu ověřit údaje na vscr.cz.
+   */
+  asOf?: string;
 }
 
 export interface QuestionAttempt {
