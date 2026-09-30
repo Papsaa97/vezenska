@@ -533,7 +533,7 @@ export default function Quiz({
         // data-no-swipe: vodorovný tah přes paletu otázek nesmí přepnout záložku.
         // Na telefonu je paleta až pod otázkou (order-last) — dřív musel
         // student u každé otázky přejíždět 50 čísel. Časomíra je v otázce.
-        <aside data-no-swipe className="w-full md:w-72 flex flex-col gap-4 shrink-0 order-last md:order-none">
+        <aside data-no-swipe className="w-full md:w-72 flex flex-col gap-4 shrink-0 order-last md:order-none md:h-full md:min-h-0 md:overflow-y-auto md:pr-1">
           <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-5">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
@@ -595,7 +595,7 @@ export default function Quiz({
     }
 
     return (
-      <aside className={`w-full md:w-72 flex-col gap-5 shrink-0 pb-8 md:pb-0 ${gameState === 'playing' ? 'hidden md:flex' : 'flex'}`}>
+      <aside className={`w-full md:w-72 flex-col gap-5 shrink-0 pb-8 md:pb-0 md:h-full md:min-h-0 md:overflow-y-auto md:pr-1 ${gameState === 'playing' ? 'hidden md:flex' : 'flex'}`}>
         {/* Exam Mode Banner CTA */}
         <div className="bg-gradient-to-br from-indigo-900 via-blue-900 to-slate-900 text-white rounded-xl shadow-md p-4 border border-blue-400/30">
           <div className="flex items-center gap-2 text-xs font-bold text-amber-300 uppercase tracking-wider mb-1">
@@ -786,7 +786,7 @@ export default function Quiz({
           animate={{ opacity: 1, y: 0 }}
           className="hidden md:flex flex-1 flex-col gap-6 h-full"
         >
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col h-full items-center justify-center p-8 sm:p-12 text-center">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col h-full min-h-0 overflow-y-auto items-center justify-center-safe p-8 sm:p-12 text-center">
             <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-4 shadow-xs">
               <BookOpen className="w-8 h-8" />
             </div>

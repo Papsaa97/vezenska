@@ -902,25 +902,29 @@ export default function App() {
           questionsPending && !customQuestions ? (
             <TabLoader isDark={isDarkMode} />
           ) : (
-            <div className={PAGE_CONTAINER_FILL}>
-              <Flashcards
-                questions={customQuestions || allQuestions}
-                favorites={favorites}
-                toggleFavorite={toggleFavorite}
-                presetSubject={flashcardPresetSubject}
-                onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
-              />
+            <div className="w-full h-full overflow-y-auto pr-1">
+              <div className={PAGE_CONTAINER}>
+                <Flashcards
+                  questions={customQuestions || allQuestions}
+                  favorites={favorites}
+                  toggleFavorite={toggleFavorite}
+                  presetSubject={flashcardPresetSubject}
+                  onUpdateQuestion={isPrivileged ? handleQuestionUpdate : undefined}
+                />
+              </div>
             </div>
           )
         )}
         
         {activeTab === 'matching' && (
-          <div className={PAGE_CONTAINER_FILL}>
-            <MatchingGame
-              categories={matchingCategories}
-              onGameComplete={handleMatchingGameComplete}
-              onNavigateToBadges={() => navigateToTab('badges')}
-            />
+          <div className="w-full h-full overflow-y-auto pr-1 print:h-auto print:overflow-visible">
+            <div className={PAGE_CONTAINER}>
+              <MatchingGame
+                categories={matchingCategories}
+                onGameComplete={handleMatchingGameComplete}
+                onNavigateToBadges={() => navigateToTab('badges')}
+              />
+            </div>
           </div>
         )}
 
