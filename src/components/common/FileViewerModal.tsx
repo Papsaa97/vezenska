@@ -22,6 +22,7 @@ import {
 } from '../../utils/materials';
 import { PptxSlide, renderDocx, renderPptx, revokePptxImages } from '../../utils/documentPreview';
 import { supabase } from '../../lib/supabase';
+import PdfViewer from './PdfViewer';
 
 interface FileViewerModalProps {
   material: StudyMaterial | null;
@@ -41,6 +42,7 @@ export default function FileViewerModal({ material, isOpen, onClose }: FileViewe
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
+  const [pdfData, setPdfData] = useState<Blob | null>(null);
   const [docHtml, setDocHtml] = useState<string | null>(null);
   const [docWarnings, setDocWarnings] = useState<string[]>([]);
   const [slides, setSlides] = useState<PptxSlide[]>([]);
@@ -64,6 +66,7 @@ export default function FileViewerModal({ material, isOpen, onClose }: FileViewe
     cleanupRef.current();
     cleanupRef.current = () => {};
     setBlobUrl(null);
+    setPdfData(null);
     setDocHtml(null);
     setDocWarnings([]);
     setSlides([]);
@@ -116,6 +119,7 @@ export default function FileViewerModal({ material, isOpen, onClose }: FileViewe
             return;
           }
           setBlobUrl(url);
+          if (kind === 'pdf') setPdfData(data);
           cleanupRef.current = () => URL.revokeObjectURL(url);
         }
       } catch (err) {
@@ -246,27 +250,23 @@ export default function FileViewerModal({ material, isOpen, onClose }: FileViewe
                 </div>
               )}
 
-              {!loading && !error && kind === 'pdf' && blobUrl && (
+              {!loading && !error && kind === 'pdf' && pdfData && (
                 <div className="h-full flex flex-col">
-                  {/* <object> místo <iframe>: když prohlížeč PDF neumí zobrazit
-                      (typicky starší mobil), vykreslí se obsah uvnitř značky
-                      místo prázdné plochy. */}
-                  <object data={blobUrl} type="application/pdf" className="w-full h-full flex-1">
-                    <div className="p-6 text-center space-y-3">
-                      <p className="text-sm text-slate-600 dark:text-slate-300">
-                        Váš prohlížeč neumí zobrazit PDF přímo v aplikaci.
-                      </p>
+                  <PdfViewer data={pdfData} />
+                  {blobUrl && (
+                    <div className="shrink-0 flex items-center justify-center gap-2 px-3 py-1.5 border-t border-slate-200 dark:border-slate-800 text-[0.6875rem] text-slate-500 dark:text-slate-400">
+                      <span>Hledání v textu nebo tisk:</span>
                       <a
                         href={blobUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold"
+                        className="inline-flex items-center gap-1 font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                         Otevřít na nové kartě
                       </a>
                     </div>
-                  </object>
+                  )}
                 </div>
               )}
 
