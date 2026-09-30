@@ -371,7 +371,9 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     tags: ['NGŘ', 'dozorčí služba', 'dozorce', 'výkon vazby', 'výkon trestu'],
     summary: 'Předpis pro dozorčí službu na odděleních výkonu vazby a trestu — v závěrečných zkouškách ZOP A druhé nejcitovanější NGŘ.',
     practicalApplication: 'Nástup do služby na oddílu, kontrola cel a vězněných osob, spolupráce s inspektorem dozorčí služby.',
-    reviewNote: 'Ověřte, zda ho nenahradilo NGŘ č. 2/2026 o dozorčí službě. Pokud ano, označte ho v editoru jako zrušené.',
+    // Podle lektora (2026-09-30) ho nahradilo NGŘ č. 2/2026.
+    status: 'zruseny',
+    replacedBy: 'NGŘ č. 2/2026',
     fullLegalText: NGR_02_2022_FULL
   },
   {
@@ -392,7 +394,9 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     tags: ['NGŘ', 'mimořádné události', 'hlášení', 'závažná MU', 'ostatní MU'],
     summary: 'Určuje, co je závažná a co ostatní mimořádná událost a komu a jak se hlásí.',
     practicalApplication: 'Hlášení útěku, napadení, sebepoškození, nálezu nepovolených věcí a dalších událostí ve službě.',
-    reviewNote: 'Ověřte, zda ho nenahradilo NGŘ č. 14/2026 o mimořádných událostech. Pokud ano, označte ho v editoru jako zrušené.',
+    // Podle lektora (2026-09-30) ho nahradilo NGŘ č. 14/2026.
+    status: 'zruseny',
+    replacedBy: 'NGŘ č. 14/2026',
     fullLegalText: NGR_16_2022_FULL
   },
   {
@@ -491,7 +495,7 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     tags: ['NGŘ', 'dozorčí služba', 'k doplnění'],
     summary: '',
     practicalApplication: '',
-    reviewNote: 'Doplňte úplný název, účinnost a nahrajte text NGŘ. Nahrazuje-li NGŘ č. 2/2022, vyberte ho v editoru v poli „Nahrazuje předpis“.',
+    reviewNote: 'Doplňte úplný název, účinnost a nahrajte text NGŘ. Nahradilo NGŘ č. 2/2022; dokud tu text není, berte výklad podle starého nařízení jen orientačně.',
     fullLegalText: ''
   },
   {
@@ -507,20 +511,20 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
     tags: ['NGŘ', 'mimořádné události', 'k doplnění'],
     summary: '',
     practicalApplication: '',
-    reviewNote: 'Doplňte úplný název, účinnost a nahrajte text NGŘ. Nahrazuje-li NGŘ č. 16/2022, vyberte ho v editoru v poli „Nahrazuje předpis“.',
+    reviewNote: 'Doplňte úplný název, účinnost a nahrajte text NGŘ. Nahradilo NGŘ č. 16/2022; dokud tu text není, berte výklad podle starého nařízení jen orientačně.',
     fullLegalText: ''
   },
   {
     id: 'ngr-12-2025',
     code: 'NGŘ č. 12/2025',
-    title: 'NGŘ č. 12/2025 – OPaS',
-    shortTitle: 'OPaS (NGŘ 12/2025)',
+    title: 'NGŘ č. 12/2025 – Oddělení prevence a stížností (OPaS)',
+    shortTitle: 'Oddělení prevence a stížností (NGŘ 12/2025)',
     type: 'ngr',
     authority: 'Generální ředitelství VS ČR',
-    scope: 'OPaS.',
+    scope: 'Oddělení prevence a stížností (OPaS).',
     keyProvisions: [],
     importanceForZOP: 'Vysoký',
-    tags: ['NGŘ', 'OPaS', 'k doplnění'],
+    tags: ['NGŘ', 'OPaS', 'prevence', 'stížnosti', 'k doplnění'],
     summary: '',
     practicalApplication: '',
     reviewNote: 'Doplňte úplný název, účinnost a nahrajte text NGŘ.',
@@ -529,17 +533,17 @@ export const VSCR_REGULATIONS_REGISTRY: VscrRegulation[] = [
   {
     id: 'ngr-21-2026',
     code: 'NGŘ č. 21/2026',
-    title: 'NGŘ č. 21/2026 – název doplňte',
-    shortTitle: 'NGŘ 21/2026',
+    title: 'NGŘ č. 21/2026 – fyzické napadení a jeho řešení (přesný název doplňte)',
+    shortTitle: 'Fyzické napadení (NGŘ 21/2026)',
     type: 'ngr',
     authority: 'Generální ředitelství VS ČR',
-    scope: '',
+    scope: 'Fyzické napadení a řešení těchto situací.',
     keyProvisions: [],
     importanceForZOP: 'Vysoký',
-    tags: ['NGŘ', 'k doplnění'],
+    tags: ['NGŘ', 'fyzické napadení', 'násilí', 'k doplnění'],
     summary: '',
     practicalApplication: '',
-    reviewNote: 'Doplňte název, účinnost a nahrajte text NGŘ.',
+    reviewNote: 'Doplňte přesný název, účinnost a nahrajte text NGŘ. Ověřte, zda nenahrazuje NGŘ č. 24/2022 o předcházení násilí; pokud ano, vyberte ho v editoru v poli „Nahrazuje předpis“.',
     fullLegalText: ''
   },
 
