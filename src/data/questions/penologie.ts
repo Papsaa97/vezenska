@@ -91,17 +91,17 @@ export const penologieQuestions: Question[] = [
     subject: 'Penologie',
     topic: 'Úkoly dozorců OVV',
     question: 'Jaké jsou základní úkoly dozorců oddělení výkonu vazby (OVV)?',
-    answer: 'Převzít službu (PPZZ), fyzicky převzít a znát stavy obviněných, prověřit uzamčení cel a signalizace, provádět nepravidelné kontroly cel, zrakové prohlídky vytypovaných osob, zajišťovat výdej stravy, vřelé vody a léků, hygienu a úklid, a plnit časový rozvrh dne bez maření účelu vazby.',
+    answer: 'Převzít službu (PPZZ), fyzicky převzít a znát stavy obviněných, prověřit uzamčení cel a signalizace, provádět nepravidelné kontroly cel, prohlídky těla vytypovaných obviněných, zajišťovat výdej stravy a vřelé vody, koupání, hygienu a úklid, a plnit časový rozvrh dne bez maření účelu vazby.',
     options: [
-              `Převzít službu (PPZZ), fyzicky převzít a znát stavy obviněných, prověřit uzamčení cel a signalizace, provádět nepravidelné kontroly cel, zrakové prohlídky vytypovaných osob, zajišťovat výdej stravy, vřelé vody a léků, hygienu a úklid, a plnit časový rozvrh dne bez maření účelu vazby.`,
+              `Převzít službu (PPZZ), fyzicky převzít a znát stavy obviněných, prověřit uzamčení cel a signalizace, provádět nepravidelné kontroly cel, prohlídky těla vytypovaných obviněných, zajišťovat výdej stravy a vřelé vody, koupání, hygienu a úklid, a plnit časový rozvrh dne bez maření účelu vazby.`,
               `Zajišťovat předvádění obviněných k výslechům vyšetřovatelů PČR, vyhodnocovat bezpečnostní rizika v systému SARPO, stanovovat individuální programy zacházení a povolovat návštěvy rodinných příslušníků. Kontroly cel, prověrky uzamčení ani výdej stravy do náplně této funkce nepatří.`,
               `Provádět nepřetržitý dohled nad střeženým obvodem věznice, obsluhovat zabezpečovací a kamerové systémy na operačním středisku, kontrolovat oprávněnost vstupu osob do věznice a evidovat vjezd vozidel. Do oddělení výkonu vazby dozorce nevstupuje, stavy nepřebírá a cely nekontroluje.`,
               `Vést osobní spisy obviněných, provádět kázeňská řízení ve funkci orgánu s kázeňskou pravomocí, rozhodovat o přemístění obviněných mezi vazebními věznicemi a cenzurovat korespondenci s obhájci. Časový rozvrh dne, výdej stravy ani hygienu dozorce nezajišťuje, to přísluší vychovateli.`
             ],
     correctOption: 0,
-    rationale: 'Dle § 3.6 a § 32 NGŘ č. 2/2022 dozorce OVV odpovídá za pořádek a bezpečnost na oddíle vazby, provádí nepravidelné kontroly cel (aby obvinění nezjistili systém), zrakové prohlídky vytypovaných osob a dbá na to, aby nebyl mařen účel vazby (např. u koluzních obviněných).',
-    source: 'NGŘ č. 2/2022 čl. 3.6 a § 28–32 a Studijní text str. 30',
-      explanation: `Dle § 3.6 a § 32 NGŘ č. 2/2022 dozorce OVV odpovídá za pořádek a bezpečnost na oddíle vazby, provádí nepravidelné kontroly cel (aby obvinění nezjistili systém), zrakové prohlídky vytypovaných osob a dbá na to, aby nebyl mařen účel vazby (např. u koluzních obviněných). (Právní úprava: NGŘ č. 2/2022 čl. 3.6 a § 28–32 a Studijní text str. 30)`
+    rationale: 'Dle § 33 odst. 3 NGŘ č. 2/2026 dozorce OVV na oddílu cel přebírá klíče, prověřuje uzamčení cel a signalizaci, fyzicky přebírá obviněné, provádí nepravidelné kontroly cel tak, aby obvinění nemohli zjistit systém kontrol (písm. e)), v případě určení prohlídky těla vytypovaných obviněných (písm. j)) a zajišťuje výdej stravy a vřelé vody (písm. g)). Léky obviněným vydává vrchní dozorce OVV (§ 24 odst. 2 písm. g)). Dozorce dbá, aby nebyl mařen účel vazby (např. u koluzních obviněných).',
+    source: '§ 29–33 NGŘ č. 2/2026 a Studijní text str. 30',
+      explanation: `Dle § 33 odst. 3 NGŘ č. 2/2026 dozorce OVV na oddílu cel přebírá klíče, prověřuje uzamčení cel a signalizaci, fyzicky přebírá obviněné, provádí nepravidelné kontroly cel tak, aby obvinění nemohli zjistit systém kontrol (písm. e)), v případě určení prohlídky těla vytypovaných obviněných (písm. j)) a zajišťuje výdej stravy a vřelé vody (písm. g)). Léky obviněným vydává vrchní dozorce OVV (§ 24 odst. 2 písm. g)). Dozorce dbá, aby nebyl mařen účel vazby (např. u koluzních obviněných). (Právní úprava: § 29–33 NGŘ č. 2/2026 a Studijní text str. 30)`
 },
   {
     id: 'pen-07',
@@ -116,9 +116,9 @@ export const penologieQuestions: Question[] = [
               `Zpracovávat komplexní pedagogicko-psychologické zprávy odsouzených, vést specializované terapeutické skupiny, rozhodovat o přeřazení do jiného typu věznice a podávat soudu návrhy na podmíněné propuštění. Dále samostatně rozhodovat o uložení kázeňských trestů a o zařazení odsouzeného do prostupného režimu.`
             ],
     correctOption: 0,
-    rationale: 'Dle § 3.8 a § 68 NGŘ č. 2/2022 dozorce OVT na ubytovně odsouzených zajišťuje vnitřní bezpečnost, provádí kontroly cel a ubytovacích prostor, početní prověrky stavu, dohlíží na dodržování ČRD a spolupracuje s vychovatelem při naplňování programu zacházení.',
-    source: 'NGŘ č. 2/2022 čl. 3.8 a § 68 a Studijní text str. 32–33',
-      explanation: `Dle § 3.8 a § 68 NGŘ č. 2/2022 dozorce OVT na ubytovně odsouzených zajišťuje vnitřní bezpečnost, provádí kontroly cel a ubytovacích prostor, početní prověrky stavu, dohlíží na dodržování ČRD a spolupracuje s vychovatelem při naplňování programu zacházení. (Právní úprava: NGŘ č. 2/2022 čl. 3.8 a § 68 a Studijní text str. 32–33)`
+    rationale: 'Dle § 70 odst. 3 NGŘ č. 2/2026 dozorce OVT na ubytovně odsouzených fyzicky přebírá odsouzené a vede o nich trvalý přehled, provádí nepravidelné kontroly cel a ložnic, zajišťuje plnění časového rozvrhu dne, vycházky a fyzické početní prověrky, dbá na ustrojení, hygienu a úklid, kontroluje uzamčení vstupů, zabraňuje vnášení nepovolených věcí a respektuje pokyny vychovatele při naplňování práv odsouzených.',
+    source: '§ 70 odst. 3 NGŘ č. 2/2026 a Studijní text str. 32–33',
+      explanation: `Dle § 70 odst. 3 NGŘ č. 2/2026 dozorce OVT na ubytovně odsouzených fyzicky přebírá odsouzené a vede o nich trvalý přehled, provádí nepravidelné kontroly cel a ložnic, zajišťuje plnění časového rozvrhu dne, vycházky a fyzické početní prověrky, dbá na ustrojení, hygienu a úklid, kontroluje uzamčení vstupů, zabraňuje vnášení nepovolených věcí a respektuje pokyny vychovatele při naplňování práv odsouzených. (Právní úprava: § 70 odst. 3 NGŘ č. 2/2026 a Studijní text str. 32–33)`
 },
   {
     id: 'pen-08',
@@ -133,9 +133,9 @@ export const penologieQuestions: Question[] = [
               `Člení se na: a) střežená a nestřežená, b) uzavřená a polootevřená, c) technická a manuální. (Příklad: střežené uzavřené technické stanoviště na operačním středisku / nestřežené manuální stanoviště ve skladu). Stálá ani dočasná stanoviště se nerozlišují.`
             ],
     correctOption: 0,
-    rationale: 'Dle § 103 odst. 2 NGŘ č. 2/2022 a Rozpisu dozorčích stanovišť se dozorčí stanoviště dělí na vnější/vnitřní, pevná/pohyblivá a stálá/dočasná. Jsou určena Plánem střežení věznice.',
-    source: '§ 103 odst. 2 NGŘ č. 2/2022 a Studijní text str. 27',
-      explanation: `Dle § 103 odst. 2 NGŘ č. 2/2022 a Rozpisu dozorčích stanovišť se dozorčí stanoviště dělí na vnější/vnitřní, pevná/pohyblivá a stálá/dočasná. Jsou určena Plánem střežení věznice. (Právní úprava: § 103 odst. 2 NGŘ č. 2/2022 a Studijní text str. 27)`
+    rationale: 'Dle § 106 odst. 2 NGŘ č. 2/2026 a Rozpisu dozorčích stanovišť se dozorčí stanoviště dělí na vnější/vnitřní, pevná/pohyblivá a stálá/dočasná. Jsou určena Plánem střežení věznice.',
+    source: '§ 106 odst. 2 NGŘ č. 2/2026 a Studijní text str. 27',
+      explanation: `Dle § 106 odst. 2 NGŘ č. 2/2026 a Rozpisu dozorčích stanovišť se dozorčí stanoviště dělí na vnější/vnitřní, pevná/pohyblivá a stálá/dočasná. Jsou určena Plánem střežení věznice. (Právní úprava: § 106 odst. 2 NGŘ č. 2/2026 a Studijní text str. 27)`
 },
   {
     id: 'pen-09',
@@ -286,9 +286,9 @@ export const penologieQuestions: Question[] = [
               `Vydávat stravu a léky bez asistence zdravotnického personálu, provádět zrakové prohlídky těla výhradně při propuštění z oddílu, povolovat telefonní hovory s příbuznými 2× denně a vést osobní spis odsouzeného. Signalizaci dozorce neprověřuje a o právech a povinnostech nepoučuje.`
             ],
     correctOption: 2,
-    rationale: 'Dle § 3.12 a § 70 NGŘ č. 2/2022 vyžaduje výkon služby v uzavřeném oddílu zvýšenou bezpečnostní ostražitost, striktní evidenci věcí, lékařské posouzení způsobilosti a nepřipuštění nedovolených kontaktů.',
-    source: 'NGŘ č. 2/2022 § 3.12, § 70 a Studijní text str. 35, 54',
-      explanation: `Dle § 3.12 a § 70 NGŘ č. 2/2022 vyžaduje výkon služby v uzavřeném oddílu zvýšenou bezpečnostní ostražitost, striktní evidenci věcí, lékařské posouzení způsobilosti a nepřipuštění nedovolených kontaktů. (Právní úprava: NGŘ č. 2/2022 § 3.12, § 70 a Studijní text str. 35, 54)`
+    rationale: 'Dle § 72 NGŘ č. 2/2026 dozorce v uzavřeném oddílu přebírá klíče a prověřuje uzamčení cel a signalizaci, umísťuje odsouzené na základě vykonatelného rozhodnutí o kázeňském trestu po osobní prohlídce a kontrole potvrzení o zdravotní způsobilosti, zajišťuje převlečení a odebrání nepovolených věcí se seznamem, poučuje o právech a povinnostech, nepravidelně kontroluje cely a nepřipouští nedovolené styky.',
+    source: '§ 72 NGŘ č. 2/2026 a Studijní text str. 35, 54',
+      explanation: `Dle § 72 NGŘ č. 2/2026 dozorce v uzavřeném oddílu přebírá klíče a prověřuje uzamčení cel a signalizaci, umísťuje odsouzené na základě vykonatelného rozhodnutí o kázeňském trestu po osobní prohlídce a kontrole potvrzení o zdravotní způsobilosti, zajišťuje převlečení a odebrání nepovolených věcí se seznamem, poučuje o právech a povinnostech, nepravidelně kontroluje cely a nepřipouští nedovolené styky. (Právní úprava: § 72 NGŘ č. 2/2026 a Studijní text str. 35, 54)`
 },
   {
     id: 'pen-18',
@@ -354,9 +354,9 @@ export const penologieQuestions: Question[] = [
               `Převzít jmenovitě a početně odsouzené dle propustky, provést osobní prohlídku a prohlídku vozidla před odjezdem, vymezit prostor pohybu a zakázat nepovolené kontakty s civilisty, provádět nepravidelné početní prověrky a kontroly v předepsaných intervalech a hlásit na OS závažné události.`
             ],
     correctOption: 3,
-    rationale: 'Dle § 3.10 a § 67 NGŘ č. 2/2022 dozorce na NPMV odpovídá za to, aby odsouzení neopustili pracoviště, nenavazovali nedovolené kontakty a dodržovali stanovený režim a bezpečnost práce.',
-    source: '§ 67 NGŘ č. 2/2022 a Studijní text str. 34, 52',
-      explanation: `Dle § 3.10 a § 67 NGŘ č. 2/2022 dozorce na NPMV odpovídá za to, aby odsouzení neopustili pracoviště, nenavazovali nedovolené kontakty a dodržovali stanovený režim a bezpečnost práce. (Právní úprava: § 67 NGŘ č. 2/2022 a Studijní text str. 34, 52)`
+    rationale: 'Dle § 69 a § 73 NGŘ č. 2/2026 dozorce na nestřeženém pracovišti přebírá odsouzené početně i jmenovitě, vymezuje jim prostor pohybu, zabraňuje nedovoleným stykům, provádí nepravidelné početní prověrky, hlásí operačnímu středisku závažné skutečnosti a podle potřeby navrhuje odvolání odsouzeného z pracoviště.',
+    source: '§ 69 a § 73 NGŘ č. 2/2026 a Studijní text str. 34, 52',
+      explanation: `Dle § 69 a § 73 NGŘ č. 2/2026 dozorce na nestřeženém pracovišti přebírá odsouzené početně i jmenovitě, vymezuje jim prostor pohybu, zabraňuje nedovoleným stykům, provádí nepravidelné početní prověrky, hlásí operačnímu středisku závažné skutečnosti a podle potřeby navrhuje odvolání odsouzeného z pracoviště. (Právní úprava: § 69 a § 73 NGŘ č. 2/2026 a Studijní text str. 34, 52)`
 },
   {
     id: 'pen-22',
@@ -558,9 +558,9 @@ export const penologieQuestions: Question[] = [
               `Prověřit spojení a signalizaci, převzít a zkontrolovat uzamčení cel, fyzicky převzít obviněné, provádět nepravidelné kontroly cel, mít přehled o vytypovaných a nebezpečných obviněných, kontrolovat dodržování vnitřního řádu a nepustit nedovolené kontakty mezi společníky.`
             ],
     correctOption: 3,
-    rationale: 'Dle § 3.6 a § 31, 32 NGŘ č. 2/2022 dozorce na OVV odpovídá za izolaci obviněných, zamezení maření vyšetřování a bezpečný chod vazebního oddělení.',
-    source: 'NGŘ č. 2/2022 § 3.6, § 31–32 a Studijní text str. 30',
-      explanation: `Dle § 3.6 a § 31, 32 NGŘ č. 2/2022 dozorce na OVV odpovídá za izolaci obviněných, zamezení maření vyšetřování a bezpečný chod vazebního oddělení. (Právní úprava: NGŘ č. 2/2022 § 3.6, § 31–32 a Studijní text str. 30)`
+    rationale: 'Dle § 33 odst. 3 NGŘ č. 2/2026 dozorce OVV v oddílu cel prověřuje spojovací a signálně zabezpečovací prostředky a uzamčení cel, fyzicky přebírá obviněné, má přehled o nebezpečných a vytypovaných obviněných a nepravidelně kontroluje cely; tím brání nedovoleným kontaktům a maření účelu vazby.',
+    source: '§ 32–33 NGŘ č. 2/2026 a Studijní text str. 30',
+      explanation: `Dle § 33 odst. 3 NGŘ č. 2/2026 dozorce OVV v oddílu cel prověřuje spojovací a signálně zabezpečovací prostředky a uzamčení cel, fyzicky přebírá obviněné, má přehled o nebezpečných a vytypovaných obviněných a nepravidelně kontroluje cely; tím brání nedovoleným kontaktům a maření účelu vazby. (Právní úprava: § 32–33 NGŘ č. 2/2026 a Studijní text str. 30)`
 },
   {
     id: 'pen-34',
@@ -1330,8 +1330,8 @@ export const penologieQuestions: Question[] = [
     ],
     "correctOption": 2,
     "rationale": "Do cely může být odsouzený umístěn sám jen tehdy, jsou-li pro to vážné důvody bezpečnostní nebo nejsou-li ve výkonu tohoto kázeňského trestu současně alespoň dva odsouzení.",
-    "source": "§ 70 NGŘ č. 02/2022",
-    "explanation": "Do cely může být odsouzený umístěn sám jen tehdy, jsou-li pro to vážné důvody bezpečnostní nebo nejsou-li ve výkonu tohoto kázeňského trestu současně alespoň dva odsouzení. (Právní úprava: § 70 NGŘ č. 02/2022)"
+    "source": "§ 64 vyhl. č. 345/1999 Sb.",
+    "explanation": "Do cely může být odsouzený umístěn sám jen tehdy, jsou-li pro to vážné důvody bezpečnostní nebo nejsou-li ve výkonu tohoto kázeňského trestu současně alespoň dva odsouzení. (Právní úprava: § 64 vyhl. č. 345/1999 Sb.)"
   },
   {
     "id": "pen-80",
@@ -1355,17 +1355,17 @@ export const penologieQuestions: Question[] = [
     "subject": "Penologie",
     "topic": "Zdravotní péče – výdej léků",
     "question": "Kdo zajišťuje výdej léků odsouzeným v případech, kdy jej neprovádí zdravotnický pracovník (a není pověřen jiný zaměstnanec)?",
-    "answer": "Inspektor dozorčí služby OVT",
+    "answer": "Vrchní inspektor dozorčí služby OVT",
     "options": [
-      "Dozorce oddílu odsouzeného",
+      "Dozorce oddílu, na kterém je odsouzený",
       "Vychovatel oddílu odsouzeného",
-      "Vrchní inspektor strážní služby",
-      "Inspektor dozorčí služby OVT"
+      "Inspektor dozorčí služby OVT",
+      "Vrchní inspektor dozorčí služby OVT"
     ],
     "correctOption": 3,
-    "rationale": "Výdej léků v intervalech a dávkách stanovených lékařem zajišťuje inspektor dozorčí služby oddělení výkonu trestu, u obviněných vrchní dozorce oddělení výkonu vazby.",
-    "source": "NGŘ č. 02/2022, § 24 odst. 2 písm. g), § 60 písm. s)",
-    "explanation": "Výdej léků v intervalech a dávkách stanovených lékařem zajišťuje inspektor dozorčí služby oddělení výkonu trestu, u obviněných vrchní dozorce oddělení výkonu vazby. (Právní úprava: NGŘ č. 02/2022, § 24 odst. 2 písm. g), § 60 písm. s))"
+    "rationale": "Výdej léků v intervalech a dávkách stanovených lékařem zajišťuje od NGŘ č. 2/2026 vrchní inspektor dozorčí služby oddělení výkonu trestu (dříve inspektor dozorčí služby), u obviněných vrchní dozorce oddělení výkonu vazby, v jeho nepřítomnosti vrchní inspektor dozorčí služby OVV.",
+    "source": "NGŘ č. 2/2026, § 24 odst. 2 písm. g), § 26 písm. q), § 61 písm. q)",
+    "explanation": "Výdej léků v intervalech a dávkách stanovených lékařem zajišťuje od NGŘ č. 2/2026 vrchní inspektor dozorčí služby oddělení výkonu trestu (dříve inspektor dozorčí služby), u obviněných vrchní dozorce oddělení výkonu vazby, v jeho nepřítomnosti vrchní inspektor dozorčí služby OVV. (Právní úprava: NGŘ č. 2/2026, § 24 odst. 2 písm. g), § 26 písm. q), § 61 písm. q))"
   },
   {
     "id": "pen-82",

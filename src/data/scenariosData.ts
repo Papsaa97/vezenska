@@ -244,7 +244,7 @@ export const tacticalScenarios: Scenario[] = [
             text: 'Sám bez hlášení odemknout celu, vběhnout dovnitř a začít odřezávat tělo, každá sekunda rozhoduje.',
             isCorrect: false,
             feedback: 'Pomoc se přivolává vždy ihned – bez hlášení nikdo neví, že jste na cele. Situace může být fingovaná s cílem napadení (spoluvězeň nereaguje), proto se do cely vstupuje za dodržení zásad bezpečnosti, pokud možno se zajištěním dalším příslušníkem.',
-            legalBasis: '§ 70 NGŘ č. 02/2022'
+            legalBasis: '§ 3 písm. l) NGŘ č. 2/2026'
           },
           {
             id: 'c1-3',
@@ -258,7 +258,7 @@ export const tacticalScenarios: Scenario[] = [
             text: 'Přivolat rádiem posilu a VISS, vstoupit se zajištěním, odříznout škrtidlo a zahájit KPR 30:2.',
             isCorrect: true,
             feedback: 'Správně. Stisknete tísňové tlačítko nebo rádiem přivoláte další hlídku a VISS a do cely vstoupíte za dodržení zásad bezpečnosti se zajištěním dalším příslušníkem. Tělo nadzvednete k uvolnění tlaku na krk, záchranářským nožem odříznete škrtidlo, položíte na pevnou podložku a zahájíte kardiopulmonální resuscitaci (30:2).',
-            legalBasis: '§ 70 NGŘ č. 02/2022; Traumatologický plán VS ČR & NGŘ č. 16/2022',
+            legalBasis: '§ 3 písm. l) NGŘ č. 2/2026; Traumatologický plán VS ČR & NGŘ č. 16/2022',
             nextStepId: 'step-2'
           }
         ]
@@ -1064,7 +1064,7 @@ export const tacticalScenarios: Scenario[] = [
     "id": "sc-16",
     "title": "Modelová situace 16: Krvácející odsouzený v uzavřeném oddílu",
     "category": "Mimořádné události & Zásah",
-    "badge": "§ 6 NGŘ č. 16/2022 & § 70 NGŘ č. 02/2022",
+    "badge": "§ 6 NGŘ č. 16/2022 & § 72 NGŘ č. 2/2026",
     "difficulty": "Pokročilá",
     "briefing": "Jako dozorce v uzavřeném oddílu provádíte kontrolu cel. Odsouzený, který vykonává kázeňský trest celodenního umístění do uzavřeného oddílu na 20 dní, leží na zemi v kaluži krve a silně krvácí z hluboké rány na předloktí. Na vaše slovní podněty nereaguje a je pravděpodobně v bezvědomí.",
     "steps": [
@@ -1078,14 +1078,14 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Okamžitě sám otevřu celu a vběhnu dovnitř, bez hlášení, protože každá sekunda rozhoduje.",
             "isCorrect": false,
             "feedback": "Situace může být předstíraná s cílem napadení nebo nátlaku; do cely se vstupuje za dodržení zásad bezpečnosti, pokud možno se zajištěním dalším příslušníkem, a pomoc se přivolává ihned.",
-            "legalBasis": "§ 70 NGŘ č. 02/2022"
+            "legalBasis": "§ 72 písm. h) NGŘ č. 2/2026"
           },
           {
             "id": "c1-2",
             "text": "Radiostanicí přivolám dalšího dozorce a IDS, informuji OS a požádám o lékaře a ZZS 155.",
             "isCorrect": true,
             "feedback": "Správně. Ihned přivoláte pomoc a lékaře i zdravotnickou záchrannou službu; do cely vstupujete za dodržení zásad bezpečnosti, ideálně se zajištěním.",
-            "legalBasis": "§ 70 NGŘ č. 02/2022; § 6 písm. a) NGŘ č. 16/2022",
+            "legalBasis": "§ 72 písm. h) NGŘ č. 2/2026; § 3 písm. l) NGŘ č. 2/2026; § 6 písm. a) NGŘ č. 16/2022",
             "nextStepId": "step-2"
           },
           {
@@ -1121,7 +1121,7 @@ export const tacticalScenarios: Scenario[] = [
             "text": "V rukavicích zastavím krvácení kapesním obvazem a předmět vezmu do úschovy.",
             "isCorrect": true,
             "feedback": "Správně. Dozorce je vystrojen kapesním obvazem; předmět se zajistí, aby jej nešlo znovu použít, a vezme se do úschovy jako důkazní prostředek.",
-            "legalBasis": "§ 62 odst. 3 NGŘ č. 02/2022; § 12 zákona č. 555/1992 Sb.",
+            "legalBasis": "§ 64 odst. 3 NGŘ č. 2/2026; § 12 zákona č. 555/1992 Sb.",
             "nextStepId": "step-3"
           }
         ]
@@ -1419,7 +1419,7 @@ export const tacticalScenarios: Scenario[] = [
     "id": "sc-20",
     "title": "Modelová situace 20: Svévolný odchod z nestřeženého pracoviště",
     "category": "Ostraha, vstupy & Justiční stráž",
-    "badge": "§ 71 NGŘ č. 2/2022 & § 6 NGŘ č. 16/2022",
+    "badge": "§ 73 NGŘ č. 2/2026 & § 6 NGŘ č. 16/2022",
     "difficulty": "Pokročilá",
     "briefing": "Jste dozorcem na nestřeženém pracovišti mimo věznici v noční směně od 22:00 do 6:00 s 15 odsouzenými. Ve 2:30 vám jeden odsouzený oznámí, že jde na WC. Po asi 10 minutách stále není na svém pracovišti.",
     "steps": [
@@ -1433,21 +1433,21 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Opustím pracoviště a vydám se odsouzeného hledat po okolí, ostatní nechám pracovat.",
             "isCorrect": false,
             "feedback": "Dozorce pracoviště neopouští a zbývající odsouzené nenechává bez dozoru; pátrání organizuje vedení věznice a Policie ČR.",
-            "legalBasis": "§ 71 odst. 1 NGŘ č. 2/2022"
+            "legalBasis": "§ 73 odst. 1 NGŘ č. 2/2026"
           },
           {
             "id": "c1-2",
             "text": "Počkám do konce směny, zda se odsouzený nevrátí sám, a pak to nahlásím.",
             "isCorrect": false,
             "feedback": "Závažné skutečnosti se hlásí operačnímu středisku neprodleně, odkladem se ztrácí čas pro pátrání.",
-            "legalBasis": "§ 71 odst. 1 písm. e) NGŘ č. 2/2022"
+            "legalBasis": "§ 73 odst. 1 písm. e) NGŘ č. 2/2026"
           },
           {
             "id": "c1-3",
             "text": "Prověřím WC a okolí, provedu početní prověrku ostatních a neprodleně hlásím OS.",
             "isCorrect": true,
             "feedback": "Správně. Prověříte toalety a okolí (úraz), shromáždíte zbývající odsouzené pod dohledem, provedete početní prověrku a neprodleně hlásíte operačnímu středisku s popisem osoby.",
-            "legalBasis": "§ 71 odst. 1 písm. d) a e) NGŘ č. 2/2022",
+            "legalBasis": "§ 73 odst. 1 písm. d) a e) NGŘ č. 2/2026",
             "nextStepId": "step-2"
           }
         ]
@@ -1477,7 +1477,7 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Použiji varovný výstřel do vzduchu, aby se zastavil, a pak jej pronásleduji.",
             "isCorrect": false,
             "feedback": "Pronásledováním byste opustil zbývajících 14 odsouzených; varovný výstřel je donucovací prostředek a zde nejde o situaci vyžadující střelbu.",
-            "legalBasis": "§ 17 zákona č. 555/1992 Sb.; § 71 NGŘ č. 2/2022"
+            "legalBasis": "§ 17 zákona č. 555/1992 Sb.; § 73 NGŘ č. 2/2026"
           }
         ]
       },
@@ -1498,7 +1498,7 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Služební záznam, záznam o kázeňském přestupku a návrh na odvolání z pracoviště.",
             "isCorrect": true,
             "feedback": "Správně. Sepíšete služební záznam (časy, opatření, hlášení), záznam o kázeňském přestupku podle § 16 NGŘ č. 41/2024 a návrh na odvolání odsouzeného z nestřeženého pracoviště.",
-            "legalBasis": "§ 71 odst. 1 písm. e) NGŘ č. 2/2022; § 16 NGŘ č. 41/2024"
+            "legalBasis": "§ 73 odst. 1 písm. e) NGŘ č. 2/2026; § 16 NGŘ č. 41/2024"
           },
           {
             "id": "c3-3",
@@ -1611,7 +1611,7 @@ export const tacticalScenarios: Scenario[] = [
     "id": "sc-22",
     "title": "Modelová situace 22: Nakládání uzavřených beden bez dozorce",
     "category": "Ostraha, vstupy & Justiční stráž",
-    "badge": "§ 80 a § 82 NGŘ 33/2019 & § 66 NGŘ 02/2022",
+    "badge": "§ 80 a § 82 NGŘ 33/2019 & § 68 NGŘ 2/2026",
     "difficulty": "Pokročilá",
     "briefing": "Jste velen jako strážný na stanoviště doprovod a střežení vozidel. Do věznice přijelo nákladní vozidlo odvézt bedny z vnitřního pracoviště. Bedny jsou pevně uzavřené a nakládat je má 5 odsouzených z pracoviště. Dozorce z vnitřního pracoviště u nakládání není.",
     "steps": [
@@ -1654,7 +1654,7 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Odsouzené odvedu sám zpět do dílny a převezmu za ně odpovědnost místo dozorce.",
             "isCorrect": false,
             "feedback": "Chyba. Za odsouzené na vnitřním střeženém pracovišti odpovídá dozorce oddělení výkonu trestu. Úkolem strážného doprovodu je střežit vozidlo, ne nahrazovat dozorce.",
-            "legalBasis": "§ 66 NGŘ 02/2022; § 82 NGŘ 33/2019"
+            "legalBasis": "§ 68 NGŘ 2/2026; § 82 NGŘ 33/2019"
           },
           {
             "id": "c2-2",
@@ -1697,7 +1697,7 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Trvám na početní prověrce, pak hlásím vjezdu kontrolu vozidla a sepíšu záznam.",
             "isCorrect": true,
             "feedback": "Správně. Bez početní prověrky vozidlo neodjede. Strážnému na vjezdu se nahlásí, že vozidlo bylo řádně zkontrolováno, a o nepřítomnosti dozorce se sepíše služební záznam.",
-            "legalBasis": "§ 82 odst. 1 NGŘ 33/2019; § 66 NGŘ 02/2022"
+            "legalBasis": "§ 82 odst. 1 NGŘ 33/2019; § 68 NGŘ 2/2026"
           }
         ]
       }
@@ -1728,7 +1728,7 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Jeho účast sám nepovolím a věc hned oznámím VISS a vrchnímu dozorci.",
             "isCorrect": true,
             "feedback": "Správně. Strážný vpustí jen osoby s platným povolením. O neuvedeném dítěti informuje VISS a vrchního dozorce oddělení výkonu vazby, který návštěvy organizuje.",
-            "legalBasis": "§ 44 odst. 2 vyhl. č. 109/1994 Sb.; § 24 odst. 2 písm. f) a t) NGŘ 02/2022",
+            "legalBasis": "§ 44 odst. 2 vyhl. č. 109/1994 Sb.; § 24 odst. 2 písm. f) a t) NGŘ 2/2026",
             "nextStepId": "step-2"
           },
           {
@@ -1803,7 +1803,7 @@ export const tacticalScenarios: Scenario[] = [
     "id": "sc-24",
     "title": "Modelová situace 24: Porucha vozidla cestou na nestřežené pracoviště",
     "category": "Mimořádné události & Zásah",
-    "badge": "§ 67 NGŘ 02/2022 & § 37 odst. 3 NGŘ 33/2019",
+    "badge": "§ 69 NGŘ 2/2026 & § 37 odst. 3 NGŘ 33/2019",
     "difficulty": "Pokročilá",
     "briefing": "Jste velen jako dozorce odsouzených na nestřežené pracoviště mimo věznici. Převzal jste od VISS odsouzené a vyrazil s nimi na pracoviště. Cestou se porouchal motor. S vozidlem jste ještě dojeli na odstavné parkoviště asi 1 km od pracoviště.",
     "steps": [
@@ -1817,7 +1817,7 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Vymezím jim prostor, zakážu kontakty s cizími a provedu početní prověrku.",
             "isCorrect": true,
             "feedback": "Správně. Dozorce musí nejdřív zajistit odsouzené: vymezí prostor pohybu, dbá, aby se nevzdalovali a nenavazovali nedovolené styky, a ověří jejich počet.",
-            "legalBasis": "§ 67 písm. c) NGŘ 02/2022",
+            "legalBasis": "§ 69 písm. c) NGŘ 2/2026",
             "nextStepId": "step-2"
           },
           {
@@ -1825,7 +1825,7 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Nechám odsouzené volně vystoupit, ať si mezitím na parkovišti zakouří.",
             "isCorrect": false,
             "feedback": "Chyba. Odsouzení se nesmějí bez kontroly vzdalovat ani navazovat nedovolené kontakty s civilními osobami. Na parkovišti je dozor ještě důležitější.",
-            "legalBasis": "§ 67 písm. c) NGŘ 02/2022"
+            "legalBasis": "§ 69 písm. c) NGŘ 2/2026"
           },
           {
             "id": "c1-3",
@@ -1846,21 +1846,21 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Nikomu nic nehlásím a vozidlo zkusím s odsouzenými opravit sám.",
             "isCorrect": false,
             "feedback": "Chyba. Závažné skutečnosti, které by mohly vést ke vzniku mimořádné události, dozorce hlásí operačnímu středisku. Oprava vozidla odsouzenými navíc není jeho úkolem.",
-            "legalBasis": "§ 67 písm. e) NGŘ 02/2022"
+            "legalBasis": "§ 69 písm. e) NGŘ 2/2026"
           },
           {
             "id": "c2-2",
             "text": "Nahlásím jen zaměstnavateli, že skupina přijde později, a víc neřeším.",
             "isCorrect": false,
             "feedback": "Chyba. Zaměstnavatele je vhodné vyrozumět, ale nejdřív je nutné informovat operační středisko a VISS a řídit se jejich pokyny.",
-            "legalBasis": "§ 67 písm. e) a f) NGŘ 02/2022; § 65 písm. f) NGŘ 33/2019"
+            "legalBasis": "§ 69 písm. e) a f) NGŘ 2/2026; § 65 písm. f) NGŘ 33/2019"
           },
           {
             "id": "c2-3",
             "text": "Vyrozumím OS a VISS o místě, poruše a počtu odsouzených.",
             "isCorrect": true,
             "feedback": "Správně. Operačnímu středisku a VISS nahlásíte polohu, povahu poruchy a počet a stav odsouzených. O dalším postupu rozhodne nadřízený, zaměstnavatele vyrozumíte o zpoždění.",
-            "legalBasis": "§ 67 písm. e) a f) NGŘ 02/2022; § 65 písm. f) NGŘ 33/2019",
+            "legalBasis": "§ 69 písm. e) a f) NGŘ 2/2026; § 65 písm. f) NGŘ 33/2019",
             "nextStepId": "step-3"
           }
         ]
@@ -1882,14 +1882,14 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Za odsouzeným se rozběhnu a ostatní nechám na parkovišti bez dohledu.",
             "isCorrect": false,
             "feedback": "Chyba. Dozorce nesmí ostatní odsouzené ponechat bez dohledu. Musí zajistit zbývající skupinu a událost ihned hlásit.",
-            "legalBasis": "§ 67 písm. c) a e) NGŘ 02/2022"
+            "legalBasis": "§ 69 písm. c) a e) NGŘ 2/2026"
           },
           {
             "id": "c3-3",
             "text": "Použiji varovný výstřel, protože jde o útěk ze střeženého objektu.",
             "isCorrect": false,
             "feedback": "Chyba. Nestřežené pracoviště není střeženým objektem a převoz není eskortou. Dozorce OVT navíc standardně střelnou zbraň nemá.",
-            "legalBasis": "§ 18 odst. 1 písm. c) z. č. 555/1992 Sb.; § 62 odst. 3 NGŘ 02/2022; § 37 odst. 3 NGŘ 33/2019"
+            "legalBasis": "§ 18 odst. 1 písm. c) z. č. 555/1992 Sb.; § 64 odst. 3 NGŘ 2/2026; § 37 odst. 3 NGŘ 33/2019"
           }
         ]
       }
@@ -1913,7 +1913,7 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Baterii mu nechám, protože tvrdí, že ji pouze našel a chtěl ji odevzdat.",
             "isCorrect": false,
             "feedback": "Chyba. Mobilní telekomunikační technika a její součásti patří mezi nepovolené věci. Odsouzený je musí odevzdat bez ohledu na to, jak k nim přišel.",
-            "legalBasis": "§ 28 odst. 2 písm. j) z. č. 169/1999 Sb.; § 64 písm. k) NGŘ 02/2022"
+            "legalBasis": "§ 28 odst. 2 písm. j) z. č. 169/1999 Sb.; § 66 písm. k) NGŘ 2/2026"
           },
           {
             "id": "c1-2",
@@ -2091,7 +2091,7 @@ export const tacticalScenarios: Scenario[] = [
     "id": "sc-27",
     "title": "Modelová situace 27: Podlitina na tváři odsouzeného",
     "category": "Právo, etika & Donucovací prostředky",
-    "badge": "NGŘ č. 24/2022 & NGŘ č. 02/2022",
+    "badge": "NGŘ č. 24/2022 & NGŘ č. 2/2026",
     "difficulty": "Základní",
     "briefing": "Jste dozorcem na ubytovně odsouzených. Při kontrole si všimnete, že jeden odsouzený má na pravé tváři výraznou podlitinu. Tvrdí, že ho předchozí den při fotbale udeřil loktem některý ze spoluvězňů, nedokáže však říct který. Pojmete podezření na úmyslné ublížení.",
     "steps": [
@@ -2120,7 +2120,7 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Odsouzeného necháte na ložnici a zjištění zmíníte až při předání služby střídajícímu dozorci.",
             "isCorrect": false,
             "feedback": "Zjištění stop po násilí se oznamuje a řeší bez zbytečného odkladu; odklad může vést k pokračování násilí.",
-            "legalBasis": "§ 20 NGŘ č. 24/2022; § 3 NGŘ č. 02/2022"
+            "legalBasis": "§ 20 NGŘ č. 24/2022; § 3 písm. f) a l) NGŘ č. 2/2026"
           }
         ]
       },
@@ -2379,7 +2379,7 @@ export const tacticalScenarios: Scenario[] = [
     "id": "sc-30",
     "title": "Modelová situace 30: Agrese při příjmu do uzavřeného oddílu",
     "category": "Právo, etika & Donucovací prostředky",
-    "badge": "§ 12 z. č. 555/1992 Sb. & § 70 NGŘ č. 02/2022 & NGŘ č. 41/2024",
+    "badge": "§ 12 z. č. 555/1992 Sb. & § 72 NGŘ č. 2/2026 & NGŘ č. 41/2024",
     "difficulty": "Základní",
     "briefing": "Jste dozorcem v oddělení výkonu kázeňských trestů. Při příjmu odsouzeného do uzavřeného oddělení u něj najdete škrtátko, zápalky, papírky a tabák, které chtěl pronést na celu. Prosí o vrácení části tabáku; po upozornění na zákaz kouření začne kopat do zdi, jde k vám a křičí: „Všechno tady rozmlátím, vraťte mi aspoň ten tabák.“",
     "steps": [
@@ -2393,14 +2393,14 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Tabák mu ponecháte, jen škrtátko a zápalky odeberete, aby se situace uklidnila.",
             "isCorrect": false,
             "feedback": "Při celodenním umístění do uzavřeného oddílu a v samovazbě není dovoleno kouřit; věci, které tam odsouzený nesmí mít, se odebírají všechny.",
-            "legalBasis": "§ 70 písm. f) NGŘ č. 02/2022"
+            "legalBasis": "§ 72 písm. f) NGŘ č. 2/2026"
           },
           {
             "id": "c1-2",
             "text": "Věci mu odejmete, sepíšete záznam o odnětí a seznam, který odsouzený podepíše.",
             "isCorrect": true,
             "feedback": "Správně. Věc, kterou má odsouzený neoprávněně u sebe, se odejme, sepíše se služební záznam o odnětí věci a seznam odebraných věcí stvrzený podpisem.",
-            "legalBasis": "§ 12 zákon č. 555/1992 Sb.; § 70 písm. f) NGŘ č. 02/2022",
+            "legalBasis": "§ 12 zákon č. 555/1992 Sb.; § 72 písm. f) NGŘ č. 2/2026",
             "nextStepId": "step-2"
           },
           {
@@ -2422,7 +2422,7 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Ustoupíte mu a část tabáku vrátíte jako kompromis, aby se konflikt co nejdřív ukončil.",
             "isCorrect": false,
             "feedback": "Kompromis v rozporu s předpisy není přípustný; dozorce jedná asertivně – klidně, věcně a jednoznačně – a na vydírání nepřistupuje.",
-            "legalBasis": "§ 70 NGŘ č. 02/2022; učební text Psychologie, Asertivita"
+            "legalBasis": "§ 72 NGŘ č. 2/2026; učební text Psychologie, Asertivita"
           },
           {
             "id": "c2-2",
@@ -2496,7 +2496,7 @@ export const tacticalScenarios: Scenario[] = [
             "text": "Okamžitě vstoupíte, postavíte se mezi odsouzeného a personál a přivoláte posilu.",
             "isCorrect": true,
             "feedback": "Správně. Zabráníte napadení personálu, lékaře a sestru vyzvete k ústupu a radiostanicí přivoláte dalšího dozorce a vyrozumíte IDS.",
-            "legalBasis": "§ 86 odst. 2 NGŘ č. 33/2019; § 3 NGŘ č. 02/2022",
+            "legalBasis": "§ 86 odst. 2 NGŘ č. 33/2019; § 3 NGŘ č. 2/2026",
             "nextStepId": "step-2"
           },
           {
