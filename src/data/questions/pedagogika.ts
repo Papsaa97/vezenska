@@ -380,17 +380,17 @@ export const pedagogikaQuestions: Question[] = [
     subject: 'Pedagogika',
     topic: 'Kázeňská pravomoc',
     question: 'Kdo má ve věznici pravomoc ukládat odsouzeným kázeňské tresty a odměny?',
-    answer: 'Ředitel věznice, vedoucí oddělení výkonu trestu, vychovatel a další pověření zaměstnanci Vězeňské služby v rozsahu svých kompetencí.',
+    answer: 'Generální ředitel VS a ředitel věznice; ostatní zaměstnanci (např. vychovatel) jen v rozsahu, k němuž byli zmocněni.',
     options: [
               `Každý příslušník vězeňské stráže nebo dozorce bez ohledu na služební zařazení a bez nutnosti schválení nadřízeným.`,
               `Samospráva odsouzených zvolená v rámci oddílu na základě kolektivního hlasování vězněných osob. Pravomoc nemá.`,
-              `Ředitel věznice, vedoucí oddělení výkonu trestu, vychovatel a další pověření zaměstnanci Vězeňské služby v rozsahu svých kompetencí.`,
+              `Generální ředitel VS a ředitel věznice; ostatní zaměstnanci (např. vychovatel) jen v rozsahu, k němuž byli zmocněni.`,
               `Výhradně příslušný samosoudce okresního soudu po provedení hlavního líčení přímo v prostorách věznice. Ředitel ji nemá.`
             ],
     correctOption: 2,
-    rationale: 'Kázeňská pravomoc je delegována na konkrétní pracovníky výkonu trestu (zejména na vychovatele, který vede oddíl), aby mohli pružně a výchovně reagovat na chování vězňů.',
-    source: 'Učební texty předmětu Pedagogika, Akademie VS ČR, str. 68 (implicitní znalost zák. 169/1999 Sb.)',
-      explanation: `Kázeňská pravomoc je delegována na konkrétní pracovníky výkonu trestu (zejména na vychovatele, který vede oddíl), aby mohli pružně a výchovně reagovat na chování vězňů. (Právní úprava: Učební texty předmětu Pedagogika, Akademie VS ČR, str. 68 (implicitní znalost zák. 169/1999 Sb.))`
+    rationale: 'Podle § 51 odst. 1 zákona č. 169/1999 Sb. vykonávají kázeňskou pravomoc nad odsouzenými generální ředitel Vězeňské služby a ředitelé věznic. Jiní zaměstnanci (vedoucí oddělení výkonu trestu, vychovatel apod.) ji mohou vykonávat, jen pokud je k tomu zmocnil generální ředitel nebo s jeho souhlasem ředitel věznice. V praxi se tak pravomoc v určeném rozsahu deleguje zejména na vychovatele, aby mohl pružně a výchovně reagovat.',
+    source: '§ 51 odst. 1 zákona č. 169/1999 Sb. a Učební texty předmětu Pedagogika, Akademie VS ČR, str. 68',
+      explanation: `Podle § 51 odst. 1 zákona č. 169/1999 Sb. vykonávají kázeňskou pravomoc nad odsouzenými generální ředitel Vězeňské služby a ředitelé věznic. Jiní zaměstnanci (vedoucí oddělení výkonu trestu, vychovatel apod.) ji mohou vykonávat, jen pokud je k tomu zmocnil generální ředitel nebo s jeho souhlasem ředitel věznice. V praxi se tak pravomoc v určeném rozsahu deleguje zejména na vychovatele, aby mohl pružně a výchovně reagovat. (Právní úprava: § 51 odst. 1 zákona č. 169/1999 Sb. a Učební texty předmětu Pedagogika, Akademie VS ČR, str. 68)`
 },
   {
     id: 'ped-24',

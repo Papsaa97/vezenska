@@ -1,32 +1,32 @@
 {
   "popis": "Referenční stav kvality banky otázek. Kontrola check:questions hlídá, že počet otázek s délkovým tellem nevzroste. Po zlepšení obsahu přepiš tento soubor příkazem \"npm run check:questions -- --update-baseline\" a commitni ho.",
-  "vytvoreno": "2026-09-30T14:14:42.114Z",
+  "vytvoreno": "2026-09-30T15:12:42.462Z",
   "cil": {
     "longestIsCorrectPct": 40
   },
   "global": {
     "questions": 551,
-    "longestIsCorrect": 89,
-    "longestIsCorrectPct": 16.2,
-    "shortestIsCorrect": 86,
-    "shortestIsCorrectPct": 15.6,
+    "longestIsCorrect": 84,
+    "longestIsCorrectPct": 15.2,
+    "shortestIsCorrect": 83,
+    "shortestIsCorrectPct": 15.1,
     "avgCorrectLen": 157,
     "avgDistractorLen": 152
   },
   "predmety": {
     "Pedagogika": {
       "questions": 33,
-      "longestIsCorrect": 8,
-      "longestIsCorrectPct": 24.2,
+      "longestIsCorrect": 7,
+      "longestIsCorrectPct": 21.2,
       "shortestIsCorrect": 7,
       "shortestIsCorrectPct": 21.2
     },
     "Penologie": {
       "questions": 88,
-      "longestIsCorrect": 13,
-      "longestIsCorrectPct": 14.8,
-      "shortestIsCorrect": 15,
-      "shortestIsCorrectPct": 17
+      "longestIsCorrect": 9,
+      "longestIsCorrectPct": 10.2,
+      "shortestIsCorrect": 14,
+      "shortestIsCorrectPct": 15.9
     },
     "Právo": {
       "questions": 80,
@@ -53,8 +53,8 @@
       "questions": 166,
       "longestIsCorrect": 16,
       "longestIsCorrectPct": 9.6,
-      "shortestIsCorrect": 10,
-      "shortestIsCorrectPct": 6
+      "shortestIsCorrect": 8,
+      "shortestIsCorrectPct": 4.8
     },
     "Vězeňská administrativa": {
       "questions": 35,

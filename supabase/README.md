@@ -61,6 +61,7 @@ projektu spusťte v tomto pořadí:
 | 46 | `045_opravy_otazek_a_prameny.sql` | **Oprava obsahu.** Přepíše dvě věcně chybné otázky (zastavovací pás není donucovací prostředek podle § 17 odst. 2; výzva „jménem zákona“ bez vymyšleného doslovného znění), opraví § 22 → § 20 u záznamu o použití DP a doplní pramen a okruh z repozitáře u otázek, kde chybí. Lektorem vyplněné hodnoty nemění. Idempotentní |
 | 47 | `046_otazky_ze_zaverecek_zop.sql` | **Nový obsah.** 187 otázek ze závěrečných zkoušek ZOP A/2 2026 (modelové situace a tahák), porovnaných s bankou, s vyplněným okruhem a pramenem. Stejné otázky jsou v `src/data/questions`. Banka roste z 364 na 551. Idempotentní |
 | 48 | `047_opravy_ctyr_otazek.sql` | **Oprava obsahu.** Lhůta ke kázeňskému trestu odsouzeného (jen 1 rok, § 47 odst. 3), povinnost před použitím zbraně (§ 18 odst. 3, ne § 20 a varovný výstřel) a odstranění rozporných barev obálek typu I a II. Upravené otázky nepřepíše. Idempotentní |
+| 49 | `048_opravy_otazek_z_testu.sql` | **Oprava obsahu.** 28 otázek z testu banky: ubytovací plocha 4 m² na osobu (6 m² jen jednolůžková cela, § 17 odst. 6 vyhl. 345/1999 Sb.), DVO = další vytypovaná osoba, zákaz návštěv v samovazbě jen u obviněných, § 19 bez „pouze hmatů a chvatů“, zásobník CZ 75 B na 16 nábojů, opravené paragrafy v pramenech a jednoznačné distraktory. Otázky s již změněným zněním nepřepíše. Idempotentní |
 
 > Kroky 12 a 13 jsou číselně naopak, protože `012_materials_storage.sql` používá
 > `public.get_role()` z kroku 1 a politiky z kroku 12 na sobě nezávisí. Spustíte-li

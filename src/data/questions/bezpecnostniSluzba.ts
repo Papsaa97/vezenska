@@ -113,12 +113,12 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
               `Hmotnost je limitována na 3 kg včetně obalu; kontrola probíhá výhradně orientačním převážením na příjmu a vizuální kontrolou neporušenosti originálního poštovního obalu. Rentgenová kontrola ani přítomnost vězněné osoby se nevyžadují.`,
               `Hmotnost nesmí přesáhnout 5 kg netto (bez obalu); kontrola se provádí výhradně stěrem na detekci výbušnin bez nutnosti rozbalení jednotlivých potravinových balení.`,
               `Hmotnost nesmí přesáhnout 5 kg včetně obalu; balíček projde kontrolou na RTG, fyzickou kontrolou obsahu a kontrolou na přítomnost OPL a nepovolených předmětů za přítomnosti vězně.`,
-              `Hmotnost nesmí přesáhnout 10 kg bez obalu; balíček se otevírá a kontroluje výhradně na oddělení prevence za nepřítomnosti vězně a předává se jednou za 6 měsíců.`
+              `Hmotnost nesmí přesáhnout 10 kg bez obalu; balíček se otevírá a kontroluje výhradně na oddělení prevence za nepřítomnosti vězně a předává se nejvýše jednou za rok.`
             ],
     correctOption: 2,
-    rationale: 'Dle zákona č. 169/1999 Sb. (§ 24) má odsouzený právo jednou za rok (nebo jako odměnu) přijmout balíček s potravinami do hmotnosti 5 kg. Balíček podléhá důkladné technické i vizuální kontrole.',
-    source: '§ 24 zákona č. 169/1999 Sb. a Řád výkonu trestu',
-      explanation: `Dle zákona č. 169/1999 Sb. (§ 24) má odsouzený právo jednou za rok (nebo jako odměnu) přijmout balíček s potravinami do hmotnosti 5 kg. Balíček podléhá důkladné technické i vizuální kontrole. (Právní úprava: § 24 zákona č. 169/1999 Sb. a Řád výkonu trestu)`
+    rationale: 'Podle § 24 odst. 1 zákona č. 169/1999 Sb. má odsouzený právo jedenkrát za šest měsíců přijmout balíček s potravinami a věcmi osobní potřeby do hmotnosti 5 kg; obviněný jedenkrát za 3 měsíce (§ 16 odst. 2 zákona č. 293/1993 Sb.). Balíčky podléhají kontrole zaměstnanců Vězeňské služby a nepovolené věci se vracejí odesílateli na náklady vězně (§ 24 odst. 2 ZVTOS, § 33 vyhlášky č. 345/1999 Sb.).',
+    source: '§ 24 zákona č. 169/1999 Sb., § 16 zákona č. 293/1993 Sb. a Řád výkonu trestu',
+      explanation: `Podle § 24 odst. 1 zákona č. 169/1999 Sb. má odsouzený právo jedenkrát za šest měsíců přijmout balíček s potravinami a věcmi osobní potřeby do hmotnosti 5 kg; obviněný jedenkrát za 3 měsíce (§ 16 odst. 2 zákona č. 293/1993 Sb.). Balíčky podléhají kontrole zaměstnanců Vězeňské služby a nepovolené věci se vracejí odesílateli na náklady vězně (§ 24 odst. 2 ZVTOS, § 33 vyhlášky č. 345/1999 Sb.). (Právní úprava: § 24 zákona č. 169/1999 Sb., § 16 zákona č. 293/1993 Sb. a Řád výkonu trestu)`
 },
   {
     id: 'bs-09',
@@ -210,17 +210,17 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     subject: 'Služební příprava',
     topic: 'Justiční stráž – jednací síň',
     question: 'Jaká oprávnění má příslušník Justiční stráže v jednací síni soudu během hlavního líčení?',
-    answer: 'Dbá pokynů předsedy senátu (soudce), zajišťuje nerušený průběh jednání, může vyvést neukázněné osoby a střeží obžalovaného.',
+    answer: 'Řídí se pokyny předsedy senátu, na jeho pokyn vykazuje osoby z jednací síně, chrání přítomné před útoky a drží pořádek při vstupu do síně.',
     options: [
-              `Dbá pokynů předsedy senátu (soudce), zajišťuje nerušený průběh jednání, může vyvést neukázněné osoby a střeží obžalovaného.`,
+              `Řídí se pokyny předsedy senátu, na jeho pokyn vykazuje osoby z jednací síně, chrání přítomné před útoky a drží pořádek při vstupu do síně.`,
               `Je oprávněn samostatně přerušit jednání soudu při jakémkoli verbálním projevu veřejnosti a rozhodnout o vyloučení veřejnosti bez souhlasu soudce.`,
               `Podléhá výhradně pokynům státního zástupce, provádí protokolaci výpovědí obžalovaného a rozhoduje o povolení vstupu médií s kamerami.`,
               `Zajišťuje fyzickou ostrahu soudce a na pokyn obhájce je povinen provést osobní prohlídku přítomných svědků a poškozených přímo v síni.`
             ],
     correctOption: 0,
-    rationale: 'Dle § 3 zákona č. 555/1992 Sb. Justiční stráž zajišťuje pořádek a bezpečnost v budovách soudů a v jednacích síních plní pokyny předsedy senátu nebo samosoudce.',
-    source: '§ 3 zákona č. 555/1992 Sb. a Instrukce MS ČR č. 8/2022',
-      explanation: `Dle § 3 zákona č. 555/1992 Sb. Justiční stráž zajišťuje pořádek a bezpečnost v budovách soudů a v jednacích síních plní pokyny předsedy senátu nebo samosoudce. (Právní úprava: § 3 zákona č. 555/1992 Sb. a Instrukce MS ČR č. 8/2022)`
+    rationale: 'Podle § 22 odst. 3 zákona č. 555/1992 Sb. se justiční stráž řídí pokyny předsedy senátu a dalších oprávněných osob; podle § 22 odst. 4 na pokyn předsedy senátu zejména provádí rozhodnutí o vykázání osob z jednací síně, chrání přítomné úřední a další osoby před fyzickými útoky a vykonává pořádkovou službu při vstupu do síně. Bez pokynu zakročí jen tehdy, nesnese-li zákrok odkladu (§ 22 odst. 6). Obecný úkol zajišťovat pořádek a bezpečnost v budovách soudů stanoví § 3 odst. 3.',
+    source: '§ 3 odst. 3 a § 22 odst. 3, 4 a 6 zákona č. 555/1992 Sb. a Instrukce MS ČR č. 8/2022',
+      explanation: `Podle § 22 odst. 3 zákona č. 555/1992 Sb. se justiční stráž řídí pokyny předsedy senátu a dalších oprávněných osob; podle § 22 odst. 4 na pokyn předsedy senátu zejména provádí rozhodnutí o vykázání osob z jednací síně, chrání přítomné úřední a další osoby před fyzickými útoky a vykonává pořádkovou službu při vstupu do síně. Bez pokynu zakročí jen tehdy, nesnese-li zákrok odkladu (§ 22 odst. 6). Obecný úkol zajišťovat pořádek a bezpečnost v budovách soudů stanoví § 3 odst. 3. (Právní úprava: § 3 odst. 3 a § 22 odst. 3, 4 a 6 zákona č. 555/1992 Sb. a Instrukce MS ČR č. 8/2022)`
 },
   {
     id: 'bs-15',
@@ -380,17 +380,17 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     subject: 'Služební příprava',
     topic: 'Metodika bezpečnostních prohlídek',
     question: 'Jaká jsou přísná zákonná a metodická pravidla pro provádění důkladné osobní prohlídky (se svlečením do naha)?',
-    answer: 'Musí ji provádět VÝHRADNĚ osoba stejného pohlaví jako prohlížený, v oddělené místnosti bez přítomnosti nepovolaných osob a způsobem zachovávajícím lidskou důstojnost.',
+    answer: 'Provádí ji osoba stejného pohlaví jako prohlížený (případně lékař), v oddělené místnosti bez přítomnosti nepovolaných osob a způsobem šetřícím lidskou důstojnost.',
     options: [
               `Prohlídku provádí zásadně tříčlenná komise na společné chodbě oddílu za účelem zajištění maximální bezpečnosti personálu.`,
-              `Musí ji provádět VÝHRADNĚ osoba stejného pohlaví jako prohlížený, v oddělené místnosti bez přítomnosti nepovolaných osob a způsobem zachovávajícím lidskou důstojnost.`,
+              `Provádí ji osoba stejného pohlaví jako prohlížený (případně lékař), v oddělené místnosti bez přítomnosti nepovolaných osob a způsobem šetřícím lidskou důstojnost.`,
               `Příslušník stejného pohlaví smí provést kontrolu oděvu a těla pohledem, přičemž je oprávněn sám provádět i invazivní fyzikální vyšetření tělesných dutin pomocí zrcadla.`,
               `Může ji provádět příslušník opačného pohlaví, pokud je přítomen lékař nebo psycholog a je pořízen nepřetržitý videozáznam úkonu.`
             ],
     correctOption: 1,
-    rationale: 'Dle zákona a Řádu VTOS důkladnou osobní prohlídku (včetně kontroly tělesných záhybů a dutin) smí provádět pouze příslušník stejného pohlaví v určené vyšetřovací/prohlížecí místnosti za dodržení důstojnosti a hygienických standardů.',
-    source: '§ 9 zákona č. 555/1992 Sb. a NGŘ o bezpečnostních prohlídkách',
-      explanation: `Dle zákona a Řádu VTOS důkladnou osobní prohlídku (včetně kontroly tělesných záhybů a dutin) smí provádět pouze příslušník stejného pohlaví v určené vyšetřovací/prohlížecí místnosti za dodržení důstojnosti a hygienických standardů. (Právní úprava: § 9 zákona č. 555/1992 Sb. a NGŘ o bezpečnostních prohlídkách)`
+    rationale: 'Podle § 11 odst. 2 zákona č. 555/1992 Sb. provádí osobní prohlídku a prohlídku těla osoba stejného pohlaví nebo lékař; lékařskou prohlídku (např. tělesných dutin) jen lékař. Příslušník musí dbát cti a důstojnosti prohlížené osoby a zásah nesmí překročit nezbytnou míru (§ 6 odst. 2). Provedení v oddělené místnosti bez přítomnosti nepovolaných osob upřesňuje NGŘ o prohlídkách. § 9 zákona upravuje mlčenlivost, ne prohlídky.',
+    source: '§ 11 odst. 2 a § 6 odst. 2 zákona č. 555/1992 Sb. a NGŘ o bezpečnostních prohlídkách',
+      explanation: `Podle § 11 odst. 2 zákona č. 555/1992 Sb. provádí osobní prohlídku a prohlídku těla osoba stejného pohlaví nebo lékař; lékařskou prohlídku (např. tělesných dutin) jen lékař. Příslušník musí dbát cti a důstojnosti prohlížené osoby a zásah nesmí překročit nezbytnou míru (§ 6 odst. 2). Provedení v oddělené místnosti bez přítomnosti nepovolaných osob upřesňuje NGŘ o prohlídkách. § 9 zákona upravuje mlčenlivost, ne prohlídky. (Právní úprava: § 11 odst. 2 a § 6 odst. 2 zákona č. 555/1992 Sb. a NGŘ o bezpečnostních prohlídkách)`
 },
   {
     id: 'bs-25',
@@ -606,16 +606,16 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     "subject": "Zbraně",
     "topic": "Pistole CZ 75",
     "question": "Jaká je kapacita zásobníku pistole CZ 75 B a její plný palebný průměr?",
-    "answer": "15 nábojů, plný palebný průměr 30 nábojů",
+    "answer": "16 nábojů, plný palebný průměr 32 nábojů",
     "options": [
-      "15 nábojů, plný palebný průměr 30 nábojů",
+      "16 nábojů, plný palebný průměr 32 nábojů",
       "12 nábojů, palebný průměr 24 nábojů",
       "20 nábojů, plný palebný průměr 60 nábojů ve 3 zásobnících",
       "10 nábojů, plný palebný průměr 20 nábojů"
     ],
     "correctOption": 0,
-    "rationale": "Pistole CZ 75 B ráže 9 mm Luger má zásobník na 15 nábojů; plný palebný průměr jsou 2 zásobníky po 15 nábojích, tedy 30 nábojů.",
+    "rationale": "Pistole CZ 75 B ráže 9 mm Luger má dvouřadý zásobník na 16 nábojů; plný palebný průměr jsou 2 zásobníky po 16 nábojích, tedy 32 nábojů.",
     "source": "Učební text Speciální příprava – střelecká teorie, s. 3–8",
-    "explanation": "Pistole CZ 75 B ráže 9 mm Luger má zásobník na 15 nábojů; plný palebný průměr jsou 2 zásobníky po 15 nábojích, tedy 30 nábojů. (Právní úprava: Učební text Speciální příprava – střelecká teorie, s. 3–8)"
+    "explanation": "Pistole CZ 75 B ráže 9 mm Luger má dvouřadý zásobník na 16 nábojů; plný palebný průměr jsou 2 zásobníky po 16 nábojích, tedy 32 nábojů. (Právní úprava: Učební text Speciální příprava – střelecká teorie, s. 3–8)"
   }
 ];
