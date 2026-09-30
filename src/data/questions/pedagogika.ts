@@ -533,5 +533,39 @@ export const pedagogikaQuestions: Question[] = [
         rationale: 'Soud při podmíněném propuštění hodnotí, zda odsouzený ve výkonu trestu svým chováním a plněním svých povinností prokázal polepšení (§ 88 trestního zákoníku).',
         source: '§ 88 trestního zákoníku (zákon č. 40/2009 Sb.) a Metodika hodnocení odsouzených',
         explanation: 'Hodnocení pro soud shrnuje plnění programu zacházení, kázeňskou historii, pracovní morálku a postoj ke škodě.'
-    }
+    },
+  {
+    "id": "ped-32",
+    "subject": "Pedagogika",
+    "topic": "Ústavní výchova",
+    "question": "Který zákon upravuje výkon ústavní výchovy a ochranné výchovy ve školských zařízeních?",
+    "answer": "Zákon č. 109/2002 Sb.",
+    "options": [
+      "Zákon č. 89/2012 Sb.",
+      "Zákon č. 109/2002 Sb.",
+      "Zákon č. 218/2003 Sb.",
+      "Zákon č. 359/1999 Sb. (SPOD)"
+    ],
+    "correctOption": 1,
+    "rationale": "Výkon ústavní a ochranné výchovy ve školských zařízeních upravuje zákon č. 109/2002 Sb.; zákon č. 218/2003 Sb. je zákon o soudnictví ve věcech mládeže.",
+    "source": "Učební texty Pedagogika (2023), s. 51–56",
+    "explanation": "Výkon ústavní a ochranné výchovy ve školských zařízeních upravuje zákon č. 109/2002 Sb.; zákon č. 218/2003 Sb. je zákon o soudnictví ve věcech mládeže. (Právní úprava: Učební texty Pedagogika (2023), s. 51–56)"
+  },
+  {
+    "id": "ped-33",
+    "subject": "Pedagogika",
+    "topic": "Ústavní výchova",
+    "question": "Pro jaký věk zpravidla zajišťují zařízení ústavní a ochranné výchovy náhradní výchovnou péči?",
+    "answer": "Od 3 do 18 let, případně do 19 let",
+    "options": [
+      "Od narození do 26 let věku",
+      "Od 6 do 15 let věku dítěte",
+      "Od 3 do 18 let, případně do 19 let",
+      "Od 12 do 18 let bez jakékoli výjimky"
+    ],
+    "correctOption": 2,
+    "rationale": "Účelem zařízení je zajišťovat nezletilé osobě zpravidla ve věku od 3 do 18 let, případně zletilé osobě do 19 let náhradní výchovnou péči na základě rozhodnutí soudu.",
+    "source": "Učební texty Pedagogika (2023), s. 51–56",
+    "explanation": "Účelem zařízení je zajišťovat nezletilé osobě zpravidla ve věku od 3 do 18 let, případně zletilé osobě do 19 let náhradní výchovnou péči na základě rozhodnutí soudu. (Právní úprava: Učební texty Pedagogika (2023), s. 51–56)"
+  }
 ];

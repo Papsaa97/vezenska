@@ -465,5 +465,107 @@ export const vezenskaAdministrativaQuestions: Question[] = [
         rationale: 'Dle § 52 odst. 3 zákona č. 169/1999 Sb. o VTOS platí subjektivní prekluzivní lhůta 1 měsíc od okamžiku, kdy se o přestupku dozvěděl zaměstnanec VS, a objektivní lhůta 1 rok od jeho spáchání.',
         source: '§ 52 odst. 3 zákona č. 169/1999 Sb., o výkonu trestu odnětí svobody',
         explanation: 'Dle § 52 odst. 3 ZVTOS je subjektivní lhůta 1 měsíc a objektivní lhůta 1 rok od spáchání kázeňského přestupku.'
-    }
+    },
+  {
+    "id": "va_28",
+    "subject": "Vězeňská administrativa",
+    "topic": "Záznam o kázeňském přestupku",
+    "question": "Co se sepíše, jestliže odsouzený odmítne podepsat zápis o vyřešení kázeňského přestupku domluvou v jednotném záznamovém listu?",
+    "answer": "Sepíše se záznam o kázeňském přestupku",
+    "options": [
+      "Sepíše se záznam o kázeňském přestupku",
+      "Zápis podepíšou dva svědci místo něj",
+      "Pouze služební záznam o odmítnutí podpisu",
+      "Nic, domluva platí i bez jeho podpisu"
+    ],
+    "correctOption": 0,
+    "rationale": "Postačí-li k nápravě domluva, záznam o kázeňském přestupku se nesepisuje a vyřešení domluvou se zapíše do VIS a do jednotného záznamového listu, který odsouzený podepíše. Odmítne-li podpis, sepíše se záznam o kázeňském přestupku.",
+    "source": "§ 17 NGŘ č. 41/2024",
+    "explanation": "Postačí-li k nápravě domluva, záznam o kázeňském přestupku se nesepisuje a vyřešení domluvou se zapíše do VIS a do jednotného záznamového listu, který odsouzený podepíše. Odmítne-li podpis, sepíše se záznam o kázeňském přestupku. (Právní úprava: § 17 NGŘ č. 41/2024)"
+  },
+  {
+    "id": "va_29",
+    "subject": "Vězeňská administrativa",
+    "topic": "Dokumentace prohlídek",
+    "question": "Kam zapíše příslušník odpovědný za řízení dílčí prohlídky stručný záznam o jejím provedení?",
+    "answer": "Do Knihy dílčích (technických) prohlídek",
+    "options": [
+      "Do staniční knihy dozorce na oddílu",
+      "Do osobních spisů všech vězňů z prohlížených cel",
+      "Do Knihy dílčích (technických) prohlídek",
+      "Do Knihy hlášení vrchního inspektora"
+    ],
+    "correctOption": 2,
+    "rationale": "Po prohlídce se zpracuje stručný záznam do Knihy dílčích (technických) prohlídek s datem, časem od–do, místem, kdo prohlídku provedl, co a u koho bylo nalezeno a jaké nedostatky byly zjištěny.",
+    "source": "§ 92 odst. 4 NGŘ č. 33/2019",
+    "explanation": "Po prohlídce se zpracuje stručný záznam do Knihy dílčích (technických) prohlídek s datem, časem od–do, místem, kdo prohlídku provedl, co a u koho bylo nalezeno a jaké nedostatky byly zjištěny. (Právní úprava: § 92 odst. 4 NGŘ č. 33/2019)"
+  },
+  {
+    "id": "va_30",
+    "subject": "Vězeňská administrativa",
+    "topic": "Záznam o odnětí věci",
+    "question": "Na jakém tiskopisu se zpracovává Záznam o odnětí věci podle § 12 odst. 1 zákona č. 555/1992 Sb.?",
+    "answer": "Na tiskopisu přílohy č. 9 NGŘ č. 41/2024",
+    "options": [
+      "Na tiskopisu přílohy č. 9 NGŘ č. 41/2024",
+      "Na tiskopisu přílohy č. 4 NGŘ č. 41/2024",
+      "Na tiskopisu přílohy č. 6 k NGŘ č. 28/2018",
+      "Na tiskopise přílohy č. 1 NGŘ č. 16/22"
+    ],
+    "correctOption": 0,
+    "rationale": "Záznam o odnětí věci je přílohou č. 9 NGŘ č. 41/2024 a slouží zároveň jako důkazní prostředek v kázeňském řízení; příloha č. 4 je Záznam o kázeňském přestupku.",
+    "source": "§ 37 odst. 2 NGŘ č. 41/2024, příloha č. 9",
+    "explanation": "Záznam o odnětí věci je přílohou č. 9 NGŘ č. 41/2024 a slouží zároveň jako důkazní prostředek v kázeňském řízení; příloha č. 4 je Záznam o kázeňském přestupku. (Právní úprava: § 37 odst. 2 NGŘ č. 41/2024, příloha č. 9)"
+  },
+  {
+    "id": "va_31",
+    "subject": "Vězeňská administrativa",
+    "topic": "Záznam o odnětí věci",
+    "question": "Kdo podepíše Záznam o odnětí věci, nelze-li určit, kdo je vlastníkem věci nebo kdo ji prokazatelně používal?",
+    "answer": "Jiný přítomný odsouzený",
+    "options": [
+      "Příslušník, který věc odňal",
+      "Vychovatel oddílu",
+      "Vrchní dozorce oddělení",
+      "Jiný přítomný odsouzený"
+    ],
+    "correctOption": 3,
+    "rationale": "Nelze-li určit vlastníka věci nebo toho, kdo ji prokazatelně používal, podepíše záznam jiný přítomný odsouzený; odmítnutí podpisu se v záznamu vždy vyznačí.",
+    "source": "příloha č. 9 NGŘ č. 41/2024; učební text Prohlídky, Postup při odnětí věci, s. 10–11",
+    "explanation": "Nelze-li určit vlastníka věci nebo toho, kdo ji prokazatelně používal, podepíše záznam jiný přítomný odsouzený; odmítnutí podpisu se v záznamu vždy vyznačí. (Právní úprava: příloha č. 9 NGŘ č. 41/2024; učební text Prohlídky, Postup při odnětí věci, s. 10–11)"
+  },
+  {
+    "id": "va_32",
+    "subject": "Vězeňská administrativa",
+    "topic": "Záznam o kázeňském přestupku",
+    "question": "Co podle § 16 odst. 3 NGŘ č. 41/2024 nelze v popisu skutku záznamu o kázeňském přestupku nikdy uvést jako jediné porušení?",
+    "answer": "Porušení vnitřního řádu věznice",
+    "options": [
+      "Porušení § 28 zákona o výkonu trestu",
+      "Porušení vnitřního řádu věznice",
+      "Porušení povinnosti plnit pokyny",
+      "Porušení slušného chování"
+    ],
+    "correctOption": 1,
+    "rationale": "Popis skutku musí vždy uvést, z jakého porušení zákonné povinnosti je odsouzený podezřelý; nikdy nelze uvést pouze porušení vnitřního řádu věznice.",
+    "source": "§ 16 odst. 3 NGŘ č. 41/2024",
+    "explanation": "Popis skutku musí vždy uvést, z jakého porušení zákonné povinnosti je odsouzený podezřelý; nikdy nelze uvést pouze porušení vnitřního řádu věznice. (Právní úprava: § 16 odst. 3 NGŘ č. 41/2024)"
+  },
+  {
+    "id": "va_33",
+    "subject": "Vězeňská administrativa",
+    "topic": "Záznam o kázeňském přestupku – důkazy",
+    "question": "Do čeho zapíše zaměstnanec s kázeňskou pravomocí výpověď svědka kázeňského přestupku (lékaře, sestry)?",
+    "answer": "Do tiskopisu podle přílohy č. 5 NGŘ č. 41/2024",
+    "options": [
+      "Do tiskopisu podle přílohy č. 1 NGŘ č. 24/2022",
+      "Do Záznamu o použití donucovacího prostředku",
+      "Do Knihy předání a převzetí služby na stanovišti",
+      "Do tiskopisu podle přílohy č. 5 NGŘ č. 41/2024"
+    ],
+    "correctOption": 3,
+    "rationale": "Svědky zaměstnanec s kázeňskou pravomocí vyslechne a výpověď zapíše do tiskopisu podle přílohy č. 5 NGŘ č. 41/2024 nebo do záznamu o podání vysvětlení v systému ETŘ.",
+    "source": "§ 19 NGŘ č. 41/2024, příloha č. 5",
+    "explanation": "Svědky zaměstnanec s kázeňskou pravomocí vyslechne a výpověď zapíše do tiskopisu podle přílohy č. 5 NGŘ č. 41/2024 nebo do záznamu o podání vysvětlení v systému ETŘ. (Právní úprava: § 19 NGŘ č. 41/2024, příloha č. 5)"
+  }
 ];

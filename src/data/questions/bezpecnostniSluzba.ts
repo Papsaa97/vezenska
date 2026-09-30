@@ -532,6 +532,90 @@ export const bezpecnostniSluzbaQuestions: Question[] = [
     rationale: 'Komorový systém zamezuje přímému průjezdu a útěku vězněných osob. Při vjezdu do propusti strážný provádí fyzickou a technickou kontrolu zrcadly, detektory i vizuálně.',
     source: 'NGŘ č. 2/2026, o pravidlech vstupu a vjezdu do objektů VS ČR',
     explanation: `Komorový systém zamezuje přímému průjezdu a útěku vězněných osob. Při vjezdu do propusti strážný provádí fyzickou a technickou kontrolu zrcadly, detektory i vizuálně. (Právní úprava: NGŘ č. 2/2026, o pravidlech vstupu a vjezdu do objektů VS ČR)`
+  },
+  {
+    "id": "bs-33",
+    "subject": "Zbraně",
+    "topic": "Pistole CZ 75 B",
+    "question": "Kdy lze u pistole CZ 75 B zajistit zbraň manuální pojistkou?",
+    "answer": "Jen při plně napnutém kohoutu",
+    "options": [
+      "Jen při vypuštěném kohoutu",
+      "Jen při plně napnutém kohoutu",
+      "Jen s vyjmutým zásobníkem",
+      "Kdykoli bez ohledu na polohu kohoutu"
+    ],
+    "correctOption": 1,
+    "rationale": "Manuální pojistku ovládá střelec přesunutím nahoru, až se zakryje červená značka; zajistit lze jen při napnutém kohoutu a blokován je spoušťový mechanismus i závěr.",
+    "source": "učební text Speciální příprava (Střelecká teorie), s. 1 až 6",
+    "explanation": "Manuální pojistku ovládá střelec přesunutím nahoru, až se zakryje červená značka; zajistit lze jen při napnutém kohoutu a blokován je spoušťový mechanismus i závěr. (Právní úprava: učební text Speciální příprava (Střelecká teorie), s. 1 až 6)"
+  },
+  {
+    "id": "bs-34",
+    "subject": "Zbraně",
+    "topic": "Samopal CZ Scorpion EVO 3 A1",
+    "question": "Jaký je podle učebního textu Speciální příprava účinný dostřel samopalu CZ Scorpion EVO 3 A1?",
+    "answer": "200 m",
+    "options": [
+      "150 m",
+      "2200 m",
+      "50 m",
+      "200 m"
+    ],
+    "correctOption": 3,
+    "rationale": "Účinný dostřel samopalu CZ Scorpion EVO 3 A1 je 200 m; 2200 m je jeho maximální dostřel.",
+    "source": "učební text Speciální příprava, kapitola CZ Scorpion EVO 3 A1",
+    "explanation": "Účinný dostřel samopalu CZ Scorpion EVO 3 A1 je 200 m; 2200 m je jeho maximální dostřel. (Právní úprava: učební text Speciální příprava, kapitola CZ Scorpion EVO 3 A1)"
+  },
+  {
+    "id": "bs-35",
+    "subject": "Zbraně",
+    "topic": "Samopal CZ Scorpion EVO 3 A1",
+    "question": "Kolik nábojů tvoří podle učebního textu plný palebný průměr samopalu CZ Scorpion EVO 3 A1?",
+    "answer": "90 nábojů ve třech zásobnících",
+    "options": [
+      "60 nábojů ve dvou zásobnících",
+      "90 nábojů ve třech zásobnících",
+      "120 nábojů ve čtyřech zásobnících",
+      "30 nábojů v jednom zásobníku"
+    ],
+    "correctOption": 1,
+    "rationale": "Plný palebný průměr samopalu CZ Scorpion EVO 3 A1 je 90 nábojů, tedy tři zásobníky po 30 nábojích.",
+    "source": "učební text Speciální příprava, kapitola CZ Scorpion EVO 3 A1",
+    "explanation": "Plný palebný průměr samopalu CZ Scorpion EVO 3 A1 je 90 nábojů, tedy tři zásobníky po 30 nábojích. (Právní úprava: učební text Speciální příprava, kapitola CZ Scorpion EVO 3 A1)"
+  },
+  {
+    "id": "bs-36",
+    "subject": "Zbraně",
+    "topic": "Nabíjení a vybíjení zbraní",
+    "question": "Jak se podle § 19 NGŘ č. 33/2019 nabíjí služební zbraň před výkonem služby?",
+    "answer": "Zasune se zásobník, náboj do komory se nezasouvá, závěr zůstává vpředu",
+    "options": [
+      "Zasune se zásobník, náboj do komory se nezasouvá, závěr zůstává vpředu",
+      "Zasune se zásobník a natažením závěru se náboj zasune do komory",
+      "Zásobník se nosí odděleně a do zbraně se vkládá až po příchodu na stanoviště",
+      "Náboj se vloží do komory ručně a zasune se částečně plný zásobník"
+    ],
+    "correctOption": 0,
+    "rationale": "Zbraň se nabíjí zasunutím zásobníku se stanoveným počtem nábojů, náboj se do nábojové komory nezasouvá, závěr zůstává v přední poloze a zbraň se zajistí.",
+    "source": "§ 19 NGŘ č. 33/2019",
+    "explanation": "Zbraň se nabíjí zasunutím zásobníku se stanoveným počtem nábojů, náboj se do nábojové komory nezasouvá, závěr zůstává v přední poloze a zbraň se zajistí. (Právní úprava: § 19 NGŘ č. 33/2019)"
+  },
+  {
+    "id": "bs-37",
+    "subject": "Zbraně",
+    "topic": "Pistole CZ 75",
+    "question": "Jaká je kapacita zásobníku pistole CZ 75 B a její plný palebný průměr?",
+    "answer": "15 nábojů, plný palebný průměr 30 nábojů",
+    "options": [
+      "15 nábojů, plný palebný průměr 30 nábojů",
+      "12 nábojů, palebný průměr 24 nábojů",
+      "20 nábojů, plný palebný průměr 60 nábojů ve 3 zásobnících",
+      "10 nábojů, plný palebný průměr 20 nábojů"
+    ],
+    "correctOption": 0,
+    "rationale": "Pistole CZ 75 B ráže 9 mm Luger má zásobník na 15 nábojů; plný palebný průměr jsou 2 zásobníky po 15 nábojích, tedy 30 nábojů.",
+    "source": "Učební text Speciální příprava – střelecká teorie, s. 3–8",
+    "explanation": "Pistole CZ 75 B ráže 9 mm Luger má zásobník na 15 nábojů; plný palebný průměr jsou 2 zásobníky po 15 nábojích, tedy 30 nábojů. (Právní úprava: Učební text Speciální příprava – střelecká teorie, s. 3–8)"
   }
 ];
-
