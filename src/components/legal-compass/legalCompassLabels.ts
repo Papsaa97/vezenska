@@ -15,7 +15,7 @@ export const REGULATION_TYPE_LABELS: Record<VscrRegulation['type'], string> = {
   zakon: 'Zákony (Sb.)',
   vyhlaska: 'Vyhlášky MS ČR',
   ngr: 'Nařízení GŘ (NGŘ)',
-  instrukce: 'Instrukce a justiční stráž',
+  instrukce: 'Pokyny GŘ a instrukce',
   ustava_mezinarodni: 'Mezinárodní a CPT',
 };
 
