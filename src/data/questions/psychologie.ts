@@ -175,18 +175,18 @@ export const psychologieQuestions: Question[] = [
     id: 'psy-11',
     subject: 'Psychologie',
     topic: 'Neverbální komunikace',
-    question: 'Z čeho se skládá neverbální komunikace a kolik procent celkového procesu komunikace tvoří?',
-    answer: 'Tvoří 90–94 % celkového procesu komunikace. Zahrnuje mimiku (obličej), kineziku a gesta (pohyby těla a rukou), oční kontakt, paralingvistiku (tón, hlasitost, tempo, pauzy), proxemiku (vzdálenost), haptiku (doteky) a celkové držení těla.',
+    question: 'Z čeho se skládá neverbální komunikace a jaký podíl na sdělení se jí připisuje podle Mehrabianova poměru?',
+    answer: 'Podle Mehrabianova poměru přibližně 93 % (38 % hlas, 55 % řeč těla) při sdělování pocitů a postojů. Zahrnuje mimiku, kineziku a gesta, oční kontakt, paralingvistiku (tón, hlasitost, tempo, pauzy), proxemiku, haptiku a držení těla.',
     options: [
               `Tvoří přibližně 50–55 % celkového procesu komunikace. Zahrnuje výhradně artikulační rychlost, slovní zásobu, syntaktickou stavbu vět a fonetické zabarvení hlasu mluvčího. Mimika, gesta ani proxemika do neverbální komunikace nepatří, jde o složky řeči.`,
               `Tvoří 70–75 % celkového procesu komunikace. Zahrnuje výhradně grafologické znaky rukopisu, styl oblékání, nošení doplňků a úpravu služebního stejnokroje. Oční kontakt ani haptika se mezi neverbální projevy neřadí, protože jde o přímý fyzický kontakt osob.`,
               `Tvoří zanedbatelných 10–15 % komunikace. Zahrnuje výhradně fyziologické vegetativní reakce organismu, jako je tepová frekvence, pocení dlaní a kožní galvanický reflex. Paralingvistika je součástí verbální řeči.`,
-              `Tvoří 90–94 % celkového procesu komunikace. Zahrnuje mimiku (obličej), kineziku a gesta (pohyby těla a rukou), oční kontakt, paralingvistiku (tón, hlasitost, tempo, pauzy), proxemiku (vzdálenost), haptiku (doteky) a celkové držení těla.`
+              `Podle Mehrabianova poměru přibližně 93 % (38 % hlas, 55 % řeč těla) při sdělování pocitů a postojů. Zahrnuje mimiku, kineziku a gesta, oční kontakt, paralingvistiku (tón, hlasitost, tempo, pauzy), proxemiku, haptiku a držení těla.`
             ],
     correctOption: 3,
-    rationale: 'Neverbální komunikace prozrazuje skutečné emoce a postoje lidí a podporuje nebo vyvrací věrohodnost slovního vyjádření (nesoulad signalizuje lež).',
+    rationale: 'Neverbální komunikaci tvoří mimika, kinezika a gesta, oční kontakt, paralingvistika, proxemika, haptika a držení těla. Často citovaný poměr 7 % slova – 38 % hlas – 55 % řeč těla (A. Mehrabian) pochází z pokusů o sdělování pocitů a postojů, neplatí tedy pro každou komunikaci. Neverbální projevy prozrazují emoce a postoje; nesoulad se slovy snižuje věrohodnost sdělení, sám o sobě však lež nedokazuje.',
     source: 'Učební texty předmětu Psychologie, Akademie VS ČR 2023, str. 24, 26–29',
-      explanation: `Neverbální komunikace prozrazuje skutečné emoce a postoje lidí a podporuje nebo vyvrací věrohodnost slovního vyjádření (nesoulad signalizuje lež). (Právní úprava: Učební texty předmětu Psychologie, Akademie VS ČR 2023, str. 24, 26–29)`
+      explanation: `Neverbální komunikaci tvoří mimika, kinezika a gesta, oční kontakt, paralingvistika, proxemika, haptika a držení těla. Často citovaný poměr 7 % slova – 38 % hlas – 55 % řeč těla (A. Mehrabian) pochází z pokusů o sdělování pocitů a postojů, neplatí tedy pro každou komunikaci. Neverbální projevy prozrazují emoce a postoje; nesoulad se slovy snižuje věrohodnost sdělení, sám o sobě však lež nedokazuje. (Právní úprava: Učební texty předmětu Psychologie, Akademie VS ČR 2023, str. 24, 26–29)`
 },
   {
     id: 'psy-12',
@@ -748,12 +748,12 @@ export const psychologieQuestions: Question[] = [
       "Mužské pohlaví a věk nad 40 let",
       "Stabilní rodina a pravidelné návštěvy",
       "Ženské pohlaví a věk pod 25 let",
-      "Krátký trest a první uvěznění"
+      "Práce a zájmová činnost"
     ],
     "correctOption": 0,
-    "rationale": "Mezi faktory vysoké pravděpodobnosti sebeohrožení patří sebevražedné pokusy v anamnéze a v příbuzenstvu, beznaděj, chronická nemoc, abúzus alkoholu nebo drog, osamělost, věk nad 40 let a mužské pohlaví.",
+    "rationale": "Mezi faktory vysoké pravděpodobnosti sebeohrožení patří sebevražedné pokusy v anamnéze a v příbuzenstvu, beznaděj, chronická nemoc, abúzus alkoholu nebo drog, osamělost, věk nad 40 let a mužské pohlaví. Pracovní zařazení, zájmová činnost a udržované rodinné vztahy naopak patří k ochranným faktorům.",
     "source": "učební text Psychologie pro ZOP (Akademie VS ČR, 2023), kapitola Sebevražedné (suicidiální) jednání, s. 73–75",
-    "explanation": "Mezi faktory vysoké pravděpodobnosti sebeohrožení patří sebevražedné pokusy v anamnéze a v příbuzenstvu, beznaděj, chronická nemoc, abúzus alkoholu nebo drog, osamělost, věk nad 40 let a mužské pohlaví. (Právní úprava: učební text Psychologie pro ZOP (Akademie VS ČR, 2023), kapitola Sebevražedné (suicidiální) jednání, s. 73–75)"
+    "explanation": "Mezi faktory vysoké pravděpodobnosti sebeohrožení patří sebevražedné pokusy v anamnéze a v příbuzenstvu, beznaděj, chronická nemoc, abúzus alkoholu nebo drog, osamělost, věk nad 40 let a mužské pohlaví. Pracovní zařazení, zájmová činnost a udržované rodinné vztahy naopak patří k ochranným faktorům. (Právní úprava: učební text Psychologie pro ZOP (Akademie VS ČR, 2023), kapitola Sebevražedné (suicidiální) jednání, s. 73–75)"
   },
   {
     "id": "psy-45",

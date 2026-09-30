@@ -703,17 +703,17 @@ export const profesniEtikaQuestions: Question[] = [
     subject: 'Profesní etika',
     topic: 'Osobní prohlídky a gender',
     question: 'Jak má být genderově a bezpečnostně zajištěn standardní průběh osobních prohlídek občanů a vězněných osob?',
-    answer: 'Osobní prohlídku provádí výhradně osoba stejného pohlaví; při prohlídce občana (vstupující osoby) je nezbytná přítomnost dalšího příslušníka stejného pohlaví jako svědka (celkem 2 příslušníci stejného pohlaví). Intimní prohlídky smí provádět pouze lékař.',
+    answer: 'Osobní prohlídku a prohlídku těla provádí osoba stejného pohlaví nebo lékař; u vstupující osoby je podle metodiky přítomen další příslušník stejného pohlaví jako svědek (celkem 2). Lékařskou prohlídku, včetně tělesných dutin, provádí jen lékař.',
     options: [
               `Při prohlídce vstupujícího občana nesmí být přítomen žádný svědek z důvodu ochrany osobních údajů a utajení bezpečnostních procedur. Přítomnost druhého příslušníka jako svědka zákon nevyžaduje ani u vstupujících osob a prohlídku smí provést příslušník sám, pokud o ní sepíše úřední záznam.`,
               `Prohlídku vězněných žen provádí zásadně smíšená hlídka za přítomnosti psovoda se služebním psem bez náhubku. Pohlaví prohlížející osoby zákon neupravuje, rozhodující je pouze přítomnost služebního psa jako donucovacího prostředku a záznam do knihy prohlídek oddělení.`,
               `Osobní prohlídku může provádět příslušník libovolného pohlaví o samotě, přičemž tělesné prohlídky tělních dutin provádí dozorce směny. Intimní prohlídky nejsou vyhrazeny lékaři, jde o úkon bezpečnostní povahy.`,
-              `Osobní prohlídku provádí výhradně osoba stejného pohlaví; při prohlídce občana (vstupující osoby) je nezbytná přítomnost dalšího příslušníka stejného pohlaví jako svědka (celkem 2 příslušníci stejného pohlaví). Intimní prohlídky smí provádět pouze lékař.`
+              `Osobní prohlídku a prohlídku těla provádí osoba stejného pohlaví nebo lékař; u vstupující osoby je podle metodiky přítomen další příslušník stejného pohlaví jako svědek (celkem 2). Lékařskou prohlídku, včetně tělesných dutin, provádí jen lékař.`
             ],
     correctOption: 3,
-    rationale: 'Dle § 11 odst. 2 z. 555/1992 Sb., EVP bod 54.5-54.7 a metodiky ZOP musí být chráněna důstojnost a vyloučeno nařčení ze zneužití pravomoci přítomností 2 osob stejného pohlaví.',
-    source: 'Studijní opora str. 9; EVP body 54.5–54.7; § 11 odst. 2 z. 555/1992 Sb.',
-      explanation: `Dle § 11 odst. 2 z. 555/1992 Sb., EVP bod 54.5-54.7 a metodiky ZOP musí být chráněna důstojnost a vyloučeno nařčení ze zneužití pravomoci přítomností 2 osob stejného pohlaví. (Právní úprava: Studijní opora str. 9; EVP body 54.5–54.7; § 11 odst. 2 z. 555/1992 Sb.)`
+    rationale: 'Podle § 11 odst. 2 zákona č. 555/1992 Sb. provádí osobní prohlídku a prohlídku těla osoba stejného pohlaví nebo lékař, lékařskou prohlídku pouze lékař; osobní prohlídku vstupující osoby při důvodném podezření umožňuje § 13 odst. 1. Přítomnost druhého příslušníka stejného pohlaví jako svědka nestanoví zákon, ale metodika ZOP a EVP (body 54.5–54.7): chrání důstojnost prohlížené osoby i příslušníka před nařčením ze zneužití pravomoci.',
+    source: '§ 11 odst. 2 a § 13 odst. 1 z. 555/1992 Sb.; EVP body 54.5–54.7; Studijní opora str. 9',
+      explanation: `Podle § 11 odst. 2 zákona č. 555/1992 Sb. provádí osobní prohlídku a prohlídku těla osoba stejného pohlaví nebo lékař, lékařskou prohlídku pouze lékař; osobní prohlídku vstupující osoby při důvodném podezření umožňuje § 13 odst. 1. Přítomnost druhého příslušníka stejného pohlaví jako svědka nestanoví zákon, ale metodika ZOP a EVP (body 54.5–54.7): chrání důstojnost prohlížené osoby i příslušníka před nařčením ze zneužití pravomoci. (Právní úprava: § 11 odst. 2 a § 13 odst. 1 z. 555/1992 Sb.; EVP body 54.5–54.7; Studijní opora str. 9)`
 },
   {
     id: 'pe_43',
@@ -920,9 +920,9 @@ export const profesniEtikaQuestions: Question[] = [
               `Může na sociálních sítích volně kritizovat vedení státu a soudy, protože má právo na svobodu slova. Svoboda projevu podle čl. 17 Listiny je absolutní a nelze ji u příslušníka bezpečnostního sboru omezit ani služebním předpisem. Omezit lze pouze sdílení utajovaných skutečností z výkonu služby.`
             ],
     correctOption: 2,
-    rationale: 'Zákon o služebním poměru (§ 46) a Kodex etiky vyžadují od příslušníků zvýšený standard morálního chování 24/7. Neetické chování v soukromí (např. rasistické komentáře na Facebooku) často vede ke kárnému řízení.',
-    source: '§ 46 zákona č. 361/2003 Sb. a Kodex profesní etiky VS ČR',
-      explanation: `Zákon o služebním poměru (§ 46) a Kodex etiky vyžadují od příslušníků zvýšený standard morálního chování 24/7. Neetické chování v soukromí (např. rasistické komentáře na Facebooku) často vede ke kárnému řízení. (Právní úprava: § 46 zákona č. 361/2003 Sb. a Kodex profesní etiky VS ČR)`
+    rationale: 'Podle § 45 odst. 1 písm. i) zákona č. 361/2003 Sb. je příslušník povinen chovat se a jednat i v době mimo službu tak, aby neohrozil dobrou pověst bezpečnostního sboru, a podle písm. c) zachovávat mlčenlivost. Kodex etiky tento standard rozvádí. Neetické chování v soukromí (např. rasistické komentáře na sociálních sítích) může být kázeňským přestupkem (§ 50). § 46 upravuje služební kázeň a rozkazy.',
+    source: '§ 45 odst. 1 písm. i) zákona č. 361/2003 Sb. a Kodex profesní etiky VS ČR',
+      explanation: `Podle § 45 odst. 1 písm. i) zákona č. 361/2003 Sb. je příslušník povinen chovat se a jednat i v době mimo službu tak, aby neohrozil dobrou pověst bezpečnostního sboru, a podle písm. c) zachovávat mlčenlivost. Kodex etiky tento standard rozvádí. Neetické chování v soukromí (např. rasistické komentáře na sociálních sítích) může být kázeňským přestupkem (§ 50). § 46 upravuje služební kázeň a rozkazy. (Právní úprava: § 45 odst. 1 písm. i) zákona č. 361/2003 Sb. a Kodex profesní etiky VS ČR)`
 },
   // 50. Objektivita a nestrannost
   {
@@ -955,9 +955,9 @@ export const profesniEtikaQuestions: Question[] = [
             `Ano, pokud k předání dojde mimo areál věznice v době osobního volna. Mimo areál věznice a mimo službu zákaz neplatí.`
         ],
         correctOption: 1,
-        rationale: 'Dle zákona č. 361/2003 Sb. i Kodexu etiky VS ČR nesmí příslušník v souvislosti s výkonem služby požadovat ani přijímat dary nebo jiné výhody pro sebe ani pro jiného.',
-        source: '§ 46 zákona č. 361/2003 Sb. a Etický kodex VS ČR',
-        explanation: 'Přijetí daru nebo výhody v souvislosti s výkonem služby je striktně zakázáno zákonem i etickým kodexem.'
+        rationale: 'Podle § 45 odst. 1 písm. b) zákona č. 361/2003 Sb. příslušník v souvislosti s výkonem služby nepřijímá dary nebo jiné výhody; zákon pro to nestanoví žádný hodnotový limit. Etický kodex VS ČR tento zákaz rozvádí.',
+        source: '§ 45 odst. 1 písm. b) zákona č. 361/2003 Sb. a Etický kodex VS ČR',
+        explanation: 'Podle § 45 odst. 1 písm. b) zákona č. 361/2003 Sb. příslušník v souvislosti s výkonem služby nepřijímá dary nebo jiné výhody; zákon pro to nestanoví žádný hodnotový limit. Etický kodex VS ČR tento zákaz rozvádí. (Právní úprava: § 45 odst. 1 písm. b) zákona č. 361/2003 Sb. a Etický kodex VS ČR)'
     },
     {
         id: 'pe_57',

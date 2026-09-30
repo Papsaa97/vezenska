@@ -38,6 +38,11 @@ export default function Scenarios() {
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [selectedChoice, setSelectedChoice] = useState<ScenarioChoice | null>(null);
+  // Chybné volby, které student v aktuálním kroku už zkusil. Správná volba se
+  // po chybě NEZVÝRAZNÍ — student zkouší dál, dokud ji nenajde sám, nebo si ji
+  // výslovně nenechá ukázat.
+  const [triedWrongIds, setTriedWrongIds] = useState<string[]>([]);
+  const [revealedCorrect, setRevealedCorrect] = useState<boolean>(false);
   const [completedScenarios, setCompletedScenarios] = useState<string[]>(loadCompletedScenarios);
   const [score, setScore] = useState<{ correct: number; total: number }>({ correct: 0, total: 0 });
   const [activeCategory, setActiveCategoryFilter] = useState<string>('all');
@@ -110,10 +115,17 @@ export default function Scenarios() {
     });
   };
 
+  // Vynuluje stav rozhodování v kroku (vybraná volba, zkoušené chyby, ukázání).
+  const resetStepState = () => {
+    setSelectedChoice(null);
+    setTriedWrongIds([]);
+    setRevealedCorrect(false);
+  };
+
   const handleSelectScenario = (scenario: Scenario) => {
     setSelectedScenario(scenario);
     setCurrentStepIndex(0);
-    setSelectedChoice(null);
+    resetStepState();
     setScore({ correct: 0, total: 0 });
   };
 
@@ -125,20 +137,37 @@ export default function Scenarios() {
     return selectedScenario.steps.findIndex(s => s.id === choice.nextStepId);
   };
 
+  // Skóre počítá KROKY rozhodnuté správně napoprvé: každý krok se do `total`
+  // přičte jen jednou (při první volbě) a do `correct` jen tehdy, když už první
+  // volba byla správná. Opakované pokusy po chybě ani ukázání správné volby
+  // skóre nemění.
   const handleChoose = (choice: ScenarioChoice) => {
-    if (selectedChoice) return;
+    if (selectedChoice?.isCorrect || triedWrongIds.includes(choice.id)) return;
+    const isFirstAttempt = selectedChoice === null && triedWrongIds.length === 0;
+    const nextScore = isFirstAttempt
+      ? { correct: score.correct + (choice.isCorrect ? 1 : 0), total: score.total + 1 }
+      : score;
+
     setSelectedChoice(choice);
-    setScore(prev => ({
-      correct: prev.correct + (choice.isCorrect ? 1 : 0),
-      total: prev.total + 1
-    }));
+    if (isFirstAttempt) setScore(nextScore);
+    if (!choice.isCorrect) setTriedWrongIds(prev => [...prev, choice.id]);
 
     // Scénář se započítá (XP, odznaky) jen tehdy, když ho student prošel
     // napoprvé bez chybné volby. Dřív stačilo zkoušet možnosti, dokud nějaká
-    // nevyšla. `score` je tu ještě stav PŘED touto volbou.
-    if (selectedScenario && choice.isCorrect && findNextStepIndex(choice) === -1 && score.correct === score.total) {
+    // nevyšla.
+    if (selectedScenario && choice.isCorrect && findNextStepIndex(choice) === -1 && nextScore.correct === nextScore.total) {
       markScenarioCompleted(selectedScenario.id);
     }
+  };
+
+  // Na výslovnou žádost po chybné volbě ukáže správnou volbu i s jejím
+  // zdůvodněním. Krok už je v skóre veden jako chybný, na tom se nic nemění.
+  const handleRevealCorrect = () => {
+    if (!selectedScenario || triedWrongIds.length === 0) return;
+    const correctChoice = selectedScenario.steps[currentStepIndex]?.choices.find(c => c.isCorrect);
+    if (!correctChoice) return;
+    setSelectedChoice(correctChoice);
+    setRevealedCorrect(true);
   };
 
   const handleNextStep = () => {
@@ -146,12 +175,12 @@ export default function Scenarios() {
     const nextIdx = findNextStepIndex(selectedChoice);
     if (nextIdx === -1) return;
     setCurrentStepIndex(nextIdx);
-    setSelectedChoice(null);
+    resetStepState();
   };
 
   const handleResetScenario = () => {
     setCurrentStepIndex(0);
-    setSelectedChoice(null);
+    resetStepState();
     setScore({ correct: 0, total: 0 });
   };
 
@@ -161,7 +190,7 @@ export default function Scenarios() {
     }
     setSelectedScenario(null);
     setCurrentStepIndex(0);
-    setSelectedChoice(null);
+    resetStepState();
     setScore({ correct: 0, total: 0 });
   };
 
@@ -431,6 +460,8 @@ export default function Scenarios() {
   // Poslední krok = správná volba bez (existujícího) dalšího kroku.
   const isFinished = !!selectedChoice?.isCorrect && findNextStepIndex(selectedChoice) === -1;
   const legalBasis = selectedChoice?.legalBasis.trim() ?? '';
+  const stepLocked = !!selectedChoice?.isCorrect;
+  const canReveal = !stepLocked && triedWrongIds.length > 0 && currentStep.choices.some(c => c.isCorrect);
 
   return (
     <div className="w-full flex flex-col pb-8">
@@ -452,9 +483,9 @@ export default function Scenarios() {
           {score.total > 0 && (
             <span
               className="text-xs font-semibold px-2.5 py-1 rounded-md border bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700"
-              title="Kolik voleb v tomto průchodu bylo správných; opakovaný pokus po chybě se počítá jako další volba"
+              title="V kolika krocích byla správná už první volba; opakované pokusy po chybě ani ukázání správné volby se nezapočítávají"
             >
-              Správné volby: <strong>{score.correct}</strong> z {score.total}
+              Správně napoprvé: <strong>{score.correct}</strong> z {score.total}
             </span>
           )}
           <span className="text-xs font-semibold px-2.5 py-1 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 rounded-md border border-blue-200 dark:border-blue-800">
@@ -504,40 +535,47 @@ export default function Scenarios() {
         <div className="space-y-3">
           {currentStep.choices.map((choice) => {
             const isSelected = selectedChoice?.id === choice.id;
+            const wasTriedWrong = triedWrongIds.includes(choice.id);
+            // Zelená jen pro volbu, kterou student sám zvolil nebo si nechal
+            // ukázat. Po chybě se správná volba nijak neodlišuje od ostatních.
+            const showAsCorrect = isSelected && choice.isCorrect;
+            const isDisabled = stepLocked || wasTriedWrong;
             let choiceStyle = 'border-slate-200 dark:border-slate-700/80 hover:border-blue-400 dark:hover:border-blue-600 bg-slate-50/50 dark:bg-slate-800/40 text-slate-800 dark:text-slate-200 cursor-pointer';
 
-            if (selectedChoice) {
-              if (isSelected) {
-                choiceStyle = choice.isCorrect
-                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200'
-                  : 'border-rose-500 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200';
-              } else if (choice.isCorrect) {
-                choiceStyle = 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/40 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300';
-              } else {
-                choiceStyle = 'opacity-40 border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 text-slate-400';
-              }
+            if (showAsCorrect) {
+              choiceStyle = 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200';
+            } else if (wasTriedWrong) {
+              choiceStyle = isSelected
+                ? 'border-rose-500 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200'
+                : 'border-rose-200 dark:border-rose-900 bg-rose-50/40 dark:bg-rose-950/20 text-rose-800/80 dark:text-rose-300/80';
+            } else if (stepLocked) {
+              choiceStyle = 'opacity-40 border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 text-slate-400';
             }
 
             return (
               <button
                 key={choice.id}
                 type="button"
-                disabled={!!selectedChoice}
+                disabled={isDisabled}
                 onClick={() => handleChoose(choice)}
+                aria-describedby={isSelected ? 'scenario-choice-feedback' : undefined}
                 className={`w-full text-left p-4 rounded-xl border transition-colors text-xs sm:text-sm leading-relaxed flex items-start gap-3 ${choiceStyle}`}
               >
                 <div className="mt-0.5 shrink-0" aria-hidden="true">
-                  {selectedChoice && isSelected ? (
-                    choice.isCorrect ? (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                    ) : (
-                      <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400" />
-                    )
+                  {showAsCorrect ? (
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  ) : wasTriedWrong ? (
+                    <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400" />
                   ) : (
                     <div className="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-600" />
                   )}
                 </div>
-                <div className="flex-1 font-medium">{choice.text}</div>
+                <div className="flex-1 font-medium">
+                  {choice.text}
+                  {wasTriedWrong && !isSelected && (
+                    <span className="sr-only"> (již zkoušeno, nesprávně)</span>
+                  )}
+                </div>
               </button>
             );
           })}
@@ -552,7 +590,7 @@ export default function Scenarios() {
               exit={{ opacity: 0, height: 0 }}
               className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800 overflow-hidden"
             >
-              <div className={`p-4 rounded-xl border ${
+              <div id="scenario-choice-feedback" role="status" className={`p-4 rounded-xl border ${
                 selectedChoice.isCorrect
                   ? 'bg-emerald-500/10 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200'
                   : 'bg-rose-500/10 border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-200'
@@ -561,7 +599,7 @@ export default function Scenarios() {
                   {selectedChoice.isCorrect ? (
                     <>
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
-                      <span>Správný postup</span>
+                      <span>{revealedCorrect ? 'Správná volba (ukázána po chybě)' : 'Správný postup'}</span>
                     </>
                   ) : (
                     <>
@@ -583,14 +621,21 @@ export default function Scenarios() {
               {/* Další krok */}
               <div className="mt-4 flex justify-end gap-3">
                 {!selectedChoice.isCorrect ? (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedChoice(null)}
-                    className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${SECONDARY_BUTTON}`}
-                  >
-                    <RotateCcw className="w-4 h-4" aria-hidden="true" />
-                    <span>Zkusit jinou možnost</span>
-                  </button>
+                  <div className="flex items-center gap-3 flex-wrap justify-end">
+                    <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">
+                      Zvolte jinou z nabízených možností.
+                    </span>
+                    {canReveal && (
+                      <button
+                        type="button"
+                        onClick={handleRevealCorrect}
+                        className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${SECONDARY_BUTTON}`}
+                      >
+                        <Eye className="w-4 h-4" aria-hidden="true" />
+                        <span>Ukázat správnou volbu</span>
+                      </button>
+                    )}
+                  </div>
                 ) : isFinished ? (
                   <div className="flex items-center gap-3 flex-wrap justify-end">
                     <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">

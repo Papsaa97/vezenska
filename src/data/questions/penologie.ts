@@ -65,9 +65,9 @@ export const penologieQuestions: Question[] = [
               `O vzetí do vazby rozhoduje vždy soud (v přípravném řízení na návrh státního zástupce); o propuštění rozhoduje soud, v přípravném řízení též státní zástupce, nebo státní zástupce při výkonu dozoru a prezident/ministr při milosti.`
             ],
     correctOption: 3,
-    rationale: 'Dle § 5 a § 10 zákona č. 293/1993 Sb. a trestního řádu může do vazby vzít osobu pouze soudce na základě písemného příkazu. Propuštění nařizuje soud, státní zástupce (v přípravném řízení či při dozoru dle § 29) nebo v řízení o milosti.',
-    source: '§ 6 zákona č. 293/1993 Sb. a Studijní text Penologie ZOP A str. 9-10',
-      explanation: `Dle § 5 a § 10 zákona č. 293/1993 Sb. a trestního řádu může do vazby vzít osobu pouze soudce na základě písemného příkazu. Propuštění nařizuje soud, státní zástupce (v přípravném řízení či při dozoru dle § 29) nebo v řízení o milosti. (Právní úprava: § 5 a § 10 zákona č. 293/1993 Sb. a Studijní text Penologie ZOP A str. 9-10)`
+    rationale: 'Podle § 73b odst. 1 trestního řádu rozhoduje o vzetí do vazby soud, v přípravném řízení soudce na návrh státního zástupce; o žádosti o propuštění rozhoduje soud a v přípravném řízení státní zástupce (§ 73b odst. 2). Vazební věznice přijme obviněného jen na písemný příkaz soudu (§ 5 odst. 1 zákona č. 293/1993 Sb.) a propustí ho na písemný příkaz soudu, státního zástupce (i při výkonu dozoru podle § 29) nebo na základě rozhodnutí prezidenta či ministra v řízení o milosti (§ 10).',
+    source: '§ 73b trestního řádu, § 5 a § 10 zákona č. 293/1993 Sb. a Studijní text Penologie ZOP A str. 9-10',
+      explanation: `Podle § 73b odst. 1 trestního řádu rozhoduje o vzetí do vazby soud, v přípravném řízení soudce na návrh státního zástupce; o žádosti o propuštění rozhoduje soud a v přípravném řízení státní zástupce (§ 73b odst. 2). Vazební věznice přijme obviněného jen na písemný příkaz soudu (§ 5 odst. 1 zákona č. 293/1993 Sb.) a propustí ho na písemný příkaz soudu, státního zástupce (i při výkonu dozoru podle § 29) nebo na základě rozhodnutí prezidenta či ministra v řízení o milosti (§ 10). (Právní úprava: § 73b trestního řádu, § 5 a § 10 zákona č. 293/1993 Sb. a Studijní text Penologie ZOP A str. 9-10)`
 },
   {
     id: 'pen-05',
@@ -244,17 +244,17 @@ export const penologieQuestions: Question[] = [
     subject: 'Penologie',
     topic: 'Způsoby (systémy) ubytování vězňů',
     question: 'Jaké rozlišujeme způsoby (systémy) ubytování vězňů, vysvětlete rozdíly mezi nimi!',
-    answer: 'Celový systém (uzavřené cely s přísnějším režimem) a Ložnicový systém (ubytovny s volnějším pohybem v oddíle). Norma: min. 6 m² pro 1 vězně a min. 4 m² pro každého dalšího (jednolůžková cela min. 6 m²), min. 7 m³ vzduchu na osobu (výjimečně min. 3 m² při překročení kapacity v obvodu vrchního soudu).',
+    answer: 'Celový systém (uzavřené cely s přísnějším režimem) a Ložnicový systém (ubytovny s volnějším pohybem v oddíle). Norma: ve vícelůžkové místnosti min. 4 m² na osobu, jednolůžková cela min. 6 m²; u patrových lůžek min. 7 m³ vzduchu na osobu (výjimečně nejméně 3 m² při nedostatku kapacity).',
     options: [
               `Skupinový systém a Individuální bezpečnostní systém. Norma: jednotně 3 m² ubytovací plochy na osobu a 5 m³ vzduchu bez ohledu na počet ubytovaných osob a typ věznice, s povinností nepřetržitého uzamčení všech ložnic i přes den. Celový ani ložnicový systém se neuplatňuje a výjimky nelze povolit.`,
               `Diferencovaný systém a Integrovaný systém ubytování. Norma: min. 10 m² pro 1 vězně a min. 8 m² pro každého dalšího, min. 15 m³ vzduchu na osobu, přičemž na jednolůžkovou celu je striktně stanovena plocha min. 12 m² bez výjimky. Snížení plochy při překročení kapacity nelze povolit.`,
-              `Celový systém (uzavřené cely s přísnějším režimem) a Ložnicový systém (ubytovny s volnějším pohybem v oddíle). Norma: min. 6 m² pro 1 vězně a min. 4 m² pro každého dalšího (jednolůžková cela min. 6 m²), min. 7 m³ vzduchu na osobu (výjimečně min. 3 m² při překročení kapacity v obvodu vrchního soudu).`,
+              `Celový systém (uzavřené cely s přísnějším režimem) a Ložnicový systém (ubytovny s volnějším pohybem v oddíle). Norma: ve vícelůžkové místnosti min. 4 m² na osobu, jednolůžková cela min. 6 m²; u patrových lůžek min. 7 m³ vzduchu na osobu (výjimečně nejméně 3 m² při nedostatku kapacity).`,
               `Pavilonový systém a Koridorový systém ubytování. Norma: min. 8 m² na každého vězně bez rozdílu počtu lůžek, min. 12 m³ vzduchu na osobu, přičemž překročení ubytovací kapacity věznice může povolit výhradně dozorový státní zástupce. Celový ani ložnicový systém norma nezná a vzduch se nestanovuje.`
             ],
     correctOption: 2,
-    rationale: 'Dle § 17 vyhlášky č. 345/1999 Sb. a § 15 vyhlášky č. 109/1994 Sb. je stanovena standardní plocha 6 m² pro prvního a 4 m² pro každého dalšího ubytovaného a minimálně 7 m³ objemu vzduchu.',
-    source: '§ 17 vyhl. 345/1999 Sb., § 15 vyhl. 109/1994 Sb. a Studijní text str. 11, 58–59',
-      explanation: `Dle § 17 vyhlášky č. 345/1999 Sb. a § 15 vyhlášky č. 109/1994 Sb. je stanovena standardní plocha 6 m² pro prvního a 4 m² pro každého dalšího ubytovaného a minimálně 7 m³ objemu vzduchu. (Právní úprava: § 17 vyhl. 345/1999 Sb., § 15 vyhl. 109/1994 Sb. a Studijní text str. 11, 58–59)`
+    rationale: 'Podle § 17 odst. 6 vyhlášky č. 345/1999 Sb. musí v ubytovací místnosti pro více odsouzených připadat na jednoho nejméně 4 m² ubytovací plochy; cela nebo ložnice pro jedinou osobu nesmí mít méně než 6 m². Pravidlo „6 m² pro prvního a 4 m² pro každého dalšího“ vyhláška nezná. Při nedostatku ubytovací kapacity lze plochu snížit, nejvýše však na 3 m² (§ 17 odst. 7), a u jednopatrových lůžek musí na osobu připadat nejméně 7 m³ vzduchu (§ 17 odst. 8). Pro obviněné platí obdobně § 15 vyhlášky č. 109/1994 Sb.',
+    source: '§ 17 odst. 6 až 8 vyhl. 345/1999 Sb., § 15 vyhl. 109/1994 Sb. a Studijní text str. 11, 58–59',
+      explanation: `Podle § 17 odst. 6 vyhlášky č. 345/1999 Sb. musí v ubytovací místnosti pro více odsouzených připadat na jednoho nejméně 4 m² ubytovací plochy; cela nebo ložnice pro jedinou osobu nesmí mít méně než 6 m². Pravidlo „6 m² pro prvního a 4 m² pro každého dalšího“ vyhláška nezná. Při nedostatku ubytovací kapacity lze plochu snížit, nejvýše však na 3 m² (§ 17 odst. 7), a u jednopatrových lůžek musí na osobu připadat nejméně 7 m³ vzduchu (§ 17 odst. 8). Pro obviněné platí obdobně § 15 vyhlášky č. 109/1994 Sb. (Právní úprava: § 17 odst. 6 až 8 vyhl. 345/1999 Sb., § 15 vyhl. 109/1994 Sb. a Studijní text str. 11, 58–59)`
 },
   {
     id: 'pen-16',
@@ -311,18 +311,18 @@ export const penologieQuestions: Question[] = [
     id: 'pen-19',
     subject: 'Penologie',
     topic: 'Režimová omezení v uzavřeném oddílu',
-    question: 'Uveďte nejdůležitější režimová omezení v uzavřeném oddělení!',
-    answer: 'Zákaz kouření, zákaz nákupu potravin (mimo hygieny), zákaz knih/tisku (kromě právnické, vzdělávací a náboženské literatury), zákaz radiopřijímače/TV, zákaz odpočinku na lůžku mimo vymezený čas; u samovazby zákaz návštěv (mimo advokáta) a balíčků.',
+    question: 'Uveďte nejdůležitější režimová omezení odsouzeného při celodenním umístění do uzavřeného oddílu a v samovazbě!',
+    answer: 'Zákaz kouření, nákupu potravin (kromě hygienických potřeb), čtení tisku a knih (kromě právnické, vzdělávací a náboženské literatury), bateriového radiopřijímače a odpočinku na lůžku mimo určenou dobu; balíček se vydá až po skončení trestu.',
     options: [
               `Zákaz sprchování a osobní hygieny, zákaz podávání teplé stravy, zákaz korespondence s obhájcem a státními orgány, zákaz denních vycházek a povinné celodenní stání v pozoru u mříže cely. Nákup hygienických potřeb zůstává povolen a vycházky se konají dvakrát denně.`,
               `Povolení neomezeného nákupu potravin i tabákových výrobků, možnost sledování společné televize do 23:00 hodin, zachování nároku na standardní balíčky a účast na všech skupinových sportovních aktivitách. Zákaz kouření ani zákaz odpočinku na lůžku se v uzavřeném oddílu neuplatňuje.`,
               `Zákaz užívání předepsaných léků, zákaz kontaktu se zdravotnickým personálem, omezení pitné vody na 1 litr denně a povinné vykonávání nočních úklidových prací po dobu trvání trestu. Zákaz kouření neplatí a návštěvy advokáta jsou vyloučeny.`,
-              `Zákaz kouření, zákaz nákupu potravin (mimo hygieny), zákaz knih/tisku (kromě právnické, vzdělávací a náboženské literatury), zákaz radiopřijímače/TV, zákaz odpočinku na lůžku mimo vymezený čas; u samovazby zákaz návštěv (mimo advokáta) a balíčků.`
+              `Zákaz kouření, nákupu potravin (kromě hygienických potřeb), čtení tisku a knih (kromě právnické, vzdělávací a náboženské literatury), bateriového radiopřijímače a odpočinku na lůžku mimo určenou dobu; balíček se vydá až po skončení trestu.`
             ],
     correctOption: 3,
-    rationale: 'Dle § 49 odst. 3 ZVTOS a § 64, 65 vyhlášky č. 345/1999 Sb. jsou odsouzeným v samovazbě a CUO citelně omezena běžná práva a volnočasové aktivity za účelem naplnění sankčního účelu kázeňského trestu.',
-    source: '§ 49 ZVTOS, § 64–65 vyhl. 345/1999 Sb. a Studijní text str. 55–56',
-      explanation: `Dle § 49 odst. 3 ZVTOS a § 64, 65 vyhlášky č. 345/1999 Sb. jsou odsouzeným v samovazbě a CUO citelně omezena běžná práva a volnočasové aktivity za účelem naplnění sankčního účelu kázeňského trestu. (Právní úprava: § 49 ZVTOS, § 64–65 vyhl. 345/1999 Sb. a Studijní text str. 55–56)`
+    rationale: 'Podle § 49 odst. 3 ZVTOS není odsouzenému v samovazbě dovoleno kouřit, číst tisk a knihy (kromě právnické, vzdělávací a náboženské literatury), nakupovat (kromě hygienických potřeb) ani odpočívat na lůžku mimo určenou dobu; totéž platí při celodenním umístění do uzavřeného oddílu, kde navíc vykonává úklidové práce. Bateriový radiopřijímač v uzavřeném oddílu mít nesmí (§ 63 odst. 1 vyhl. č. 345/1999 Sb.), návštěvy probíhají odděleně za přímého dozoru a nárokový balíček se vydá až po skončení trestu (§ 64). Zákaz návštěv (kromě obhájce a advokáta) a balíčků v samovazbě platí pro obviněné (§ 22 odst. 7 zákona č. 293/1993 Sb.), ne pro odsouzené.',
+    source: '§ 49 ZVTOS, § 63–65 vyhl. 345/1999 Sb., § 22 odst. 7 ZVV a Studijní text str. 55–56',
+      explanation: `Podle § 49 odst. 3 ZVTOS není odsouzenému v samovazbě dovoleno kouřit, číst tisk a knihy (kromě právnické, vzdělávací a náboženské literatury), nakupovat (kromě hygienických potřeb) ani odpočívat na lůžku mimo určenou dobu; totéž platí při celodenním umístění do uzavřeného oddílu, kde navíc vykonává úklidové práce. Bateriový radiopřijímač v uzavřeném oddílu mít nesmí (§ 63 odst. 1 vyhl. č. 345/1999 Sb.), návštěvy probíhají odděleně za přímého dozoru a nárokový balíček se vydá až po skončení trestu (§ 64). Zákaz návštěv (kromě obhájce a advokáta) a balíčků v samovazbě platí pro obviněné (§ 22 odst. 7 zákona č. 293/1993 Sb.), ne pro odsouzené. (Právní úprava: § 49 ZVTOS, § 63–65 vyhl. 345/1999 Sb., § 22 odst. 7 ZVV a Studijní text str. 55–56)`
 },
   {
     id: 'pen-20',
@@ -567,17 +567,17 @@ export const penologieQuestions: Question[] = [
     subject: 'Penologie',
     topic: 'Propuštění z vazby – Důvody a orgány',
     question: 'Jaké jsou zákonné důvody pro propuštění z VV, kdo o něm rozhoduje?',
-    answer: 'Písemný příkaz soudu na základě rozhodnutí o propuštění, příkaz státního zástupce v přípravném řízení, příkaz státního zástupce při výkonu dozoru (§ 29 ZVV), rozhodnutí prezidenta o milosti nebo ministra, či převod do VTOS na základě nařízení soudu.',
+    answer: 'Písemný příkaz soudu vydaný na základě jeho rozhodnutí, příkaz státního zástupce na základě jeho rozhodnutí (přípravné řízení), příkaz státního zástupce při výkonu dozoru (§ 29 ZVV), nebo příkaz podle rozhodnutí prezidenta či ministra o milosti.',
     options: [
-              `Písemný příkaz soudu na základě rozhodnutí o propuštění, příkaz státního zástupce v přípravném řízení, příkaz státního zástupce při výkonu dozoru (§ 29 ZVV), rozhodnutí prezidenta o milosti nebo ministra, či převod do VTOS na základě nařízení soudu.`,
+              `Písemný příkaz soudu vydaný na základě jeho rozhodnutí, příkaz státního zástupce na základě jeho rozhodnutí (přípravné řízení), příkaz státního zástupce při výkonu dozoru (§ 29 ZVV), nebo příkaz podle rozhodnutí prezidenta či ministra o milosti.`,
               `Písemný souhlas vyšetřovatele Policie ČR po ukončení výslechu, rozhodnutí velitele eskorty při předvedení k soudu, nebo uplynutí pořádkové lhůty 48 hodin od zadržení podezřelého. Příkaz soudu ani příkaz státního zástupce se k propuštění nevyžaduje.`,
               `Písemný pokyn primátora statutárního města, rozhodnutí probačního úředníka PMS ČR po stanovení dohledu, nebo nařízení vedoucího oddělení výkonu vazby při nedostatku lůžek. Rozhodnutí soudu o propuštění ani příkaz státního zástupce se nevydává.`,
               `Rozhodnutí ředitele vazební věznice po dohodě s obhájcem obviněného, složení finanční záruky přímo do pokladny věznice, nebo písemná žádost rodinných příslušníků obviněného. Příkaz soudu se nevyžaduje a o propuštění rozhoduje ředitel věznice.`
             ],
     correctOption: 0,
-    rationale: 'Dle § 10 zákona č. 293/1993 Sb. vazební věznice neprodleně propustí obviněného na svobodu po doručení originálu (či ověřeného faxu) písemného příkazu soudu, státního zástupce nebo v řízení o milosti.',
-    source: '§ 6 zákona č. 293/1993 Sb., o výkonu vazby a Studijní text str. 9, 10',
-      explanation: `Dle § 10 zákona č. 293/1993 Sb. vazební věznice neprodleně propustí obviněného na svobodu po doručení originálu (či ověřeného faxu) písemného příkazu soudu, státního zástupce nebo v řízení o milosti. (Právní úprava: § 10 zákona č. 293/1993 Sb., o výkonu vazby a Studijní text str. 9, 10)`
+    rationale: 'Podle § 10 zákona č. 293/1993 Sb. věznice neodkladně propustí obviněného, obdrží-li písemný příkaz k propuštění vydaný soudem nebo státním zástupcem na základě jejich rozhodnutí, příkaz státního zástupce vydaný při dozoru nad výkonem vazby (§ 29 odst. 2 písm. f) nebo příkaz na základě rozhodnutí prezidenta republiky či ministra v řízení o udělení milosti. Převedení do výkonu trestu není propuštěním z vazby.',
+    source: '§ 10 a § 29 zákona č. 293/1993 Sb., o výkonu vazby a Studijní text str. 9, 10',
+      explanation: `Podle § 10 zákona č. 293/1993 Sb. věznice neodkladně propustí obviněného, obdrží-li písemný příkaz k propuštění vydaný soudem nebo státním zástupcem na základě jejich rozhodnutí, příkaz státního zástupce vydaný při dozoru nad výkonem vazby (§ 29 odst. 2 písm. f) nebo příkaz na základě rozhodnutí prezidenta republiky či ministra v řízení o udělení milosti. Převedení do výkonu trestu není propuštěním z vazby. (Právní úprava: § 10 a § 29 zákona č. 293/1993 Sb., o výkonu vazby a Studijní text str. 9, 10)`
 },
   {
     id: 'pen-35',
@@ -652,17 +652,17 @@ export const penologieQuestions: Question[] = [
     subject: 'Penologie',
     topic: 'Právo odsouzeného na korespondenci a omezení',
     question: 'Vysvětlete, jak je naplňováno právo odsouzeného na korespondenci a jaká jsou jeho případná omezení:',
-    answer: 'Odsouzený má právo přijímat a na svůj náklad odesílat korespondenci bez početního limitu. VS je oprávněna ji otevírat a kontrolovat obsah. Kontrola je ZAKÁZÁNA u korespondence s obhájcem, advokátem, státními orgány ČR, prezidentem, ombudsmanem a mezinárodními institucemi lidských práv.',
+    answer: 'Odsouzený smí přijímat a na svůj náklad odesílat korespondenci bez omezení počtu. VS ji může kontrolovat a seznámit se s obsahem. Kontrola je NEPŘÍPUSTNÁ u dopisů s obhájcem, advokátem, státními orgány ČR, diplomatickou misí či konzulátem a mezinárodními lidskoprávními orgány.',
     options: [
               `Odsouzený může odeslat nejvýše 4 dopisy za měsíc na náklady věznice. Vězeňská služba je povinna otevírat a cenzurovat veškerou korespondenci včetně dopisů adresovaných obhájci a Evropskému soudu pro lidská práva. Kontrola je vyloučena jen u dopisů prezidentu republiky.`,
-              `Odsouzený má právo přijímat a na svůj náklad odesílat korespondenci bez početního limitu. VS je oprávněna ji otevírat a kontrolovat obsah. Kontrola je ZAKÁZÁNA u korespondence s obhájcem, advokátem, státními orgány ČR, prezidentem, ombudsmanem a mezinárodními institucemi lidských práv.`,
+              `Odsouzený smí přijímat a na svůj náklad odesílat korespondenci bez omezení počtu. VS ji může kontrolovat a seznámit se s obsahem. Kontrola je NEPŘÍPUSTNÁ u dopisů s obhájcem, advokátem, státními orgány ČR, diplomatickou misí či konzulátem a mezinárodními lidskoprávními orgány.`,
               `Odsouzený smí vést korespondenci výhradně s rodinnými příslušníky zapsanými v osobním spise; veškeré dopisy cizím osobám nebo institucím jsou automaticky vraceny odesílateli bez odeslání. Odesílání na vlastní náklady není přípustné a kontrola se provádí i u dopisů obhájci.`,
               `Korespondence odsouzeného nesmí být ze zákona nikdy otevírána ani kontrolována personálem věznice z důvodu ochrany listovního tajemství dle Listiny základních práv a svobod. Početní limit není stanoven a náklady na odeslání hradí věznice z provozních prostředků, nikoli odsouzený.`
             ],
     correctOption: 1,
-    rationale: 'Dle § 17 zákona č. 169/1999 Sb. a § 24 vyhlášky č. 345/1999 Sb. je korespondence významným sociálním kontaktem, přičemž ochrana obhajoby a kontrolních orgánů má absolutní zákonnou prioritu.',
-    source: '§ 18 zákona č. 169/1999 Sb. a Studijní text str. 61–62',
-      explanation: `Dle § 17 zákona č. 169/1999 Sb. a § 24 vyhlášky č. 345/1999 Sb. je korespondence významným sociálním kontaktem, přičemž ochrana obhajoby a kontrolních orgánů má absolutní zákonnou prioritu. (Právní úprava: § 17 zákona č. 169/1999 Sb. a Studijní text str. 61–62)`
+    rationale: 'Podle § 17 odst. 1 a 2 zákona č. 169/1999 Sb. má odsouzený právo přijímat a na svůj náklad odesílat korespondenci bez omezení a Vězeňská služba ji smí kontrolovat. Kontrola korespondence s obhájcem, advokátem, státními orgány ČR, diplomatickou misí či konzulárním úřadem cizího státu a s mezinárodní organizací příslušnou k ochraně lidských práv je nepřípustná (§ 17 odst. 3); tyto dopisy se odevzdávají v zalepené obálce (§ 24 odst. 3 vyhlášky č. 345/1999 Sb.) a nemajetnému odsouzenému se odešlou na náklady věznice (§ 17 odst. 5). § 18 upravuje telefon, ne korespondenci.',
+    source: '§ 17 zákona č. 169/1999 Sb., § 24 vyhl. č. 345/1999 Sb. a Studijní text str. 61–62',
+      explanation: `Podle § 17 odst. 1 a 2 zákona č. 169/1999 Sb. má odsouzený právo přijímat a na svůj náklad odesílat korespondenci bez omezení a Vězeňská služba ji smí kontrolovat. Kontrola korespondence s obhájcem, advokátem, státními orgány ČR, diplomatickou misí či konzulárním úřadem cizího státu a s mezinárodní organizací příslušnou k ochraně lidských práv je nepřípustná (§ 17 odst. 3); tyto dopisy se odevzdávají v zalepené obálce (§ 24 odst. 3 vyhlášky č. 345/1999 Sb.) a nemajetnému odsouzenému se odešlou na náklady věznice (§ 17 odst. 5). § 18 upravuje telefon, ne korespondenci. (Právní úprava: § 17 zákona č. 169/1999 Sb., § 24 vyhl. č. 345/1999 Sb. a Studijní text str. 61–62)`
 },
   {
     id: 'pen-40',
@@ -703,17 +703,17 @@ export const penologieQuestions: Question[] = [
     subject: 'Penologie',
     topic: 'Vybavení cel a ubytovací normy',
     question: 'Vyjmenujte a popište základní vybavení cel a ložnic, jak je legislativně upraven počet ubytovaných v cele (ložnici)?',
-    answer: 'Vybavení: lůžko, uzamykatelná skříňka, stůl, židle dle počtu osob, umyvadlo s pitnou vodou, záchod oddělený neprůhlednou zástěnou/dveřmi, signalizační zařízení, osvětlení, vytápění, větrání. Plocha: jednolůžková cela min. 6 m², vícelůžková min. 6 m² pro prvního a min. 4 m² pro každého dalšího, min. 7 m³ vzduchu.',
+    answer: 'Vybavení: lůžko, uzamykatelná skříňka, stůl, židle dle počtu osob, umyvadlo s pitnou vodou, záchod oddělený neprůhlednou zástěnou/dveřmi, signalizační zařízení, osvětlení, vytápění, větrání. Plocha: ve vícelůžkové místnosti min. 4 m² na osobu, jednolůžková cela min. 6 m²; u patrových lůžek min. 7 m³ vzduchu.',
     options: [
-              `Vybavení: lůžko, uzamykatelná skříňka, stůl, židle dle počtu osob, umyvadlo s pitnou vodou, záchod oddělený neprůhlednou zástěnou/dveřmi, signalizační zařízení, osvětlení, vytápění, větrání. Plocha: jednolůžková cela min. 6 m², vícelůžková min. 6 m² pro prvního a min. 4 m² pro každého dalšího, min. 7 m³ vzduchu.`,
+              `Vybavení: lůžko, uzamykatelná skříňka, stůl, židle dle počtu osob, umyvadlo s pitnou vodou, záchod oddělený neprůhlednou zástěnou/dveřmi, signalizační zařízení, osvětlení, vytápění, větrání. Plocha: ve vícelůžkové místnosti min. 4 m² na osobu, jednolůžková cela min. 6 m²; u patrových lůžek min. 7 m³ vzduchu.`,
               `Vybavení: lůžko, noční stolek, televizor, lednice, sprchový kout a mikrovlnná trouba. Plocha: minimálně 10 m² na každého odsouzeného a 15 m³ vzduchu, přičemž počet ubytovaných na cele nesmí překročit 2 osoby. Signalizační zařízení se zřizuje jen na odděleních se zvýšenou ostrahou a do ubytovací plochy se započítává i sociální zařízení.`,
               `Vybavení: matrace na podlaze, skříňka na chodbě ubytovny, společné sociální zařízení na patře. Plocha: minimálně 4 m² pro prvního a 2 m² pro každého dalšího ubytovaného, objem vzduchu není normou stanoven. Umyvadlo s pitnou vodou na cele se nevyžaduje, osvětlení a větrání upravuje pouze vnitřní řád věznice.`,
               `Vybavení: patrová pryčna, společný stůl, otevřená toaleta bez oddělení, kamna na tuhá paliva. Plocha: jednotně 2,5 m² na osobu bez ohledu na počet lůžek a minimální objem vzduchu 4 m³ na odsouzeného. Uzamykatelná skříňka ani židle se do vybavení cely nepočítají a počet ubytovaných stanoví vychovatel.`
             ],
     correctOption: 0,
-    rationale: 'Dle § 9 a § 16 ZVTOS, § 9 ZVV a § 17 vyhlášky č. 345/1999 Sb. musí každé ubytovací místo splňovat hygienické, prostorové a bezpečnostní parametry.',
-    source: '§ 17 vyhl. 345/1999 Sb., § 15 vyhl. 109/1994 Sb. a Studijní text str. 11, 58–59',
-      explanation: `Dle § 9 a § 16 ZVTOS, § 9 ZVV a § 17 vyhlášky č. 345/1999 Sb. musí každé ubytovací místo splňovat hygienické, prostorové a bezpečnostní parametry. (Právní úprava: § 17 vyhl. 345/1999 Sb., § 15 vyhl. 109/1994 Sb. a Studijní text str. 11, 58–59)`
+    rationale: 'Podle § 16 odst. 3 ZVTOS a § 17 odst. 1, 2 a 5 vyhlášky č. 345/1999 Sb. má každý odsouzený lůžko a uzamykatelnou skříňku, místnost stolek a židle podle počtu ubytovaných a cela sociální zařízení se záchodem odděleným neprůhlednou zástěnou, elektrické osvětlení a signalizační zařízení (u obviněných § 9 ZVV). Počet ubytovaných omezuje ubytovací plocha: ve vícelůžkové místnosti nejméně 4 m² na osobu, cela pro jednu osobu nejméně 6 m² (§ 17 odst. 6 vyhlášky); 7 m³ vzduchu na osobu se vyžaduje u jednopatrových lůžek (§ 17 odst. 8).',
+    source: '§ 16 odst. 3 ZVTOS, § 17 vyhl. 345/1999 Sb., § 9 ZVV, § 15 vyhl. 109/1994 Sb. a Studijní text str. 11, 58–59',
+      explanation: `Podle § 16 odst. 3 ZVTOS a § 17 odst. 1, 2 a 5 vyhlášky č. 345/1999 Sb. má každý odsouzený lůžko a uzamykatelnou skříňku, místnost stolek a židle podle počtu ubytovaných a cela sociální zařízení se záchodem odděleným neprůhlednou zástěnou, elektrické osvětlení a signalizační zařízení (u obviněných § 9 ZVV). Počet ubytovaných omezuje ubytovací plocha: ve vícelůžkové místnosti nejméně 4 m² na osobu, cela pro jednu osobu nejméně 6 m² (§ 17 odst. 6 vyhlášky); 7 m³ vzduchu na osobu se vyžaduje u jednopatrových lůžek (§ 17 odst. 8). (Právní úprava: § 16 odst. 3 ZVTOS, § 17 vyhl. 345/1999 Sb., § 9 ZVV, § 15 vyhl. 109/1994 Sb. a Studijní text str. 11, 58–59)`
 },
   {
     id: 'pen-43',
@@ -828,17 +828,17 @@ export const penologieQuestions: Question[] = [
     subject: 'Penologie',
     topic: 'Prevence násilí',
     question: 'Která kategorie vězněných osob se označuje zkratkou DVO a jaká platí pro ni specifika?',
-    answer: 'DVO = Duševně (psychicky) vysoce narušené osoby a osoby s mentální retardací (dále DVO-P, DVO-M). Vyžadují speciální zacházení, umístění na specializované oddělení, dohled psychologa a zvýšenou ochranu před šikanou ze strany ostatních vězňů.',
+    answer: 'DVO = další vytypovaná osoba, např. vězeň z medializované kauzy nebo osoba známá z veřejného či politického života. Zařazení navrhuje VOVT, rozhoduje a písemně je odůvodňuje ředitel věznice; tělo se na stopy násilí prohlíží jednou týdně.',
     options: [
               `DVO = dozorem vytypované osoby, tedy vězni zařazení do evidence možných agresorů na základě hlášení dozorce. Platí pro ně zvýšená frekvence osobních prohlídek, oddělené ubytování od ostatních a povinnost hlásit se při opuštění ubytovny.`,
-              `DVO = Duševně (psychicky) vysoce narušené osoby a osoby s mentální retardací (dále DVO-P, DVO-M). Vyžadují speciální zacházení, umístění na specializované oddělení, dohled psychologa a zvýšenou ochranu před šikanou ze strany ostatních vězňů.`,
+              `DVO = další vytypovaná osoba, např. vězeň z medializované kauzy nebo osoba známá z veřejného či politického života. Zařazení navrhuje VOVT, rozhoduje a písemně je odůvodňuje ředitel věznice; tělo se na stopy násilí prohlíží jednou týdně.`,
               `DVO = dlouhodobě vězněné osoby, tedy odsouzení k nepodmíněnému trestu odnětí svobody nad deset let. Vyžadují rozšířený program zacházení, přehodnocování rizik jednou ročně a přednostní zařazení do prostupného systému vnitřní diferenciace.`,
               `DVO = dobrovolně vyčleněné osoby, tedy vězni, kteří sami požádali o umístění mimo kolektiv. Vyžadují písemný souhlas s omezením účasti na společných aktivitách, samostatnou celu a potvrzení psychologa, že vyčlenění neohrozí duševní stav.`
             ],
     correctOption: 1,
-    rationale: 'Osoby v kategorii DVO jsou obzvlášť zranitelné (riziko viktimizace) nebo hůře zvladatelné běžnými metodami, proto se pro ně zřizují specializovaná oddělení s intenzivnějším dohledem odborných zaměstnanců.',
+    rationale: 'Podle NGŘ č. 24/2022 je DVO „další vytypovaná osoba“ – vězeň, kterému kvůli jeho známosti (medializovaná kauza, veřejný či politický život) hrozí násilí ze strany ostatních. O zařazení do DVO i do DVO-P (osoba s výkonem profese, např. bývalý policista nebo příslušník VS) rozhoduje ředitel věznice a u vytypovaných osob se 1x týdně provádí prohlídka těla na stopy násilí. Zkratka DVO neoznačuje duševně narušené osoby.',
     source: 'NGŘ č. 24/2022, o předcházení násilí mezi vězněnými osobami',
-      explanation: `Osoby v kategorii DVO jsou obzvlášť zranitelné (riziko viktimizace) nebo hůře zvladatelné běžnými metodami, proto se pro ně zřizují specializovaná oddělení s intenzivnějším dohledem odborných zaměstnanců. (Právní úprava: NGŘ č. 24/2022, o předcházení násilí mezi vězněnými osobami)`
+      explanation: `Podle NGŘ č. 24/2022 je DVO „další vytypovaná osoba“ – vězeň, kterému kvůli jeho známosti (medializovaná kauza, veřejný či politický život) hrozí násilí ze strany ostatních. O zařazení do DVO i do DVO-P (osoba s výkonem profese, např. bývalý policista nebo příslušník VS) rozhoduje ředitel věznice a u vytypovaných osob se 1x týdně provádí prohlídka těla na stopy násilí. Zkratka DVO neoznačuje duševně narušené osoby. (Právní úprava: NGŘ č. 24/2022, o předcházení násilí mezi vězněnými osobami)`
 },
     {
         id: 'pen-51',
@@ -853,26 +853,26 @@ export const penologieQuestions: Question[] = [
             `Vedoucí oddělení vězeňské stráže bez nutnosti posouzení odbornou komisí. Zpráva se nezpracuje.`
         ],
         correctOption: 1,
-        rationale: 'Dle § 9a zákona č. 169/1999 Sb. o VTOS soud zařazuje odsouzeného do typu věznice (ostraha / zvýšená ostraha), ale o umístění do konkrétního stupně zabezpečení (nízký, střední, vysoký) v rámci věznice s ostrahou rozhoduje ředitel věznice po doporučení komise.',
-        source: '§ 9a zákona č. 169/1999 Sb., o výkonu trestu odnětí svobody',
-        explanation: 'Dle § 9a zákona č. 169/1999 Sb. o VTOS soud zařazuje odsouzeného do typu věznice, ale o umístění do konkrétního stupně zabezpečení rozhoduje ředitel věznice po doporučení odborné komise.'
+        rationale: 'Soud zařazuje odsouzeného do typu věznice (s ostrahou / se zvýšenou ostrahou) podle § 56 trestního zákoníku. Věznice s ostrahou se člení na oddělení s nízkým, středním a vysokým stupněm zabezpečení (§ 12a zákona č. 169/1999 Sb.); míru vnějších a vnitřních rizik vyhodnotí odborná komise a o umístění rozhoduje ředitel věznice s přihlédnutím k jejímu doporučení (§ 12b odst. 1 a 2). § 9a v zákoně není.',
+        source: '§ 12a a § 12b zákona č. 169/1999 Sb., o výkonu trestu odnětí svobody',
+        explanation: 'Soud zařazuje odsouzeného do typu věznice (s ostrahou / se zvýšenou ostrahou) podle § 56 trestního zákoníku. Věznice s ostrahou se člení na oddělení s nízkým, středním a vysokým stupněm zabezpečení (§ 12a zákona č. 169/1999 Sb.); míru vnějších a vnitřních rizik vyhodnotí odborná komise a o umístění rozhoduje ředitel věznice s přihlédnutím k jejímu doporučení (§ 12b odst. 1 a 2). § 9a v zákoně není. (Právní úprava: § 12a a § 12b zákona č. 169/1999 Sb., o výkonu trestu odnětí svobody)'
     },
     {
         id: 'pen-52',
         subject: 'Penologie',
         topic: 'Program zacházení odsouzených',
-        question: 'Jak často se standardně provádí komplexní hodnocení plnění individuálního programu zacházení u odsouzeného ve VTOS?',
-        answer: 'Zpravidla jedenkrát za 3 měsíce (u mladistvých častěji), nebo vždy při významné změně v chování či zařazení.',
+        question: 'Jak často se podle řádu výkonu trestu zpravidla vyhodnocuje plnění programu zacházení u odsouzeného ve věznici s ostrahou?',
+        answer: 'Zpravidla jednou za 3 měsíce; ve věznici pro mladistvé jednou za měsíc, ve výstupním oddílu za 2 a při zvýšené ostraze za 6 měsíců.',
         options: [
             `Pouze jednou za kalendářní rok bez ohledu na délku uloženého trestu. Změna v chování ani přeřazení na vyhodnocení nemají vliv.`,
             `Každý týden v rámci ranní prověrky na ubytovně. U mladistvých se vyhodnocení neprovádí vůbec a změny v chování se nezohledňují.`,
-            'Zpravidla jedenkrát za 3 měsíce (u mladistvých častěji), nebo vždy při významné změně v chování či zařazení.',
+            'Zpravidla jednou za 3 měsíce; ve věznici pro mladistvé jednou za měsíc, ve výstupním oddílu za 2 a při zvýšené ostraze za 6 měsíců.',
             `Výhradně těsně před podáním žádosti o podmíněné propuštění na soud. V průběhu výkonu trestu se program zacházení nevyhodnocuje vůbec.`
         ],
         correctOption: 2,
-        rationale: 'Dle prováděcí vyhlášky k zákonu o VTOS se plnění programu zacházení vyhodnocuje pravidelně ve čtvrtletních intervalech za účasti odborných zaměstnanců (vychovatel, psycholog, speciální pedagog).',
-        source: '§ 40 vyhlášky MS ČR č. 345/1999 Sb., řád výkonu trestu odnětí svobody',
-        explanation: 'Dle vyhlášky č. 345/1999 Sb. se plnění programu zacházení vyhodnocuje pravidelně ve čtvrtletních intervalech za účasti odborných zaměstnanců.'
+        rationale: 'Podle § 38 odst. 1 vyhlášky č. 345/1999 Sb. se úspěšnost plnění programu zacházení vyhodnocuje zpravidla jednou za měsíc ve věznici pro mladistvé, za dva měsíce ve výstupních oddílech, za tři měsíce ve věznici s ostrahou a za šest měsíců ve věznici se zvýšenou ostrahou. Odsouzený je s výsledky prokazatelně seznámen a program se při vyhodnocení aktualizuje (§ 38 odst. 2 a 3).',
+        source: '§ 38 vyhlášky MS ČR č. 345/1999 Sb., řád výkonu trestu odnětí svobody',
+        explanation: 'Podle § 38 odst. 1 vyhlášky č. 345/1999 Sb. se úspěšnost plnění programu zacházení vyhodnocuje zpravidla jednou za měsíc ve věznici pro mladistvé, za dva měsíce ve výstupních oddílech, za tři měsíce ve věznici s ostrahou a za šest měsíců ve věznici se zvýšenou ostrahou. Odsouzený je s výsledky prokazatelně seznámen a program se při vyhodnocení aktualizuje (§ 38 odst. 2 a 3). (Právní úprava: § 38 vyhlášky MS ČR č. 345/1999 Sb., řád výkonu trestu odnětí svobody)'
     },
   {
     "id": "pen-53",
@@ -1201,7 +1201,7 @@ export const penologieQuestions: Question[] = [
     "id": "pen-72",
     "subject": "Penologie",
     "topic": "Program zacházení",
-    "question": "V jakém případě se podle § 41 zákona č. 169/1999 Sb. program zacházení pro odsouzeného nezpracovává?",
+    "question": "V jakém případě se podle § 40 odst. 2 zákona č. 169/1999 Sb. program zacházení pro odsouzeného nezpracovává?",
     "answer": "Má-li vykonat trest nebo jeho zbytek do 3 měsíců",
     "options": [
       "Má-li vykonat trest nebo jeho zbytek do 3 měsíců",
@@ -1210,9 +1210,9 @@ export const penologieQuestions: Question[] = [
       "Je-li starší šedesáti let a nemůže ze zdravotních důvodů pracovat"
     ],
     "correctOption": 0,
-    "rationale": "Program zacházení se nezpracovává, má-li odsouzený vykonat trest nebo jeho zbytek ve výměře nepřesahující 3 měsíce.",
-    "source": "§ 41 zákona č. 169/1999 Sb.",
-    "explanation": "Program zacházení se nezpracovává, má-li odsouzený vykonat trest nebo jeho zbytek ve výměře nepřesahující 3 měsíce. (Právní úprava: § 41 zákona č. 169/1999 Sb.)"
+    "rationale": "Podle § 40 odst. 2 zákona č. 169/1999 Sb. se program zacházení nezpracovává, má-li odsouzený vykonat trest nebo jeho zbytek ve výměře nepřesahující 3 měsíce. § 41 upravuje až podklady a obsah programu (komplexní zprávu).",
+    "source": "§ 40 odst. 2 zákona č. 169/1999 Sb.",
+    "explanation": "Podle § 40 odst. 2 zákona č. 169/1999 Sb. se program zacházení nezpracovává, má-li odsouzený vykonat trest nebo jeho zbytek ve výměře nepřesahující 3 měsíce. § 41 upravuje až podklady a obsah programu (komplexní zprávu). (Právní úprava: § 40 odst. 2 zákona č. 169/1999 Sb.)"
   },
   {
     "id": "pen-73",
@@ -1287,17 +1287,17 @@ export const penologieQuestions: Question[] = [
     "subject": "Penologie",
     "topic": "Práva obviněného",
     "question": "S kým smí obviněný ve vazbě z koluzních důvodů používat telefon podle § 13a zákona č. 293/1993 Sb.?",
-    "answer": "Pouze se svým obhájcem",
+    "answer": "Jen s obhájcem či advokátem v jiné věci",
     "options": [
-      "S osobou blízkou i s obhájcem",
-      "Pouze se svým obhájcem",
-      "Jen s osobou blízkou",
-      "S nikým, telefon je vyloučen"
+      "S osobou blízkou i se svým obhájcem",
+      "Jen s obhájcem či advokátem v jiné věci",
+      "Jen s osobou blízkou po souhlasu soudu",
+      "S nikým, telefon je v koluzní vazbě vyloučen"
     ],
     "correctOption": 1,
-    "rationale": "Obviněný má právo použít telefon ke kontaktu s osobou blízkou a s obhájcem nebo advokátem; u koluzní vazby jen s obhájcem.",
-    "source": "§ 13a zákona č. 293/1993 Sb.",
-    "explanation": "Obviněný má právo použít telefon ke kontaktu s osobou blízkou a s obhájcem nebo advokátem; u koluzní vazby jen s obhájcem. (Právní úprava: § 13a zákona č. 293/1993 Sb.)"
+    "rationale": "Podle § 13a odst. 1 zákona č. 293/1993 Sb. má právo telefonovat osobě blízké jen obviněný, u něhož důvodem vazby není obava z maření objasňování skutečností (koluzní vazba). Právo na kontakt s obhájcem nebo s advokátem, který obviněného zastupuje v jiné věci, má podle § 13a odst. 3 každý obviněný, tedy i v koluzní vazbě.",
+    "source": "§ 13a odst. 1 a 3 zákona č. 293/1993 Sb.",
+    "explanation": "Podle § 13a odst. 1 zákona č. 293/1993 Sb. má právo telefonovat osobě blízké jen obviněný, u něhož důvodem vazby není obava z maření objasňování skutečností (koluzní vazba). Právo na kontakt s obhájcem nebo s advokátem, který obviněného zastupuje v jiné věci, má podle § 13a odst. 3 každý obviněný, tedy i v koluzní vazbě. (Právní úprava: § 13a odst. 1 a 3 zákona č. 293/1993 Sb.)"
   },
   {
     "id": "pen-78",

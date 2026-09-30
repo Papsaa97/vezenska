@@ -5,18 +5,18 @@ export const sluzebniPripravaQuestions: Question[] = [
     "id": "sp-01",
     "subject": "Služební příprava",
     "topic": "Použití donucovacích prostředků",
-    "question": "Jaké jsou zákonné podmínky pro použití donucovacích prostředků (DP) dle § 17 zákona č. 555/1992 Sb.?",
-    "answer": "K zajištění pořádku a bezpečnosti, k ochraně osob a majetku a proti maření účelu vazby/výkonu trestu; musí předcházet výzva „Jménem zákona!“ s výstrahou, ledaže je bezprostředně ohrožen život/zdraví a zákrok nesnese odkladu.",
+    "question": "Jaké jsou zákonné podmínky pro použití donucovacích prostředků (DP) podle zákona č. 555/1992 Sb.?",
+    "answer": "Je-li to nezbytné k zajištění pořádku a bezpečnosti, proti osobě, která ohrožuje život či zdraví, poškozuje majetek, maří účel vazby/trestu nebo ruší pořádek; dovolují-li to okolnosti, předchází výzva se slovy „jménem zákona“.",
     "options": [
       "Při jakémkoliv verbálním neuposlechnutí pokynu dozorce, přičemž výzva „Jménem zákona!“ postačí až po dokončení donucovacího zákroku.",
       "K překonání jakéhokoli odporu odsouzeného bez ohledu na jeho intenzitu; výzva s výstrahou je povinná vždy a zákon z ní nepřipouští žádnou výjimku ani tehdy, je-li bezprostředně ohrožen život nebo zdraví a zákrok nesnese odkladu.",
       "Výhradně k odvrácení fyzického útoku na příslušníka; použití DP musí předem písemně schválit velitel směny nebo dozorující státní zástupce.",
-      "K zajištění pořádku a bezpečnosti, k ochraně osob a majetku a proti maření účelu vazby/výkonu trestu; musí předcházet výzva „Jménem zákona!“ s výstrahou, ledaže je bezprostředně ohrožen život/zdraví a zákrok nesnese odkladu."
+      "Je-li to nezbytné k zajištění pořádku a bezpečnosti, proti osobě, která ohrožuje život či zdraví, poškozuje majetek, maří účel vazby/trestu nebo ruší pořádek; dovolují-li to okolnosti, předchází výzva se slovy „jménem zákona“."
     ],
     "correctOption": 3,
-    "rationale": "Dle § 17 odst. 1 a odst. 3 zákona č. 555/1992 Sb. je příslušník oprávněn použít DP k zajištění pořádku a bezpečnosti a k ochraně osob. Zákroku musí předcházet zákonná výzva s výstrahou, ledaže je bezprostředně ohrožen život nebo zdraví a zákrok nesnese odkladu.",
-    "source": "§ 17 odst. 1 a 3 zákona č. 555/1992 Sb., o VS a JS ČR",
-    "explanation": "Dle § 17 odst. 1 a odst. 3 zákona č. 555/1992 Sb. je příslušník oprávněn použít DP k zajištění pořádku a bezpečnosti a k ochraně osob. Zákroku musí předcházet zákonná výzva s výstrahou, ledaže je bezprostředně ohrožen život nebo zdraví a zákrok nesnese odkladu. (Právní úprava: § 17 odst. 1 a 3 zákona č. 555/1992 Sb., o VS a JS ČR)"
+    "rationale": "Kdy a proti komu lze DP použít, stanoví § 17 odst. 1 zákona č. 555/1992 Sb.; přiměřenost zákroku § 17 odst. 3. Výzvu upravuje § 6 odst. 3: dovolují-li to okolnosti a povaha zákroku, příslušník před ním prokáže příslušnost k VS a použije domluvy, výzvy nebo varování, před výzvou se slovy „jménem zákona“. Výzvu s výstrahou, od níž lze upustit jen při ohrožení života nebo zdraví, když zákrok nesnese odkladu, předepisuje § 18 odst. 3 pro použití střelné zbraně, ne pro donucovací prostředky.",
+    "source": "§ 17 odst. 1 a 3, § 6 odst. 3 a § 18 odst. 3 zákona č. 555/1992 Sb., o VS a JS ČR",
+    "explanation": "Kdy a proti komu lze DP použít, stanoví § 17 odst. 1 zákona č. 555/1992 Sb.; přiměřenost zákroku § 17 odst. 3. Výzvu upravuje § 6 odst. 3: dovolují-li to okolnosti a povaha zákroku, příslušník před ním prokáže příslušnost k VS a použije domluvy, výzvy nebo varování, před výzvou se slovy „jménem zákona“. Výzvu s výstrahou, od níž lze upustit jen při ohrožení života nebo zdraví, když zákrok nesnese odkladu, předepisuje § 18 odst. 3 pro použití střelné zbraně, ne pro donucovací prostředky. (Právní úprava: § 17 odst. 1 a 3, § 6 odst. 3 a § 18 odst. 3 zákona č. 555/1992 Sb., o VS a JS ČR)"
   },
   {
     "id": "sp-02",
@@ -57,17 +57,17 @@ export const sluzebniPripravaQuestions: Question[] = [
     "subject": "Služební příprava",
     "topic": "Zákonná omezení použití DP a zbraně",
     "question": "Vůči kterým osobám je příslušník povinen omezit použití DP a zbraně dle § 19 zákona č. 555/1992 Sb.?",
-    "answer": "Vůči těhotným ženám, osobám vysokého věku, osobám se zjevným tělesným postižením a dětem mladším 15 let (smí použít pouze hmaty a chvaty, neohrožují-li bezprostředně život).",
+    "answer": "Vůči těhotným ženám, osobám vysokého věku, se zjevným zdravotním postižením a zjevně mladším 15 let (nelze užít mj. úderů a kopů, obušku, psa ani zbraně, neohrožuje-li jejich útok život či zdraví).",
     "options": [
       "Vůči obviněným ve výkonu vazby a osobám s psychiatrickou diagnózou (povolena výhradně hrozba namířenou střelnou zbraní a varovný výstřel).",
-      "Vůči těhotným ženám, osobám vysokého věku, osobám se zjevným tělesným postižením a dětem mladším 15 let (smí použít pouze hmaty a chvaty, neohrožují-li bezprostředně život).",
+      "Vůči těhotným ženám, osobám vysokého věku, se zjevným zdravotním postižením a zjevně mladším 15 let (nelze užít mj. úderů a kopů, obušku, psa ani zbraně, neohrožuje-li jejich útok život či zdraví).",
       "Vůči mladistvým do 18 let, osobám zbaveným svéprávnosti, cizím státním příslušníkům a osobám v ústavním léčení, vůči nimž nesmí být použit žádný donucovací prostředek včetně hmatů a chvatů, a to ani tehdy, je-li bezprostředně ohrožen život příslušníka.",
       "Vůči ženám obecně, osobám starším 60 let a prvotrestaným odsouzeným (lze použít výhradně slzotvorný sprej a pouta, nikoli obušek a psa)."
     ],
     "correctOption": 1,
-    "rationale": "Dle § 19 zákona č. 555/1992 Sb. smí příslušník proti zranitelným skupinám (těhotné, staří, postižení, děti <15 let) použít pouze hmaty a chvaty, s výjimkou případů, kdy útok těchto osob bezprostředně ohrožuje životy.",
-    "source": "§ 19 zákona č. 555/1992 Sb., o VS a JS ČR",
-    "explanation": "Dle § 19 zákona č. 555/1992 Sb. smí příslušník proti zranitelným skupinám (těhotné, staří, postižení, děti <15 let) použít pouze hmaty a chvaty, s výjimkou případů, kdy útok těchto osob bezprostředně ohrožuje životy. (Právní úprava: § 19 zákona č. 555/1992 Sb., o VS a JS ČR)"
+    "rationale": "Podle § 19 odst. 1 písm. a) zákona č. 555/1992 Sb. nelze proti těhotné ženě, osobě vysokého věku, osobě se zjevným zdravotním postižením nebo osobě zjevně mladší 15 let použít úderů a kopů sebeobrany, pout s poutacím opaskem, slzotvorných a elektrických prostředků, obušku, služebního psa, vodního stříkače, zásahové výbušky, expanzní zbraně, úderu střelnou zbraní, varovného výstřelu ani střelné zbraně. Ostatní prostředky (např. hmaty, chvaty, pouta) zákon nevylučuje. Proti ženě nelze použít služebního psa, elektrický prostředek a střelnou zbraň (písm. b). Omezení neplatí, pokud útok těchto osob bezprostředně ohrožuje život nebo zdraví příslušníka či jiné osoby nebo hrozí větší škoda na majetku a nebezpečí nelze odvrátit jinak, a při zamezení útěku podle § 18 odst. 1 písm. c).",
+    "source": "§ 19 odst. 1 zákona č. 555/1992 Sb., o VS a JS ČR",
+    "explanation": "Podle § 19 odst. 1 písm. a) zákona č. 555/1992 Sb. nelze proti těhotné ženě, osobě vysokého věku, osobě se zjevným zdravotním postižením nebo osobě zjevně mladší 15 let použít úderů a kopů sebeobrany, pout s poutacím opaskem, slzotvorných a elektrických prostředků, obušku, služebního psa, vodního stříkače, zásahové výbušky, expanzní zbraně, úderu střelnou zbraní, varovného výstřelu ani střelné zbraně. Ostatní prostředky (např. hmaty, chvaty, pouta) zákon nevylučuje. Proti ženě nelze použít služebního psa, elektrický prostředek a střelnou zbraň (písm. b). Omezení neplatí, pokud útok těchto osob bezprostředně ohrožuje život nebo zdraví příslušníka či jiné osoby nebo hrozí větší škoda na majetku a nebezpečí nelze odvrátit jinak, a při zamezení útěku podle § 18 odst. 1 písm. c). (Právní úprava: § 19 odst. 1 zákona č. 555/1992 Sb., o VS a JS ČR)"
   },
   {
     "id": "sp-05",
@@ -83,8 +83,8 @@ export const sluzebniPripravaQuestions: Question[] = [
     ],
     "correctOption": 1,
     "rationale": "Základní bezpečnostní drill pro manipulaci se služební zbraní: Zbraň vždy směřuje do bezpečného prostoru/lapače, PRVNÍ je vyjmutí zásobníku, NÁSLEDUJE kontrola komory (dvojí kontrola: zrak + prst), vypuštění závěru a rána jistoty.",
-    "source": "§ 19 NGŘ č. 33/2019 a střelecký řád VS ČR",
-    "explanation": "Základní bezpečnostní drill pro manipulaci se služební zbraní: Zbraň vždy směřuje do bezpečného prostoru/lapače, PRVNÍ je vyjmutí zásobníku, NÁSLEDUJE kontrola komory (dvojí kontrola: zrak + prst), vypuštění závěru a rána jistoty. (Právní úprava: § 19 NGŘ č. 33/2019 a střelecký řád VS ČR)"
+    "source": "NGŘ č. 19/2023 o zbraňové službě a střelecké přípravě a střelecký řád VS ČR",
+    "explanation": "Základní bezpečnostní drill pro manipulaci se služební zbraní: Zbraň vždy směřuje do bezpečného prostoru/lapače, PRVNÍ je vyjmutí zásobníku, NÁSLEDUJE kontrola komory (dvojí kontrola: zrak + prst), vypuštění závěru a rána jistoty. (Právní úprava: NGŘ č. 19/2023 o zbraňové službě a střelecké přípravě a střelecký řád VS ČR)"
   },
   {
     "id": "sp-06",
@@ -584,17 +584,17 @@ export const sluzebniPripravaQuestions: Question[] = [
     "subject": "Služební příprava",
     "topic": "Donucovací prostředky",
     "question": "U jakých kategorií osob je příslušníkům VS ČR zakázáno použít úderů, kopů, slzotvorných prostředků, taseru a zbraně (neplatí pro nutnou obranu a krajní nouzi)?",
-    "answer": "U zjevně těhotných žen, osob zjevně vysokého věku, osob se zjevnou tělesnou vadou (invalidů) a dětí mladších 15 let.",
+    "answer": "U těhotných žen, osob vysokého věku, osob se zjevným zdravotním postižením a u osob, které jsou zjevně mladší patnácti let.",
     "options": [
       "U všech cizích státních příslušníků, diplomatů a dalších osob požívajících diplomatické imunity podle mezinárodního práva.",
-      "U zjevně těhotných žen, osob zjevně vysokého věku, osob se zjevnou tělesnou vadou (invalidů) a dětí mladších 15 let.",
+      "U těhotných žen, osob vysokého věku, osob se zjevným zdravotním postižením a u osob, které jsou zjevně mladší patnácti let.",
       "Zákon nedefinuje žádné chráněné kategorie, donucovací prostředky lze použít bez omezení vůči každému. Těhotné ženy ani děti mladší patnácti let zvláštní ochranu nepožívají.",
       "U osob, které jsou ve výkonu vazby déle než 1 rok bez pravomocného rozsudku. Věk, tělesná vada ani těhotenství na použití donucovacích prostředků vliv nemají."
     ],
     "correctOption": 1,
-    "rationale": "Zákon jasně chrání vybrané zranitelné skupiny. Výjimka pro použití DP vůči nim platí POUZE tehdy, pokud útok těchto osob bezprostředně ohrožuje život nebo zdraví jiných a nelze jej odvrátit jinak (§ 21 zákona č. 555/1992 Sb.).",
-    "source": "§ 19 odst. 1 zákona č. 555/1992 Sb., o VS a JS ČR",
-    "explanation": "Zákon jasně chrání vybrané zranitelné skupiny. Výjimka pro použití DP vůči nim platí POUZE tehdy, pokud útok těchto osob bezprostředně ohrožuje život nebo zdraví jiných a nelze jej odvrátit jinak (§ 21 zákona č. 555/1992 Sb.). (Právní úprava: § 21 zákona č. 555/1992 Sb., o VS a JS ČR)"
+    "rationale": "Podle § 19 odst. 1 písm. a) zákona č. 555/1992 Sb. nelze proti těhotné ženě, osobě vysokého věku, osobě se zjevným zdravotním postižením nebo osobě zjevně mladší 15 let použít mimo jiné úderů a kopů, slzotvorných a elektrických prostředků, obušku, služebního psa ani střelné zbraně. Omezení neplatí, pokud útok těchto osob bezprostředně ohrožuje život nebo zdraví příslušníka či jiné osoby nebo hrozí větší škoda na majetku a nebezpečí nelze odvrátit jinak, a při zamezení útěku podle § 18 odst. 1 písm. c). § 21 upravuje zákrok pod jednotným velením.",
+    "source": "§ 19 odst. 1 písm. a) zákona č. 555/1992 Sb., o VS a JS ČR",
+    "explanation": "Podle § 19 odst. 1 písm. a) zákona č. 555/1992 Sb. nelze proti těhotné ženě, osobě vysokého věku, osobě se zjevným zdravotním postižením nebo osobě zjevně mladší 15 let použít mimo jiné úderů a kopů, slzotvorných a elektrických prostředků, obušku, služebního psa ani střelné zbraně. Omezení neplatí, pokud útok těchto osob bezprostředně ohrožuje život nebo zdraví příslušníka či jiné osoby nebo hrozí větší škoda na majetku a nebezpečí nelze odvrátit jinak, a při zamezení útěku podle § 18 odst. 1 písm. c). § 21 upravuje zákrok pod jednotným velením. (Právní úprava: § 19 odst. 1 písm. a) zákona č. 555/1992 Sb., o VS a JS ČR)"
   },
   {
     "id": "sp-42",
@@ -2216,17 +2216,17 @@ export const sluzebniPripravaQuestions: Question[] = [
     "subject": "Služební příprava",
     "topic": "Justiční stráž – ochrana svědků",
     "question": "Podle čích pokynů poskytuje justiční stráž ochranu svědkům, jejichž totožnost a podoba má být utajena?",
-    "answer": "Podle pokynů předsedy senátu",
+    "answer": "Podle pokynů předsedy senátu nebo vedoucího státního zástupce",
     "options": [
-      "Podle pokynů předsedy senátu",
-      "Podle pokynů ředitele",
-      "Podle pokynů vedoucího oddělení VS",
-      "Podle pokynů státního zástupce"
+      "Podle pokynů předsedy senátu nebo vedoucího státního zástupce",
+      "Podle pokynů ředitele věznice nebo generálního ředitele Vězeňské služby",
+      "Podle pokynů vedoucího oddělení VS nebo velitele eskorty",
+      "Podle pokynů policejního orgánu nebo obhájce obviněného"
     ],
     "correctOption": 0,
-    "rationale": "Justiční stráž poskytuje podle pokynů předsedy senátu ochranu svědkům, jejichž totožnost a podoba má být utajena; při ochraně chráněné osoby spolupracuje s policií.",
+    "rationale": "Podle § 22 odst. 7 zákona č. 555/1992 Sb. poskytuje justiční stráž v budovách soudů a státních zastupitelství ochranu svědkům, jejichž totožnost a podoba má být utajena, podle pokynů předsedy senátu nebo vedoucího státního zástupce; při ochraně chráněné osoby spolupracuje s policií.",
     "source": "§ 22 odst. 7 zákona č. 555/1992 Sb.; § 140 odst. 2 NGŘ č. 33/2019",
-    "explanation": "Justiční stráž poskytuje podle pokynů předsedy senátu ochranu svědkům, jejichž totožnost a podoba má být utajena; při ochraně chráněné osoby spolupracuje s policií. (Právní úprava: § 22 odst. 7 zákona č. 555/1992 Sb.; § 140 odst. 2 NGŘ č. 33/2019)"
+    "explanation": "Podle § 22 odst. 7 zákona č. 555/1992 Sb. poskytuje justiční stráž v budovách soudů a státních zastupitelství ochranu svědkům, jejichž totožnost a podoba má být utajena, podle pokynů předsedy senátu nebo vedoucího státního zástupce; při ochraně chráněné osoby spolupracuje s policií. (Právní úprava: § 22 odst. 7 zákona č. 555/1992 Sb.; § 140 odst. 2 NGŘ č. 33/2019)"
   },
   {
     "id": "sp-138",
