@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { MatchingCategory, MatchingPair, MatchingDiagramPart } from '../types';
+import { MatchingCategory, MatchingPair, MatchingDiagramPart, WeaponSpecRow, WeaponView } from '../types';
 import { SubjectInfo, subjectsMeta } from '../data/questions/subjectsInfo';
 import { Scenario, ScenarioStep, ScenarioChoice } from '../data/scenariosData';
 import { StoppageDrill, WeaponData, WeaponStep } from '../data/weaponsData';
@@ -192,31 +192,59 @@ function normalizeMatchingCategory(value: unknown): MatchingCategory | null {
         .filter((p): p is MatchingPair => p !== null)
     : [];
 
-  const parts: MatchingDiagramPart[] = Array.isArray(raw.parts)
-    ? raw.parts
-        .map((p): MatchingDiagramPart | null => {
-          const pr = record(p);
-          if (!pr) return null;
-          const partId = str(pr.id).trim();
-          const label = str(pr.label).trim();
-          if (!partId || !label) return null;
+  const parts = normalizeDiagramParts(raw.parts);
+
+  const views: WeaponView[] = Array.isArray(raw.views)
+    ? raw.views
+        .map((v): WeaponView | null => {
+          const vr = record(v);
+          if (!vr) return null;
+          const viewId = str(vr.id).trim();
+          const imageUrl = str(vr.imageUrl).trim();
+          const viewParts = normalizeDiagramParts(vr.parts);
+          if (!viewId || !imageUrl || viewParts.length === 0) return null;
           return {
-            id: partId,
-            label,
-            top: typeof pr.top === 'number' ? pr.top : 50,
-            left: typeof pr.left === 'number' ? pr.left : 50,
-            labelTop: typeof pr.labelTop === 'number' ? pr.labelTop : undefined,
-            labelLeft: typeof pr.labelLeft === 'number' ? pr.labelLeft : undefined,
+            id: viewId,
+            title: str(vr.title).trim() || viewId,
+            imageUrl,
+            width: typeof vr.width === 'number' && vr.width > 0 ? vr.width : 4,
+            height: typeof vr.height === 'number' && vr.height > 0 ? vr.height : 3,
+            parts: viewParts,
           };
         })
-        .filter((p): p is MatchingDiagramPart => p !== null)
+        .filter((v): v is WeaponView => v !== null)
     : [];
 
-  const type = raw.type === 'diagram' ? 'diagram' : 'classic';
+  const specs: WeaponSpecRow[] = Array.isArray(raw.specs)
+    ? raw.specs
+        .map((r): WeaponSpecRow | null => {
+          const rr = record(r);
+          if (!rr) return null;
+          const rowId = str(rr.id).trim();
+          const label = str(rr.label).trim();
+          const answer = str(rr.answer).trim();
+          if (!rowId || !label || !answer) return null;
+          const unit = str(rr.unit).trim();
+          const accepted = strArray(rr.accepted).map((a) => a.trim()).filter(Boolean);
+          return {
+            id: rowId,
+            label,
+            answer,
+            unit: unit || undefined,
+            accepted: accepted.length > 0 ? accepted : undefined,
+          };
+        })
+        .filter((r): r is WeaponSpecRow => r !== null)
+    : [];
 
-  // Poznávačka bez dvojic (u diagramu bez částí) by se otevřela jako prázdná
-  // hra, ze které nejde vyhrát — taková položka se do seznamu nepustí.
-  if (type === 'diagram' ? parts.length === 0 : pairs.length === 0) return null;
+  const type = raw.type === 'diagram' ? 'diagram' : raw.type === 'weapon' ? 'weapon' : 'classic';
+
+  // Poznávačka bez dvojic (u diagramu bez částí, u zbraně bez obrázků a
+  // tabulky) by se otevřela jako prázdná hra, ze které nejde vyhrát — taková
+  // položka se do seznamu nepustí.
+  if (type === 'diagram' && parts.length === 0) return null;
+  if (type === 'classic' && pairs.length === 0) return null;
+  if (type === 'weapon' && views.length === 0 && specs.length === 0 && pairs.length === 0) return null;
 
   return {
     id,
@@ -224,8 +252,34 @@ function normalizeMatchingCategory(value: unknown): MatchingCategory | null {
     type,
     imageUrl: str(raw.imageUrl).trim() || undefined,
     parts: parts.length > 0 ? parts : undefined,
+    views: views.length > 0 ? views : undefined,
+    specs: specs.length > 0 ? specs : undefined,
+    source: str(raw.source).trim() || undefined,
     pairs,
   };
+}
+
+function normalizeDiagramParts(value: unknown): MatchingDiagramPart[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((p): MatchingDiagramPart | null => {
+      const pr = record(p);
+      if (!pr) return null;
+      const partId = str(pr.id).trim();
+      const label = str(pr.label).trim();
+      if (!partId || !label) return null;
+      return {
+        id: partId,
+        label,
+        top: typeof pr.top === 'number' ? pr.top : 50,
+        left: typeof pr.left === 'number' ? pr.left : 50,
+        labelTop: typeof pr.labelTop === 'number' ? pr.labelTop : undefined,
+        labelLeft: typeof pr.labelLeft === 'number' ? pr.labelLeft : undefined,
+        slotWidth: typeof pr.slotWidth === 'number' ? pr.slotWidth : undefined,
+        slotHeight: typeof pr.slotHeight === 'number' ? pr.slotHeight : undefined,
+      };
+    })
+    .filter((p): p is MatchingDiagramPart => p !== null);
 }
 
 const SCENARIO_CATEGORIES: Scenario['category'][] = [

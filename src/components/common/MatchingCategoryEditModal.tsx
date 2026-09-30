@@ -1,7 +1,7 @@
 import React, { useEffect, useId, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Save, Loader2, AlertCircle, LayoutGrid, Plus, Trash2 } from 'lucide-react';
-import { MatchingCategory, MatchingDiagramPart, MatchingPair } from '../../types';
+import { MatchingCategory, MatchingDiagramPart, MatchingPair, WeaponSpecRow } from '../../types';
 import { makeContentId } from '../../utils/contentLibrary';
 import { useDialog } from '../../hooks/useDialog';
 
@@ -37,7 +37,8 @@ export default function MatchingCategoryEditModal({
   const fieldIds = useId();
 
   const [title, setTitle] = useState('');
-  const [type, setType] = useState<'classic' | 'diagram'>('classic');
+  const [type, setType] = useState<'classic' | 'diagram' | 'weapon'>('classic');
+  const [specs, setSpecs] = useState<WeaponSpecRow[]>([]);
   const [imageUrl, setImageUrl] = useState('');
   const [pairs, setPairs] = useState<MatchingPair[]>([]);
   const [parts, setParts] = useState<MatchingDiagramPart[]>([]);
@@ -49,10 +50,11 @@ export default function MatchingCategoryEditModal({
   useEffect(() => {
     if (!isOpen) return;
     setTitle(category?.title ?? '');
-    setType(category?.type === 'diagram' ? 'diagram' : 'classic');
+    setType(category?.type === 'diagram' || category?.type === 'weapon' ? category.type : 'classic');
+    setSpecs((category?.specs ?? []).map((r) => ({ ...r })));
     setImageUrl(category?.imageUrl ?? '');
     setPairs(
-      category?.pairs && category.pairs.length > 0
+      category?.pairs && (category.pairs.length > 0 || category.type === 'weapon')
         ? category.pairs.map((p) => ({ ...p }))
         : [
             { id: newPairId(0), left: '', right: '' },
@@ -82,6 +84,13 @@ export default function MatchingCategoryEditModal({
       setErrorMsg('Klasická poznávačka potřebuje aspoň dvě úplné dvojice.');
       return;
     }
+    const cleanSpecs = specs
+      .map((r) => ({ ...r, label: r.label.trim(), answer: r.answer.trim(), unit: r.unit?.trim() || undefined }))
+      .filter((r) => r.label && r.answer);
+    if (type === 'weapon' && cleanSpecs.length === 0 && cleanPairs.length === 0 && !category?.views?.length) {
+      setErrorMsg('Poznávačka zbraně potřebuje aspoň řádek tabulky nebo dvojici.');
+      return;
+    }
     if (type === 'diagram') {
       if (!imageUrl.trim()) {
         setErrorMsg('Diagram potřebuje odkaz na obrázek.');
@@ -96,7 +105,17 @@ export default function MatchingCategoryEditModal({
     setSaving(true);
     setErrorMsg(null);
 
-    const payload: MatchingCategory = {
+    const payload: MatchingCategory = type === 'weapon' ? {
+      id: category?.id ?? makeContentId('poznavacka', title, usedIds),
+      title: title.trim(),
+      type,
+      // Obrázky a pole na nich jsou vázané na soubory v repozitáři, formulář je
+      // nemění — přenášejí se beze změny.
+      views: category?.views,
+      source: category?.source,
+      specs: cleanSpecs,
+      pairs: cleanPairs,
+    } : {
       id: category?.id ?? makeContentId('poznavacka', title, usedIds),
       title: title.trim(),
       type,
@@ -176,6 +195,11 @@ export default function MatchingCategoryEditModal({
                     className={INPUT_CLASS}
                   />
                 </div>
+                {type === 'weapon' ? (
+                  <p className="text-xs text-slate-500 dark:text-slate-400 self-end">
+                    Poznávačka zbraně. Obrázky se tu neupravují, jen tabulka hodnot a funkce součástí.
+                  </p>
+                ) : (
                 <div>
                   <label
                     className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5"
@@ -193,7 +217,61 @@ export default function MatchingCategoryEditModal({
                     <option value="diagram">Popis obrázku</option>
                   </select>
                 </div>
+                )}
               </div>
+
+              {type === 'weapon' && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                      Tabulka takticko-technických dat ({specs.length})
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSpecs((prev) => [...prev, { id: `ttd-${Date.now().toString(36)}-${prev.length}`, label: '', answer: '' }])
+                      }
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Přidat řádek
+                    </button>
+                  </div>
+                  {specs.map((row, index) => (
+                    <div key={row.id} className="flex items-center gap-2">
+                      {([
+                        ['label', 'Údaj', 'flex-[2]'],
+                        ['answer', 'Hodnota', 'flex-1'],
+                        ['unit', 'Jednotka', 'w-24'],
+                      ] as const).map(([field, label, width]) => (
+                        <div key={field} className={width}>
+                          <label className="sr-only" htmlFor={`${fieldIds}-ttd-${field}-${index}`}>
+                            {label} {index + 1}
+                          </label>
+                          <input
+                            id={`${fieldIds}-ttd-${field}-${index}`}
+                            type="text"
+                            value={row[field] ?? ''}
+                            placeholder={label}
+                            onChange={(e) =>
+                              setSpecs((prev) => prev.map((r) => (r.id === row.id ? { ...r, [field]: e.target.value } : r)))
+                            }
+                            className={INPUT_CLASS}
+                          />
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => setSpecs((prev) => prev.filter((r) => r.id !== row.id))}
+                        aria-label={`Smazat řádek ${index + 1}`}
+                        className="p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {type === 'diagram' && (
                 <div>
@@ -214,7 +292,7 @@ export default function MatchingCategoryEditModal({
                 </div>
               )}
 
-              {type === 'classic' ? (
+              {type === 'classic' || type === 'weapon' ? (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
