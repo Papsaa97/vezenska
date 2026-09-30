@@ -23,6 +23,7 @@ import { UserRank } from '../types';
 import { AVATAR_PRESETS, getInitials, resolveAvatarDisplay, toPresetAvatarUrl } from '../utils/avatar';
 import { useDialog } from '../hooks/useDialog';
 import DisplayScalePicker from './DisplayScalePicker';
+import PushNotificationSettings from './PushNotificationSettings';
 import { MIN_PASSWORD_LENGTH, ROLE_LABELS, translateAuthError } from '../constants/auth';
 
 const ROLE_COLORS: Record<UserRole, string> = {
@@ -510,6 +511,8 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
           </form>
 
           <DisplayScalePicker />
+
+          <PushNotificationSettings />
 
           {/* Změna hesla */}
           <form onSubmit={handleChangePassword} className="space-y-3 pb-6 mb-6 border-b border-slate-800">

@@ -17,6 +17,7 @@ import type { UserRole, UserProfile, UpdateProfileInput, ProfileUpdateResult } f
 import { setStorageOwner } from '../utils/userScopedStorage';
 import { syncCompletedProgress } from '../utils/gamification';
 import { applyDisplayScale, displayScaleFromMetadata } from '../utils/displayScale';
+import { odhlasitZarizeni } from '../utils/pushNotifications';
 
 /**
  * Seznam e-mailových adres garantovaných správců systému — bootstrap pro případ,
@@ -509,6 +510,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     try {
+      // Ještě přihlášený: zařízení přestane dostávat upozornění tohoto účtu.
+      await odhlasitZarizeni();
       await supabase.auth.signOut();
     } finally {
       setSession(null);

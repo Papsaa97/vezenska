@@ -237,3 +237,51 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
   }
 });
+
+// 5. Upozornění do zařízení (Web Push, migrace 044 a api/push.ts)
+//
+// Server posílá JSON { title, body, tag, url }. `tag` je id oznámení ve
+// zvonečku: kdyby push služba zprávu doručila dvakrát, zobrazí se jednou.
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (error) {
+    data = { body: event.data ? event.data.text() : '' };
+  }
+  const title = data.title || 'Akademie VS ČR';
+  const url = typeof data.url === 'string' && data.url.startsWith('/') ? data.url : '/';
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: data.body || '',
+      tag: data.tag || undefined,
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      lang: 'cs',
+      data: { url },
+    })
+  );
+});
+
+// Klepnutí na upozornění: přepnout na už otevřenou aplikaci, jinak ji otevřít.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = new URL(
+    (event.notification.data && event.notification.data.url) || '/',
+    self.location.origin
+  ).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windows) => {
+      for (const client of windows) {
+        if (new URL(client.url).origin === self.location.origin && 'focus' in client) {
+          // Ne client.navigate(): to by stránku znovu načetlo a uživateli
+          // uprostřed testu zahodilo rozpracované odpovědi. Aplikace si
+          // záložku přepne sama (src/utils/pushNotifications.ts).
+          client.postMessage({ type: 'OPEN_URL', url: target });
+          return client.focus();
+        }
+      }
+      return self.clients.openWindow(target);
+    })
+  );
+});

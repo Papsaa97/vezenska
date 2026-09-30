@@ -6,6 +6,7 @@ import { registerServiceWorker } from './registerServiceWorker';
 import { AuthProvider } from './context/AuthContext';
 import { installPreloadErrorRecovery } from './utils/lazyWithReload';
 import { applyStoredDisplayScale } from './utils/displayScale';
+import { installPushClickHandler } from './utils/pushNotifications';
 
 // Aplikace směruje jen přes #kotvu, cesty nepoužívá. Hosting ale na jakoukoli
 // adresu (/admin, /cokoli) vrací tutéž stránku, takže by v adresním řádku
@@ -18,6 +19,7 @@ if (window.location.pathname !== '/') {
 installPreloadErrorRecovery();
 applyStoredDisplayScale();
 registerServiceWorker();
+installPushClickHandler();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
