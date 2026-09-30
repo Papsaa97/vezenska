@@ -9,7 +9,6 @@ import {
   ListChecks,
   Calendar,
   BarChart3,
-  Compass,
   ArrowRight,
   BrainCircuit,
   Trash2,
@@ -22,8 +21,6 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -34,7 +31,7 @@ import {
   Pie
 } from 'recharts';
 import { Question, QuizSessionRecord, TopicPerformance } from '../types';
-import { PASS_PERCENT, DISTINCTION_PERCENT } from '../constants/grading';
+import { PASS_PERCENT } from '../constants/grading';
 import { NAV_TAB_LABELS } from '../data/navTabs';
 import ConfirmDialog from './common/ConfirmDialog';
 
@@ -102,16 +99,6 @@ function formatDurationCs(totalSeconds: number): string {
   if (hours > 0) return `${hours} h ${minutes} min`;
   if (minutes > 0) return `${minutes} min`;
   return `${totalSeconds} s`;
-}
-
-/**
- * Popisek osy Y u grafu okruhů. Recharts dlouhý název zalomí do více řádků,
- * které pak lezou přes sousední sloupce; zkrácený popisek se vejde na řádek
- * a celý název je v bublině po najetí.
- */
-function shortenAxisLabel(label: string): string {
-  const MAX = 26;
-  return label.length > MAX ? `${label.slice(0, MAX - 1).trimEnd()}…` : label;
 }
 
 function formatShortDateCs(date: Date): string {
@@ -345,22 +332,6 @@ export default function Statistics({
       .slice(0, 3);
   }, [topicStats]);
 
-  /**
-   * Data sloupcového grafu. Popisek osy Y nese předmět jen tehdy, když se
-   * některý název okruhu opakuje ve více předmětech — jinak by jen zabíral místo.
-   */
-  const { topicChartData, topicChartHeight } = useMemo(() => {
-    const names = topicStats.map(t => t.topic);
-    const hasDuplicateNames = new Set(names).size !== names.length;
-    const data = topicStats.map(t => ({
-      ...t,
-      label: hasDuplicateNames ? `${t.subject} · ${t.topic}` : t.topic,
-    }));
-    // ~28 px na okruh, aby se popisky nepřekrývaly; minimum 18 rem (288 px).
-    const height = Math.max(288, topicStats.length * 28 + 40);
-    return { topicChartData: data, topicChartHeight: height };
-  }, [topicStats]);
-
   // Aggregate stats per Subject
   const subjectStats = useMemo(() => {
     const map = new Map<string, { subject: string; total: number; correct: number }>();
@@ -488,14 +459,6 @@ export default function Statistics({
   };
 
   const readiness = getReadinessBadge(overallAccuracy, totalAnswered);
-
-  /** Barva sloupce: hranicí mezi slabým a zvládnutým je PASS_PERCENT. */
-  const getBarColor = (acc: number) => {
-    if (acc >= DISTINCTION_PERCENT) return '#10b981'; // emerald – výborné
-    if (acc >= PASS_PERCENT) return '#3b82f6'; // blue – nad hranicí
-    if (acc >= 50) return '#f59e0b'; // amber – slabé
-    return '#ef4444'; // red – kritické
-  };
 
   if (isLoading) {
     return (
@@ -763,177 +726,92 @@ export default function Statistics({
         </div>
       </div>
 
-      {/* Grafy: vývoj v čase + okruhy */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-
-        {/* Graf 1: Vývoj úspěšnosti v čase */}
-        <div className={PANEL_CLASS}>
-          <div className="flex items-start justify-between gap-3 mb-4">
-            <div>
-              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-blue-500" aria-hidden="true" />
-                Vývoj úspěšnosti v čase
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Procento správných odpovědí v jednotlivých testech
-              </p>
-            </div>
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg shrink-0">
-              {pluralCz(timeSeriesData.length, 'test', 'testy', 'testů')}
-            </span>
+      {/* Graf: Vývoj úspěšnosti v čase */}
+      <div className={PANEL_CLASS}>
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-blue-500" aria-hidden="true" />
+              Vývoj úspěšnosti v čase
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Procento správných odpovědí v jednotlivých testech
+            </p>
           </div>
-
-          <div className="h-72 w-full mt-2">
-            {timeSeriesData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={timeSeriesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="accuracyGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.35}/>
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} vertical={false} />
-                  <XAxis
-                    dataKey="shortDate"
-                    tick={{ fontSize: 11, fill: palette.tick }}
-                    stroke={palette.axis}
-                  />
-                  <YAxis
-                    domain={[0, 100]}
-                    tick={{ fontSize: 11, fill: palette.tick }}
-                    stroke={palette.axis}
-                    unit="%"
-                  />
-                  <Tooltip
-                    contentStyle={palette.tooltip}
-                    formatter={(val) => [`${val ?? 0} %`, 'Úspěšnost testu']}
-                    labelFormatter={(_, payload) => {
-                      if (payload && payload[0]) {
-                        const item = payload[0].payload;
-                        return `${item.sessionName} · ${item.subject} (${item.correct}/${item.total} správně)`;
-                      }
-                      return '';
-                    }}
-                  />
-                  <ReferenceLine
-                    y={PASS_PERCENT}
-                    stroke="#10b981"
-                    strokeDasharray="4 4"
-                    strokeWidth={2}
-                    label={{ value: `Hranice úspěšnosti (${PASS_PERCENT} %)`, position: 'insideTopRight', fill: '#10b981', fontSize: 11, fontWeight: 600 }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="accuracy"
-                    stroke="#3b82f6"
-                    strokeWidth={2.5}
-                    fillOpacity={1}
-                    fill="url(#accuracyGradient)"
-                    dot={{ r: 4, fill: '#3b82f6', strokeWidth: 2, stroke: palette.dotStroke }}
-                    activeDot={{ r: 6, fill: '#2563eb', strokeWidth: 2, stroke: palette.dotStroke }}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-slate-400">
-                <BookOpen className="w-10 h-10 stroke-1 mb-2 text-slate-300 dark:text-slate-700" aria-hidden="true" />
-                <p className="font-semibold text-sm">{NO_DATA_TEXT}</p>
-                <p className="text-xs mt-1">Zkuste jiné období nebo předmět.</p>
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-blue-500 inline-block" aria-hidden="true"></span>
-              <span>Výsledek testu</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-0.5 bg-green-500 inline-block" aria-hidden="true"></span>
-              <span className="text-green-600 dark:text-green-400 font-semibold">Hranice úspěšnosti ({PASS_PERCENT} %)</span>
-            </div>
-          </div>
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg shrink-0">
+            {pluralCz(timeSeriesData.length, 'test', 'testy', 'testů')}
+          </span>
         </div>
 
-        {/* Graf 2: Úspěšnost podle tematických okruhů */}
-        <div className={PANEL_CLASS}>
-          <div className="flex items-start justify-between gap-3 mb-4">
-            <div>
-              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Compass className="w-5 h-5 text-blue-500" aria-hidden="true" />
-                Úspěšnost v tematických okruzích
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Testované okruhy seřazené od nejslabšího po nejlépe zvládnutý
-              </p>
+        <div className="h-72 w-full mt-2">
+          {timeSeriesData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={timeSeriesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="accuracyGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.35}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} vertical={false} />
+                <XAxis
+                  dataKey="shortDate"
+                  tick={{ fontSize: 11, fill: palette.tick }}
+                  stroke={palette.axis}
+                />
+                <YAxis
+                  domain={[0, 100]}
+                  tick={{ fontSize: 11, fill: palette.tick }}
+                  stroke={palette.axis}
+                  unit="%"
+                />
+                <Tooltip
+                  contentStyle={palette.tooltip}
+                  formatter={(val) => [`${val ?? 0} %`, 'Úspěšnost testu']}
+                  labelFormatter={(_, payload) => {
+                    if (payload && payload[0]) {
+                      const item = payload[0].payload;
+                      return `${item.sessionName} · ${item.subject} (${item.correct}/${item.total} správně)`;
+                    }
+                    return '';
+                  }}
+                />
+                <ReferenceLine
+                  y={PASS_PERCENT}
+                  stroke="#10b981"
+                  strokeDasharray="4 4"
+                  strokeWidth={2}
+                  label={{ value: `Hranice úspěšnosti (${PASS_PERCENT} %)`, position: 'insideTopRight', fill: '#10b981', fontSize: 11, fontWeight: 600 }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="accuracy"
+                  stroke="#3b82f6"
+                  strokeWidth={2.5}
+                  fillOpacity={1}
+                  fill="url(#accuracyGradient)"
+                  dot={{ r: 4, fill: '#3b82f6', strokeWidth: 2, stroke: palette.dotStroke }}
+                  activeDot={{ r: 6, fill: '#2563eb', strokeWidth: 2, stroke: palette.dotStroke }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-slate-400">
+              <BookOpen className="w-10 h-10 stroke-1 mb-2 text-slate-300 dark:text-slate-700" aria-hidden="true" />
+              <p className="font-semibold text-sm">{NO_DATA_TEXT}</p>
+              <p className="text-xs mt-1">Zkuste jiné období nebo předmět.</p>
             </div>
-            {untestedTopicCount > 0 && (
-              <span
-                className="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg shrink-0"
-                title="Okruhy z banky otázek, na které v tomto výběru nepadla žádná odpověď"
-              >
-                {untestedTopicCount} netestováno
-              </span>
-            )}
-          </div>
+          )}
+        </div>
 
-          <div className="w-full mt-2" style={{ height: topicStats.length > 0 ? `${topicChartHeight}px` : '18rem' }}>
-            {topicStats.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={topicChartData}
-                  layout="vertical"
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={palette.grid} />
-                  <XAxis
-                    type="number"
-                    domain={[0, 100]}
-                    tick={{ fontSize: 10, fill: palette.tick }}
-                    stroke={palette.axis}
-                    unit="%"
-                  />
-                  <YAxis
-                    type="category"
-                    dataKey="label"
-                    width={170}
-                    tick={{ fontSize: 11, fill: palette.tick }}
-                    tickFormatter={shortenAxisLabel}
-                    stroke={palette.axis}
-                    interval={0}
-                  />
-                  <Tooltip
-                    contentStyle={palette.tooltip}
-                    formatter={(val, _name, item) => {
-                      const payload = (item as { payload?: { correctAttempts?: number; totalAttempts?: number } })?.payload;
-                      return [
-                        `${val ?? 0} % (${payload?.correctAttempts ?? 0}/${payload?.totalAttempts ?? 0} správně)`,
-                        'Úspěšnost'
-                      ];
-                    }}
-                    labelFormatter={(label) => `Okruh: ${label}`}
-                  />
-                  <ReferenceLine x={PASS_PERCENT} stroke="#10b981" strokeDasharray="3 3" />
-                  <Bar dataKey="accuracy" radius={[0, 6, 6, 0]}>
-                    {topicChartData.map((entry) => (
-                      <Cell key={`${entry.subject}-${entry.topic}`} fill={getBarColor(entry.accuracy)} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex items-center justify-center text-slate-500 dark:text-slate-400 text-sm">
-                {NO_DATA_TEXT}
-              </div>
-            )}
+        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-blue-500 inline-block" aria-hidden="true"></span>
+            <span>Výsledek testu</span>
           </div>
-
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500" aria-hidden="true"></span> pod 50 % kritické</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-500" aria-hidden="true"></span> 50–{PASS_PERCENT - 1} % slabé</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-blue-500" aria-hidden="true"></span> {PASS_PERCENT}–{DISTINCTION_PERCENT - 1} % nad hranicí</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500" aria-hidden="true"></span> od {DISTINCTION_PERCENT} % výborné</span>
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-0.5 bg-green-500 inline-block" aria-hidden="true"></span>
+            <span className="text-green-600 dark:text-green-400 font-semibold">Hranice úspěšnosti ({PASS_PERCENT} %)</span>
           </div>
         </div>
       </div>
