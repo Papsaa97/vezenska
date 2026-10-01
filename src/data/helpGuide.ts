@@ -145,8 +145,9 @@ export const HELP_SECTIONS: HelpSection[] = [
         title: 'Jak to probíhá',
         items: [
           'Po prvním přihlášení se ukáže okno „Zvolte svou třídu“. U každé třídy vidíte jejího velitele.',
-          'Vyberte třídu a stiskněte „Požádat o zařazení“. Žádost dostane velitel třídy, případně lektor.',
-          'Než ji schválí, ukazuje Nástěnka u vaší třídy „čeká na schválení“. Žádost můžete změnit tlačítkem „Změnit žádost“.',
+          'Vyberte třídu a stiskněte „Požádat o zařazení“. Žádost dostane velitel třídy, případně lektor, a o přijetí mohou hlasovat i členové třídy.',
+          'Než o ní někdo rozhodne, ukazuje Nástěnka u vaší třídy „čeká na schválení“ a kolik členů už hlasovalo pro (jména nevidíte). Žádost můžete změnit tlačítkem „Změnit žádost“.',
+          'Přijati jste, když žádost schválí velitel (zástupce, lektor), nebo když pro vás hlasuje víc než polovina členů třídy. Zamítnou-li vás členové hlasováním, do téže třídy můžete znovu požádat až po 24 hodinách.',
           'Po schválení jste ve třídě a vidíte její rozvrh, služby, ústroj, členy a diskuzi.',
         ],
       },
@@ -183,10 +184,30 @@ export const HELP_SECTIONS: HelpSection[] = [
         kind: 'list',
         items: [
           'Každá třída má nejvýše jednoho velitele. Jmenuje ho lektor nebo správce.',
-          'Velitel vyřizuje žádosti o zařazení, vede nástěnku třídy (rozvrh, ústroj, služby, hlášení) a moderuje diskuzi.',
+          'Velitel vyřizuje žádosti o zařazení (přijmout nového člena mohou i členové hlasováním), vede nástěnku třídy (rozvrh, ústroj, služby, hlášení) a moderuje diskuzi.',
           'Velitel si může určit zástupce z členů třídy — na určitou dobu nebo do odvolání. Zástupce má po tu dobu stejná práva jako velitel.',
           'Velitel může funkci předat jinému členovi třídy; uvádí přitom odůvodnění, které vidí lektoři. Původní velitel se pak stává běžným členem.',
           'Jméno velitele a zástupce je v záhlaví třídy na Nástěnce a v přehledu všech tříd.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'hlasovani-o-prijeti',
+    group: 'trida',
+    title: 'Hlasování o přijetí nového člena',
+    summary: 'Jak členové třídy přijmou nového člena, když velitel nereaguje.',
+    tab: 'dashboard',
+    blocks: [
+      {
+        kind: 'list',
+        items: [
+          'Když někdo požádá o zařazení do vaší třídy, dostanete oznámení a na nástěnce třídy se objeví blok „Žádosti o vstup do třídy“.',
+          'Hlasujete „Pro přijetí“ nebo „Proti“. Každý má jeden hlas a do rozhodnutí ho může změnit.',
+          'Přijato je, jakmile pro hlasuje víc než polovina členů třídy (u 5 členů 3, u 6 členů 4). Zamítnuto je, jakmile už většina vzniknout nemůže.',
+          'Hlasovat mohou jen ti, kdo byli ve třídě už při podání žádosti. Kdo přibude později nebo je z jiné třídy, nehlasuje.',
+          'Má-li třída méně než 3 členy, nehlasuje se a rozhoduje velitel, zástupce nebo lektor.',
+          'Velitel, zástupce, lektor a správce vidí, kdo jak hlasoval; ostatní členové a žadatel jen počty. Velitel může žádost dál schválit nebo odmítnout sám.',
         ],
       },
     ],
@@ -491,7 +512,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         kind: 'list',
         items: [
           'V panelu „Zařazení“ vidíte nezařazené studenty, jejich poznámku a jak dlouho čekají.',
-          'Žádost do své třídy vyřídíte tlačítky „Schválit“ nebo „Odmítnout“.',
+          'Žádost do své třídy vyřídíte tlačítky „Schválit“ nebo „Odmítnout“. U žádosti vidíte i průběh hlasování členů a kdo jak hlasoval; jakmile pro hlasuje většina třídy, žadatel je přijat i bez vás.',
           '„Označit do …“ pošle studentovi nabídku do vaší třídy; zařazen je, až ji potvrdí. Označení jde zrušit.',
           'Přeřadit už zařazeného studenta nemůžete — to dělá lektor nebo správce.',
         ],
@@ -612,7 +633,7 @@ export const HELP_SECTIONS: HelpSection[] = [
       {
         kind: 'list',
         title: 'Vybral(a) jsem špatnou třídu.',
-        items: ['Dokud žádost nikdo neschválil, změňte ji na Nástěnce tlačítkem „Změnit žádost“. Po zařazení vás přeřadí jen lektor nebo správce.'],
+        items: ['Dokud o žádosti nikdo nerozhodl (velitel ani hlasování třídy), změňte ji na Nástěnce tlačítkem „Změnit žádost“. Po zařazení vás přeřadí jen lektor nebo správce.'],
       },
       {
         kind: 'list',

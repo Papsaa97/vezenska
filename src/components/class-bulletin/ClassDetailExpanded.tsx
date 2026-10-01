@@ -25,6 +25,7 @@ import {
 import CourseCountdownWidget from './CourseCountdownWidget';
 import ClassMembersPanel from './ClassMembersPanel';
 import ClassDiscussionBoard from './ClassDiscussionBoard';
+import ClassJoinVotes from './ClassJoinVotes';
 import AttachedFilesPanel from '../common/AttachedFilesPanel';
 import { useTaggedMaterials } from '../../hooks/useTaggedMaterials';
 import { materialsForClass } from '../../utils/materials';
@@ -576,6 +577,10 @@ export default function ClassDetailExpanded({
           )}
         </div>
       </div>
+
+      {/* Žádosti o vstup — členové o nich mohou hlasovat (migrace 053).
+          Bez čekajících žádostí se nevykreslí nic, ani oddělovač. */}
+      <ClassJoinVotes className={item.className} />
 
       {/* Diskuze třídy — moderuje velitel, jeho zástupce, lektor a správce */}
       <div className="pt-5 border-t border-slate-200 dark:border-slate-800">

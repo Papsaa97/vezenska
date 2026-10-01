@@ -54,6 +54,7 @@ import DeleteConfirmModal from './class-bulletin/DeleteConfirmModal';
 import ScheduleLightbox from './class-bulletin/ScheduleLightbox';
 import ClassOverviewCard from './class-bulletin/ClassOverviewCard';
 import ClassAssignmentPanel from './class-bulletin/ClassAssignmentPanel';
+import { MyJoinRequestProgress } from './class-bulletin/ClassJoinVotes';
 import {
   ChooseClassDialog,
   MEMBERSHIP_CHANGED_EVENT,
@@ -1044,11 +1045,12 @@ export default function ClassBulletinBoard() {
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
                 {pendingRequest
-                  ? 'Jakmile ji velitel třídy (nebo lektor) schválí, uvidíte tady rozvrh, ústroj i služby své třídy. Dostanete o tom oznámení.'
+                  ? 'Jakmile ji velitel třídy (nebo lektor) schválí, nebo pro vás hlasuje většina členů třídy, uvidíte tady rozvrh, ústroj i služby své třídy. Dostanete o tom oznámení.'
                   : membership?.note
                   ? `Vaše poznámka: „${membership.note}“. Až bude vaše třída založená, velitel vás označí nebo si o ni požádáte sami. Nástěnky tříd vidí jen jejich členové, ostatním se ukazuje přehled.`
                   : 'Nástěnky tříd vidí jen jejich členové. Požádejte o zařazení do své třídy.'}
               </p>
+              {pendingRequest && <MyJoinRequestProgress className={pendingRequest.className} />}
               <div className="flex flex-wrap justify-center gap-2">
                 <button
                   type="button"
