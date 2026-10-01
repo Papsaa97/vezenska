@@ -340,3 +340,91 @@ export function formatWaitingTime(sinceIso: string | null, now: Date = new Date(
   if (days === 1) return '1 den';
   return days <= 4 ? `${days} dny` : `${days} dní`;
 }
+
+// ─── Hlasování členů o přijetí (migrace 053) ─────────────────────────────────
+//
+// Žádost o vstup může kromě velitele přijmout i většina členů třídy. Kdo smí
+// hlasovat, kolik hlasů je potřeba a kdy je rozhodnuto, počítá databáze;
+// klient jen zobrazí stav a pošle hlas.
+
+const VOTING_FEATURE: MissingFeature = { label: 'Hlasování o přijetí', ending: 'é', migration: '053' };
+
+/** Čekající žádost o vstup do třídy se stavem hlasování. */
+export interface JoinVote {
+  requestId: string;
+  className: string;
+  applicantId: string;
+  applicantName: string;
+  createdAt: string;
+  /** Kolik členů smí hlasovat — členové třídy v okamžiku podání žádosti. */
+  eligible: number;
+  /** Kolik hlasů pro je potřeba k přijetí (víc než polovina). */
+  needed: number;
+  votesFor: number;
+  votesAgainst: number;
+  /** Třída má dost členů na hlasování (jinak rozhoduje jen velitel nebo lektor). */
+  votingPossible: boolean;
+  /** Hlas přihlášeného: true pro, false proti, null nehlasoval. */
+  myVote: boolean | null;
+  canVote: boolean;
+  /** Jména hlasujících — jen pro velitele, zástupce, lektora a správce. */
+  namesFor: string | null;
+  namesAgainst: string | null;
+}
+
+interface JoinVoteRow {
+  zadost_id: string;
+  class_name: string;
+  zadatel_id: string;
+  zadatel_jmeno: string;
+  vytvoreno: string;
+  opravneni: number;
+  potreba: number;
+  pro: number;
+  proti: number;
+  hlasovani_mozne: boolean;
+  muj_hlas: boolean | null;
+  smim_hlasovat: boolean;
+  jmena_pro: string | null;
+  jmena_proti: string | null;
+}
+
+/** Je chyba jen tím, že migrace 053 ještě neběžela? Pak se panel nezobrazí. */
+export function isMissingVotingFeature(error: string | null): boolean {
+  return Boolean(error && error.includes(`migrace ${VOTING_FEATURE.migration}`));
+}
+
+export async function fetchJoinVotes(): Promise<RpcResult<JoinVote[]>> {
+  const res = await call<JoinVoteRow[]>('hlasovani_o_zadostech', undefined, VOTING_FEATURE);
+  if (res.error || !res.data) return { data: null, error: res.error };
+  return {
+    data: res.data.map((r) => ({
+      requestId: r.zadost_id,
+      className: r.class_name,
+      applicantId: r.zadatel_id,
+      applicantName: r.zadatel_jmeno,
+      createdAt: r.vytvoreno,
+      eligible: r.opravneni,
+      needed: r.potreba,
+      votesFor: r.pro,
+      votesAgainst: r.proti,
+      votingPossible: r.hlasovani_mozne,
+      myVote: r.muj_hlas,
+      canVote: r.smim_hlasovat,
+      namesFor: r.jmena_pro,
+      namesAgainst: r.jmena_proti,
+    })),
+    error: null,
+  };
+}
+
+/** Výsledek hlasu: žádost dál čeká, nebo je hlasováním přijata či zamítnuta. */
+export type JoinVoteOutcome = 'ceka' | 'prijato' | 'odmitnuto';
+
+export const voteOnJoinRequest = (requestId: string, inFavour: boolean) =>
+  call<JoinVoteOutcome>('hlasovat_o_zadosti', { p_id: requestId, p_pro: inFavour }, VOTING_FEATURE);
+
+/** „Pro 2 z 3 potřebných · proti 1 · oprávněných 5“ — krátký stav pro všechny role. */
+export function describeVoteTally(v: Pick<JoinVote, 'votesFor' | 'votesAgainst' | 'needed' | 'eligible'>): string {
+  return `Pro ${v.votesFor} z ${v.needed} potřebných · proti ${v.votesAgainst} · oprávněných ${v.eligible}`;
+}

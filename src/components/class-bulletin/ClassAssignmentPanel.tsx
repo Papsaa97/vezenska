@@ -8,13 +8,16 @@ import {
   ClassOverview,
   CommandHistoryEntry,
   CommandHistoryKind,
+  JoinVote,
   fetchCommandHistory,
   appointCommander,
   assignClass,
   cancelNomination,
   decideRequest,
   dismissCommander,
+  describeVoteTally,
   fetchAssignmentList,
+  fetchJoinVotes,
   formatWaitingTime,
   nominateToMyClass,
 } from '../../utils/classMembership';
@@ -43,6 +46,9 @@ export default function ClassAssignmentPanel({ classes, leadsClass }: ClassAssig
   const isCommander = !isStaff && myClass.length > 0;
 
   const [rows, setRows] = useState<AssignmentRow[]>([]);
+  // Stav hlasování členů podle id žádosti (migrace 053). Chybí-li migrace,
+  // zůstane prázdný a panel funguje jako dřív.
+  const [votes, setVotes] = useState<Record<string, JoinVote>>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -60,8 +66,9 @@ export default function ClassAssignmentPanel({ classes, leadsClass }: ClassAssig
 
   const load = useCallback(async () => {
     setLoading(true);
-    const res = await fetchAssignmentList();
+    const [res, voteRes] = await Promise.all([fetchAssignmentList(), fetchJoinVotes()]);
     setLoading(false);
+    setVotes(Object.fromEntries((voteRes.data ?? []).map((v) => [v.requestId, v])));
     setNow(new Date());
     if (res.error) {
       setError(res.error);
@@ -214,6 +221,15 @@ export default function ClassAssignmentPanel({ classes, leadsClass }: ClassAssig
                 {r.requestClass && (
                   <div className="text-xs text-indigo-700 dark:text-indigo-300 font-semibold">
                     Žádá o zařazení do {r.requestClass}
+                  </div>
+                )}
+                {r.requestId && votes[r.requestId] && (
+                  <div className="text-[0.6875rem] text-slate-500 dark:text-slate-400">
+                    {votes[r.requestId].votingPossible
+                      ? `Hlasování třídy: ${describeVoteTally(votes[r.requestId])}`
+                      : 'Třída je na hlasování malá (méně než 3 členové) — rozhodujete vy.'}
+                    {votes[r.requestId].namesFor && <> · pro: {votes[r.requestId].namesFor}</>}
+                    {votes[r.requestId].namesAgainst && <> · proti: {votes[r.requestId].namesAgainst}</>}
                   </div>
                 )}
                 {r.nominatedClasses && (

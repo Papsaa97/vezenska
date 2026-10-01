@@ -25,7 +25,8 @@ function classPoint(role: UserRole): WelcomePoint {
         icon: School,
         title: 'Vaše třída',
         text:
-          'Jako velitel třídy vyřizujete na Nástěnce v panelu „Zařazení“ žádosti o zařazení a můžete do třídy ' +
+          'Jako velitel třídy vyřizujete na Nástěnce v panelu „Zařazení“ žádosti o zařazení (přijmout je mohou i členové ' +
+          'hlasováním) a můžete do třídy ' +
           'označit nezařazené studenty. Vedete nástěnku třídy (rozvrh, služby, ústroj), diskuzi a můžete si určit zástupce.',
       };
     case 'lektor':
@@ -43,7 +44,7 @@ function classPoint(role: UserRole): WelcomePoint {
         title: 'Zařazení do třídy',
         text:
           'Pokud ještě nejste v žádné třídě, po zavření této zprávy si ji vyberete. Žádost dostane velitel třídy ' +
-          '(nebo lektor) a po schválení vás zařadí. Třídu pak sami změnit nemůžete — to dělá lektor nebo správce. ' +
+          '(nebo lektor) a po schválení vás zařadí; přijmout vás mohou i členové třídy hlasováním. Třídu pak sami změnit nemůžete — to dělá lektor nebo správce. ' +
           'Nevidíte-li svou třídu, zvolte „Nevidím zde svou třídu“ a napište, kam patříte.',
       };
   }

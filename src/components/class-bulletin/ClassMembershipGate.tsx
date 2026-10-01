@@ -187,7 +187,7 @@ export function ChooseClassDialog({
                 Zvolte svou třídu
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Do třídy vás zařadí její velitel (nebo lektor) po schválení. Změnit ji potom může jen lektor nebo správce.
+                Do třídy vás zařadí její velitel (nebo lektor) po schválení, případně vás přijme hlasováním většina členů třídy. Změnit ji potom může jen lektor nebo správce.
               </p>
             </div>
           </div>
