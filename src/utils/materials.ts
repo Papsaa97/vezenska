@@ -483,8 +483,11 @@ export async function getMaterialSignedUrl(
 }
 
 /** Stáhne soubor do zařízení pod čitelným názvem. */
-export async function downloadMaterial(material: StudyMaterial): Promise<string | null> {
-  const { data, error } = await supabase.storage.from(MATERIALS_BUCKET).download(material.name);
+export async function downloadMaterial(
+  material: StudyMaterial,
+  bucket: string = MATERIALS_BUCKET
+): Promise<string | null> {
+  const { data, error } = await supabase.storage.from(bucket).download(material.name);
   if (error || !data) {
     return `Stahování selhalo: ${error?.message ?? 'Neznámá chyba'}`;
   }

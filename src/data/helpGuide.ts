@@ -262,7 +262,7 @@ export const HELP_SECTIONS: HelpSection[] = [
     id: 'chat',
     group: 'trida',
     title: 'Chat',
-    summary: 'Soukromé zprávy a skupiny s lidmi z akademie.',
+    summary: 'Soukromé zprávy, skupiny, přílohy a sdílení z aplikace.',
     tab: 'chat',
     blocks: [
       {
@@ -280,6 +280,16 @@ export const HELP_SECTIONS: HelpSection[] = [
           'Vyberete-li jednoho člověka, „Otevřít konverzaci“ otevře soukromou konverzaci (s každým máte jen jednu).',
           'Vyberete-li víc lidí, napište „Název skupiny“ a stiskněte „Založit skupinu“ (nejvýš 50 členů).',
           'Zprávu odešlete klávesou Enter nebo šipkou; Shift+Enter zalomí řádek.',
+          'Soubor přiložíte sponkou vedle pole pro zprávu: PDF, Word, Excel, PowerPoint, obrázek nebo text do 10 MB. Popisek je nepovinný.',
+        ],
+      },
+      {
+        kind: 'list',
+        title: 'Poslat do chatu z aplikace',
+        items: [
+          'Tlačítko s bublinami „Poslat do chatu“ najdete u souborů v Knihovně, u otázky v Zkoušce (po odpovědi v procvičování a v přehledu výsledků), u kartiček a v Kompasu zákonů u předpisu i ustanovení.',
+          'Vyberete konverzaci (nebo člověka, se kterým ještě nepíšete), můžete připsat zprávu a stisknete „Odeslat“.',
+          'Ve zprávě se věc ukáže jako karta: soubor z Knihovny otevřete přímo v chatu, u otázky si správnou odpověď odkryjete, předpis a ustanovení otevřou Kompas zákonů.',
         ],
       },
       {
@@ -287,7 +297,8 @@ export const HELP_SECTIONS: HelpSection[] = [
         title: 'Co ještě jde',
         items: [
           'Každý vidí jen konverzace, ve kterých je. Lektoři ani správce cizí konverzace nečtou.',
-          'Svou zprávu smažete ikonou koše pod ní; ostatní místo ní uvidí „Zpráva byla smazána.“',
+          'Svou zprávu smažete ikonou koše pod ní; ostatní místo ní uvidí „Zpráva byla smazána.“ Smaže se i její příloha.',
+          'Přílohy vidí jen členové konverzace. Za 24 hodin můžete poslat nejvýš 40 souborů.',
           'Nevhodnou zprávu nahlásíte ikonou praporku. Uvidí ji lektoři a správce (jen tu jednu zprávu) a mohou ji skrýt; autor se nedozví, kdo ji nahlásil.',
           'Ikona „i“ v konverzaci ukáže členy a nabídne „Ztlumit“ — bez upozornění do zařízení a bez počítání do čísla v hlavičce.',
           'Skupinu přejmenovává a členy přidává nebo odebírá ten, kdo ji založil. „Opustit skupinu“ může kdokoli; odejde-li zakladatel, správu převezme další člen.',
@@ -653,8 +664,9 @@ export const HELP_SECTIONS: HelpSection[] = [
         items: [
           'O nové nahlášené zprávě přijde lektorům a správci oznámení do zvonku.',
           'V záložce Chat stiskněte „Nahlášené“. Vidíte nahlášenou zprávu, autora, kdo ji nahlásil a proč — zbytek konverzace ne.',
-          '„Skrýt zprávu“ smaže její text všem v konverzaci, „Ponechat“ nahlášení jen uzavře. „I vyřízené“ ukáže i starší vyřízená nahlášení.',
-          'Smaže-li autor nahlášenou zprávu sám, její text zůstane pro vás uložený, dokud nahlášení nevyřídíte.',
+          'Má-li zpráva přílohu nebo sdílenou věc, uvidíte ji u nahlášení a přílohu si můžete otevřít.',
+          '„Skrýt zprávu“ smaže její text i přílohu všem v konverzaci, „Ponechat“ nahlášení jen uzavře. „I vyřízené“ ukáže i starší vyřízená nahlášení.',
+          'Smaže-li autor nahlášenou zprávu sám, její text i příloha zůstanou pro vás uložené, dokud nahlášení nevyřídíte.',
         ],
       },
     ],

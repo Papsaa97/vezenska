@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import PrintHeader from './common/PrintHeader';
 import FileViewerModal from './common/FileViewerModal';
+import ShareToChatButton from './chat/ShareToChatButton';
+import { shareMaterial } from '../utils/chatShare';
 import { useTaggedMaterials } from '../hooks/useTaggedMaterials';
 import { useMaterialTagOptions } from '../hooks/useMaterialTagOptions';
 import {
@@ -378,6 +380,11 @@ export default function MaterialLibrary() {
                           </div>
                         </div>
                         <div className="no-print flex items-center gap-1.5 shrink-0">
+                          <ShareToChatButton
+                            compact
+                            label={`Poslat ${material.displayName} do chatu`}
+                            getShare={() => shareMaterial(material)}
+                          />
                           <button
                             type="button"
                             onClick={() => setViewed(material)}

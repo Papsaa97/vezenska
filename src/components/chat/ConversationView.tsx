@@ -1,18 +1,27 @@
 import React, { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
-import { ArrowLeft, BellOff, Flag, Info, Loader2, Send, Trash2, Users } from 'lucide-react';
+import { ArrowLeft, BellOff, Flag, Info, Loader2, Paperclip, Send, Trash2, Users, X } from 'lucide-react';
 import ConfirmDialog from '../common/ConfirmDialog';
+import FileViewerModal from '../common/FileViewerModal';
 import ReportMessageDialog from './ReportMessageDialog';
+import { AttachmentBlock, OpenFileHandler, SharedItemCard } from './MessageExtras';
+import { StudyMaterial, formatFileSize } from '../../utils/materials';
+import type { RpcResult } from '../../utils/classMembership';
 import {
+  CHAT_ATTACHMENT_ACCEPT,
+  CHAT_ATTACHMENT_HINT,
   CHAT_MAX_TEXT,
   CHAT_ROLE_LABEL,
   ChatConversation,
   ChatMessage,
   announceUnreadChanged,
+  checkAttachment,
   deleteMessage,
   fetchMessages,
   formatChatTime,
   markRead,
+  removeAttachment,
   sendMessage,
+  uploadAttachment,
 } from '../../utils/chat';
 
 interface ConversationViewProps {
@@ -62,6 +71,9 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
   const [confirmDelete, setConfirmDelete] = useState<ChatMessage | null>(null);
   const [deleting, setDeleting] = useState<boolean>(false);
   const [reportTarget, setReportTarget] = useState<ChatMessage | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [viewer, setViewer] = useState<{ material: StudyMaterial; bucket: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   /** Uživatel je u konce konverzace — nová zpráva ho má posunout dolů. */
@@ -152,11 +164,40 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
     });
   };
 
+  const openFile: OpenFileHandler = (material, bucket) => setViewer({ material, bucket });
+
+  const pickFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    // Stejný soubor jde vybrat znovu jen s vynulovanou hodnotou.
+    event.target.value = '';
+    if (!file) return;
+    const invalid = checkAttachment(file);
+    if (invalid) {
+      setError(invalid);
+      return;
+    }
+    setError(null);
+    setPendingFile(file);
+  };
+
   const send = async () => {
     const trimmed = text.trim();
-    if (!trimmed || sending) return;
+    if ((!trimmed && !pendingFile) || sending) return;
     setSending(true);
-    const res = await sendMessage(conversationId, trimmed);
+    let res: RpcResult<string>;
+    if (pendingFile) {
+      const upload = await uploadAttachment(conversationId, pendingFile);
+      if (upload.error || !upload.data) {
+        setSending(false);
+        setError(upload.error);
+        return;
+      }
+      res = await sendMessage(conversationId, trimmed, { attachment: upload.data });
+      // Zpráva se neodeslala: nahraný soubor by v úložišti zůstal bez užitku.
+      if (res.error) void removeAttachment(upload.data.path);
+    } else {
+      res = await sendMessage(conversationId, trimmed);
+    }
     setSending(false);
     if (res.error) {
       setError(res.error);
@@ -164,6 +205,7 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
     }
     setError(null);
     setText('');
+    setPendingFile(null);
     stickToBottomRef.current = true;
     await loadLatest();
     onActivity();
@@ -180,13 +222,17 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
   const doDelete = async () => {
     if (!confirmDelete) return;
     setDeleting(true);
-    const res = await deleteMessage(confirmDelete.id);
+    const target = confirmDelete;
+    const res = await deleteMessage(target.id);
     setDeleting(false);
     setConfirmDelete(null);
     if (res.error) {
       setError(res.error);
       return;
     }
+    // Soubor zmizí i z úložiště. Drží-li zprávu otevřené nahlášení, server
+    // smazání odmítne a soubor zůstane moderátorům.
+    if (target.attachment) void removeAttachment(target.attachment.path);
     await loadLatest();
     onActivity();
   };
@@ -290,17 +336,29 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
                     {roleLabel && <span className="font-normal text-slate-500"> · {roleLabel}</span>}
                   </span>
                 )}
-                <div
-                  className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words ${
-                    m.deleted
-                      ? 'italic text-slate-500 dark:text-slate-400 border border-dashed border-slate-300 dark:border-slate-700'
-                      : m.mine
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100'
-                  }`}
-                >
-                  {m.deleted ? 'Zpráva byla smazána.' : m.text}
-                </div>
+                {!m.deleted && m.attachment && (
+                  <div className={`w-full flex mb-0.5 ${m.mine ? 'justify-end' : 'justify-start'}`}>
+                    <AttachmentBlock attachment={m.attachment} onOpenFile={openFile} />
+                  </div>
+                )}
+                {!m.deleted && m.share && (
+                  <div className={`w-full flex mb-0.5 ${m.mine ? 'justify-end' : 'justify-start'}`}>
+                    <SharedItemCard share={m.share} onOpenFile={openFile} />
+                  </div>
+                )}
+                {(m.deleted || m.text.trim() !== '') && (
+                  <div
+                    className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words ${
+                      m.deleted
+                        ? 'italic text-slate-500 dark:text-slate-400 border border-dashed border-slate-300 dark:border-slate-700'
+                        : m.mine
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100'
+                    }`}
+                  >
+                    {m.deleted ? 'Zpráva byla smazána.' : m.text}
+                  </div>
+                )}
                 <div className="flex items-center gap-1 px-1 text-[0.6875rem] text-slate-500 dark:text-slate-400">
                   <time dateTime={m.createdAt}>{formatChatTime(m.createdAt)}</time>
                   {!m.deleted && m.mine && (
@@ -339,7 +397,47 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
         </p>
       )}
 
-      <div className="border-t border-slate-200 dark:border-slate-800 p-3 flex items-end gap-2">
+      {pendingFile && (
+        <div className="border-t border-slate-200 dark:border-slate-800 px-3 pt-2 flex">
+          <div className="flex items-center gap-2 max-w-full rounded-xl bg-slate-100 dark:bg-slate-800 pl-3 pr-1 py-1 text-xs text-slate-700 dark:text-slate-200">
+            <Paperclip className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+            <span className="truncate font-semibold">{pendingFile.name}</span>
+            <span className="text-slate-500 shrink-0">{formatFileSize(pendingFile.size)}</span>
+            <button
+              type="button"
+              onClick={() => setPendingFile(null)}
+              disabled={sending}
+              aria-label={`Odebrat přílohu ${pendingFile.name}`}
+              className="p-1 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:text-white dark:hover:bg-slate-700 cursor-pointer disabled:opacity-50"
+            >
+              <X className="w-3.5 h-3.5" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div
+        className={`${pendingFile ? '' : 'border-t border-slate-200 dark:border-slate-800 '}p-3 flex items-end gap-2`}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={CHAT_ATTACHMENT_ACCEPT}
+          onChange={pickFile}
+          className="hidden"
+          tabIndex={-1}
+          aria-hidden="true"
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={sending}
+          aria-label="Přiložit soubor"
+          title={`Přiložit soubor (${CHAT_ATTACHMENT_HINT})`}
+          className="p-2.5 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:hover:text-white dark:hover:bg-slate-800 cursor-pointer disabled:opacity-50"
+        >
+          <Paperclip className="w-4 h-4" aria-hidden="true" />
+        </button>
         <label htmlFor={composerId} className="sr-only">
           Napsat zprávu
         </label>
@@ -350,13 +448,13 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
           rows={1}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={onComposerKeyDown}
-          placeholder="Napište zprávu…"
+          placeholder={pendingFile ? 'Přidejte popisek (nepovinné)…' : 'Napište zprávu…'}
           className="flex-1 min-w-0 resize-none max-h-40 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 field-sizing-content"
         />
         <button
           type="button"
           onClick={() => void send()}
-          disabled={sending || !text.trim()}
+          disabled={sending || (!text.trim() && !pendingFile)}
           aria-label="Odeslat zprávu"
           title="Odeslat (Enter)"
           className="p-2.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
@@ -379,6 +477,12 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
         isBusy={deleting}
         onConfirm={() => void doDelete()}
         onCancel={() => setConfirmDelete(null)}
+      />
+      <FileViewerModal
+        material={viewer?.material ?? null}
+        bucket={viewer?.bucket}
+        isOpen={viewer !== null}
+        onClose={() => setViewer(null)}
       />
       {reportTarget && (
         <ReportMessageDialog

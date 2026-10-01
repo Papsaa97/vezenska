@@ -13,6 +13,8 @@ import PrintHeader from '../common/PrintHeader';
 import OfficialSectionPanel, { findArticleSnapshot } from './OfficialSectionPanel';
 import { formatIsoDate } from './legalCompassLabels';
 import { isRepealed } from '../../utils/regulationDocuments';
+import ShareToChatButton from '../chat/ShareToChatButton';
+import { shareArticle, shareRegulation } from '../../utils/chatShare';
 
 /** Nadpis bloku v detailu ustanovení — obyčejný nadpis místo verzálkového štítku. */
 const BLOCK_HEADING =
@@ -525,6 +527,11 @@ export default function LegalRegistryView({
                         <span>Nahrát text NGŘ</span>
                       </button>
                     )}
+                    <ShareToChatButton
+                      label={`Poslat ${reg.code} do chatu`}
+                      className="py-2"
+                      getShare={() => shareRegulation(reg)}
+                    />
                   </div>
 
                   {source.portalUrl && (
@@ -738,6 +745,13 @@ export default function LegalRegistryView({
                     <Printer className="w-4 h-4" aria-hidden="true" />
                     <span className="hidden sm:inline">Tisk / PDF</span>
                   </button>
+
+                  <ShareToChatButton
+                    compact
+                    label="Poslat ustanovení do chatu"
+                    className="min-w-[44px] min-h-[44px] justify-center border border-slate-200 dark:border-slate-700"
+                    getShare={() => shareArticle(currentArticle)}
+                  />
 
                   <button
                     type="button"
