@@ -38,8 +38,12 @@ const MEMBERSHIP_REFRESH_MS = 60_000;
  *
  * Když migrace 038 ještě neběžela, komponenta nic nezobrazí — aplikaci
  * kvůli tomu blokovat nejde.
+ *
+ * `suspended`: dialogy se odloží, dokud je otevřená úvodní zpráva — ta
+ * vysvětluje, co volba třídy znamená, a dva modální dialogy přes sebe by si
+ * přetahovaly fokus.
  */
-export default function ClassMembershipGate() {
+export default function ClassMembershipGate({ suspended = false }: { suspended?: boolean }) {
   const { user, realRole, loading, refreshProfile } = useAuth();
   const [membership, setMembership] = useState<MyMembership | null>(null);
   const [classes, setClasses] = useState<ClassOverview[]>([]);
@@ -81,7 +85,7 @@ export default function ClassMembershipGate() {
     };
   }, [loading, load]);
 
-  if (!user || loading || !membership) return null;
+  if (!user || loading || !membership || suspended) return null;
 
   const nomination = membership.pending.find((p) => p.kind === 'nominace');
   if (nomination && !membership.userClass) {

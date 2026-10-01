@@ -27,6 +27,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MessageSquare,
+  CircleHelp,
   UserCog,
   LayoutDashboard
 } from 'lucide-react';
@@ -60,6 +61,8 @@ interface HeaderProps {
   onGoForward?: () => void;
   /** Předměty s otázkami v bance. Musí jít stejné jako do BadgesView, jinak by se XP v liště a v Odznacích rozešlo. */
   availableSubjects?: readonly string[];
+  /** Otevře nápovědu (otazník v hlavičce). */
+  onOpenHelp?: () => void;
 }
 
 type DropdownType = 'practice' | 'drill' | 'more' | 'profile';
@@ -116,7 +119,8 @@ export default function Header({
   canGoForward = false,
   onGoBack,
   onGoForward,
-  availableSubjects
+  availableSubjects,
+  onOpenHelp,
 }: HeaderProps) {
   const { user, profile, signOut } = useAuth();
   const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
@@ -658,6 +662,19 @@ export default function Header({
 
           {/* Notification Bell (zprávy od správce) */}
           <NotificationBell />
+
+          {/* Nápověda — podrobný návod k aplikaci, dostupný odkudkoli. */}
+          {onOpenHelp && (
+            <button
+              type="button"
+              onClick={onOpenHelp}
+              className="p-2 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-slate-700"
+              title="Nápověda a návod k aplikaci"
+              aria-label="Nápověda"
+            >
+              <CircleHelp className="w-4 h-4 text-slate-300" />
+            </button>
+          )}
 
           {/* Feedback Button (accessible from header on mobile and desktop) */}
           {user && (
