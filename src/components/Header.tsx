@@ -27,6 +27,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MessageSquare,
+  MessagesSquare,
   CircleHelp,
   UserCog,
   LayoutDashboard
@@ -42,6 +43,7 @@ import { useAuth } from '../context/AuthContext';
 import { getInitials, resolveAvatarDisplay } from '../utils/avatar';
 import { useLocalProgress } from '../hooks/useLocalProgress';
 import { useSeenBadges } from '../hooks/useSeenBadges';
+import { useChatUnread } from '../hooks/useChatUnread';
 
 import { NavTab, NAV_TAB_LABELS, NAV_TAB_SHORT_LABELS } from '../data/navTabs';
 
@@ -124,6 +126,7 @@ export default function Header({
 }: HeaderProps) {
   const { user, profile, signOut } = useAuth();
   const isPrivileged = profile?.role === 'lektor' || profile?.role === 'admin';
+  const chatUnread = useChatUnread();
 
   const [openDropdown, setOpenDropdown] = useState<DropdownType | null>(null);
   const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number } | null>(null);
@@ -335,7 +338,7 @@ export default function Header({
             <div className="flex flex-col">
               <span className="text-white font-bold text-xs sm:text-sm lg:text-base tracking-tight flex items-center gap-1.5 sm:gap-2">
                 AKADEMIE VS ČR
-                <span className="text-amber-400 font-bold text-[0.5625rem] sm:text-[0.625rem] lg:text-xs px-1.5 sm:px-2 py-0.5 bg-amber-400/10 rounded-full border border-amber-400/30 tracking-wider">
+                <span className="hidden sm:inline text-amber-400 font-bold text-[0.5625rem] sm:text-[0.625rem] lg:text-xs px-1.5 sm:px-2 py-0.5 bg-amber-400/10 rounded-full border border-amber-400/30 tracking-wider">
                   ZOP A
                 </span>
               </span>
@@ -598,7 +601,7 @@ export default function Header({
         </div>
 
         {/* Right controls: Merged Profile & Rank + Theme Toggle */}
-        <div className="flex-shrink-0 flex items-center gap-2 sm:gap-2.5">
+        <div className="flex-shrink-0 flex items-center gap-0.5 sm:gap-2.5">
           {/* Combined Profile + Rank Element */}
           <div className="relative shrink-0">
             <button
@@ -659,6 +662,32 @@ export default function Header({
               <ChevronDown className={`w-3.5 h-3.5 text-slate-400 hidden sm:block transition-transform ${openDropdown === 'profile' ? 'rotate-180 text-amber-400' : ''}`} />
             </button>
           </div>
+
+          {/* Chat — interní zprávy; číslo = nepřečtené zprávy (bez ztlumených). */}
+          {user && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('chat')}
+              aria-current={activeTab === 'chat' ? 'page' : undefined}
+              className={`relative p-2 rounded-xl transition-colors cursor-pointer border ${
+                activeTab === 'chat'
+                  ? 'bg-slate-800 border-slate-700 text-white'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/80 border-transparent hover:border-slate-700'
+              }`}
+              title="Chat — zprávy spolužákům, velitelům a lektorům"
+              aria-label={chatUnread > 0 ? `Chat, ${chatUnread} nepřečtených zpráv` : 'Chat'}
+            >
+              <MessagesSquare className="w-4 h-4 text-slate-300" aria-hidden="true" />
+              {chatUnread > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-1 -right-1 min-w-[1.125rem] h-[1.125rem] px-1 rounded-full bg-indigo-500 text-white text-[0.625rem] font-bold flex items-center justify-center"
+                >
+                  {chatUnread > 99 ? '99+' : chatUnread}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Notification Bell (zprávy od správce) */}
           <NotificationBell />

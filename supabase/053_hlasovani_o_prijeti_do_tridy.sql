@@ -35,7 +35,7 @@
 -- Bez této migrace aplikace funguje dál jako dřív: panel hlasování se
 -- nezobrazí (funkce chybí) a žádosti vyřizuje velitel.
 --
--- Spouštět po 051. Idempotentní.
+-- Spouštět po 052. Idempotentní.
 -- ============================================================================
 
 BEGIN;

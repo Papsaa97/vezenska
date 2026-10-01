@@ -28,6 +28,7 @@ export type NavTab =
   | 'badges'
   | 'statistics'
   | 'library'
+  | 'chat'
   | 'content-manager';
 
 export const NAV_TAB_LABELS: Record<NavTab, string> = {
@@ -45,6 +46,7 @@ export const NAV_TAB_LABELS: Record<NavTab, string> = {
   badges: 'Odznaky & Úrovně',
   statistics: 'Statistiky',
   library: 'Knihovna',
+  chat: 'Chat',
   'content-manager': 'Správa obsahu',
 };
 
@@ -64,6 +66,7 @@ export const NAV_TAB_SHORT_LABELS: Record<NavTab, string> = {
   badges: 'Odznaky',
   statistics: 'Statistiky',
   library: 'Knihovna',
+  chat: 'Chat',
   'content-manager': 'Správa obsahu',
 };
 

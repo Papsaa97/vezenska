@@ -103,14 +103,14 @@ export const HELP_SECTIONS: HelpSection[] = [
         items: [
           'Hlavička nahoře: Nástěnka, Předměty, Zkouška a AI Asistent přímo, ostatní moduly v nabídkách „Výcvik & Praxe“, „Znalosti a dril“ a „Další“.',
           'Šipky vlevo v hlavičce vrací zpět a vpřed mezi záložkami.',
-          'Vpravo je váš profil (hodnost a XP), zvonek s oznámeními, otazník s nápovědou, Zpětná vazba a přepínač světlého a tmavého režimu.',
+          'Vpravo je váš profil (hodnost a XP), Chat (dvě bubliny, číslo ukazuje nepřečtené zprávy), zvonek s oznámeními, otazník s nápovědou, Zpětná vazba (jedna bublina) a přepínač světlého a tmavého režimu.',
         ],
       },
       {
         kind: 'list',
         title: 'Na telefonu',
         items: [
-          'Spodní lišta: Předměty, Zkouška, Asistent, Výcvik a Více. V nabídce „Více“ je Nástěnka, Kompas zákonů, Kartičky, Poznávačka, Odznaky, Statistiky, Knihovna a tahle nápověda.',
+          'Spodní lišta: Předměty, Zkouška, Asistent, Výcvik a Více. V nabídce „Více“ je Nástěnka, Chat, Kompas zákonů, Kartičky, Poznávačka, Odznaky, Statistiky, Knihovna a tahle nápověda.',
           'Rychlým tahem prstu doprava se vrátíte o záložku zpět, doleva vpřed.',
         ],
       },
@@ -119,6 +119,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         title: 'Moduly v kostce',
         items: [
           'Nástěnka — vaše třída: rozvrh, ústroj, služby, hlášení, diskuze a celoškolní oznámení.',
+          'Chat — soukromé zprávy a skupinové konverzace s lidmi z akademie.',
           'Předměty — učivo a otázky s vysvětlením po předmětech, spuštění testu nebo kartiček.',
           'Zkouška — procvičování a zkouška nanečisto.',
           'AI Asistent — rozbor zadání nebo fotky úlohy s návrhem odpovědí.',
@@ -253,6 +254,44 @@ export const HELP_SECTIONS: HelpSection[] = [
           '„Označit člena…“ — označený spolužák dostane oznámení do zvonku.',
           '„Anketa“ — 2 až 10 možností, volitelně s koncem hlasování. Dokud hlasování běží, svůj hlas můžete změnit.',
           'Svou zprávu můžete smazat. Velitel, zástupce, lektor a správce mohou zprávy připnout, skrýt nebo smazat.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'chat',
+    group: 'trida',
+    title: 'Chat',
+    summary: 'Soukromé zprávy a skupiny s lidmi z akademie.',
+    tab: 'chat',
+    blocks: [
+      {
+        kind: 'p',
+        text:
+          'Chat otevřete ikonou se dvěma bublinami v hlavičce, na telefonu v nabídce „Více“. Číslo u ikony ukazuje ' +
+          'nepřečtené zprávy. Psát si mohou jen lidé z akademie: studenti a velitelé zařazení do třídy, lektoři ' +
+          'a správce. Dokud vás nikdo nezařadí do třídy, chat se vám neotevře a nikdo vám nenapíše.',
+      },
+      {
+        kind: 'steps',
+        title: 'Jak napsat',
+        items: [
+          '„Nová konverzace“ → vyhledejte člověka podle jména nebo třídy (spolužáci jsou nahoře).',
+          'Vyberete-li jednoho člověka, „Otevřít konverzaci“ otevře soukromou konverzaci (s každým máte jen jednu).',
+          'Vyberete-li víc lidí, napište „Název skupiny“ a stiskněte „Založit skupinu“ (nejvýš 50 členů).',
+          'Zprávu odešlete klávesou Enter nebo šipkou; Shift+Enter zalomí řádek.',
+        ],
+      },
+      {
+        kind: 'list',
+        title: 'Co ještě jde',
+        items: [
+          'Každý vidí jen konverzace, ve kterých je. Lektoři ani správce cizí konverzace nečtou.',
+          'Svou zprávu smažete ikonou koše pod ní; ostatní místo ní uvidí „Zpráva byla smazána.“',
+          'Nevhodnou zprávu nahlásíte ikonou praporku. Uvidí ji lektoři a správce (jen tu jednu zprávu) a mohou ji skrýt; autor se nedozví, kdo ji nahlásil.',
+          'Ikona „i“ v konverzaci ukáže členy a nabídne „Ztlumit“ — bez upozornění do zařízení a bez počítání do čísla v hlavičce.',
+          'Skupinu přejmenovává a členy přidává nebo odebírá ten, kdo ji založil. „Opustit skupinu“ může kdokoli; odejde-li zakladatel, správu převezme další člen.',
+          'Na novou zprávu přijde upozornění do zařízení, máte-li ho zapnuté (druh „Nové zprávy v chatu“). Do zvonku chatové zprávy nechodí.',
         ],
       },
     ],
@@ -456,7 +495,7 @@ export const HELP_SECTIONS: HelpSection[] = [
       {
         kind: 'list',
         items: [
-          'Zvonek v hlavičce ukazuje zprávy od správce, žádosti a zařazení do třídy, označení v diskuzi, nové ankety, hlášení třídy a celoškolní oznámení.',
+          'Zvonek v hlavičce ukazuje zprávy od správce, žádosti a zařazení do třídy, označení v diskuzi, nové ankety, hlášení třídy a celoškolní oznámení. Zprávy z Chatu do zvonku nechodí — počítá je ikona Chatu.',
           'Upozornění do zařízení zapnete v profilu v části „Upozornění do zařízení“ → „Zapnout v tomto zařízení“. Každé zařízení se zapíná zvlášť; které druhy zpráv chcete dostávat, platí pro všechna.',
           'iPhone a iPad: upozornění fungují jen z aplikace přidané na plochu — v Safari Sdílet → Přidat na plochu a pak aplikaci otevírejte z plochy.',
         ],
@@ -598,6 +637,24 @@ export const HELP_SECTIONS: HelpSection[] = [
           'Správa obsahu → „Správce souborů“: nahrání PDF, Word, PowerPoint a obrázků. Štítky předmětu a třídy určují, kde se soubor ukáže (detail předmětu, nástěnka třídy). Bez štítku je jen v Knihovně.',
           'Správa obsahu → „Banka otázek“: úpravy, hromadný import a tisk otázek. Skryté otázky studenti nevidí, vy ano.',
           'Správa obsahu → „Zpětná vazba“: hlášení od uživatelů, filtr nová/vyřešená, označení jako vyřešené.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'lektor-chat',
+    group: 'lektor',
+    title: 'Nahlášené zprávy v chatu',
+    summary: 'Jak vyřídit zprávu, kterou někdo nahlásil.',
+    tab: 'chat',
+    blocks: [
+      {
+        kind: 'list',
+        items: [
+          'O nové nahlášené zprávě přijde lektorům a správci oznámení do zvonku.',
+          'V záložce Chat stiskněte „Nahlášené“. Vidíte nahlášenou zprávu, autora, kdo ji nahlásil a proč — zbytek konverzace ne.',
+          '„Skrýt zprávu“ smaže její text všem v konverzaci, „Ponechat“ nahlášení jen uzavře. „I vyřízené“ ukáže i starší vyřízená nahlášení.',
+          'Smaže-li autor nahlášenou zprávu sám, její text zůstane pro vás uložený, dokud nahlášení nevyřídíte.',
         ],
       },
     ],

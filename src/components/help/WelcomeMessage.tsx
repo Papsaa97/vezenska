@@ -71,14 +71,15 @@ export default function WelcomeMessage({ onClose, onOpenGuide }: WelcomeMessageP
       text:
         'Nástěnka ukazuje vaši třídu, rozvrh, služby a oznámení. V Předmětech je učivo, ve Zkoušce procvičování ' +
         'i zkouška nanečisto. Další moduly (Kompas zákonů, scénáře, zbraně, kartičky, statistiky, knihovna…) ' +
-        'najdete v nabídkách v hlavičce, na telefonu pod „Výcvik“ a „Více“. Zvonek v hlavičce hlásí novinky.',
+        'najdete v nabídkách v hlavičce, na telefonu pod „Výcvik“ a „Více“. Zvonek v hlavičce hlásí novinky, ' +
+        'ikona se dvěma bublinami otevře Chat se spolužáky, veliteli a lektory.',
     },
     {
       icon: CircleHelp,
       title: 'Nápověda je kdykoli po ruce',
       text:
         'Otazník v hlavičce otevře podrobný návod. Najdete-li chybu nebo vám něco chybí, napište přes ikonu ' +
-        'Zpětná vazba (bublina v hlavičce).',
+        'Zpětná vazba (jedna bublina v hlavičce).',
     },
   ];
 
