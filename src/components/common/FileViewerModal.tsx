@@ -28,6 +28,8 @@ interface FileViewerModalProps {
   material: StudyMaterial | null;
   isOpen: boolean;
   onClose: () => void;
+  /** Kbelík úložiště; výchozí jsou studijní materiály (chat má vlastní). */
+  bucket?: string;
 }
 
 /**
@@ -38,7 +40,7 @@ interface FileViewerModalProps {
  * (viz documentPreview.ts). Nikam ven se přitom neposílá nic: interní materiály
  * Vězeňské služby nemají co dělat v cizí online prohlížečce dokumentů.
  */
-export default function FileViewerModal({ material, isOpen, onClose }: FileViewerModalProps) {
+export default function FileViewerModal({ material, isOpen, onClose, bucket = MATERIALS_BUCKET }: FileViewerModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
@@ -86,7 +88,7 @@ export default function FileViewerModal({ material, isOpen, onClose }: FileViewe
 
     (async () => {
       const { data, error: dlError } = await supabase.storage
-        .from(MATERIALS_BUCKET)
+        .from(bucket)
         .download(storagePath);
 
       if (cancelled) return;
@@ -137,7 +139,7 @@ export default function FileViewerModal({ material, isOpen, onClose }: FileViewe
     return () => {
       cancelled = true;
     };
-  }, [isOpen, storagePath, kind, releasePreview]);
+  }, [isOpen, storagePath, kind, releasePreview, bucket]);
 
   // Zavřením prohlížeče se uvolní object URL — jinak by se s každým otevřením
   // dalšího souboru držel v paměti obsah všech předchozích.
@@ -150,7 +152,7 @@ export default function FileViewerModal({ material, isOpen, onClose }: FileViewe
   const handleDownload = async () => {
     if (!material) return;
     setDownloading(true);
-    const err = await downloadMaterial(material);
+    const err = await downloadMaterial(material, bucket);
     if (err) setError(err);
     setDownloading(false);
   };

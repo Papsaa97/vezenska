@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useId, useState } from 'react';
 import { Check, EyeOff, Loader2, RefreshCw } from 'lucide-react';
 import { ChatReport, fetchReports, formatChatTime, resolveReport } from '../../utils/chat';
+import FileViewerModal from '../common/FileViewerModal';
+import { AttachmentBlock, OpenFileHandler, SharedItemCard } from './MessageExtras';
+import type { StudyMaterial } from '../../utils/materials';
 
 interface ReportsPanelProps {
   /** Počet otevřených nahlášení se změnil (číslo u tlačítka v hlavičce záložky). */
@@ -9,7 +12,7 @@ interface ReportsPanelProps {
 
 /**
  * Nahlášené zprávy pro lektory a správce. Vidí jen samotnou nahlášenou
- * zprávu, ne zbytek konverzace. „Skrýt zprávu“ smaže její text všem,
+ * zprávu, ne zbytek konverzace. „Skrýt zprávu“ smaže její text i přílohu všem,
  * „Ponechat“ nahlášení jen uzavře.
  */
 export default function ReportsPanel({ onOpenCountChange }: ReportsPanelProps) {
@@ -19,6 +22,8 @@ export default function ReportsPanel({ onOpenCountChange }: ReportsPanelProps) {
   const [loading, setLoading] = useState<boolean>(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [viewer, setViewer] = useState<{ material: StudyMaterial; bucket: string } | null>(null);
+  const openFile: OpenFileHandler = (material, bucket) => setViewer({ material, bucket });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -97,10 +102,14 @@ export default function ReportsPanel({ onOpenCountChange }: ReportsPanelProps) {
             <div className="text-xs text-slate-500 dark:text-slate-400">
               {r.conversation} · {r.authorName} · {formatChatTime(r.messageAt)}
             </div>
+            {r.attachment && <AttachmentBlock attachment={r.attachment} onOpenFile={openFile} />}
+            {r.share && <SharedItemCard share={r.share} onOpenFile={openFile} />}
             <p className="text-sm text-slate-900 dark:text-slate-100 whitespace-pre-wrap break-words">
-              {r.text ? r.text : <em className="text-slate-500">Text zprávy už není uložený.</em>}
-              {r.messageDeleted && r.text && (
-                <span className="block text-xs text-slate-500 mt-1">Autor zprávu mezitím smazal; text je tu jen pro vás.</span>
+              {r.text
+                ? r.text
+                : !r.attachment && !r.share && <em className="text-slate-500">Text zprávy už není uložený.</em>}
+              {r.messageDeleted && (r.text || r.attachment || r.share) && (
+                <span className="block text-xs text-slate-500 mt-1">Autor zprávu mezitím smazal; obsah je tu jen pro vás.</span>
               )}
             </p>
             <p className="text-xs text-slate-600 dark:text-slate-300">
@@ -134,6 +143,12 @@ export default function ReportsPanel({ onOpenCountChange }: ReportsPanelProps) {
           </article>
         ))}
       </div>
+      <FileViewerModal
+        material={viewer?.material ?? null}
+        bucket={viewer?.bucket}
+        isOpen={viewer !== null}
+        onClose={() => setViewer(null)}
+      />
     </div>
   );
 }

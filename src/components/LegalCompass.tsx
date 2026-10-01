@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { Scale, BookOpen, ClipboardCheck, Printer, CheckCircle2, Info, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { legalDatabase } from '../data/legalCompasData';
+import { compassTargetFromHash } from '../utils/chatShare';
 import { RegulationDocument, VscrRegulation, VSCR_REGULATIONS_REGISTRY } from '../data/vscrRegulationsRegistry';
 import { NAV_TAB_LABELS } from '../data/navTabs';
 import {
@@ -571,6 +572,42 @@ export default function LegalCompass() {
       zruseno = true;
     };
   }, []);
+
+  // Odkaz z chatu: #compass/predpis/<id> ukáže předpis v registru,
+  // #compass/clanek/<id> otevře ustanovení. Adresa se pak vrátí na #compass.
+  const [hashTarget, setHashTarget] = useState(() => compassTargetFromHash(window.location.hash));
+  useEffect(() => {
+    const onHashChange = () => {
+      const target = compassTargetFromHash(window.location.hash);
+      if (target) setHashTarget(target);
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+  useEffect(() => {
+    if (!hashTarget) return;
+    if (hashTarget.druh === 'clanek') {
+      if (legalDatabase.some((a) => a.id === hashTarget.id)) {
+        stopReading();
+        setViewMode('articles');
+        setArticleSearchQuery('');
+        setSelectedCategory('all');
+        setSelectedArticleId(hashTarget.id);
+        setMobileDetailOpen(true);
+      }
+    } else {
+      const reg = regulationsList.find((r) => r.id === hashTarget.id);
+      // Vlastní předpisy lektorů se načítají ze serveru; počkat na ně.
+      if (!reg) return;
+      stopReading();
+      setViewMode('registry');
+      setSelectedRegistryType('all');
+      setRegistrySearchQuery(reg.code);
+      setMobileDetailOpen(false);
+    }
+    setHashTarget(null);
+    window.history.replaceState(null, '', '#compass');
+  }, [hashTarget, regulationsList, stopReading]);
 
   // Escape zavírají samy dialogy (hooks/useDialog) — globální posluchač tu
   // dřív zavíral okno podruhé a přebíjel pořadí, které si dialogy hlídají.

@@ -10,6 +10,8 @@ import ConfirmDialog from './common/ConfirmDialog';
 import { DISTINCTION_PERCENT, MIN_XP_PERCENT, PASS_PERCENT } from '../constants/grading';
 import { quizSessionXp } from '../utils/gamification';
 import { buildMasteryMap, masteryOf, orderForPractice, subjectReadiness } from '../utils/questionMastery';
+import ShareToChatButton from './chat/ShareToChatButton';
+import { shareQuestion } from '../utils/chatShare';
 
 const SUBJECT_ORDER: readonly string[] = Object.values(subjectsMeta).map(info => info.name);
 
@@ -1154,6 +1156,11 @@ export default function Quiz({
                               }`}>
                                 {answers[q.id] === undefined ? 'Nezodpovězeno' : isWrong ? 'Chybná odpověď' : 'Správně zodpovězeno'}
                               </span>
+                              <ShareToChatButton
+                                compact
+                                label={`Poslat otázku ${index + 1} do chatu`}
+                                getShare={() => shareQuestion(q)}
+                              />
                             </div>
                           </div>
 
@@ -1446,6 +1453,9 @@ export default function Quiz({
                         </p>
                         <div className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">
                           {currentQ.source}
+                        </div>
+                        <div className="mt-3">
+                          <ShareToChatButton getShare={() => shareQuestion(currentQ)} label="Poslat tuto otázku do chatu" />
                         </div>
                       </motion.div>
                     )}

@@ -36,6 +36,8 @@ import {
   writeScoped,
   writeScopedRaw,
 } from '../utils/userScopedStorage';
+import ShareToChatButton from './chat/ShareToChatButton';
+import { shareQuestion } from '../utils/chatShare';
 
 /** Klíče postupu v Leitnerově drilu (v úložišti se doplní id účtu). */
 const LEITNER_BOXES_KEY = 'vscr_leitner_boxes';
@@ -460,8 +462,8 @@ export default function Flashcards({
       // na ní) dřív nefungovaly, protože se tu vracelo u každého tlačítka.
       const onCard = Boolean(target?.closest('[data-flashcard="true"]'));
       if (onCard && (e.code === 'Space' || e.key === 'Enter')) return;
-      // Prvky, které si klávesy obsluhují samy.
-      if (!onCard && target?.closest('input, textarea, select, button, a[href], [role="button"], [contenteditable="true"]')) {
+      // Prvky, které si klávesy obsluhují samy (a otevřený dialog, např. Poslat do chatu).
+      if (!onCard && target?.closest('input, textarea, select, button, a[href], [role="button"], [contenteditable="true"], [role="dialog"]')) {
         return;
       }
 
@@ -1050,6 +1052,13 @@ export default function Flashcards({
                 >
                   <ChevronRight className={isLeitnerMode && isFlipped ? 'w-5 h-5' : 'w-6 h-6'} aria-hidden="true" />
                 </button>
+                {currentQuestion && (
+                  <ShareToChatButton
+                    compact
+                    label="Poslat tuto kartičku do chatu"
+                    getShare={() => shareQuestion(currentQuestion)}
+                  />
+                )}
               </div>
               <div className="hidden sm:flex items-center justify-center gap-4 mt-3 text-[0.625rem] text-slate-400 dark:text-slate-600 font-mono no-print">
                 <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500">Space</kbd> otočit</span>
