@@ -25,8 +25,8 @@ function classPoint(role: UserRole): WelcomePoint {
         icon: School,
         title: 'Vaše třída',
         text:
-          'Jako velitel třídy vyřizujete na Nástěnce žádosti o zařazení, můžete do třídy označit nezařazené ' +
-          'studenty, určit si zástupce a vést třídní nástěnku i diskuzi.',
+          'Jako velitel třídy vyřizujete na Nástěnce v panelu „Zařazení“ žádosti o zařazení a můžete do třídy ' +
+          'označit nezařazené studenty. Vedete nástěnku třídy (rozvrh, služby, ústroj), diskuzi a můžete si určit zástupce.',
       };
     case 'lektor':
     case 'admin':
@@ -34,17 +34,17 @@ function classPoint(role: UserRole): WelcomePoint {
         icon: School,
         title: 'Třídy a velitelé',
         text:
-          'Na Nástěnce vidíte všechny třídy. Zařazujete studenty, jmenujete velitele tříd (v každé třídě jeden) ' +
-          'a vidíte seznam nezařazených.',
+          'Na Nástěnce vidíte všechny třídy. V panelu „Zařazení“ přiřazujete studenty do tříd a jmenujete ' +
+          'velitele (v každé třídě jednoho). Novou třídu založíte tlačítkem „Přidat třídu“.',
       };
     default:
       return {
         icon: School,
         title: 'Zařazení do třídy',
         text:
-          'Po zavření této zprávy si vyberete svou třídu. Žádost dostane velitel třídy (nebo lektor) a po ' +
-          'schválení vás zařadí. Třídu pak sami změnit nemůžete — to dělá lektor nebo správce. Nevidíte-li svou ' +
-          'třídu, zvolte „Nevidím zde svou třídu“ a napište, kam patříte.',
+          'Pokud ještě nejste v žádné třídě, po zavření této zprávy si ji vyberete. Žádost dostane velitel třídy ' +
+          '(nebo lektor) a po schválení vás zařadí. Třídu pak sami změnit nemůžete — to dělá lektor nebo správce. ' +
+          'Nevidíte-li svou třídu, zvolte „Nevidím zde svou třídu“ a napište, kam patříte.',
       };
   }
 }
@@ -68,15 +68,15 @@ export default function WelcomeMessage({ onClose, onOpenGuide }: WelcomeMessageP
       icon: Compass,
       title: 'Orientace v aplikaci',
       text:
-        'Nástěnka ukazuje vaši třídu, rozvrh a oznámení. V Předmětech je učivo, ve Zkoušce testy na procvičení ' +
-        'i zkoušku nanečisto. Další moduly (Kompas zákonů, scénáře, kartičky, statistiky, knihovna…) jsou ' +
-        'v nabídce „Další“. Zvonek v hlavičce hlásí novinky.',
+        'Nástěnka ukazuje vaši třídu, rozvrh, služby a oznámení. V Předmětech je učivo, ve Zkoušce procvičování ' +
+        'i zkouška nanečisto. Další moduly (Kompas zákonů, scénáře, zbraně, kartičky, statistiky, knihovna…) ' +
+        'najdete v nabídkách v hlavičce, na telefonu pod „Výcvik“ a „Více“. Zvonek v hlavičce hlásí novinky.',
     },
     {
       icon: CircleHelp,
       title: 'Nápověda je kdykoli po ruce',
       text:
-        'Otazník v hlavičce otevře podrobný návod. Najdete-li chybu nebo něco chybí, napište přes tlačítko ' +
+        'Otazník v hlavičce otevře podrobný návod. Najdete-li chybu nebo vám něco chybí, napište přes ikonu ' +
         'Zpětná vazba (bublina v hlavičce).',
     },
   ];
