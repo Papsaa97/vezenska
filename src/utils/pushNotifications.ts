@@ -9,8 +9,12 @@ import { supabase } from '../lib/supabase';
  * předvolby a odhlášení zařízení při odhlášení z účtu.
  */
 
-/** Druhy upozornění — musí odpovídat CHECK na user_notifications.druh (044). */
-export const PUSH_DRUHY = ['zprava', 'zminka', 'anketa', 'nastenka', 'celoskolni', 'zarazeni'] as const;
+/**
+ * Druhy upozornění — musí odpovídat CHECK na user_notifications.druh (044,
+ * 052) a seznamu v push_ulozit_predvolby. „chat“ = nové zprávy v chatu
+ * (do zvonku nejdou) a lektorům a správcům nahlášené zprávy.
+ */
+export const PUSH_DRUHY = ['zprava', 'zminka', 'anketa', 'nastenka', 'celoskolni', 'zarazeni', 'chat'] as const;
 export type PushDruh = (typeof PUSH_DRUHY)[number];
 
 export const PUSH_DRUH_POPIS: Record<PushDruh, string> = {
@@ -20,6 +24,7 @@ export const PUSH_DRUH_POPIS: Record<PushDruh, string> = {
   nastenka: 'Hlášení, události a rozvrh na nástěnce třídy',
   celoskolni: 'Celoškolní oznámení',
   zarazeni: 'Žádosti a zařazení do třídy',
+  chat: 'Nové zprávy v chatu',
 };
 
 /**

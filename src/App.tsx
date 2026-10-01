@@ -34,6 +34,7 @@ const Statistics           = lazyWithReload(() => import('./components/Statistic
 const MaterialLibrary      = lazyWithReload(() => import('./components/MaterialLibrary'));
 const ContentManager       = lazyWithReload(() => import('./components/ContentManager'));
 const HelpCenter           = lazyWithReload(() => import('./components/help/HelpCenter'));
+const Chat                 = lazyWithReload(() => import('./components/Chat'));
 import { useDialog } from './hooks/useDialog';
 import ConfirmDialog from './components/common/ConfirmDialog';
 import { matchingCategories } from './data/questions/matching';
@@ -60,6 +61,7 @@ import {
   Settings2,
   LayoutDashboard,
   CircleHelp,
+  MessagesSquare,
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord, Question } from './types';
 import {
@@ -847,6 +849,14 @@ export default function App() {
           </div>
         )}
 
+        {activeTab === 'chat' && (
+          <div className="w-full h-full min-h-0 flex flex-col">
+            <div className={`${PAGE_CONTAINER} flex-1 min-h-0 flex flex-col`}>
+              <Chat />
+            </div>
+          </div>
+        )}
+
         {activeTab === 'subjects' && (
           <div className="w-full h-full overflow-y-auto pr-1">
             <div className={PAGE_CONTAINER}>
@@ -1101,7 +1111,7 @@ export default function App() {
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className={`flex flex-1 flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all cursor-pointer ${
-            isMobileMenuOpen || ['dashboard', 'compass', 'flashcards', 'matching', 'badges', 'statistics', 'library', 'content-manager'].includes(activeTab)
+            isMobileMenuOpen || ['dashboard', 'chat', 'compass', 'flashcards', 'matching', 'badges', 'statistics', 'library', 'content-manager'].includes(activeTab)
               ? 'text-indigo-600 dark:text-indigo-400 font-bold' 
               : 'text-slate-400 dark:text-slate-500 hover:text-slate-700'
           }`}
@@ -1177,6 +1187,23 @@ export default function App() {
                 <span className="text-[0.625rem] font-bold px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-400/30 shrink-0">
                   Nástěnka
                 </span>
+              </button>
+
+              {/* Interní chat */}
+              <button
+                type="button"
+                onClick={() => { navigateToTab('chat'); setIsMobileMenuOpen(false); }}
+                className={`w-full p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                  activeTab === 'chat'
+                    ? 'bg-indigo-500/10 border-indigo-500 text-indigo-900 dark:text-indigo-300 font-bold'
+                    : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/60 text-slate-800 dark:text-slate-200'
+                }`}
+              >
+                <div>
+                  <div className="text-xs font-bold">{NAV_TAB_LABELS['chat']}</div>
+                  <div className="text-[0.625rem] text-slate-500">Zprávy spolužákům, velitelům a lektorům</div>
+                </div>
+                <MessagesSquare className="w-5 h-5 text-indigo-500" />
               </button>
 
               {/* Section 1: Výcvik & Trenažéry */}
