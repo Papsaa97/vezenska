@@ -906,7 +906,8 @@ export default function ClassBulletinBoard() {
       </header>
 
       {/* ─── Jídelníček ──────────────────────────────────────────────────── */}
-      <JidelnicekCard canEdit={isPrivileged} />
+      {/* Jídelníček je společný; od migrace 051 ho upraví i velitel kterékoli třídy a jeho zástupce. */}
+      <JidelnicekCard canEdit={canSeeAssignments} />
 
       {/* ─── Celoškolní informace pro všechny ────────────────────────────── */}
       <section className="no-print bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm p-5 sm:p-6 space-y-4">
