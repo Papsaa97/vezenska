@@ -10,6 +10,8 @@ import PWAInstallPrompt from './components/PWAInstallPrompt';
 import PasswordRecoveryModal from './components/PasswordRecoveryModal';
 import UpdatePrompt from './components/UpdatePrompt';
 import FeedbackButton from './components/FeedbackButton';
+import WelcomeMessage from './components/help/WelcomeMessage';
+import { useWelcomeSeen } from './hooks/useWelcomeSeen';
 import { fetchQuizQuestionsFromSupabase } from './utils/quizQuestionsLoader';
 import { lazyWithReload } from './utils/lazyWithReload';
 import { PAGE_CONTAINER, PAGE_CONTAINER_FILL } from './constants/layout';
@@ -31,6 +33,7 @@ const BadgesView           = lazyWithReload(() => import('./components/BadgesVie
 const Statistics           = lazyWithReload(() => import('./components/Statistics'));
 const MaterialLibrary      = lazyWithReload(() => import('./components/MaterialLibrary'));
 const ContentManager       = lazyWithReload(() => import('./components/ContentManager'));
+const HelpCenter           = lazyWithReload(() => import('./components/help/HelpCenter'));
 import { useDialog } from './hooks/useDialog';
 import ConfirmDialog from './components/common/ConfirmDialog';
 import { matchingCategories } from './data/questions/matching';
@@ -56,6 +59,7 @@ import {
   BookOpen,
   Settings2,
   LayoutDashboard,
+  CircleHelp,
 } from 'lucide-react';
 import { QuizSessionRecord, MatchingRecord, Question } from './types';
 import {
@@ -120,6 +124,23 @@ export default function App() {
   const [flashcardPresetSubject, setFlashcardPresetSubject] = useState<string | undefined>(undefined);
   const [customQuestions, setCustomQuestions] = useState<Question[] | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+
+  // Nápověda (otazník v hlavičce) a úvodní zpráva po prvním přihlášení.
+  // Úvodní zpráva se ukáže jednou za účet; „Zobrazit znovu“ v nápovědě ji
+  // otevře ručně (welcomeReopened), aniž by se měnil uložený stav.
+  const [helpOpen, setHelpOpen] = useState<boolean>(false);
+  const [helpSection, setHelpSection] = useState<string | undefined>(undefined);
+  const [welcomeReopened, setWelcomeReopened] = useState<boolean>(false);
+  const { seen: welcomeSeen, markSeen: markWelcomeSeen } = useWelcomeSeen();
+  const showWelcome = Boolean(user) && !authLoading && (welcomeReopened || !welcomeSeen);
+  const closeWelcome = useCallback(() => {
+    setWelcomeReopened(false);
+    markWelcomeSeen();
+  }, [markWelcomeSeen]);
+  const openHelp = useCallback((sectionId?: string) => {
+    setHelpSection(sectionId);
+    setHelpOpen(true);
+  }, []);
 
   // Escape, past na fokus a jeho návrat — viz hooks/useDialog. Ref patří na
   // samotný panel, ne na ztmavené pozadí: past se má týkat jen ovládacích
@@ -760,6 +781,7 @@ export default function App() {
           onGoBack={handleGoBack}
           onGoForward={handleGoForward}
           availableSubjects={availableSubjects}
+          onOpenHelp={() => openHelp()}
         />
         <OfflineBanner
           pendingResultCount={pendingResults.length}
@@ -773,7 +795,32 @@ export default function App() {
       <PasswordRecoveryModal />
       <UpdatePrompt />
       {/* Povinná volba třídy po registraci a potvrzení nominace od velitele. */}
-      <ClassMembershipGate />
+      <ClassMembershipGate suspended={showWelcome || helpOpen} />
+      {showWelcome && (
+        <WelcomeMessage
+          onClose={closeWelcome}
+          onOpenGuide={() => {
+            closeWelcome();
+            openHelp('zaciname');
+          }}
+        />
+      )}
+      {helpOpen && (
+        <Suspense fallback={null}>
+          <HelpCenter
+            initialSectionId={helpSection}
+            onClose={() => setHelpOpen(false)}
+            onNavigate={(tab) => {
+              setHelpOpen(false);
+              navigateToTab(tab);
+            }}
+            onShowWelcome={() => {
+              setHelpOpen(false);
+              setWelcomeReopened(true);
+            }}
+          />
+        </Suspense>
+      )}
       <FeedbackButton screenLabel={NAV_TAB_LABELS[activeTab] ?? activeTab} />
       
       <main
@@ -1320,6 +1367,18 @@ export default function App() {
                   )}
                 </div>
               </div>
+
+              <button
+                type="button"
+                onClick={() => { setIsMobileMenuOpen(false); openHelp(); }}
+                className="w-full p-3 rounded-2xl border text-left cursor-pointer flex items-center justify-between bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/60 text-slate-800 dark:text-slate-200"
+              >
+                <div>
+                  <div className="text-xs font-bold">Nápověda a návod</div>
+                  <div className="text-[0.625rem] text-slate-500">Jak aplikace funguje, třídy, role</div>
+                </div>
+                <CircleHelp className="w-5 h-5 text-slate-500" />
+              </button>
             </motion.div>
           </>
         )}
