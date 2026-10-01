@@ -453,7 +453,7 @@ function normalizeStoppageDrill(value: unknown): StoppageDrill | null {
   };
 }
 
-function normalizeJidelnicek(value: unknown): Jidelnicek | null {
+export function normalizeJidelnicek(value: unknown): Jidelnicek | null {
   const raw = record(value);
   if (!raw) return null;
   const id = str(raw.id).trim();
