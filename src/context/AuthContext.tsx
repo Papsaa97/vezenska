@@ -480,7 +480,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = useCallback(
     async (email: string, password: string, fullName: string, captchaToken?: string) => {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -489,20 +489,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       });
 
-      if (!error && data.user) {
-        await supabase.from('profiles').upsert(
-          {
-            id: data.user.id,
-            email,
-            full_name: fullName,
-            role: 'student',
-            // Bez třídy. Registrace nemá jak vědět, do které třídy člověk nastupuje;
-            // dosazená „ZOP A11“ se pak tvářila jako jeho skutečné zařazení.
-          },
-          { onConflict: 'id' }
-        );
-      }
-
+      // Profil tu klient nezakládá. Udělá to trigger on_auth_user_created
+      // (handle_new_user) se jménem z user_metadata, a to i bez session. Dřívější
+      // upsert odsud šel při zapnutém potvrzování e-mailu jako nepřihlášený
+      // (anon) a v logu končil chybou „permission denied for function
+      // is_admin“ (401). Chybí-li profil přesto, doplní ho loadProfile.
       return { error };
     },
     []

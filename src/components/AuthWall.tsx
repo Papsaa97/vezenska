@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-import { MIN_PASSWORD_LENGTH, translateAuthError, weakPasswordNotice } from '../constants/auth';
+import { MIN_PASSWORD_LENGTH, passwordProblem, translateAuthError, weakPasswordNotice } from '../constants/auth';
 import CaptchaWidget, { isCaptchaConfigured, type CaptchaWidgetHandle } from './CaptchaWidget';
 import {
   isBiometricsSupported,
@@ -134,6 +134,11 @@ export default function AuthWall({ isDarkMode }: AuthWallProps) {
       }
       if (password !== confirmPassword) {
         setErrorMsg('Zadaná hesla se neshodují. Zkontrolujte prosím obě pole.');
+        return;
+      }
+      const weak = passwordProblem(password);
+      if (weak) {
+        setErrorMsg(weak);
         return;
       }
     }
@@ -454,7 +459,7 @@ export default function AuthWall({ isDarkMode }: AuthWallProps) {
                         Požadavky na heslo:
                       </div>
                       <p className="text-[0.6875rem] text-slate-400">• Minimální délka je {MIN_PASSWORD_LENGTH} znaků</p>
-                      <p className="text-[0.6875rem] text-slate-400">• Doporučujeme kombinaci velkých a malých písmen a číslic</p>
+                      <p className="text-[0.6875rem] text-slate-400">• Musí obsahovat malé i velké písmeno a číslici</p>
                       <p className="text-[0.6875rem] text-slate-300 font-medium">• Musí obsahovat alespoň jeden speciální znak (např. <span className="font-mono">!@#$%^&*</span>)</p>
                       <p className="text-[0.6875rem] text-slate-400">• Heslo je bezpečně šifrováno v Supabase Auth</p>
                     </div>

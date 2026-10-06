@@ -489,7 +489,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         kind: 'list',
         items: [
           'Profil otevřete kliknutím na své jméno vpravo v hlavičce → „Upravit profil“.',
-          'Můžete změnit fotku (vlastní nebo služební avatar), jméno, velikost zobrazení a heslo (alespoň 12 znaků).',
+          'Můžete změnit fotku (vlastní nebo služební avatar), jméno, velikost zobrazení a heslo (alespoň 12 znaků, malé i velké písmeno, číslice a speciální znak).',
           'E-mail a roli sami změnit nemůžete. Třídu mění jen lektor nebo správce.',
           'Velikost zobrazení se uloží k účtu a platí na všech zařízeních. Světlý a tmavý režim se pamatuje jen v daném prohlížeči.',
           'Zapomenuté heslo: na přihlašovací stránce „Zapomněli jste heslo?“ — odkaz přijde e-mailem (zkontrolujte i nevyžádanou poštu).',

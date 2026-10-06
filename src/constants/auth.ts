@@ -23,6 +23,30 @@ export const ROLE_LABELS: Record<UserRole, string> = {
  */
 export const MIN_PASSWORD_LENGTH = 12;
 
+/**
+ * Supabase (Authentication → Providers → Email → Password requirements) je
+ * nastavený na „malá i velká písmena, číslice a symboly“. Server tedy odmítne
+ * heslo, kterému chybí kterákoli ze čtyř skupin — formulář to dřív jen
+ * „doporučoval“ a lidé se o skutečném požadavku dozvěděli až z odmítnuté
+ * registrace (v logu Auth opakovaně). Kontrola tady je jen předběžná, aby
+ * se nemusela znovu řešit captcha; rozhoduje server.
+ */
+export const PASSWORD_REQUIREMENTS_TEXT =
+  'malé i velké písmeno, číslici a speciální znak (např. !@#$%&*)';
+
+/** Vrátí českou výtku k heslu, nebo null, když splňuje pravidla serveru. */
+export function passwordProblem(password: string): string | null {
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return `Heslo musí mít alespoň ${MIN_PASSWORD_LENGTH} znaků.`;
+  }
+  const missing: string[] = [];
+  if (!/[a-z]/.test(password)) missing.push('malé písmeno');
+  if (!/[A-Z]/.test(password)) missing.push('velké písmeno');
+  if (!/[0-9]/.test(password)) missing.push('číslici');
+  if (!/[^a-zA-Z0-9]/.test(password)) missing.push('speciální znak (např. !@#$%&*)');
+  return missing.length > 0 ? `Heslo musí obsahovat ještě: ${missing.join(', ')}.` : null;
+}
+
 /** Tvar chyby, se kterou pracuje překlad hlášek. */
 export interface TranslatableAuthError {
   message: string;
@@ -43,11 +67,18 @@ export function translateAuthError(error: TranslatableAuthError): string {
   // Slabé heslo hlásí server ve dvou situacích: při registraci nového hesla
   // a při přihlášení účtu, jehož stávající heslo nesplňuje zpřísněné
   // požadavky. Délku bereme z odpovědi, ne z konstanty.
-  if (error.code === 'weak_password' || msg.includes('Password should be at least')) {
+  if (
+    error.code === 'weak_password'
+    || msg.includes('Password should be at least')
+    || msg.includes('Password should contain')
+  ) {
+    if (/contain at least one character/i.test(msg)) {
+      return `Heslo musí obsahovat ${PASSWORD_REQUIREMENTS_TEXT}.`;
+    }
     const required = msg.match(/at least (\d+)/)?.[1];
     return required
       ? `Heslo musí mít alespoň ${required} znaků.`
-      : 'Heslo nesplňuje požadavky na sílu. Zvolte delší heslo s číslicemi a velkými i malými písmeny.';
+      : `Heslo nesplňuje požadavky na sílu. Musí mít alespoň ${MIN_PASSWORD_LENGTH} znaků a obsahovat ${PASSWORD_REQUIREMENTS_TEXT}.`;
   }
 
   // Ochrana proti robotům. Server ji vyžaduje, ale rozhoduje, jestli ji
