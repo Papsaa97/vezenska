@@ -255,6 +255,8 @@ export interface ChatMessage {
   /** Jen u vlastních zpráv: kolik členů zprávu přečetlo a kolik ji mělo dostat. */
   readCount: number | null;
   recipientCount: number | null;
+  /** Databáze už má migraci 056 (odpověď a úprava zprávy); bez ní tlačítka nenabízíme. */
+  repliesSupported: boolean;
 }
 
 export interface ChatMember {
@@ -481,6 +483,7 @@ export async function fetchMessages(conversationId: string, before?: string): Pr
           : null,
         readCount: typeof r.precetlo === 'number' ? r.precetlo : null,
         recipientCount: typeof r.prijemcu === 'number' ? r.prijemcu : null,
+        repliesSupported: 'upraveno' in r,
       }))
       .reverse(),
     error: null,

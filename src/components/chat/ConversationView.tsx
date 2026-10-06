@@ -703,7 +703,7 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, myP
                         m.readCount > 0 && <span>· Přečteno</span>
                       )
                     )}
-                    {!m.deleted && canWrite && (
+                    {!m.deleted && canWrite && m.repliesSupported && (
                       <button
                         type="button"
                         onClick={() => startReply(m)}
@@ -714,7 +714,7 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, myP
                         <Reply className="w-3.5 h-3.5" aria-hidden="true" />
                       </button>
                     )}
-                    {canWrite && canEditMessage(m, now) && m.text.trim() !== '' && (
+                    {canWrite && m.repliesSupported && canEditMessage(m, now) && m.text.trim() !== '' && (
                       <button
                         type="button"
                         onClick={() => startEdit(m)}
