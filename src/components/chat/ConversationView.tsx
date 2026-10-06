@@ -13,7 +13,7 @@ import {
   CHAT_ROLE_LABEL,
   ChatConversation,
   ChatMessage,
-  announceUnreadChanged,
+  announceChatChanged,
   checkAttachment,
   deleteMessage,
   fetchMessages,
@@ -21,7 +21,9 @@ import {
   markRead,
   removeAttachment,
   sendMessage,
+  splitMessageLinks,
   uploadAttachment,
+  withAttachmentName,
 } from '../../utils/chat';
 
 interface ConversationViewProps {
@@ -29,8 +31,6 @@ interface ConversationViewProps {
   /** Zpět na seznam (jen na telefonu, kde se seznam a konverzace střídají). */
   onBack: () => void;
   onOpenInfo: () => void;
-  /** Odeslaná nebo smazaná zpráva — seznam konverzací se načte znovu. */
-  onActivity: () => void;
 }
 
 /** Jak často se otevřená konverzace načte znovu, když je stránka vidět. */
@@ -42,6 +42,35 @@ function memberWord(count: number): string {
   if (count === 1) return 'člen';
   if (count >= 2 && count <= 4) return 'členové';
   return 'členů';
+}
+
+/** Text zprávy s klikacími odkazy http(s); odkaz se otevře v nové kartě. */
+function MessageText({ text, mine }: { text: string; mine: boolean }) {
+  return (
+    <>
+      {splitMessageLinks(text).map((part, i) =>
+        part.kind === 'link' ? (
+          <a
+            // Úseky vznikají z neměnného textu, pořadí jako klíč stačí.
+            key={i}
+            href={part.text}
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            className={`underline underline-offset-2 break-all ${mine ? 'decoration-white/70' : 'text-indigo-700 dark:text-indigo-300'}`}
+          >
+            {part.text}
+          </a>
+        ) : (
+          <React.Fragment key={i}>{part.text}</React.Fragment>
+        )
+      )}
+    </>
+  );
+}
+
+/** Nese přetahovaná věc soubor (ne třeba označený text)? */
+function dragHasFiles(event: DragEvent): boolean {
+  return Array.from(event.dataTransfer?.types ?? []).includes('Files');
 }
 
 function dayLabel(iso: string): string {
@@ -59,7 +88,7 @@ function dayLabel(iso: string): string {
  * Nové zprávy se načítají každých pár sekund; rodič komponentu klíčuje id
  * konverzace, takže se stav při přepnutí sám vynuluje.
  */
-export default function ConversationView({ conversation, onBack, onOpenInfo, onActivity }: ConversationViewProps) {
+export default function ConversationView({ conversation, onBack, onOpenInfo }: ConversationViewProps) {
   const composerId = useId();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -72,14 +101,24 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
   const [deleting, setDeleting] = useState<boolean>(false);
   const [reportTarget, setReportTarget] = useState<ChatMessage | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [dragOver, setDragOver] = useState<boolean>(false);
   const [viewer, setViewer] = useState<{ material: StudyMaterial; bucket: string } | null>(null);
+  /** První zpráva, která byla při otevření nepřečtená (před ní čára „Nové zprávy“). */
+  const [firstUnreadId, setFirstUnreadId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const rootRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const dividerRef = useRef<HTMLDivElement>(null);
   /** Uživatel je u konce konverzace — nová zpráva ho má posunout dolů. */
   const stickToBottomRef = useRef<boolean>(true);
   /** Výška obsahu před načtením starších zpráv (aby obraz neposkočil). */
   const restoreFromHeightRef = useRef<number | null>(null);
+  /** Po prvním načtení posunout na čáru „Nové zprávy“ místo na konec. */
+  const scrollToDividerRef = useRef<boolean>(false);
+  /** Kolik zpráv bylo nepřečtených při otevření (číslo ze seznamu konverzací). */
+  const unreadAtOpenRef = useRef<number>(conversation.unread);
   const lastMarkedRef = useRef<string | null>(null);
   const firstLoadRef = useRef<boolean>(true);
 
@@ -97,6 +136,14 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
     if (firstLoadRef.current) {
       firstLoadRef.current = false;
       setHasOlder(latest.length >= PAGE_SIZE);
+      // Nepřečtené jsou vždy ty nejnovější cizí zprávy (server počítá cizí,
+      // nesmazané zprávy po posledním přečtení).
+      const unread = unreadAtOpenRef.current;
+      const others = latest.filter((m) => !m.mine && !m.deleted);
+      if (unread > 0 && others.length > 0) {
+        setFirstUnreadId(others[Math.max(0, others.length - unread)].id);
+        scrollToDividerRef.current = true;
+      }
     }
     setMessages((prev) => {
       const ids = new Set(latest.map((m) => m.id));
@@ -107,8 +154,11 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
     const newest = latest[latest.length - 1];
     if (newest && newest.id !== lastMarkedRef.current) {
       lastMarkedRef.current = newest.id;
-      const marked = await markRead(conversationId);
-      if (!marked.error) announceUnreadChanged();
+      // Vlastní zprávu označil za přečtenou už server při odeslání.
+      if (!newest.mine) {
+        const marked = await markRead(conversationId);
+        if (!marked.error) announceChatChanged();
+      }
     }
   }, [conversationId]);
 
@@ -135,8 +185,27 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
       restoreFromHeightRef.current = null;
       return;
     }
+    if (scrollToDividerRef.current && dividerRef.current) {
+      scrollToDividerRef.current = false;
+      el.scrollTop += dividerRef.current.getBoundingClientRect().top - el.getBoundingClientRect().top - 8;
+      stickToBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+      return;
+    }
     if (stickToBottomRef.current) el.scrollTop = el.scrollHeight;
-  }, [newestId, messages.length]);
+  }, [newestId, messages.length, firstUnreadId]);
+
+  // Obrázek se načte až po vykreslení a obsah naroste: kdo byl u konce
+  // konverzace, zůstane u konce (jinak by poslední zprávu měl schovanou).
+  useEffect(() => {
+    const el = scrollRef.current;
+    const content = contentRef.current;
+    if (!el || !content || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => {
+      if (stickToBottomRef.current && !scrollToDividerRef.current) el.scrollTop = el.scrollHeight;
+    });
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, []);
 
   const onScroll = () => {
     const el = scrollRef.current;
@@ -166,19 +235,75 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
 
   const openFile: OpenFileHandler = (material, bucket) => setViewer({ material, bucket });
 
-  const pickFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] ?? null;
-    // Stejný soubor jde vybrat znovu jen s vynulovanou hodnotou.
-    event.target.value = '';
-    if (!file) return;
+  /** Soubor z výběru, ze schránky nebo přetažený: ověřit a připravit k odeslání. */
+  const acceptFile = (file: File, more = false) => {
     const invalid = checkAttachment(file);
     if (invalid) {
       setError(invalid);
       return;
     }
-    setError(null);
+    setError(more ? 'Ke zprávě jde přiložit jeden soubor — přiložil se první z vybraných.' : null);
     setPendingFile(file);
   };
+
+  const pickFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    // Stejný soubor jde vybrat znovu jen s vynulovanou hodnotou.
+    event.target.value = '';
+    if (file) acceptFile(file);
+  };
+
+  const onComposerPaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    // Snímek obrazovky (Ctrl+V) se přiloží jako soubor. Kopie z Wordu nese
+    // vedle textu i obrázek textu — tehdy se vloží jen text.
+    const file = event.clipboardData.files[0];
+    if (!file || event.clipboardData.getData('text/plain') || sending) return;
+    event.preventDefault();
+    acceptFile(withAttachmentName(file));
+  };
+
+  // Přetažený soubor: posluchač níže volá vždy nejnovější verzi (stav `sending`).
+  const dropFilesRef = useRef<(files: FileList) => void>(() => undefined);
+  useEffect(() => {
+    dropFilesRef.current = (files) => {
+      if (files.length === 0 || sending) return;
+      acceptFile(withAttachmentName(files[0]), files.length > 1);
+    };
+  });
+
+  // Přetažení souboru myší do konverzace. Je to pohodlí navíc pro počítač —
+  // z klávesnice a na telefonu slouží sponka a vložení ze schránky — proto
+  // posluchače přímo na prvku, ne obslužné atributy, které by z obalu
+  // konverzace dělaly ovládací prvek bez role.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const onDragOver = (event: DragEvent) => {
+      if (!dragHasFiles(event)) return;
+      event.preventDefault();
+      if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+      setDragOver(true);
+    };
+    const onDragLeave = (event: DragEvent) => {
+      // Přechod na vnořený prvek není odchod z konverzace.
+      if (event.relatedTarget instanceof Node && root.contains(event.relatedTarget)) return;
+      setDragOver(false);
+    };
+    const onDrop = (event: DragEvent) => {
+      if (!dragHasFiles(event)) return;
+      event.preventDefault();
+      setDragOver(false);
+      if (event.dataTransfer) dropFilesRef.current(event.dataTransfer.files);
+    };
+    root.addEventListener('dragover', onDragOver);
+    root.addEventListener('dragleave', onDragLeave);
+    root.addEventListener('drop', onDrop);
+    return () => {
+      root.removeEventListener('dragover', onDragOver);
+      root.removeEventListener('dragleave', onDragLeave);
+      root.removeEventListener('drop', onDrop);
+    };
+  }, []);
 
   const send = async () => {
     const trimmed = text.trim();
@@ -208,7 +333,7 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
     setPendingFile(null);
     stickToBottomRef.current = true;
     await loadLatest();
-    onActivity();
+    announceChatChanged();
   };
 
   const onComposerKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -234,7 +359,7 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
     // smazání odmítne a soubor zůstane moderátorům.
     if (target.attachment) void removeAttachment(target.attachment.path);
     await loadLatest();
-    onActivity();
+    announceChatChanged();
   };
 
   const subtitle = conversation.isGroup
@@ -244,7 +369,12 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
       : null;
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div ref={rootRef} className="relative flex flex-col h-full min-h-0">
+      {dragOver && (
+        <div className="absolute inset-0 z-10 m-2 flex items-center justify-center rounded-2xl border-2 border-dashed border-indigo-400 bg-white/90 dark:bg-slate-900/90 text-sm font-semibold text-indigo-700 dark:text-indigo-300 pointer-events-none">
+          Pusťte soubor a přiloží se ke zprávě
+        </div>
+      )}
       <div className="flex items-center gap-2 px-3 sm:px-4 py-3 border-b border-slate-200 dark:border-slate-800">
         <button
           type="button"
@@ -289,106 +419,115 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
       <div
         ref={scrollRef}
         onScroll={onScroll}
-        className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-4 py-3 space-y-1"
+        className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-4 py-3"
         aria-live="polite"
         aria-relevant="additions"
       >
-        {loading && (
-          <div className="flex items-center gap-2 text-sm text-slate-500 p-2">
-            <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> Načítám zprávy…
-          </div>
-        )}
-        {hasOlder && !loading && (
-          <div className="flex justify-center pb-2">
-            <button
-              type="button"
-              onClick={() => void loadOlder()}
-              disabled={loadingOlder}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer disabled:opacity-50"
-            >
-              {loadingOlder ? 'Načítám…' : 'Načíst starší zprávy'}
-            </button>
-          </div>
-        )}
-        {!loading && messages.length === 0 && !error && (
-          <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-8">
-            Zatím tu nejsou žádné zprávy. Napište první.
-          </p>
-        )}
-        {messages.map((m, i) => {
-          const prev = messages[i - 1];
-          const newDay = !prev || new Date(prev.createdAt).toDateString() !== new Date(m.createdAt).toDateString();
-          const showAuthor = conversation.isGroup && !m.mine && (newDay || prev?.authorId !== m.authorId);
-          const roleLabel = m.authorRole && m.authorRole !== 'student' ? CHAT_ROLE_LABEL[m.authorRole] : null;
-          return (
-            <React.Fragment key={m.id}>
-              {newDay && (
-                <div className="flex justify-center py-2">
-                  <span className="text-[0.6875rem] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full">
-                    {dayLabel(m.createdAt)}
-                  </span>
-                </div>
-              )}
-              <div className={`group flex flex-col ${m.mine ? 'items-end' : 'items-start'}`}>
-                {showAuthor && (
-                  <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 px-1 mt-1">
-                    {m.authorName}
-                    {roleLabel && <span className="font-normal text-slate-500"> · {roleLabel}</span>}
-                  </span>
-                )}
-                {!m.deleted && m.attachment && (
-                  <div className={`w-full flex mb-0.5 ${m.mine ? 'justify-end' : 'justify-start'}`}>
-                    <AttachmentBlock attachment={m.attachment} onOpenFile={openFile} />
+        <div ref={contentRef} className="space-y-1">
+          {loading && (
+            <div className="flex items-center gap-2 text-sm text-slate-500 p-2">
+              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> Načítám zprávy…
+            </div>
+          )}
+          {hasOlder && !loading && (
+            <div className="flex justify-center pb-2">
+              <button
+                type="button"
+                onClick={() => void loadOlder()}
+                disabled={loadingOlder}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer disabled:opacity-50"
+              >
+                {loadingOlder ? 'Načítám…' : 'Načíst starší zprávy'}
+              </button>
+            </div>
+          )}
+          {!loading && messages.length === 0 && !error && (
+            <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-8">
+              Zatím tu nejsou žádné zprávy. Napište první.
+            </p>
+          )}
+          {messages.map((m, i) => {
+            const prev = messages[i - 1];
+            const newDay = !prev || new Date(prev.createdAt).toDateString() !== new Date(m.createdAt).toDateString();
+            const showAuthor = conversation.isGroup && !m.mine && (newDay || prev?.authorId !== m.authorId);
+            const roleLabel = m.authorRole && m.authorRole !== 'student' ? CHAT_ROLE_LABEL[m.authorRole] : null;
+            return (
+              <React.Fragment key={m.id}>
+                {newDay && (
+                  <div className="flex justify-center py-2">
+                    <span className="text-[0.6875rem] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full">
+                      {dayLabel(m.createdAt)}
+                    </span>
                   </div>
                 )}
-                {!m.deleted && m.share && (
-                  <div className={`w-full flex mb-0.5 ${m.mine ? 'justify-end' : 'justify-start'}`}>
-                    <SharedItemCard share={m.share} onOpenFile={openFile} />
+                {m.id === firstUnreadId && (
+                  <div ref={dividerRef} className="flex items-center gap-2 py-2">
+                    <span className="flex-1 h-px bg-indigo-200 dark:bg-indigo-900" aria-hidden="true" />
+                    <span className="text-[0.6875rem] font-semibold text-indigo-700 dark:text-indigo-300">Nové zprávy</span>
+                    <span className="flex-1 h-px bg-indigo-200 dark:bg-indigo-900" aria-hidden="true" />
                   </div>
                 )}
-                {(m.deleted || m.text.trim() !== '') && (
-                  <div
-                    className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words ${
-                      m.deleted
-                        ? 'italic text-slate-500 dark:text-slate-400 border border-dashed border-slate-300 dark:border-slate-700'
-                        : m.mine
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100'
-                    }`}
-                  >
-                    {m.deleted ? 'Zpráva byla smazána.' : m.text}
-                  </div>
-                )}
-                <div className="flex items-center gap-1 px-1 text-[0.6875rem] text-slate-500 dark:text-slate-400">
-                  <time dateTime={m.createdAt}>{formatChatTime(m.createdAt)}</time>
-                  {!m.deleted && m.mine && (
-                    <button
-                      type="button"
-                      onClick={() => setConfirmDelete(m)}
-                      aria-label="Smazat zprávu"
-                      title="Smazat zprávu"
-                      className="p-1 rounded text-slate-400 hover:text-red-600 cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
-                    </button>
+                <div className={`group flex flex-col ${m.mine ? 'items-end' : 'items-start'}`}>
+                  {showAuthor && (
+                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 px-1 mt-1">
+                      {m.authorName}
+                      {roleLabel && <span className="font-normal text-slate-500"> · {roleLabel}</span>}
+                    </span>
                   )}
-                  {!m.deleted && !m.mine && !m.reportedByMe && (
-                    <button
-                      type="button"
-                      onClick={() => setReportTarget(m)}
-                      aria-label={`Nahlásit zprávu od ${m.authorName}`}
-                      title="Nahlásit zprávu"
-                      className="p-1 rounded text-slate-400 hover:text-red-600 cursor-pointer"
-                    >
-                      <Flag className="w-3.5 h-3.5" aria-hidden="true" />
-                    </button>
+                  {!m.deleted && m.attachment && (
+                    <div className={`w-full flex mb-0.5 ${m.mine ? 'justify-end' : 'justify-start'}`}>
+                      <AttachmentBlock attachment={m.attachment} onOpenFile={openFile} />
+                    </div>
                   )}
-                  {m.reportedByMe && !m.deleted && <span>· nahlášeno</span>}
+                  {!m.deleted && m.share && (
+                    <div className={`w-full flex mb-0.5 ${m.mine ? 'justify-end' : 'justify-start'}`}>
+                      <SharedItemCard share={m.share} onOpenFile={openFile} />
+                    </div>
+                  )}
+                  {(m.deleted || m.text.trim() !== '') && (
+                    <div
+                      className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words ${
+                        m.deleted
+                          ? 'italic text-slate-500 dark:text-slate-400 border border-dashed border-slate-300 dark:border-slate-700'
+                          : m.mine
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100'
+                      }`}
+                    >
+                      {m.deleted ? 'Zpráva byla smazána.' : <MessageText text={m.text} mine={m.mine} />}
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1 px-1 text-[0.6875rem] text-slate-500 dark:text-slate-400">
+                    <time dateTime={m.createdAt}>{formatChatTime(m.createdAt)}</time>
+                    {!m.deleted && m.mine && (
+                      <button
+                        type="button"
+                        onClick={() => setConfirmDelete(m)}
+                        aria-label="Smazat zprávu"
+                        title="Smazat zprávu"
+                        className="p-1 rounded text-slate-400 hover:text-red-600 cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                      </button>
+                    )}
+                    {!m.deleted && !m.mine && !m.reportedByMe && (
+                      <button
+                        type="button"
+                        onClick={() => setReportTarget(m)}
+                        aria-label={`Nahlásit zprávu od ${m.authorName}`}
+                        title="Nahlásit zprávu"
+                        className="p-1 rounded text-slate-400 hover:text-red-600 cursor-pointer"
+                      >
+                        <Flag className="w-3.5 h-3.5" aria-hidden="true" />
+                      </button>
+                    )}
+                    {m.reportedByMe && !m.deleted && <span>· nahlášeno</span>}
+                  </div>
                 </div>
-              </div>
-            </React.Fragment>
-          );
-        })}
+              </React.Fragment>
+            );
+          })}
+        </div>
       </div>
 
       {error && (
@@ -448,6 +587,7 @@ export default function ConversationView({ conversation, onBack, onOpenInfo, onA
           rows={1}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={onComposerKeyDown}
+          onPaste={onComposerPaste}
           placeholder={pendingFile ? 'Přidejte popisek (nepovinné)…' : 'Napište zprávu…'}
           className="flex-1 min-w-0 resize-none max-h-40 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 field-sizing-content"
         />

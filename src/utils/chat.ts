@@ -13,11 +13,15 @@ import type { StudyMaterial } from './materials';
 const CHAT_FEATURE: MissingFeature = { label: 'Chat', ending: 'ý', migration: '052' };
 const ATTACH_FEATURE: MissingFeature = { label: 'Posílání příloh v chatu', ending: 'é', migration: '054' };
 
-/** Událost: změnil se počet nepřečtených (hlavička si ho načte znovu). */
-export const CHAT_UNREAD_CHANGED_EVENT = 'vscr-chat-neprectene';
+/**
+ * Událost: v chatu se něco změnilo (přečtení, odeslaná nebo smazaná zpráva,
+ * ztlumení, úprava skupiny). Odznak v hlavičce i seznam konverzací si data
+ * načtou hned, ne až při dalším pravidelném obnovení.
+ */
+export const CHAT_CHANGED_EVENT = 'vscr-chat-zmena';
 
-export function announceUnreadChanged(): void {
-  window.dispatchEvent(new Event(CHAT_UNREAD_CHANGED_EVENT));
+export function announceChatChanged(): void {
+  window.dispatchEvent(new Event(CHAT_CHANGED_EVENT));
 }
 
 export const CHAT_MAX_TEXT = 2000;
@@ -75,6 +79,20 @@ export interface ChatAttachment {
 function extensionOf(fileName: string): string {
   const dot = fileName.lastIndexOf('.');
   return dot === -1 ? '' : fileName.slice(dot + 1).toLowerCase();
+}
+
+/**
+ * Soubor vložený ze schránky nebo přetažený: nemá-li známou příponu (Safari
+ * pojmenuje snímek bez ní), dostane jméno podle svého typu.
+ */
+export function withAttachmentName(file: File): File {
+  if (ATTACHMENT_TYPES[extensionOf(file.name)]) return file;
+  const ext = Object.keys(ATTACHMENT_TYPES).find((key) => ATTACHMENT_TYPES[key] === file.type);
+  if (!ext) return file;
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const stamp = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}-${pad(d.getMinutes())}`;
+  return new File([file], `Vložený soubor ${stamp}.${ext}`, { type: file.type, lastModified: file.lastModified });
 }
 
 /** Ověří soubor před nahráním; vrací chybu pro uživatele, nebo null. */
@@ -483,6 +501,39 @@ export function conversationIdFromHash(hash: string): string | null {
   const [tab, id] = hash.replace(/^#/, '').split('/');
   if (tab !== 'chat' || !id) return null;
   return /^[0-9a-f-]{36}$/i.test(id) ? id : null;
+}
+
+/** Přehled nahlášených zpráv; tam vede upozornění lektorům a správcům (migrace 055). */
+export const CHAT_REPORTS_HASH = '#chat/nahlasene';
+
+export function isReportsHash(hash: string): boolean {
+  return hash.replace(/^#/, '') === CHAT_REPORTS_HASH.slice(1);
+}
+
+/** Úsek textu zprávy: prostý text, nebo odkaz. */
+export type ChatTextPart = { kind: 'text'; text: string } | { kind: 'link'; text: string };
+
+const LINK_PATTERN = /\bhttps?:\/\/[^\s<>"]+/gi;
+
+/**
+ * Rozdělí text zprávy na prostý text a odkazy http(s). Tečka, čárka nebo
+ * závorka na konci věty k odkazu nepatří. Jiná schémata (javascript: apod.)
+ * zůstávají prostým textem.
+ */
+export function splitMessageLinks(text: string): ChatTextPart[] {
+  const parts: ChatTextPart[] = [];
+  let last = 0;
+  for (const match of text.matchAll(LINK_PATTERN)) {
+    const start = match.index ?? 0;
+    const url = match[0].replace(/[.,;:!?)\]}'»“”]+$/, '');
+    // Po odříznutí interpunkce musí zbýt aspoň začátek adresy serveru.
+    if (!/^https?:\/\/[^/]/i.test(url)) continue;
+    if (start > last) parts.push({ kind: 'text', text: text.slice(last, start) });
+    parts.push({ kind: 'link', text: url });
+    last = start + url.length;
+  }
+  if (last < text.length) parts.push({ kind: 'text', text: text.slice(last) });
+  return parts;
 }
 
 export function formatChatTime(iso: string): string {

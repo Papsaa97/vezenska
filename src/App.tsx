@@ -603,7 +603,9 @@ export default function App() {
       if (quizGuardActiveRef.current && tabFromHash !== 'quiz') {
         window.history.pushState({ tab: 'quiz' }, '', '#quiz');
         pendingNavigationRef.current = () => {
-          window.history.replaceState({ tab: tabFromHash }, '', `#${tabFromHash}`);
+          // Celá adresa, ne jen záložka: odkaz z upozornění (#chat/<id>)
+          // má po opuštění testu otevřít tu konverzaci, ne jen Chat.
+          window.history.replaceState({ tab: tabFromHash }, '', `#${rawHash}`);
           applyTab(tabFromHash);
         };
         setIsLeaveQuizDialogOpen(true);

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BellOff, Flag, Loader2, MessagesSquare, Plus, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { NAV_TAB_LABELS } from '../data/navTabs';
@@ -7,13 +7,16 @@ import ConversationInfoDialog from './chat/ConversationInfoDialog';
 import NewConversationDialog from './chat/NewConversationDialog';
 import ReportsPanel from './chat/ReportsPanel';
 import {
+  CHAT_CHANGED_EVENT,
+  CHAT_REPORTS_HASH,
   ChatConversation,
-  announceUnreadChanged,
+  announceChatChanged,
   conversationIdFromHash,
   fetchChatAccess,
   fetchConversations,
   fetchReports,
   formatChatTime,
+  isReportsHash,
 } from '../utils/chat';
 
 /** Jak často se seznam konverzací načte znovu, když je stránka vidět. */
@@ -21,8 +24,7 @@ const REFRESH_MS = 15_000;
 
 type Access = 'nacitam' | 'ano' | 'ne';
 
-function setChatHash(conversationId: string | null): void {
-  const target = conversationId ? `#chat/${conversationId}` : '#chat';
+function setChatHash(target: string): void {
   if (window.location.hash !== target) window.history.replaceState(null, '', target);
 }
 
@@ -51,10 +53,18 @@ export default function Chat() {
   const [listLoaded, setListLoaded] = useState<boolean>(false);
   const [listError, setListError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(() => conversationIdFromHash(window.location.hash));
-  const [showReports, setShowReports] = useState<boolean>(false);
-  const [openReports, setOpenReports] = useState<number>(0);
+  const [showReports, setShowReports] = useState<boolean>(() => isReportsHash(window.location.hash));
+  const [openReportCount, setOpenReportCount] = useState<number>(0);
   const [newOpen, setNewOpen] = useState<boolean>(false);
   const [infoOpen, setInfoOpen] = useState<boolean>(false);
+  /**
+   * Pro které vybrané id už seznam (načtený až po výběru) ověřil, zda
+   * konverzace existuje. Dokud ne, ukazuje se „Načítám“, ne „není dostupná“:
+   * právě založená skupina nebo konverzace otevřená z upozornění v dříve
+   * načteném seznamu ještě být nemusí.
+   */
+  const [checkedId, setCheckedId] = useState<string | null>(null);
+  const selectedIdRef = useRef<string | null>(selectedId);
 
   useEffect(() => {
     let active = true;
@@ -73,6 +83,9 @@ export default function Chat() {
   }, []);
 
   const loadConversations = useCallback(async () => {
+    // Které id bylo vybrané při odeslání dotazu: jen seznam načtený po výběru
+    // smí říct, že konverzace neexistuje.
+    const requestedFor = selectedIdRef.current;
     const res = await fetchConversations();
     setListLoaded(true);
     if (res.error) {
@@ -81,39 +94,65 @@ export default function Chat() {
     }
     setListError(null);
     setConversations(res.data ?? []);
+    setCheckedId(requestedFor);
+  }, []);
+
+  // Počet otevřených nahlášení pro tlačítko v hlavičce záložky.
+  const loadReportCount = useCallback(async () => {
+    const res = await fetchReports(false);
+    if (res.data) setOpenReportCount(res.data.length);
   }, []);
 
   useEffect(() => {
     if (access !== 'ano') return;
-    void loadConversations();
-    const refreshIfVisible = () => {
-      if (document.visibilityState === 'visible') void loadConversations();
+    const refresh = () => {
+      void loadConversations();
+      if (isStaff) void loadReportCount();
     };
+    refresh();
+    const refreshIfVisible = () => {
+      if (document.visibilityState === 'visible') refresh();
+    };
+    // Přečtení, odeslání nebo smazání zprávy, ztlumení: seznam hned, ne za 15 s.
+    const onChatChanged = () => void loadConversations();
     document.addEventListener('visibilitychange', refreshIfVisible);
+    window.addEventListener(CHAT_CHANGED_EVENT, onChatChanged);
     const timer = window.setInterval(refreshIfVisible, REFRESH_MS);
     return () => {
       document.removeEventListener('visibilitychange', refreshIfVisible);
+      window.removeEventListener(CHAT_CHANGED_EVENT, onChatChanged);
       window.clearInterval(timer);
     };
-  }, [access, loadConversations]);
+  }, [access, isStaff, loadConversations, loadReportCount]);
 
-  // Počet otevřených nahlášení pro tlačítko v hlavičce záložky.
-  useEffect(() => {
-    if (!isStaff || access !== 'ano') return;
-    let active = true;
-    void fetchReports(false).then((res) => {
-      if (active && res.data) setOpenReports(res.data.length);
-    });
-    return () => {
-      active = false;
-    };
-  }, [isStaff, access]);
+  const select = (id: string | null) => {
+    selectedIdRef.current = id;
+    setSelectedId(id);
+    setShowReports(false);
+    setChatHash(id ? `#chat/${id}` : '#chat');
+  };
 
-  // Klepnutí na upozornění otevře aplikaci na #chat/<id>.
+  const openReportsPanel = () => {
+    selectedIdRef.current = null;
+    setSelectedId(null);
+    setShowReports(true);
+    setChatHash(CHAT_REPORTS_HASH);
+  };
+
+  // Klepnutí na upozornění otevře aplikaci na #chat/<id>, lektora
+  // a správce u nahlášené zprávy na #chat/nahlasene.
   useEffect(() => {
     const onHash = () => {
-      const id = conversationIdFromHash(window.location.hash);
+      const hash = window.location.hash;
+      if (isReportsHash(hash)) {
+        selectedIdRef.current = null;
+        setSelectedId(null);
+        setShowReports(true);
+        return;
+      }
+      const id = conversationIdFromHash(hash);
       if (id) {
+        selectedIdRef.current = id;
         setSelectedId(id);
         setShowReports(false);
       }
@@ -122,25 +161,25 @@ export default function Chat() {
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
-  const select = (id: string | null) => {
-    setSelectedId(id);
-    setShowReports(false);
-    setChatHash(id);
-  };
-
-  const onActivity = useCallback(() => {
-    void loadConversations();
-  }, [loadConversations]);
-
-  const onReportCount = useCallback((count: number) => setOpenReports(count), []);
-
   const selected = conversations.find((c) => c.id === selectedId) ?? null;
-  const rightPaneOpen = showReports || selectedId !== null;
+  const selectedMissing = selectedId !== null && selected === null;
+
+  // Vybraná konverzace v seznamu chybí (právě založená, nebo otevřená
+  // z upozornění na novou skupinu): seznam se načte hned, ne až za 15 s.
+  useEffect(() => {
+    if (access !== 'ano' || !listLoaded || !selectedMissing || checkedId === selectedId) return;
+    void loadConversations();
+  }, [access, listLoaded, selectedMissing, selectedId, checkedId, loadConversations]);
+
+  const onReportCount = useCallback((count: number) => setOpenReportCount(count), []);
+
+  const reportsOpen = showReports && isStaff;
+  const rightPaneOpen = reportsOpen || selectedId !== null;
 
   const header = (
     <div
       className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex-col sm:flex-row sm:items-center justify-between gap-3 no-print ${
-        rightPaneOpen ? 'hidden md:flex' : 'flex'
+        access === 'ano' && rightPaneOpen ? 'hidden md:flex' : 'flex'
       }`}
     >
       <div className="flex items-center gap-3.5 min-w-0">
@@ -159,23 +198,20 @@ export default function Chat() {
           {isStaff && (
             <button
               type="button"
-              onClick={() => {
-                setShowReports(true);
-                setSelectedId(null);
-                setChatHash(null);
-              }}
-              aria-pressed={showReports}
+              onClick={openReportsPanel}
+              aria-pressed={reportsOpen}
               className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold cursor-pointer border ${
-                showReports
+                reportsOpen
                   ? 'bg-slate-900 text-white border-slate-900 dark:bg-white dark:text-slate-900 dark:border-white'
                   : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
             >
               <Flag className="w-4 h-4" aria-hidden="true" />
               Nahlášené
-              {openReports > 0 && (
+              {openReportCount > 0 && (
                 <span className="min-w-5 h-5 px-1.5 rounded-full bg-red-600 text-white text-xs font-bold inline-flex items-center justify-center">
-                  {openReports}
+                  {openReportCount}
+                  <span className="sr-only"> otevřených</span>
                 </span>
               )}
             </button>
@@ -323,19 +359,23 @@ export default function Chat() {
               })}
             </ul>
           </div>
+          {/* Aplikace není služební systém VS ČR: citlivé údaje do chatu nepatří. */}
+          <p className="shrink-0 px-4 py-2.5 border-t border-slate-200 dark:border-slate-800 text-[0.6875rem] leading-snug text-slate-500 dark:text-slate-400">
+            Chat je pro studium a běžnou domluvu. Údaje o vězněných osobách ani jiné služební informace sem nepište.
+          </p>
         </nav>
 
         {/* Pravá část: otevřená konverzace, nahlášené zprávy, nebo výzva. */}
         <section
-          aria-label={showReports ? 'Nahlášené zprávy' : selected ? `Konverzace: ${selected.title}` : 'Konverzace'}
+          aria-label={reportsOpen ? 'Nahlášené zprávy' : selected ? `Konverzace: ${selected.title}` : 'Konverzace'}
           className={`${rightPaneOpen ? 'flex' : 'hidden md:flex'} flex-1 min-w-0 flex-col min-h-0`}
         >
-          {showReports && isStaff ? (
+          {reportsOpen ? (
             <div className="flex flex-col h-full min-h-0">
               <div className="md:hidden px-3 pt-3">
                 <button
                   type="button"
-                  onClick={() => setShowReports(false)}
+                  onClick={() => select(null)}
                   className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 cursor-pointer"
                 >
                   ← Zpět na konverzace
@@ -349,18 +389,29 @@ export default function Chat() {
               conversation={selected}
               onBack={() => select(null)}
               onOpenInfo={() => setInfoOpen(true)}
-              onActivity={onActivity}
             />
-          ) : selectedId && listLoaded ? (
+          ) : selectedId ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-3 p-6 text-center text-sm text-slate-600 dark:text-slate-300">
-              <p>Tahle konverzace už není dostupná — možná jste ze skupiny odešli nebo vás z ní odebrali.</p>
-              <button
-                type="button"
-                onClick={() => select(null)}
-                className="font-semibold text-indigo-600 dark:text-indigo-400 cursor-pointer"
-              >
-                Zpět na konverzace
-              </button>
+              {checkedId === selectedId ? (
+                <p>Tahle konverzace už není dostupná — možná jste ze skupiny odešli nebo vás z ní odebrali.</p>
+              ) : listError ? (
+                <p role="alert" className="text-red-600 dark:text-red-400">
+                  {listError}
+                </p>
+              ) : (
+                <p className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                  <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> Načítám konverzaci…
+                </p>
+              )}
+              {(checkedId === selectedId || listError) && (
+                <button
+                  type="button"
+                  onClick={() => select(null)}
+                  className="font-semibold text-indigo-600 dark:text-indigo-400 cursor-pointer"
+                >
+                  Zpět na konverzace
+                </button>
+              )}
             </div>
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center gap-2 p-6 text-center text-sm text-slate-500 dark:text-slate-400">
@@ -376,8 +427,8 @@ export default function Chat() {
           onClose={() => setNewOpen(false)}
           onOpened={(id) => {
             setNewOpen(false);
+            // Nová konverzace v seznamu ještě není; načte ho efekt výše.
             select(id);
-            void loadConversations();
           }}
         />
       )}
@@ -385,10 +436,8 @@ export default function Chat() {
         <ConversationInfoDialog
           conversation={selected}
           onClose={() => setInfoOpen(false)}
-          onChanged={() => {
-            void loadConversations();
-            announceUnreadChanged();
-          }}
+          // Seznam i odznak v hlavičce se načtou znovu.
+          onChanged={announceChatChanged}
           onLeft={() => {
             setInfoOpen(false);
             select(null);

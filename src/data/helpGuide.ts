@@ -281,6 +281,7 @@ export const HELP_SECTIONS: HelpSection[] = [
           'Vyberete-li víc lidí, napište „Název skupiny“ a stiskněte „Založit skupinu“ (nejvýš 50 členů).',
           'Zprávu odešlete klávesou Enter nebo šipkou; Shift+Enter zalomí řádek.',
           'Soubor přiložíte sponkou vedle pole pro zprávu: PDF, Word, Excel, PowerPoint, obrázek nebo text do 10 MB. Popisek je nepovinný.',
+          'Na počítači jde soubor i přetáhnout do konverzace a snímek obrazovky vložit do pole pro zprávu (Ctrl+V).',
         ],
       },
       {
@@ -297,13 +298,21 @@ export const HELP_SECTIONS: HelpSection[] = [
         title: 'Co ještě jde',
         items: [
           'Každý vidí jen konverzace, ve kterých je. Lektoři ani správce cizí konverzace nečtou.',
+          'Při otevření konverzace s novými zprávami vás aplikace posune na čáru „Nové zprávy“. Odkazy (https://…) ve zprávě otevřete klepnutím.',
           'Svou zprávu smažete ikonou koše pod ní; ostatní místo ní uvidí „Zpráva byla smazána.“ Smaže se i její příloha.',
           'Přílohy vidí jen členové konverzace. Za 24 hodin můžete poslat nejvýš 40 souborů.',
           'Nevhodnou zprávu nahlásíte ikonou praporku. Uvidí ji lektoři a správce (jen tu jednu zprávu) a mohou ji skrýt; autor se nedozví, kdo ji nahlásil.',
           'Ikona „i“ v konverzaci ukáže členy a nabídne „Ztlumit“ — bez upozornění do zařízení a bez počítání do čísla v hlavičce.',
-          'Skupinu přejmenovává a členy přidává nebo odebírá ten, kdo ji založil. „Opustit skupinu“ může kdokoli; odejde-li zakladatel, správu převezme další člen.',
+          'Skupinu přejmenovává a členy přidává nebo odebírá ten, kdo ji založil. Noví členové uvidí i dřívější zprávy a přílohy skupiny. „Opustit skupinu“ může kdokoli; odejde-li zakladatel, správu převezme další člen.',
           'Na novou zprávu přijde upozornění do zařízení, máte-li ho zapnuté (druh „Nové zprávy v chatu“). Do zvonku chatové zprávy nechodí.',
+          'Kdo přestane být zařazený do třídy (například po smazání třídy na konci kurzu), chat ztratí: nejde mu psát a upozornění na zprávy ze skupin mu už nechodí.',
         ],
+      },
+      {
+        kind: 'tip',
+        text:
+          'Chat je pro studium a běžnou domluvu. Aplikace není služební systém Vězeňské služby, proto do chatu nepište ' +
+          'údaje o vězněných osobách ani jiné služební informace.',
       },
     ],
   },
@@ -663,7 +672,7 @@ export const HELP_SECTIONS: HelpSection[] = [
       {
         kind: 'list',
         items: [
-          'O nové nahlášené zprávě přijde lektorům a správci oznámení do zvonku.',
+          'O nové nahlášené zprávě přijde lektorům a správci oznámení do zvonku (a do zařízení, máte-li zapnutý druh „Nové zprávy v chatu“). Klepnutí na upozornění v zařízení otevře rovnou „Nahlášené“.',
           'V záložce Chat stiskněte „Nahlášené“. Vidíte nahlášenou zprávu, autora, kdo ji nahlásil a proč — zbytek konverzace ne.',
           'Má-li zpráva přílohu nebo sdílenou věc, uvidíte ji u nahlášení a přílohu si můžete otevřít.',
           '„Skrýt zprávu“ smaže její text i přílohu všem v konverzaci, „Ponechat“ nahlášení jen uzavře. „I vyřízené“ ukáže i starší vyřízená nahlášení.',
