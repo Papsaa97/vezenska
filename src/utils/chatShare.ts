@@ -44,13 +44,38 @@ export interface SharedArticle {
   kod: string;
 }
 
-export type ChatShare = SharedMaterial | SharedQuestion | SharedRegulation | SharedArticle;
+/** Modelová situace (migrace 056). */
+export interface SharedScenario {
+  druh: 'scenar';
+  nazev: string;
+  id: string;
+  /** Kategorie a obtížnost, jen pro popisek karty. */
+  popis: string;
+}
+
+/** Okruh Poznávačky (migrace 056). */
+export interface SharedMatching {
+  druh: 'poznavacka';
+  nazev: string;
+  id: string;
+  popis: string;
+}
+
+export type ChatShare =
+  | SharedMaterial
+  | SharedQuestion
+  | SharedRegulation
+  | SharedArticle
+  | SharedScenario
+  | SharedMatching;
 
 export const CHAT_SHARE_LABEL: Record<ChatShare['druh'], string> = {
   material: 'Soubor z Knihovny',
   otazka: 'Otázka',
   predpis: 'Předpis',
   clanek: 'Kompas zákonů',
+  scenar: 'Modelová situace',
+  poznavacka: 'Poznávačka',
 };
 
 /** Server přijme nejvýš 6000 znaků JSON; necháváme rezervu. */
@@ -114,6 +139,12 @@ export function parseChatShare(raw: unknown): ChatShare | null {
       if (!id) return null;
       return { druh: r.druh, nazev, id, kod: str(r.kod, 200) ?? '' };
     }
+    case 'scenar':
+    case 'poznavacka': {
+      const id = str(r.id, 200);
+      if (!id) return null;
+      return { druh: r.druh, nazev, id, popis: str(r.popis, 200) ?? '' };
+    }
     default:
       return null;
   }
@@ -158,6 +189,34 @@ export function shareRegulation(reg: { id: string; code: string; shortTitle: str
 
 export function shareArticle(a: { id: string; title: string; section: string; actNumber: string }): SharedArticle {
   return { druh: 'clanek', nazev: cut(a.title, 300), id: a.id, kod: cut(`${a.section} · ${a.actNumber}`, 200) };
+}
+
+export function shareScenario(s: { id: string; title: string; category: string; difficulty: string }): SharedScenario {
+  return { druh: 'scenar', nazev: cut(s.title, 300), id: s.id, popis: cut(`${s.category} · ${s.difficulty}`, 200) };
+}
+
+export function shareMatching(c: { id: string; title: string; type?: string }): SharedMatching {
+  const popis = c.type === 'diagram' ? 'Popis schématu' : c.type === 'weapon' ? 'Poznávačka zbraně' : 'Spojování pojmů';
+  return { druh: 'poznavacka', nazev: cut(c.title, 300), id: c.id, popis };
+}
+
+// ─── Otevření scénáře nebo poznávačky z chatu ────────────────────────────────
+
+/** Adresa, která otevře modelovou situaci nebo okruh Poznávačky. */
+export function appItemHash(share: SharedScenario | SharedMatching): string {
+  const tab = share.druh === 'scenar' ? 'scenarios' : 'matching';
+  return `#${tab}/${encodeURIComponent(share.id)}`;
+}
+
+/** Id položky z adresy `#<záložka>/<id>` pro danou záložku, jinak null. */
+export function itemIdFromHash(hash: string, tab: 'scenarios' | 'matching'): string | null {
+  const [hashTab, id] = hash.replace(/^#/, '').split('/');
+  if (hashTab !== tab || !id) return null;
+  try {
+    return decodeURIComponent(id);
+  } catch {
+    return null;
+  }
 }
 
 // ─── Otevření předpisu nebo článku z chatu ───────────────────────────────────

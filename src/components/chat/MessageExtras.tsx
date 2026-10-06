@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, Download, Eye, FileText, HelpCircle, Library, Loader2, Scale } from 'lucide-react';
+import { BookOpen, Compass, Download, Eye, FileText, HelpCircle, Library, Loader2, Puzzle, Scale } from 'lucide-react';
 import {
   CHAT_ATTACHMENT_BUCKET,
   ChatAttachment,
   attachmentAsMaterial,
   attachmentUrl,
 } from '../../utils/chat';
-import { CHAT_SHARE_LABEL, ChatShare, SharedQuestion, compassHash } from '../../utils/chatShare';
+import { CHAT_SHARE_LABEL, ChatShare, SharedQuestion, appItemHash, compassHash } from '../../utils/chatShare';
 import {
   MATERIALS_BUCKET,
   StudyMaterial,
@@ -100,6 +100,27 @@ function FileRow({
       )}
       <DownloadButton material={material} bucket={bucket} label={title} />
     </div>
+  );
+}
+
+/** Příloha jako řádek (bez náhledu obrázku) — přehled souborů konverzace. */
+export function AttachmentRow({
+  attachment,
+  caption,
+  onOpenFile,
+}: {
+  attachment: ChatAttachment;
+  caption?: string;
+  onOpenFile: OpenFileHandler;
+}) {
+  return (
+    <FileRow
+      material={attachmentAsMaterial(attachment)}
+      bucket={CHAT_ATTACHMENT_BUCKET}
+      title={attachment.name}
+      caption={caption}
+      onOpenFile={onOpenFile}
+    />
   );
 }
 
@@ -251,11 +272,13 @@ export function SharedItemCard({ share, onOpenFile }: { share: ChatShare; onOpen
     );
   }
 
-  const Icon = share.druh === 'predpis' ? Library : Scale;
+  const isAppItem = share.druh === 'scenar' || share.druh === 'poznavacka';
+  const Icon = share.druh === 'predpis' ? Library : share.druh === 'scenar' ? Compass : share.druh === 'poznavacka' ? Puzzle : Scale;
+  const detail = isAppItem ? share.popis : share.kod;
   return (
     <div className={CARD}>
       <a
-        href={compassHash(share)}
+        href={isAppItem ? appItemHash(share) : compassHash(share)}
         className="flex items-center gap-2.5 p-2.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/60"
       >
         <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
@@ -264,7 +287,7 @@ export function SharedItemCard({ share, onOpenFile }: { share: ChatShare; onOpen
         <div className="flex-1 min-w-0">
           <div className="text-[0.6875rem] font-semibold text-slate-500 dark:text-slate-400">{CHAT_SHARE_LABEL[share.druh]}</div>
           <div className="text-sm font-semibold truncate">{share.nazev}</div>
-          {share.kod && <div className="text-[0.6875rem] text-slate-500 dark:text-slate-400 truncate">{share.kod}</div>}
+          {detail && <div className="text-[0.6875rem] text-slate-500 dark:text-slate-400 truncate">{detail}</div>}
         </div>
         <span className="flex items-center gap-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 shrink-0">
           <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />

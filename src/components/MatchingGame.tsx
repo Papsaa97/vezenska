@@ -10,6 +10,8 @@ import MatchingCategoryEditModal from './common/MatchingCategoryEditModal';
 import ConfirmDialog from './common/ConfirmDialog';
 import { useAuth } from '../context/AuthContext';
 import { useEditableContent } from '../hooks/useEditableContent';
+import ShareToChatButton from './chat/ShareToChatButton';
+import { itemIdFromHash, shareMatching } from '../utils/chatShare';
 
 interface MatchingGameProps {
   categories: MatchingCategory[];
@@ -172,7 +174,10 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
   } = useEditableContent<MatchingCategory>('matching_category', categories, canEdit);
 
   const [gameKey, setGameKey] = useState(0);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(categories[0]?.id || '');
+  // Odkaz z chatu (#matching/<id>) vybere rovnou daný okruh.
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
+    () => itemIdFromHash(window.location.hash, 'matching') ?? categories[0]?.id ?? ''
+  );
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<MatchingCategory | null>(null);
   const [confirmDeleteCategory, setConfirmDeleteCategory] = useState(false);
@@ -405,6 +410,13 @@ export default function MatchingGame({ categories, onGameComplete, onNavigateToB
                   {shownMatched} / {shownTotal}
                 </span>
               </div>
+            )}
+            {activeCategory && (
+              <ShareToChatButton
+                label={`Poslat poznávačku ${activeCategory.title} do chatu`}
+                getShare={() => shareMatching(activeCategory)}
+                className="py-2"
+              />
             )}
             {activeCategory && (
               <button
