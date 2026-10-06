@@ -8,6 +8,8 @@
 // Obě knihovny se načítají dynamickým importem, takže se stahují až při prvním
 // otevření dokumentu a nezvětšují hlavní balík aplikace.
 
+import { importWithReload } from './lazyWithReload';
+
 export interface DocxPreview {
   html: string;
   /** Hlášky převodu (nepodporované prvky dokumentu), pro lektora k informaci. */
@@ -89,7 +91,7 @@ export function sanitizeDocumentHtml(html: string): string {
 
 /** Převede .docx na HTML. Formátování se zjednoduší, obsah zůstává. */
 export async function renderDocx(blob: Blob): Promise<DocxPreview> {
-  const mammoth = await import('mammoth');
+  const mammoth = await importWithReload(() => import('mammoth'));
   const arrayBuffer = await blob.arrayBuffer();
   const result = await mammoth.convertToHtml({ arrayBuffer });
 
@@ -122,7 +124,7 @@ function slideNumber(path: string): number {
  * stačí na zopakování látky; kdo potřebuje původní podobu, stáhne si soubor.
  */
 export async function renderPptx(blob: Blob): Promise<PptxSlide[]> {
-  const { default: JSZip } = await import('jszip');
+  const { default: JSZip } = await importWithReload(() => import('jszip'));
   const zip = await JSZip.loadAsync(blob);
 
   const slidePaths = Object.keys(zip.files)

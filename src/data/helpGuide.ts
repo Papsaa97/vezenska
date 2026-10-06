@@ -526,6 +526,7 @@ export const HELP_SECTIONS: HelpSection[] = [
           'Bez internetu fungují testy, kartičky a stažené předpisy. Dokončený test počká v zařízení a odešle se sám, jakmile se připojíte — i když aplikaci mezitím zavřete.',
           'Nástěnka třídy se načítá ze serveru, bez připojení ji neuvidíte aktuální.',
           'Na sdíleném počítači se data jednotlivých účtů nemíchají. Po skončení se odhlaste.',
+          'Aplikace anonymně měří návštěvnost a rychlost načítání (Vercel Web Analytics a Speed Insights). Nepoužívá k tomu cookies ani vaše jméno či e-mail; slouží jen k nalezení pomalých míst.',
         ],
       },
       {

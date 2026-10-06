@@ -48,6 +48,20 @@ export function reloadForNewVersion(): boolean {
   return true;
 }
 
+/**
+ * Pro přímé `import()` mimo React.lazy (banka otázek, pdf.js, náhledy Office).
+ * I ty po nasazení nové verze sahají na chunk, který už na serveru není
+ * (Vercel to v logu hlásil jako 404 na .js soubor).
+ */
+export function importWithReload<T>(factory: () => Promise<T>): Promise<T> {
+  return factory().catch((error: unknown) => {
+    if (isChunkLoadError(error) && reloadForNewVersion()) {
+      return new Promise<never>(() => {});
+    }
+    throw error;
+  });
+}
+
 /** Jako React.lazy, jen chybějící chunk po nasazení vyřeší obnovením stránky. */
 export const lazyWithReload: typeof lazy = (factory) =>
   lazy(() =>
