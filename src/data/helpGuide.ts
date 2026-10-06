@@ -301,7 +301,7 @@ export const HELP_SECTIONS: HelpSection[] = [
           'Při otevření konverzace s novými zprávami vás aplikace posune na čáru „Nové zprávy“. Odkazy (https://…) ve zprávě otevřete klepnutím.',
           'Svou zprávu smažete ikonou koše pod ní; ostatní místo ní uvidí „Zpráva byla smazána.“ Smaže se i její příloha.',
           'Přílohy vidí jen členové konverzace. Za 24 hodin můžete poslat nejvýš 40 souborů.',
-          'Nevhodnou zprávu nahlásíte ikonou praporku. Uvidí ji lektoři a správce (jen tu jednu zprávu) a mohou ji skrýt; autor se nedozví, kdo ji nahlásil.',
+          'Nevhodnou zprávu nahlásíte ikonou praporku. Uvidí ji lektoři a správce (jen tu jednu zprávu) a mohou ji skrýt; autor se nedozví, kdo ji nahlásil, ani když je sám lektor nebo správce.',
           'Ikona „i“ v konverzaci ukáže členy a nabídne „Ztlumit“ — bez upozornění do zařízení a bez počítání do čísla v hlavičce.',
           'Skupinu přejmenovává a členy přidává nebo odebírá ten, kdo ji založil. Noví členové uvidí i dřívější zprávy a přílohy skupiny. „Opustit skupinu“ může kdokoli; odejde-li zakladatel, správu převezme další člen.',
           'Na novou zprávu přijde upozornění do zařízení, máte-li ho zapnuté (druh „Nové zprávy v chatu“). Do zvonku chatové zprávy nechodí.',
@@ -674,6 +674,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         items: [
           'O nové nahlášené zprávě přijde lektorům a správci oznámení do zvonku (a do zařízení, máte-li zapnutý druh „Nové zprávy v chatu“). Klepnutí na upozornění v zařízení otevře rovnou „Nahlášené“.',
           'V záložce Chat stiskněte „Nahlášené“. Vidíte nahlášenou zprávu, autora, kdo ji nahlásil a proč — zbytek konverzace ne.',
+          'Nahlášení vaší vlastní zprávy neuvidíte a oznámení o něm vám nepřijde; vyřídí ho jiný lektor nebo správce.',
           'Má-li zpráva přílohu nebo sdílenou věc, uvidíte ji u nahlášení a přílohu si můžete otevřít.',
           '„Skrýt zprávu“ smaže její text i přílohu všem v konverzaci, „Ponechat“ nahlášení jen uzavře. „I vyřízené“ ukáže i starší vyřízená nahlášení.',
           'Smaže-li autor nahlášenou zprávu sám, její text i příloha zůstanou pro vás uložené, dokud nahlášení nevyřídíte.',
