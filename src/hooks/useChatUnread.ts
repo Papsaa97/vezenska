@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { CHAT_UNREAD_CHANGED_EVENT, fetchUnreadCount } from '../utils/chat';
+import { CHAT_CHANGED_EVENT, fetchUnreadCount } from '../utils/chat';
 
 /** Jak často se počet nepřečtených načte znovu, když je stránka vidět. */
 const REFRESH_MS = 30_000;
@@ -30,11 +30,11 @@ export function useChatUnread(): number {
     };
     const onChanged = () => void load();
     document.addEventListener('visibilitychange', refreshIfVisible);
-    window.addEventListener(CHAT_UNREAD_CHANGED_EVENT, onChanged);
+    window.addEventListener(CHAT_CHANGED_EVENT, onChanged);
     const timer = window.setInterval(refreshIfVisible, REFRESH_MS);
     return () => {
       document.removeEventListener('visibilitychange', refreshIfVisible);
-      window.removeEventListener(CHAT_UNREAD_CHANGED_EVENT, onChanged);
+      window.removeEventListener(CHAT_CHANGED_EVENT, onChanged);
       window.clearInterval(timer);
     };
   }, [user, load]);

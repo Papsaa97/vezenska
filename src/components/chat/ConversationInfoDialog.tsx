@@ -220,6 +220,9 @@ export default function ConversationInfoDialog({
           )}
           {manage && adding && (
             <div className="space-y-3">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Noví členové uvidí i dřívější zprávy a přílohy skupiny.
+              </p>
               <PeoplePicker
                 selected={toAdd}
                 excludeIds={members.map((m) => m.id)}
