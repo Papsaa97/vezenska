@@ -13,7 +13,7 @@ import FeedbackButton from './components/FeedbackButton';
 import WelcomeMessage from './components/help/WelcomeMessage';
 import { useWelcomeSeen } from './hooks/useWelcomeSeen';
 import { fetchQuizQuestionsFromSupabase } from './utils/quizQuestionsLoader';
-import { lazyWithReload } from './utils/lazyWithReload';
+import { importWithReload, lazyWithReload } from './utils/lazyWithReload';
 import { PAGE_CONTAINER, PAGE_CONTAINER_FILL } from './constants/layout';
 
 // Lazy-loaded view components — načteny až při první návštěvě daného tabu.
@@ -172,7 +172,7 @@ export default function App() {
     // vždy, i když ji dotaz do Supabase okamžitě nahradil a nikdy se nepoužila.
     const sourceQuestions = fromDb
       ? dbQuestions!
-      : (await import('./data/questionsData')).academyQuestions;
+      : (await importWithReload(() => import('./data/questionsData'))).academyQuestions;
 
     const hiddenSet = getHiddenQuestionIds();
     setAllQuestions(

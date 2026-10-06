@@ -3,6 +3,7 @@ import { fetchContentOverlay, mergeContent } from './contentLibrary';
 import { getFileKind, listMaterials, MATERIALS_BUCKET } from './materials';
 import type { VscrRegulation } from '../data/vscrRegulationsRegistry';
 import type { GeminiInlineDataPart } from './geminiAnalyzer';
+import { importWithReload } from './lazyWithReload';
 
 /**
  * Zdroje, ze kterých smí AI asistent čerpat (návrh z 29. 9. 2026: „čerpat
@@ -42,8 +43,8 @@ function compact(text: string | undefined | null): string {
 
 async function buildCompassText(): Promise<string> {
   const [{ legalDatabase }, { VSCR_REGULATIONS_REGISTRY }, overlay] = await Promise.all([
-    import('../data/legalCompasData'),
-    import('../data/vscrRegulationsRegistry'),
+    importWithReload(() => import('../data/legalCompasData')),
+    importWithReload(() => import('../data/vscrRegulationsRegistry')),
     fetchContentOverlay<VscrRegulation>('regulation'),
   ]);
 

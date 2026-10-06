@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Loader2, Minus, Plus, MoveHorizontal, AlertCircle } from 'lucide-react';
 import type { PDFDocumentProxy, RenderTask } from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { importWithReload } from '../../utils/lazyWithReload';
 
 /**
  * PDF vykreslené přímo v aplikaci přes pdf.js.
@@ -39,8 +40,8 @@ const PAGE_GUTTER = 32;
 
 async function loadPdfJs() {
   const [pdfjs, worker] = await Promise.all([
-    import('pdfjs-dist/legacy/build/pdf.mjs'),
-    import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url'),
+    importWithReload(() => import('pdfjs-dist/legacy/build/pdf.mjs')),
+    importWithReload(() => import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url')),
   ]);
   pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
   return pdfjs;
