@@ -46,7 +46,8 @@ export default function ShareToChatDialog({ share, onClose }: ShareToChatDialogP
         setError(res.error);
         return;
       }
-      const list = res.data ?? [];
+      // Do zablokované soukromé konverzace psát nejde, proto ji nenabízíme.
+      const list = (res.data ?? []).filter((c) => c.blocked === null);
       setConversations(list);
       if (list.length === 0) setPickPerson(true);
     });

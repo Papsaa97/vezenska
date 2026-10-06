@@ -12,6 +12,7 @@ import type { StudyMaterial } from './materials';
 
 const CHAT_FEATURE: MissingFeature = { label: 'Chat', ending: 'ý', migration: '052' };
 const ATTACH_FEATURE: MissingFeature = { label: 'Posílání příloh v chatu', ending: 'é', migration: '054' };
+const SAFETY_FEATURE: MissingFeature = { label: 'Tato funkce chatu', ending: 'á', migration: '056' };
 
 /**
  * Událost: v chatu se něco změnilo (přečtení, odeslaná nebo smazaná zpráva,
@@ -27,6 +28,12 @@ export function announceChatChanged(): void {
 export const CHAT_MAX_TEXT = 2000;
 export const CHAT_MAX_GROUP_NAME = 80;
 export const CHAT_MAX_GROUP_MEMBERS = 50;
+/** Jak dlouho po odeslání jde zprávu upravit (hlídá i server, migrace 056). */
+export const CHAT_EDIT_MINUTES = 15;
+/** Kolik souborů jde přiložit naráz (každý odejde jako samostatná zpráva). */
+export const CHAT_MAX_FILES_AT_ONCE = 10;
+/** Na kolik dní nejvýš jde pozastavit psaní (hlídá i server). */
+export const CHAT_MAX_PAUSE_DAYS = 30;
 
 export const CHAT_ROLE_LABEL: Record<string, string> = {
   student: 'Student',
@@ -215,6 +222,18 @@ export interface ChatConversation {
   muted: boolean;
   /** Volající skupinu založil (nebo správu převzal) a smí ji upravovat. */
   canManage: boolean;
+  /**
+   * Přímá konverzace: 'ja' = druhého jsem zablokoval(a), 'druhy' = druhý
+   * mi psát nedovolí. Jinak null (a vždy null bez migrace 056).
+   */
+  blocked: 'ja' | 'druhy' | null;
+}
+
+/** Citace zprávy, na kterou zpráva odpovídá. */
+export interface ChatReplyQuote {
+  id: string;
+  authorName: string;
+  preview: string;
 }
 
 export interface ChatMessage {
@@ -229,6 +248,13 @@ export interface ChatMessage {
   reportedByMe: boolean;
   attachment: ChatAttachment | null;
   share: ChatShare | null;
+  /** Název přílohy, kterou po 12 měsících smazal úklid. */
+  removedAttachmentName: string | null;
+  editedAt: string | null;
+  replyTo: ChatReplyQuote | null;
+  /** Jen u vlastních zpráv: kolik členů zprávu přečetlo a kolik ji mělo dostat. */
+  readCount: number | null;
+  recipientCount: number | null;
 }
 
 export interface ChatMember {
@@ -255,6 +281,54 @@ export interface ChatReport {
   messageHidden: boolean;
   attachment: ChatAttachment | null;
   share: ChatShare | null;
+  /** Údaje z migrace 056; na starší databázi null / false. */
+  authorId: string | null;
+  canPauseAuthor: boolean;
+  authorPausedUntil: string | null;
+  /** Znění zprávy v okamžiku nahlášení (autor ji mohl potom upravit). */
+  textAtReport: string | null;
+  editedAt: string | null;
+}
+
+/** Člověk, kterého jsem zablokoval(a). */
+export interface ChatBlockedPerson {
+  id: string;
+  name: string;
+  role: string | null;
+  className: string | null;
+  since: string;
+}
+
+/** Uživatel s pozastaveným psaním (přehled pro lektory a správce). */
+export interface ChatPausedUser {
+  userId: string;
+  name: string;
+  className: string | null;
+  until: string;
+  reason: string;
+  pausedBy: string | null;
+  since: string;
+}
+
+/** Pozastavené psaní přihlášeného uživatele. */
+export interface ChatMyPause {
+  until: string;
+  reason: string;
+}
+
+/** Třída, kterou smím vybrat celou při zakládání skupiny. */
+export interface ChatClassOption {
+  name: string;
+  count: number;
+}
+
+/** Soubor nebo sdílená věc v přehledu konverzace. */
+export interface ChatFileItem {
+  messageId: string;
+  authorName: string;
+  createdAt: string;
+  attachment: ChatAttachment | null;
+  share: ChatShare | null;
 }
 
 interface PersonRow {
@@ -278,6 +352,7 @@ interface ConversationRow {
   neprectene: number | null;
   ztlumeno: boolean;
   spravuji: boolean;
+  blokace?: string | null;
 }
 
 interface MessageRow {
@@ -296,6 +371,14 @@ interface MessageRow {
   priloha_typ?: string | null;
   priloha_velikost?: number | null;
   sdileni?: unknown;
+  // Sloupce z migrace 056.
+  priloha_smazana?: string | null;
+  upraveno?: string | null;
+  odpoved_na?: string | null;
+  odpoved_autor?: string | null;
+  odpoved_nahled?: string | null;
+  precetlo?: number | null;
+  prijemcu?: number | null;
 }
 
 interface MemberRow {
@@ -325,6 +408,11 @@ interface ReportRow {
   priloha_typ?: string | null;
   priloha_velikost?: number | null;
   sdileni?: unknown;
+  autor_id?: string | null;
+  autor_muze_byt_pozastaven?: boolean | null;
+  autor_pozastaven_do?: string | null;
+  text_pri_nahlaseni?: string | null;
+  upraveno?: string | null;
 }
 
 export const fetchChatAccess = () => call<boolean>('chat_pristup', undefined, CHAT_FEATURE);
@@ -358,6 +446,7 @@ export async function fetchConversations(): Promise<RpcResult<ChatConversation[]
       unread: r.neprectene ?? 0,
       muted: r.ztlumeno,
       canManage: r.spravuji,
+      blocked: r.blokace === 'ja' || r.blokace === 'druhy' ? r.blokace : null,
     })),
     error: null,
   };
@@ -385,6 +474,13 @@ export async function fetchMessages(conversationId: string, before?: string): Pr
         reportedByMe: r.nahlasil_jsem,
         attachment: attachmentFrom(r),
         share: parseChatShare(r.sdileni),
+        removedAttachmentName: r.priloha_smazana ?? null,
+        editedAt: r.upraveno ?? null,
+        replyTo: r.odpoved_na
+          ? { id: r.odpoved_na, authorName: r.odpoved_autor ?? 'Uživatel', preview: r.odpoved_nahled ?? '' }
+          : null,
+        readCount: typeof r.precetlo === 'number' ? r.precetlo : null,
+        recipientCount: typeof r.prijemcu === 'number' ? r.prijemcu : null,
       }))
       .reverse(),
     error: null,
@@ -426,6 +522,11 @@ export async function fetchReports(includeResolved: boolean): Promise<RpcResult<
       messageHidden: r.zprava_skryta,
       attachment: attachmentFrom(r),
       share: parseChatShare(r.sdileni),
+      authorId: r.autor_id ?? null,
+      canPauseAuthor: r.autor_muze_byt_pozastaven === true,
+      authorPausedUntil: r.autor_pozastaven_do ?? null,
+      textAtReport: r.text_pri_nahlaseni ?? null,
+      editedAt: r.upraveno ?? null,
     })),
     error: null,
   };
@@ -444,22 +545,164 @@ export const createGroup = (name: string, memberIds: string[]) =>
 export function sendMessage(
   conversationId: string,
   text: string,
-  extra?: { attachment?: { path: string; name: string }; share?: ChatShare }
+  extra?: { attachment?: { path: string; name: string }; share?: ChatShare; replyTo?: string }
 ): Promise<RpcResult<string>> {
-  if (!extra?.attachment && !extra?.share) {
+  if (!extra?.attachment && !extra?.share && !extra?.replyTo) {
     return call<string>('chat_odeslat', { p_konv: conversationId, p_text: text }, CHAT_FEATURE);
   }
-  return call<string>(
-    'chat_odeslat',
-    {
-      p_konv: conversationId,
-      p_text: text,
-      p_priloha: extra.attachment?.path ?? null,
-      p_priloha_nazev: extra.attachment?.name ?? null,
-      p_sdileni: extra.share ?? null,
-    },
-    ATTACH_FEATURE
-  );
+  const args: Record<string, unknown> = {
+    p_konv: conversationId,
+    p_text: text,
+    p_priloha: extra.attachment?.path ?? null,
+    p_priloha_nazev: extra.attachment?.name ?? null,
+    p_sdileni: extra.share ?? null,
+  };
+  // Odpověď umí až migrace 056; bez ní se parametr vůbec neposílá.
+  if (extra.replyTo) args.p_odpoved_na = extra.replyTo;
+  return call<string>('chat_odeslat', args, extra.replyTo ? SAFETY_FEATURE : ATTACH_FEATURE);
+}
+
+/** Lze zprávu ještě upravit? (Server hlídá totéž.) */
+export function canEditMessage(m: ChatMessage, now: number = Date.now()): boolean {
+  if (!m.mine || m.deleted) return false;
+  const sent = new Date(m.createdAt).getTime();
+  return Number.isFinite(sent) && now - sent < CHAT_EDIT_MINUTES * 60_000;
+}
+
+export const editMessage = (messageId: string, text: string) =>
+  call<null>('chat_upravit_zpravu', { p_zprava: messageId, p_text: text }, SAFETY_FEATURE);
+
+// ─── Blokování a pozastavení (migrace 056) ───────────────────────────────────
+
+export const blockUser = (userId: string, block: boolean) =>
+  call<null>('chat_zablokovat', { p_user: userId, p_ano: block }, SAFETY_FEATURE);
+
+interface BlockedRow {
+  id: string;
+  jmeno: string;
+  role: string | null;
+  trida: string | null;
+  vytvoreno: string;
+}
+
+export async function fetchBlocked(): Promise<RpcResult<ChatBlockedPerson[]>> {
+  const res = await call<BlockedRow[]>('chat_blokovani_seznam', undefined, SAFETY_FEATURE);
+  if (res.error || !res.data) return { data: null, error: res.error };
+  return {
+    data: res.data.map((r) => ({ id: r.id, name: r.jmeno, role: r.role, className: r.trida, since: r.vytvoreno })),
+    error: null,
+  };
+}
+
+export const pauseUser = (userId: string, days: number, reason: string) =>
+  call<string>('chat_pozastavit', { p_user: userId, p_dni: days, p_duvod: reason }, SAFETY_FEATURE);
+
+export const unpauseUser = (userId: string) =>
+  call<null>('chat_zrusit_pozastaveni', { p_user: userId }, SAFETY_FEATURE);
+
+interface PausedRow {
+  user_id: string;
+  jmeno: string;
+  trida: string | null;
+  do_kdy: string;
+  duvod: string;
+  pozastavil_jmeno: string | null;
+  vytvoreno: string;
+}
+
+export async function fetchPaused(): Promise<RpcResult<ChatPausedUser[]>> {
+  const res = await call<PausedRow[]>('chat_pozastaveni_seznam', undefined, SAFETY_FEATURE);
+  if (res.error || !res.data) return { data: null, error: res.error };
+  return {
+    data: res.data.map((r) => ({
+      userId: r.user_id,
+      name: r.jmeno,
+      className: r.trida,
+      until: r.do_kdy,
+      reason: r.duvod,
+      pausedBy: r.pozastavil_jmeno,
+      since: r.vytvoreno,
+    })),
+    error: null,
+  };
+}
+
+/**
+ * Pozastavené psaní přihlášeného, nebo null. Bez migrace 056 tiše null:
+ * chat funguje dál jako dřív.
+ */
+export async function fetchMyPause(): Promise<ChatMyPause | null> {
+  const res = await call<{ pozastaveno_do: string; duvod: string }[]>('chat_muj_stav', undefined, SAFETY_FEATURE);
+  const row = res.data?.[0];
+  return row ? { until: row.pozastaveno_do, reason: row.duvod } : null;
+}
+
+// ─── Skupina z celé třídy, přehled souborů, skrytí (migrace 056) ─────────────
+
+/** Třídy, které smím vybrat celé; bez migrace 056 prázdný seznam. */
+export async function fetchClassOptions(): Promise<ChatClassOption[]> {
+  const res = await call<{ trida: string; pocet: number }[]>('chat_tridy_k_vyberu', undefined, SAFETY_FEATURE);
+  return (res.data ?? []).map((r) => ({ name: r.trida, count: r.pocet }));
+}
+
+export async function fetchClassPeople(className: string): Promise<RpcResult<ChatPerson[]>> {
+  const res = await call<PersonRow[]>('chat_lide_tridy', { p_trida: className }, SAFETY_FEATURE);
+  if (res.error || !res.data) return { data: null, error: res.error };
+  return {
+    data: res.data.map((r) => ({ id: r.id, name: r.jmeno ?? 'Uživatel', role: r.role, className: r.trida })),
+    error: null,
+  };
+}
+
+interface FileRow {
+  zprava_id: string;
+  autor_jmeno: string;
+  vytvoreno: string;
+  priloha_cesta: string | null;
+  priloha_nazev: string | null;
+  priloha_typ: string | null;
+  priloha_velikost: number | null;
+  sdileni: unknown;
+}
+
+export async function fetchConversationFiles(conversationId: string): Promise<RpcResult<ChatFileItem[]>> {
+  const res = await call<FileRow[]>('chat_soubory_konverzace', { p_konv: conversationId }, SAFETY_FEATURE);
+  if (res.error || !res.data) return { data: null, error: res.error };
+  return {
+    data: res.data.map((r) => ({
+      messageId: r.zprava_id,
+      authorName: r.autor_jmeno,
+      createdAt: r.vytvoreno,
+      attachment: attachmentFrom(r),
+      share: parseChatShare(r.sdileni),
+    })),
+    error: null,
+  };
+}
+
+export const hideConversation = (conversationId: string, hide: boolean) =>
+  call<null>('chat_skryt_konverzaci', { p_konv: conversationId, p_skryt: hide }, SAFETY_FEATURE);
+
+/**
+ * Smaže z úložiště vlastní soubory, na které už žádná zpráva neodkazuje
+ * (smazaná nebo skrytá zpráva, příloha starší 12 měsíců). Databáze je zařadí
+ * do fronty, soubor ale smí smazat jen jeho autor přes úložiště. Běží tiše
+ * při otevření chatu; chyba nevadí, zkusí se to příště.
+ */
+export async function cleanupMyAttachments(): Promise<void> {
+  const res = await call<string[]>('chat_moje_prilohy_ke_smazani', undefined, SAFETY_FEATURE);
+  const paths = (res.data ?? []).filter((p) => typeof p === 'string' && p.length > 0);
+  if (paths.length === 0) return;
+  const { error } = await supabase.storage.from(CHAT_ATTACHMENT_BUCKET).remove(paths);
+  if (error) return;
+  await call<null>('chat_prilohy_smazany', { p_cesty: paths }, SAFETY_FEATURE);
+}
+
+/** Datum a čas pro „do kdy“ (pozastavení). */
+export function formatChatDeadline(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleString('cs-CZ', { day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 export const markRead = (conversationId: string) =>

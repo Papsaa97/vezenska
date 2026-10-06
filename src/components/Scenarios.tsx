@@ -9,6 +9,8 @@ import { loadCompletedScenarios, saveCompletedScenarios, updateDailyStreak } fro
 import { NAV_TAB_LABELS } from '../data/navTabs';
 import ScenarioEditModal from './common/ScenarioEditModal';
 import ConfirmDialog from './common/ConfirmDialog';
+import ShareToChatButton from './chat/ShareToChatButton';
+import { itemIdFromHash, shareScenario } from '../utils/chatShare';
 
 const SECONDARY_BUTTON =
   'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700';
@@ -53,6 +55,34 @@ export default function Scenarios() {
   useEffect(() => {
     setCompletedScenarios(loadCompletedScenarios());
   }, [progressRevision]);
+
+  // Odkaz z chatu: #scenarios/<id> otevře rovnou danou modelovou situaci.
+  // Adresa se pak vrátí na #scenarios.
+  const [hashScenarioId, setHashScenarioId] = useState<string | null>(() =>
+    itemIdFromHash(window.location.hash, 'scenarios')
+  );
+  useEffect(() => {
+    const onHashChange = () => {
+      const id = itemIdFromHash(window.location.hash, 'scenarios');
+      if (id) setHashScenarioId(id);
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+  useEffect(() => {
+    if (!hashScenarioId) return;
+    const target = scenarios.find(s => s.id === hashScenarioId);
+    // Situace upravené lektorem se načítají ze serveru; počkat na ně.
+    if (!target) return;
+    setHashScenarioId(null);
+    setSelectedScenario(target);
+    setCurrentStepIndex(0);
+    setSelectedChoice(null);
+    setTriedWrongIds([]);
+    setRevealedCorrect(false);
+    setScore({ correct: 0, total: 0 });
+    window.history.replaceState(null, '', '#scenarios');
+  }, [hashScenarioId, scenarios]);
 
   const categories = useMemo(
     () => Array.from(new Set<string>(scenarios.map(s => s.category))),
@@ -491,6 +521,11 @@ export default function Scenarios() {
           <span className="text-xs font-semibold px-2.5 py-1 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 rounded-md border border-blue-200 dark:border-blue-800">
             Krok {currentStepIndex + 1} z {selectedScenario.steps.length}
           </span>
+          <ShareToChatButton
+            compact
+            label="Poslat tuto modelovou situaci do chatu"
+            getShare={() => shareScenario(selectedScenario)}
+          />
           <button
             type="button"
             onClick={handleResetScenario}

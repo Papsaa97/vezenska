@@ -1,20 +1,25 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { BellOff, Flag, Loader2, MessagesSquare, Plus, Users } from 'lucide-react';
+import { BellOff, Flag, Loader2, MessagesSquare, Plus, UserX, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { NAV_TAB_LABELS } from '../data/navTabs';
 import ConversationView from './chat/ConversationView';
 import ConversationInfoDialog from './chat/ConversationInfoDialog';
 import NewConversationDialog from './chat/NewConversationDialog';
 import ReportsPanel from './chat/ReportsPanel';
+import BlockedPeopleDialog from './chat/BlockedPeopleDialog';
 import {
   CHAT_CHANGED_EVENT,
   CHAT_REPORTS_HASH,
   ChatConversation,
+  ChatMyPause,
   announceChatChanged,
+  cleanupMyAttachments,
   conversationIdFromHash,
   fetchChatAccess,
   fetchConversations,
+  fetchMyPause,
   fetchReports,
+  formatChatDeadline,
   formatChatTime,
   isReportsHash,
 } from '../utils/chat';
@@ -57,6 +62,9 @@ export default function Chat() {
   const [openReportCount, setOpenReportCount] = useState<number>(0);
   const [newOpen, setNewOpen] = useState<boolean>(false);
   const [infoOpen, setInfoOpen] = useState<boolean>(false);
+  const [blockedOpen, setBlockedOpen] = useState<boolean>(false);
+  /** Psaní pozastavené vyučujícím (migrace 056), jinak null. */
+  const [myPause, setMyPause] = useState<ChatMyPause | null>(null);
   /**
    * Pro které vybrané id už seznam (načtený až po výběru) ověřil, zda
    * konverzace existuje. Dokud ne, ukazuje se „Načítám“, ne „není dostupná“:
@@ -97,6 +105,16 @@ export default function Chat() {
     setCheckedId(requestedFor);
   }, []);
 
+  const loadMyPause = useCallback(async () => {
+    setMyPause(await fetchMyPause());
+  }, []);
+
+  // Soubory, na které už žádná zpráva neodkazuje (smazané zprávy, přílohy
+  // starší 12 měsíců), smaže z úložiště jejich autor — tiše, jednou za otevření.
+  useEffect(() => {
+    if (access === 'ano') void cleanupMyAttachments();
+  }, [access]);
+
   // Počet otevřených nahlášení pro tlačítko v hlavičce záložky.
   const loadReportCount = useCallback(async () => {
     const res = await fetchReports(false);
@@ -107,6 +125,7 @@ export default function Chat() {
     if (access !== 'ano') return;
     const refresh = () => {
       void loadConversations();
+      void loadMyPause();
       if (isStaff) void loadReportCount();
     };
     refresh();
@@ -123,7 +142,7 @@ export default function Chat() {
       window.removeEventListener(CHAT_CHANGED_EVENT, onChatChanged);
       window.clearInterval(timer);
     };
-  }, [access, isStaff, loadConversations, loadReportCount]);
+  }, [access, isStaff, loadConversations, loadMyPause, loadReportCount]);
 
   const select = (id: string | null) => {
     selectedIdRef.current = id;
@@ -267,6 +286,16 @@ export default function Chat() {
     <div className="flex flex-col gap-4 h-full min-h-0">
       {header}
 
+      {myPause && (
+        <div
+          role="status"
+          className={`${rightPaneOpen ? 'hidden md:block' : 'block'} rounded-2xl border border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/40 px-4 py-3 text-sm text-amber-900 dark:text-amber-200`}
+        >
+          Psaní do chatu máte pozastavené do <strong>{formatChatDeadline(myPause.until)}</strong>. Důvod: {myPause.reason}.
+          Konverzace můžete dál číst. S dotazem se obraťte na vyučujícího.
+        </div>
+      )}
+
       <div className="flex-1 min-h-[24rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden flex">
         {/* Seznam konverzací — na telefonu jen tehdy, když není nic otevřené. */}
         <nav
@@ -360,9 +389,18 @@ export default function Chat() {
             </ul>
           </div>
           {/* Aplikace není služební systém VS ČR: citlivé údaje do chatu nepatří. */}
-          <p className="shrink-0 px-4 py-2.5 border-t border-slate-200 dark:border-slate-800 text-[0.6875rem] leading-snug text-slate-500 dark:text-slate-400">
-            Chat je pro studium a běžnou domluvu. Údaje o vězněných osobách ani jiné služební informace sem nepište.
-          </p>
+          <div className="shrink-0 px-4 py-2.5 border-t border-slate-200 dark:border-slate-800 space-y-1.5">
+            <p className="text-[0.6875rem] leading-snug text-slate-500 dark:text-slate-400">
+              Chat je pro studium a běžnou domluvu. Údaje o vězněných osobách ani jiné služební informace sem nepište.
+            </p>
+            <button
+              type="button"
+              onClick={() => setBlockedOpen(true)}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white cursor-pointer"
+            >
+              <UserX className="w-3.5 h-3.5" aria-hidden="true" /> Zablokovaní
+            </button>
+          </div>
         </nav>
 
         {/* Pravá část: otevřená konverzace, nahlášené zprávy, nebo výzva. */}
@@ -389,6 +427,7 @@ export default function Chat() {
               conversation={selected}
               onBack={() => select(null)}
               onOpenInfo={() => setInfoOpen(true)}
+              myPause={myPause}
             />
           ) : selectedId ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-3 p-6 text-center text-sm text-slate-600 dark:text-slate-300">
@@ -445,6 +484,7 @@ export default function Chat() {
           }}
         />
       )}
+      {blockedOpen && <BlockedPeopleDialog onClose={() => setBlockedOpen(false)} />}
     </div>
   );
 }

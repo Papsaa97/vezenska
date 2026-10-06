@@ -1,29 +1,43 @@
 import React, { useCallback, useEffect, useId, useState } from 'react';
-import { BellOff, Loader2, LogOut, UserMinus, UserPlus } from 'lucide-react';
+import { BellOff, EyeOff, FileText, Loader2, LogOut, PauseCircle, UserMinus, UserPlus, UserX } from 'lucide-react';
 import ChatDialog from './ChatDialog';
 import PeoplePicker from './PeoplePicker';
+import PauseUserDialog from './PauseUserDialog';
 import ConfirmDialog from '../common/ConfirmDialog';
+import FileViewerModal from '../common/FileViewerModal';
+import { AttachmentRow, OpenFileHandler, SharedItemCard } from './MessageExtras';
 import { useAuth } from '../../context/AuthContext';
+import type { StudyMaterial } from '../../utils/materials';
 import {
   CHAT_MAX_GROUP_NAME,
   CHAT_ROLE_LABEL,
   ChatConversation,
+  ChatFileItem,
   ChatMember,
   ChatPerson,
+  blockUser,
+  fetchBlocked,
+  fetchConversationFiles,
   fetchMembers,
+  formatChatTime,
+  hideConversation,
   leaveGroup,
   setMuted,
   updateGroup,
 } from '../../utils/chat';
+
+const isStaffRole = (role: string | null) => role === 'lektor' || role === 'admin';
 
 interface ConversationInfoDialogProps {
   conversation: ChatConversation;
   onClose: () => void;
   /** Něco se změnilo (název, členové, ztlumení) — seznam se načte znovu. */
   onChanged: () => void;
-  /** Uživatel ze skupiny odešel. */
+  /** Uživatel ze skupiny odešel, nebo konverzaci skryl. */
   onLeft: () => void;
 }
+
+type Confirm = { kind: 'leave' } | { kind: 'hide' } | { kind: 'block'; member: ChatMember };
 
 /**
  * Podrobnosti konverzace: členové, ztlumení a u skupiny správa (název,
@@ -35,7 +49,8 @@ export default function ConversationInfoDialog({
   onChanged,
   onLeft,
 }: ConversationInfoDialogProps) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  const iAmStaff = isStaffRole(profile?.role ?? null);
   const nameId = useId();
   const muteId = useId();
   const [members, setMembers] = useState<ChatMember[]>([]);
@@ -45,18 +60,38 @@ export default function ConversationInfoDialog({
   const [name, setName] = useState<string>(conversation.title);
   const [adding, setAdding] = useState<boolean>(false);
   const [toAdd, setToAdd] = useState<ChatPerson[]>([]);
-  const [confirmLeave, setConfirmLeave] = useState<boolean>(false);
+  const [confirm, setConfirm] = useState<Confirm | null>(null);
   const [muted, setMutedState] = useState<boolean>(conversation.muted);
+  /** Koho mám zablokovaného (null = nevím, chybí migrace 056). */
+  const [blockedIds, setBlockedIds] = useState<Set<string> | null>(null);
+  const [files, setFiles] = useState<ChatFileItem[] | null>(null);
+  const [filesLoading, setFilesLoading] = useState<boolean>(false);
+  const [viewer, setViewer] = useState<{ material: StudyMaterial; bucket: string } | null>(null);
+  const [pauseTarget, setPauseTarget] = useState<ChatMember | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const openFile: OpenFileHandler = (material, bucket) => setViewer({ material, bucket });
 
   const load = useCallback(async () => {
-    const res = await fetchMembers(conversation.id);
+    const [res, blocked] = await Promise.all([fetchMembers(conversation.id), fetchBlocked()]);
     setLoading(false);
+    setBlockedIds(blocked.data ? new Set(blocked.data.map((b) => b.id)) : null);
     if (res.error) {
       setError(res.error);
       return;
     }
     setMembers(res.data ?? []);
   }, [conversation.id]);
+
+  const loadFiles = async () => {
+    setFilesLoading(true);
+    const res = await fetchConversationFiles(conversation.id);
+    setFilesLoading(false);
+    if (res.error) {
+      setError(res.error);
+      return;
+    }
+    setFiles(res.data ?? []);
+  };
 
   useEffect(() => {
     void load();
@@ -100,21 +135,43 @@ export default function ConversationInfoDialog({
   };
 
   const leave = async () => {
-    if (await run(leaveGroup(conversation.id))) {
-      setConfirmLeave(false);
-      onLeft();
-    } else {
-      setConfirmLeave(false);
-    }
+    const ok = await run(leaveGroup(conversation.id));
+    setConfirm(null);
+    if (ok) onLeft();
+  };
+
+  const hide = async () => {
+    const ok = await run(hideConversation(conversation.id, true));
+    setConfirm(null);
+    if (ok) onLeft();
+  };
+
+  const setBlocked = async (member: ChatMember, block: boolean) => {
+    const ok = await run(blockUser(member.id, block));
+    setConfirm(null);
+    if (!ok) return;
+    setBlockedIds((prev) => {
+      const next = new Set(prev ?? []);
+      if (block) next.add(member.id);
+      else next.delete(member.id);
+      return next;
+    });
+  };
+
+  const runConfirm = () => {
+    if (!confirm) return;
+    if (confirm.kind === 'leave') void leave();
+    else if (confirm.kind === 'hide') void hide();
+    else void setBlocked(confirm.member, true);
   };
 
   const manage = conversation.isGroup && conversation.canManage;
 
   return (
     <>
-      {/* Potvrzení odchodu nahradí dialog, ne překryje: dva dialogy s pastí
-          na fokus by si ho přetahovaly. */}
-      {!confirmLeave && (
+      {/* Potvrzení, prohlížeč souboru i pozastavení nahradí dialog, ne překryjí:
+          dva dialogy s pastí na fokus by si ho přetahovaly. */}
+      {!confirm && !viewer && !pauseTarget && (
       <ChatDialog title={conversation.isGroup ? 'Skupina' : 'Konverzace'} onClose={onClose} busy={busy}>
         <div className="space-y-5">
           {manage ? (
@@ -191,6 +248,42 @@ export default function ConversationInfoDialog({
                           .join(' · ')}
                       </span>
                     </span>
+                    {m.id !== user?.id && blockedIds !== null && !isStaffRole(m.role) && (
+                      blockedIds.has(m.id) ? (
+                        <button
+                          type="button"
+                          onClick={() => void setBlocked(m, false)}
+                          disabled={busy}
+                          aria-label={`Odblokovat: ${m.name}`}
+                          className="px-2 py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer disabled:opacity-50"
+                        >
+                          Odblokovat
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setConfirm({ kind: 'block', member: m })}
+                          disabled={busy}
+                          aria-label={`Zablokovat: ${m.name}`}
+                          title="Zablokovat"
+                          className="p-1.5 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer disabled:opacity-50"
+                        >
+                          <UserX className="w-4 h-4" aria-hidden="true" />
+                        </button>
+                      )
+                    )}
+                    {iAmStaff && m.id !== user?.id && !isStaffRole(m.role) && (
+                      <button
+                        type="button"
+                        onClick={() => setPauseTarget(m)}
+                        disabled={busy}
+                        aria-label={`Pozastavit psaní do chatu: ${m.name}`}
+                        title="Pozastavit psaní do chatu"
+                        className="p-1.5 rounded-lg text-slate-500 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-500/10 cursor-pointer disabled:opacity-50"
+                      >
+                        <PauseCircle className="w-4 h-4" aria-hidden="true" />
+                      </button>
+                    )}
                     {manage && m.id !== user?.id && (
                       <button
                         type="button"
@@ -253,42 +346,162 @@ export default function ConversationInfoDialog({
             </div>
           )}
 
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+              Soubory a sdílené věci{files && files.length > 0 ? ` (${files.length})` : ''}
+            </h3>
+            {files === null ? (
+              <button
+                type="button"
+                onClick={() => void loadFiles()}
+                disabled={filesLoading}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer disabled:opacity-50"
+              >
+                {filesLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <FileText className="w-4 h-4" aria-hidden="true" />
+                )}
+                Ukázat soubory konverzace
+              </button>
+            ) : files.length === 0 ? (
+              <p className="text-sm text-slate-500 dark:text-slate-400">V konverzaci zatím nejsou žádné soubory.</p>
+            ) : (
+              <ul className="space-y-2">
+                {files.map((f) => (
+                  <li key={f.messageId} className="rounded-xl border border-slate-200 dark:border-slate-800">
+                    {f.attachment ? (
+                      <AttachmentRow
+                        attachment={f.attachment}
+                        caption={`${f.authorName} · ${formatChatTime(f.createdAt)}`}
+                        onOpenFile={openFile}
+                      />
+                    ) : (
+                      f.share && (
+                        <div className="p-1.5 space-y-1">
+                          <p className="px-1 text-[0.6875rem] font-semibold text-slate-500 dark:text-slate-400">
+                            {f.authorName} · {formatChatTime(f.createdAt)}
+                          </p>
+                          <SharedItemCard share={f.share} onOpenFile={openFile} />
+                        </div>
+                      )
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {notice && (
+            <p role="status" className="text-sm text-emerald-700 dark:text-emerald-400">
+              {notice}
+            </p>
+          )}
           {error && (
             <p role="alert" className="text-sm text-red-600 dark:text-red-400">
               {error}
             </p>
           )}
 
-          {conversation.isGroup && (
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+          <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-2">
+            {!conversation.isGroup &&
+              conversation.otherUserId &&
+              blockedIds !== null &&
+              !isStaffRole(conversation.otherUserRole) &&
+              (blockedIds.has(conversation.otherUserId) ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const other = members.find((m) => m.id === conversation.otherUserId);
+                    if (other) void setBlocked(other, false);
+                  }}
+                  disabled={busy}
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer disabled:opacity-50"
+                >
+                  <UserX className="w-4 h-4" aria-hidden="true" /> Odblokovat
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const other = members.find((m) => m.id === conversation.otherUserId);
+                    if (other) setConfirm({ kind: 'block', member: other });
+                  }}
+                  disabled={busy || members.length === 0}
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer disabled:opacity-50"
+                >
+                  <UserX className="w-4 h-4" aria-hidden="true" /> Zablokovat
+                </button>
+              ))}
+            <button
+              type="button"
+              onClick={() => setConfirm({ kind: 'hide' })}
+              disabled={busy}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer disabled:opacity-50"
+            >
+              <EyeOff className="w-4 h-4" aria-hidden="true" /> Skrýt konverzaci
+            </button>
+            {conversation.isGroup && (
               <button
                 type="button"
-                onClick={() => setConfirmLeave(true)}
+                onClick={() => setConfirm({ kind: 'leave' })}
                 disabled={busy}
                 className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer disabled:opacity-50"
               >
                 <LogOut className="w-4 h-4" aria-hidden="true" /> Opustit skupinu
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </ChatDialog>
       )}
       <ConfirmDialog
-        isOpen={confirmLeave}
+        isOpen={confirm !== null}
         tone="danger"
-        title="Opustit skupinu?"
-        description={
-          <>
-            Skupina „{conversation.title}“ vám zmizí ze seznamu a nové zprávy už neuvidíte. Zpět vás může přidat
-            jen ten, kdo skupinu spravuje.
-          </>
+        title={
+          confirm?.kind === 'leave'
+            ? 'Opustit skupinu?'
+            : confirm?.kind === 'hide'
+              ? 'Skrýt konverzaci?'
+              : `Zablokovat: ${confirm?.kind === 'block' ? confirm.member.name : ''}?`
         }
-        confirmLabel="Opustit skupinu"
+        description={
+          confirm?.kind === 'leave' ? (
+            <>
+              Skupina „{conversation.title}“ vám zmizí ze seznamu a nové zprávy už neuvidíte. Zpět vás může přidat jen
+              ten, kdo skupinu spravuje.
+            </>
+          ) : confirm?.kind === 'hide' ? (
+            <>Konverzace zmizí ze seznamu, dokud do ní někdo nenapíše. Zprávy se nemažou.</>
+          ) : (
+            <>
+              Nenapíše vám do přímé konverzace a nepřidá vás do skupiny. Ve společné skupině jeho zprávy dál uvidíte, jen
+              vám z nich nepřijde upozornění. Odblokovat ho jde kdykoli v seznamu „Zablokovaní“.
+            </>
+          )
+        }
+        confirmLabel={confirm?.kind === 'leave' ? 'Opustit skupinu' : confirm?.kind === 'hide' ? 'Skrýt' : 'Zablokovat'}
         isBusy={busy}
-        onConfirm={() => void leave()}
-        onCancel={() => setConfirmLeave(false)}
+        onConfirm={runConfirm}
+        onCancel={() => setConfirm(null)}
       />
+      <FileViewerModal
+        material={viewer?.material ?? null}
+        bucket={viewer?.bucket}
+        isOpen={viewer !== null}
+        onClose={() => setViewer(null)}
+      />
+      {pauseTarget && (
+        <PauseUserDialog
+          userId={pauseTarget.id}
+          userName={pauseTarget.name}
+          onClose={() => setPauseTarget(null)}
+          onPaused={() => {
+            setNotice(`${pauseTarget.name} má psaní do chatu pozastavené. Zrušit to jde v přehledu Nahlášené.`);
+            setPauseTarget(null);
+          }}
+        />
+      )}
     </>
   );
 }
