@@ -2,7 +2,7 @@ import React, { useEffect, useId, useState } from 'react';
 import { KeyRound, Loader2 } from 'lucide-react';
 import { supabase, PASSWORD_RECOVERY_KEY } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { translateAuthError } from '../constants/auth';
+import { passwordProblem, translateAuthError } from '../constants/auth';
 import { useDialog } from '../hooks/useDialog';
 
 function readRecoveryFlag(): boolean {
@@ -63,6 +63,11 @@ export default function PasswordRecoveryModal() {
     setError(null);
     if (password !== confirm) {
       setError('Zadaná hesla se neshodují.');
+      return;
+    }
+    const weak = passwordProblem(password);
+    if (weak) {
+      setError(weak);
       return;
     }
     setSaving(true);

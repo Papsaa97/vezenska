@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, LogIn, UserPlus, Eye, EyeOff, Loader2, ShieldCheck, AlertCircle, HelpCircle } from 'lucide-react';
 import { useAuth, UserRole } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
-import { MIN_PASSWORD_LENGTH, translateAuthError, weakPasswordNotice } from '../constants/auth';
+import { MIN_PASSWORD_LENGTH, passwordProblem, translateAuthError, weakPasswordNotice } from '../constants/auth';
 import CaptchaWidget, { isCaptchaConfigured, type CaptchaWidgetHandle } from './CaptchaWidget';
 import { getInitials } from '../utils/avatar';
 import {
@@ -143,6 +143,11 @@ export function AuthModal({ onClose }: AuthModalProps) {
       }
       if (password !== confirmPassword) {
         setErrorMsg('Zadaná hesla se neshodují. Zkontrolujte prosím obě pole.');
+        return;
+      }
+      const weak = passwordProblem(password);
+      if (weak) {
+        setErrorMsg(weak);
         return;
       }
     }
@@ -324,7 +329,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
                     Požadavky na heslo:
                   </div>
                   <p className="text-[0.6875rem] text-slate-400">• Minimální délka je {MIN_PASSWORD_LENGTH} znaků</p>
-                  <p className="text-[0.6875rem] text-slate-400">• Doporučujeme kombinaci velkých a malých písmen a číslic</p>
+                  <p className="text-[0.6875rem] text-slate-400">• Musí obsahovat malé i velké písmeno a číslici</p>
                   <p className="text-[0.6875rem] text-slate-300 font-medium">• Musí obsahovat alespoň jeden speciální znak (např. <span className="font-mono">!@#$%^&*</span>)</p>
                   <p className="text-[0.6875rem] text-slate-400">• Heslo je bezpečně šifrováno v Supabase Auth</p>
                 </div>

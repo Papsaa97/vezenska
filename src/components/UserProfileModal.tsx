@@ -24,7 +24,7 @@ import { AVATAR_PRESETS, shrinkAvatarImage, getInitials, resolveAvatarDisplay, t
 import { useDialog } from '../hooks/useDialog';
 import DisplayScalePicker from './DisplayScalePicker';
 import PushNotificationSettings from './PushNotificationSettings';
-import { MIN_PASSWORD_LENGTH, ROLE_LABELS, translateAuthError } from '../constants/auth';
+import { MIN_PASSWORD_LENGTH, ROLE_LABELS, passwordProblem, translateAuthError } from '../constants/auth';
 
 const ROLE_COLORS: Record<UserRole, string> = {
   student: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
@@ -267,8 +267,9 @@ export default function UserProfileModal({ onClose, totalXp, currentRank }: User
     e.preventDefault();
     setPasswordMessage(null);
 
-    if (newPassword.length < MIN_PASSWORD_LENGTH) {
-      setPasswordMessage({ type: 'error', text: `Heslo musí mít alespoň ${MIN_PASSWORD_LENGTH} znaků.` });
+    const weak = passwordProblem(newPassword);
+    if (weak) {
+      setPasswordMessage({ type: 'error', text: weak });
       return;
     }
     if (newPassword !== confirmPassword) {

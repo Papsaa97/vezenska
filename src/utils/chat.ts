@@ -100,7 +100,12 @@ export async function uploadAttachment(
   if (invalid) return { data: null, error: invalid };
   const ext = extensionOf(file.name);
   const path = `${conversationId}/${crypto.randomUUID()}.${ext}`;
-  const { error } = await supabase.storage.from(CHAT_ATTACHMENT_BUCKET).upload(path, file, {
+  // Supabase u souboru (Blob) volbu `contentType` nepoužije a pošle typ, který
+  // má soubor sám. Chromebook ani Windows u HEIC žádný nemají, kbelík pak
+  // dostal application/octet-stream a nahrání odmítl. Proto se soubor přebalí
+  // do Blobu s typem podle přípony.
+  const body = file.slice(0, file.size, ATTACHMENT_TYPES[ext]);
+  const { error } = await supabase.storage.from(CHAT_ATTACHMENT_BUCKET).upload(path, body, {
     contentType: ATTACHMENT_TYPES[ext],
     upsert: false,
   });
@@ -113,6 +118,9 @@ export async function uploadAttachment(
     }
     if (/row-level security|unauthorized|403/i.test(error.message)) {
       return { data: null, error: 'Soubor se nepodařilo nahrát. Za posledních 24 hodin jste možná poslali příliš mnoho příloh (nejvýš 40).' };
+    }
+    if (/mime type/i.test(error.message)) {
+      return { data: null, error: `Tento typ souboru server nepřijal. Povoleno: ${CHAT_ATTACHMENT_HINT}.` };
     }
     return { data: null, error: `Soubor se nepodařilo nahrát: ${error.message}` };
   }
