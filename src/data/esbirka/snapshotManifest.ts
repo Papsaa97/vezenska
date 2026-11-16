@@ -16,19 +16,15 @@ export const ESBIRKA_SNAPSHOTS: Record<string, EsbirkaSnapshotSummary> = {
     "eli": "/eli/cz/sb/1961/141",
     "citace": "141/1961 Sb.",
     "nazev": "Zákon o trestním řízení soudním (trestní řád)",
-    "dokumentId": 2055613,
-    "cisloZneni": 115,
-    "ucinnostOd": "2026-01-01",
+    "dokumentId": 2080975,
+    "cisloZneni": 116,
+    "ucinnostOd": "2026-11-01",
     "novely": [
-      "265/2001 Sb.",
-      "220/2025 Sb.",
-      "269/2025 Sb.",
-      "270/2025 Sb.",
-      "285/2025 Sb."
+      "197/2026 Sb."
     ],
-    "portalUrl": "https://e-sbirka.gov.cz/sb/1961/141/2026-01-01?zalozka=text",
-    "stazenoDne": "2026-09-16T10:07:23.935Z",
-    "pocetZnaku": 656185,
+    "portalUrl": "https://e-sbirka.gov.cz/sb/1961/141/2026-11-01?zalozka=text",
+    "stazenoDne": "2026-11-16T11:18:16.379Z",
+    "pocetZnaku": 656156,
     "paragrafy": [
       "§ 1",
       "§ 2",
